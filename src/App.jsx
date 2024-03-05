@@ -27,7 +27,7 @@ function App() {
 
           <section className='flex justify-center w-full py-2 gap-2 px-4'>
             {days.map(({ name }) => (
-              <a href={`#${name}`} key={name} className=' badge  badge-primary badge-lg'>
+              <a href={`#${name}`} key={name} className=' badge text-xl p-3 badge-primary badge-lg'>
                 {name}
               </a>
             ))}
