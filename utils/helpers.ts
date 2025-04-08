@@ -1,10 +1,11 @@
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Modal } from "#components";
+import type { NavigationMenuItem } from "@nuxt/ui";
 
 export const menuDate = "20 Mayo - 24 Mayo";
 
-export const links = [
+export const links: NavigationMenuItem[] = [
   [
     {
       label: "Inicio",
@@ -12,9 +13,14 @@ export const links = [
       to: "/",
     },
     {
-      label: "Nuestros planes",
+      label: "Servicio",
+      icon: "i-heroicons-clipboard-document-list",
+      to: "/servicio",
+    },
+    {
+      label: "Planes",
       icon: "i-heroicons-list-bullet-20-solid",
-      to: "/nuestros-planes",
+      to: "/planes",
     },
     {
       label: "Menú",
@@ -95,7 +101,7 @@ const modal = overlay.create(Modal, {
 export const steps = [
   {
     id: 1,
-    title: "Elige tu plan",
+    title: "(1) Elige tu plan",
     description: "Selecciona el plan que más se ajuste a tus necesidades.",
     button: {
       label: "Ver planes",
@@ -108,7 +114,7 @@ export const steps = [
   },
   {
     id: 2,
-    title: "Realiza tu pedido",
+    title: "(2) Realiza tu pedido",
     description: "Realiza tu pedido a través de WhatsApp y paga en línea.",
     button: {
       label: "¡Ordenar ahora!",
@@ -120,7 +126,7 @@ export const steps = [
   },
   {
     id: 3,
-    title: "Confirma tu menú",
+    title: "(3) Confirma tu menú",
     description: "Confirma el menú recomendado o haz algún cambio.",
     button: {
       label: "Menú de la semana",
@@ -131,7 +137,7 @@ export const steps = [
   },
   {
     id: 4,
-    title: "Recibe tus comidas",
+    title: "(4) Recibe tus comidas",
     description: "Recibe tus comidas en la comodidad de tu hogar.",
     button: {
       label: "Mas información",
@@ -167,5 +173,28 @@ export const benefits = [
     title: "Personalización",
     description: "Adapta tus comidas a tus necesidades y preferencias.",
     image: "/personalizacion.png",
+  },
+];
+
+export const menuItems = [
+  {
+    id: 1,
+    title: "Albondigas",
+    image: "/albondigas.jpeg",
+  },
+  {
+    id: 2,
+    title: "Pechuga a la plancha",
+    image: "/pechuga-plancha.jpeg",
+  },
+  {
+    id: 3,
+    title: "Pechuga al chipotle",
+    image: "/pechuga-chipotle.jpeg",
+  },
+  {
+    id: 4,
+    title: "Carne asada",
+    image: "/carne-asada.jpeg",
   },
 ];

@@ -17,7 +17,7 @@
         </section>
       </div>
       <figure class="overflow-hidden rounded-2xl shadow-2xl">
-        <NuxtImg src="/hero.png" alt="Hero" width="400" height="400" />
+        <NuxtImg src="/hero-new.jpeg" alt="Hero" width="400" height="550" />
       </figure>
     </section>
 
@@ -27,7 +27,7 @@
       class="container mx-auto flex w-full flex-col-reverse items-center justify-center gap-8 py-8 md:flex-row md:gap-12 md:py-20"
     >
       <figure class="overflow-hidden rounded-2xl shadow-2xl">
-        <NuxtImg src="/who.png" alt="Why Us" width="400" height="400" />
+        <NuxtImg src="/hero.png" alt="Why Us" width="400" height="400" />
       </figure>
       <div class="md:w-1/2">
         <h2 class="text-primary-500 mb-4 text-3xl font-bold">
@@ -54,8 +54,17 @@
         </p>
       </article>
 
+      <!-- Como funciona el servicio -->
       <section>
-        <div class="grid grid-cols-1 justify-between gap-4 py-8 md:grid-cols-4">
+        <!-- Versión movil -->
+        <div class="py-8 md:hidden">
+          <BaseGallery :items="steps" />
+        </div>
+
+        <!-- Versión desktop -->
+        <div
+          class="hidden grid-cols-1 justify-between gap-4 py-8 md:grid md:grid-cols-4"
+        >
           <BaseCard
             v-for="{ id, title, description, button, image } in steps"
             card-style="complex"
@@ -84,7 +93,7 @@
       </article>
 
       <section class="pt-4 pb-8">
-        <Gallery />
+        <BaseGallery :items="menuItems" :autoplay="3000" />
       </section>
 
       <section class="flex flex-col items-center justify-center gap-4 pt-8">
@@ -108,8 +117,13 @@
           cuidado.
         </p>
       </article>
+
+      <div class="py-8 md:hidden">
+        <BaseGallery :items="benefits" :autoplay="4000" />
+      </div>
+
       <section
-        class="grid grid-cols-1 justify-between gap-4 py-8 md:grid-cols-4"
+        class="hidden grid-cols-1 justify-between gap-4 py-8 md:grid md:grid-cols-4"
       >
         <BaseCard
           v-for="{ id, title, description, image } in benefits"

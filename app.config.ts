@@ -3,5 +3,10 @@ export default defineAppConfig({
     colors: {
       neutral: "neutral",
     },
+    navigationMenu: {
+      slots: {
+        linkLeadingIcon: "text-xl",
+      },
+    },
   },
 });
