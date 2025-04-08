@@ -27,7 +27,7 @@ const {
 <template>
   <UCard :variant="variant" class="rounded-xl shadow">
     <template #header v-if="cardStyle === 'complex'">
-      <h3 class="text-primary-500 text-xl">{{ title }}</h3>
+      <h3 class="text-xl font-bold">{{ title }}</h3>
     </template>
 
     <figure class="mx-auto mb-4 overflow-hidden rounded-lg">
@@ -46,12 +46,10 @@ const {
 
     <template v-if="button" #footer>
       <section class="flex items-center justify-center">
-        <UButton
+        <BaseButton
           :label="button.label"
-          size="lg"
           :icon="button.icon"
           @click="button.click"
-          trailing
         />
       </section>
     </template>

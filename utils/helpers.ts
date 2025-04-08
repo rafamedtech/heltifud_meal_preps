@@ -198,3 +198,54 @@ export const menuItems = [
     image: "/carne-asada.jpeg",
   },
 ];
+
+export const faqQuestions = [
+  {
+    id: 1,
+    question: "¿Qué es Heltifud?",
+    answer:
+      "Heltifud es un servicio de comida saludable a domicilio que ofrece menús semanales personalizados y equilibrados.",
+  },
+  {
+    id: 2,
+    question: "¿Cómo funciona el servicio?",
+    answer:
+      "Elige un plan, realiza tu pedido a través de WhatsApp y recibe tus comidas en la comodidad de tu hogar.",
+  },
+  {
+    id: 3,
+    question: "¿Qué tipo de comidas ofrecen?",
+    answer:
+      "Ofrecemos una variedad de comidas saludables, incluyendo opciones vegetarianas y sin gluten. Puedes ver el menú semanal en nuestra página.",
+  },
+  {
+    id: 4,
+    question: "¿Puedo personalizar mi menú?",
+    answer:
+      "Sí, puedes personalizar tu menú según tus preferencias y necesidades dietéticas. Contáctanos para más información.",
+  },
+  {
+    id: 5,
+    question: "¿Cómo puedo realizar un pedido?",
+    answer:
+      "Puedes realizar tu pedido a través de WhatsApp. Haz clic en el botón 'Ordenar ahora' para comenzar.",
+  },
+];
+
+export const socialLinks = [
+  {
+    id: 1,
+    icon: "i-mdi-instagram",
+    link: "https://www.instagram.com/heltifud/",
+  },
+  {
+    id: 2,
+    icon: "i-mdi-whatsapp",
+    link: "https://wa.me/c/5216648161284",
+  },
+  {
+    id: 3,
+    icon: "i-mdi-facebook-box",
+    link: "https://www.facebook.com/heltifud",
+  },
+];

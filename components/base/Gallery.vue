@@ -33,9 +33,9 @@ const {
     :arrows
     :autoplay="autoplay ? { delay: Number(autoplay) } : false"
     :items="items"
-    :ui="{ item: 'md:basis-1/3' }"
+    :ui="{ item: 'md:basis-1/3', dots: '-bottom-4' }"
   >
-    <section class="p-2 md:p-4">
+    <section class="p-2">
       <BaseCard
         :key="item.id"
         :title="item.title"
