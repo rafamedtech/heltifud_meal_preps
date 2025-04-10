@@ -27,7 +27,7 @@ const isDark = computed({
           size="lg"
           :ui="{ leadingIcon: 'text-xl', trailingIcon: 'text-xl' }"
         />
-        <UButton icon="i-lucide-rocket" size="lg">Ordenar</UButton>
+        <BaseButton icon="i-lucide-rocket" label="Ordenar" />
       </nav>
     </section>
   </header>

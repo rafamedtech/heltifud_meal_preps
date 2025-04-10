@@ -11,6 +11,9 @@ interface BaseCardProps {
     click: () => void;
   };
   image: string;
+  imageWidth?: string;
+  imageHeight?: string;
+  imageAlt?: string;
 }
 
 const {
@@ -20,6 +23,9 @@ const {
   titleStyle = "left",
   description,
   image,
+  imageWidth = "400",
+  imageHeight = "400",
+  imageAlt = "",
   button,
 } = defineProps<BaseCardProps>();
 </script>
@@ -31,7 +37,12 @@ const {
     </template>
 
     <figure class="mx-auto mb-4 overflow-hidden rounded-lg">
-      <NuxtImg :src="image" :alt="title" width="400" height="400" />
+      <NuxtImg
+        :src="image"
+        :alt="imageAlt"
+        :width="imageWidth"
+        :height="imageHeight"
+      />
     </figure>
     <h3
       class="text-primary-500 text-xl"
@@ -40,9 +51,11 @@ const {
     >
       {{ title }}
     </h3>
-    <p v-if="description" class="text-lg lg:text-base dark:text-gray-50">
+    <p v-if="description" class="text-lg md:text-base dark:text-gray-50">
       {{ description }}
     </p>
+
+    <slot />
 
     <template v-if="button" #footer>
       <section class="flex items-center justify-center">

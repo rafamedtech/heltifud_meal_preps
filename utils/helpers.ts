@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Modal } from "#components";
 import type { NavigationMenuItem } from "@nuxt/ui";
+import type { WeeklyPlan } from "@/types";
 
 export const menuDate = "20 Mayo - 24 Mayo";
 
@@ -13,19 +14,19 @@ export const links: NavigationMenuItem[] = [
       to: "/",
     },
     {
-      label: "Servicio",
-      icon: "i-heroicons-clipboard-document-list",
-      to: "/servicio",
-    },
-    {
       label: "Planes",
-      icon: "i-heroicons-list-bullet-20-solid",
+      icon: "i-heroicons-newspaper",
       to: "/planes",
     },
     {
       label: "Menú",
-      icon: "i-heroicons-newspaper",
+      icon: "i-heroicons-clipboard-document-list",
       to: "/menu",
+    },
+    {
+      label: "Blog",
+      icon: "i-heroicons-chat-bubble-bottom-center-text",
+      to: "/blog",
     },
   ],
 ];
@@ -90,13 +91,6 @@ export function indexPlans(index: number) {
 }
 
 const overlay = useOverlay();
-const count = ref(0);
-
-const modal = overlay.create(Modal, {
-  props: {
-    count: count.value,
-  },
-});
 
 export const steps = [
   {
@@ -107,7 +101,7 @@ export const steps = [
       label: "Ver planes",
       icon: "i-heroicons-list-bullet-20-solid",
       click: () => {
-        modal.open();
+        return navigateTo("/planes");
       },
     },
     image: "/step1.png",
@@ -115,7 +109,7 @@ export const steps = [
   {
     id: 2,
     title: "(2) Realiza tu pedido",
-    description: "Realiza tu pedido a través de WhatsApp y paga en línea.",
+    description: "Realiza tu pedido por WhatsApp y paga en línea.",
     button: {
       label: "¡Ordenar ahora!",
       icon: "i-heroicons-rocket-launch",
@@ -127,9 +121,9 @@ export const steps = [
   {
     id: 3,
     title: "(3) Confirma tu menú",
-    description: "Confirma el menú recomendado o haz algún cambio.",
+    description: "Confirma el menú o haz algún cambio.",
     button: {
-      label: "Menú de la semana",
+      label: "Ver menú",
       icon: "i-heroicons-newspaper",
       click: () => navigateTo("/menu"),
     },
@@ -138,11 +132,20 @@ export const steps = [
   {
     id: 4,
     title: "(4) Recibe tus comidas",
-    description: "Recibe tus comidas en la comodidad de tu hogar.",
+    description: "Recibe tu pedido a domicilio sin costo adicional.",
     button: {
-      label: "Mas información",
+      label: "Más información",
       icon: "i-heroicons-information-circle",
-      click: () => {},
+      click: () => {
+        const modal = overlay.create(Modal, {
+          props: {
+            title: "¿Cómo funcionan las entregas?",
+            description:
+              "Realizamos las entregas en dos partes a la semana, la primera mitad el domingo por la tarde o el lunes por la mañana y la segunda mitad el miércoles por la tarde o el jueves por la mañana. Las entregas son gratuitas y el horario depende de tu ubicación.",
+          },
+        });
+        modal.open();
+      },
     },
     image: "/step4.png",
   },
@@ -202,33 +205,33 @@ export const menuItems = [
 export const faqQuestions = [
   {
     id: 1,
-    question: "¿Qué es Heltifud?",
+    question: "¿Dónde están ubicados?",
     answer:
-      "Heltifud es un servicio de comida saludable a domicilio que ofrece menús semanales personalizados y equilibrados.",
+      "Estamos ubicados en Tijuana, Baja California. Hacemos entregas en Tijuana y Rosarito.",
   },
   {
     id: 2,
-    question: "¿Cómo funciona el servicio?",
+    question: "¿Cómo funcionan las entregas?",
     answer:
-      "Elige un plan, realiza tu pedido a través de WhatsApp y recibe tus comidas en la comodidad de tu hogar.",
+      "Realizamos las entregas en dos partes a la semana, la primera mitad el domingo por la tarde o el lunes por la mañana y la segunda mitad el miércoles por la tarde o el jueves por la mañana. Las entregas son gratuitas y el horario depende de tu ubicación.",
   },
   {
     id: 3,
     question: "¿Qué tipo de comidas ofrecen?",
     answer:
-      "Ofrecemos una variedad de comidas saludables, incluyendo opciones vegetarianas y sin gluten. Puedes ver el menú semanal en nuestra página.",
+      "Ofrecemos una variedad de comidas saludables y caseras pensados en la dieta flexible, incluyendo opciones vegetarianas. Puedes ver el menú semanal en nuestra página.",
   },
   {
     id: 4,
     question: "¿Puedo personalizar mi menú?",
     answer:
-      "Sí, puedes personalizar tu menú según tus preferencias y necesidades dietéticas. Contáctanos para más información.",
+      "Sí, puedes personalizar tu menú según tus preferencias con cualquiera de las demás opciones del menú de la semana.",
   },
   {
     id: 5,
     question: "¿Cómo puedo realizar un pedido?",
     answer:
-      "Puedes realizar tu pedido a través de WhatsApp. Haz clic en el botón 'Ordenar ahora' para comenzar.",
+      "Puedes realizar tu pedido a través de WhatsApp. Haz clic en el botón 'Ordenar' para comenzar.",
   },
 ];
 
@@ -247,5 +250,156 @@ export const socialLinks = [
     id: 3,
     icon: "i-mdi-facebook-box",
     link: "https://www.facebook.com/heltifud",
+  },
+];
+
+export const weeklyPlans: WeeklyPlan[] = [
+  {
+    id: 1,
+    title: "Plan desayunos",
+    price: 1200,
+    description:
+      "Desayunos saludables a domicilio para empezar tu día con energía.",
+    image: "/desayunos.png",
+    button: {
+      label: "Ver opciones",
+      icon: "i-heroicons-numbered-list",
+      click: () => {
+        const modal = overlay.create(Modal, {
+          props: {
+            title: "Opciones del plan desayunos",
+            variants: [
+              {
+                title: "3 días",
+                price: "400",
+              },
+              {
+                title: "4 días",
+                price: "500",
+              },
+              {
+                title: "5 días",
+                price: "600",
+              },
+            ],
+            button: {
+              icon: "i-heroicons-rocket-launch",
+              label: "Ordenar",
+              click: () => navigateTo("/planes"),
+            },
+          },
+        });
+        modal.open();
+      },
+    },
+  },
+  {
+    id: 2,
+    title: "Plan comidas",
+    price: 2400,
+    description:
+      "Comidas caseras y balanceadas listas para tu semana sin cocinar.",
+    image: "/comidas.png",
+    button: {
+      label: "Ver opciones",
+      icon: "i-heroicons-numbered-list",
+      click: () => {
+        const modal = overlay.create(Modal, {
+          props: {
+            title: "Opciones del plan comidas",
+            variants: [
+              {
+                title: "3 días",
+                price: "500",
+              },
+              {
+                title: "4 días",
+                price: "600",
+              },
+              {
+                title: "5 días",
+                price: "700",
+              },
+            ],
+            button: {
+              icon: "i-heroicons-rocket-launch",
+              label: "Ordenar",
+              click: () => navigateTo("/planes"),
+            },
+          },
+        });
+        modal.open();
+      },
+    },
+  },
+  {
+    id: 3,
+    title: "Plan cenas",
+    price: 4800,
+    description:
+      "Cenas ligeras, nutritivas y deliciosas, entregadas listas para servir.",
+    image: "/cenas.png",
+    button: {
+      label: "Ver opciones",
+      icon: "i-heroicons-numbered-list",
+      click: () => {
+        const modal = overlay.create(Modal, {
+          props: {
+            title: "Opciones del plan cenas",
+            variants: [
+              {
+                title: "3 días",
+                price: "450",
+              },
+              {
+                title: "4 días",
+                price: "550",
+              },
+              {
+                title: "5 días",
+                price: "650",
+              },
+            ],
+            button: {
+              icon: "i-heroicons-rocket-launch",
+              label: "Ordenar",
+              click: () => navigateTo("/planes"),
+            },
+          },
+        });
+        modal.open();
+      },
+    },
+  },
+  {
+    id: 4,
+    title: "Plan toda la semana",
+    price: 1900,
+    description:
+      "Meal prep completo semanal con desayuno, comida y cena saludable.",
+    image: "/todas.png",
+    button: {
+      label: "Ver opciones",
+      icon: "i-heroicons-numbered-list",
+      click: () => {
+        const modal = overlay.create(Modal, {
+          props: {
+            title: "Opciones del plan Toda la semana",
+            variants: [
+              {
+                title: "5 días",
+                price: "1900",
+              },
+            ],
+            button: {
+              icon: "i-heroicons-rocket-launch",
+              label: "Ordenar",
+              click: () => navigateTo("/planes"),
+            },
+          },
+        });
+        modal.open();
+      },
+    },
   },
 ];
