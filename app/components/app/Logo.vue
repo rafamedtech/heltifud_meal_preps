@@ -4,6 +4,6 @@
       src="https://heltifud.com/_nuxt/logo-horizontal.CO9MA3uZ.png"
       alt=""
       class="max-w-full"
-    />
+    >
   </figure>
 </template>

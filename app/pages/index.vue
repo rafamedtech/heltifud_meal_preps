@@ -68,8 +68,8 @@
       <div class="hidden md:grid md:grid-cols-4 md:justify-between md:gap-4 md:py-4">
         <BaseCard
           v-for="{ id, title, description, button, image } in steps"
-          card-style="complex"
           :key="id"
+          card-style="complex"
           :title
           :description
           :button
@@ -151,8 +151,7 @@
       </div>
 
       <section class="hidden pt-4 md:grid md:grid-cols-4 md:justify-between md:gap-4">
-        <BaseCard v-for="{ id, title, description, image } in benefits" :key="id" :title :description :image>
-        </BaseCard>
+        <BaseCard v-for="{ id, title, description, image } in benefits" :key="id" :title :description :image/>
       </section>
     </BaseSection>
 

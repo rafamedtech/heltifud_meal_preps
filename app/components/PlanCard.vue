@@ -10,9 +10,8 @@ defineProps<WeeklyPlan>();
     :description
     :image
     :button
-    cardStyle="complex"
-    imageWidth="340"
-    imageHeight="480"
-  >
-  </BaseCard>
+    card-style="complex"
+    image-width="340"
+    image-height="480"
+  />
 </template>

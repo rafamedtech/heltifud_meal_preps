@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { de } from "date-fns/locale";
-
 interface Item {
   id: number;
   title: string;
@@ -16,13 +14,7 @@ interface GalleryProps {
   loop?: boolean;
 }
 
-const {
-  items,
-  autoplay = false,
-  arrows = false,
-  dots = false,
-  loop = false,
-} = defineProps<GalleryProps>();
+const { items, autoplay = false, arrows = false, dots = false, loop = false } = defineProps<GalleryProps>();
 </script>
 
 <template>

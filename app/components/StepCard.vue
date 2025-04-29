@@ -16,13 +16,13 @@ const { title, description, image, button } = step;
 </script>
 
 <template>
-  <UCard variant="subtle" :key="title" class="rounded-xl shadow">
+  <UCard :key="title" variant="subtle" class="rounded-xl shadow">
     <template #header>
       <h3 class="text-primary-500 text-xl">{{ title }}</h3>
     </template>
 
     <figure class="mx-auto h-56 w-56">
-      <img :src="image" :alt="title" class="h-full w-full" />
+      <img :src="image" :alt="title" class="h-full w-full" >
     </figure>
     <p class="text-dark text-lg dark:text-gray-50">{{ description }}</p>
 
@@ -32,8 +32,8 @@ const { title, description, image, button } = step;
           :label="button.label"
           size="xl"
           :icon="button.icon"
-          @click="button.click"
           trailing
+          @click="button.click"
         />
       </section>
     </template>

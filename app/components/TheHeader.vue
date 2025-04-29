@@ -23,9 +23,9 @@ const isDark = computed({
           :icon="isDark ? 'i-lucide-moon' : 'i-lucide-sun'"
           color="neutral"
           variant="ghost"
-          @click="isDark = !isDark"
           size="lg"
           :ui="{ leadingIcon: 'text-xl', trailingIcon: 'text-xl' }"
+          @click="isDark = !isDark"
         />
         <BaseButton icon="i-lucide-rocket" label="Ordenar" />
       </nav>

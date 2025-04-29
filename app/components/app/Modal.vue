@@ -40,7 +40,7 @@ const emit = defineEmits<{ close: [boolean] }>();
         </ul>
       </section>
     </template>
-    <template #footer v-if="button">
+    <template v-if="button" #footer>
       <div class="flex w-full justify-center">
         <BaseButton
           :icon="button.icon"
