@@ -20,7 +20,7 @@
 
       <!-- Footer -->
       <footer class="flex items-center justify-between py-8">
-        <Logo class="bg-black" />
+        <AppLogo class="bg-black" />
         <section class="flex gap-2">
           <BaseButton v-for="link in socialLinks" :key="link.id" :icon="link.icon" :to="link.link" variant="subtle" />
         </section>

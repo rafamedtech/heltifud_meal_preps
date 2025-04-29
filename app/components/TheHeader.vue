@@ -3,17 +3,17 @@ const colorMode = useColorMode();
 
 const isDark = computed({
   get() {
-    return colorMode.value === "dark";
+    return colorMode.value === 'dark';
   },
   set() {
-    colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
+    colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark';
   },
 });
 </script>
 
 <template>
   <header class="flex items-center justify-between py-4">
-    <Logo class="bg-black" />
+    <AppLogo class="bg-black" />
     <section class="hidden md:flex">
       <NavigationMenu />
     </section>

@@ -1,11 +1,11 @@
 export default defineAppConfig({
   ui: {
     colors: {
-      neutral: "neutral",
+      neutral: 'neutral',
     },
     navigationMenu: {
       slots: {
-        linkLeadingIcon: "text-xl",
+        linkLeadingIcon: 'text-xl',
       },
     },
   },

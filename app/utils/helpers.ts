@@ -71,7 +71,7 @@ export function transformPrice(item: number): string {
 
 export function formatDate(date: Date | string): string {
   const newDate = new Date(date);
-  const formattedDate = format(newDate, 'd MMMM', { locale: es });
+  const formattedDate = format(newDate, 'd MMM', { locale: es });
   return formattedDate;
 }
 
