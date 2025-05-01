@@ -2,14 +2,14 @@
 import type { DayMenu } from '~/types';
 
 interface MenuCardProps {
-  days: DayMenu[];
+  days: DayMenu[] | undefined;
 }
 
 const { days } = defineProps<MenuCardProps>();
 </script>
 
 <template>
-  <UCard v-for="day in days" :key="day.id" class="basis-1/3 max-h-[30rem] h-[30rem]">
+  <UCard v-for="day in days" :key="day.id" class="basis-1/3 max-h-[32rem] h-[32rem]">
     <template #header>
       <h3 class="text-xl font-bold text-primary-500">{{ day.dayOfWeek }}</h3>
     </template>

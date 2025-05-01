@@ -2,24 +2,42 @@
 import type { WeeklyMenu } from '~/types';
 
 const route = useRoute();
-const { type } = route.query;
-const activeMenu = computed<WeeklyMenu>(() => {
-  return menus.find((menu) => menu.type === type && menu.isActive) as WeeklyMenu;
-});
+const { type = 'std' } = route.query;
+const { data: menus } = await useFetch<WeeklyMenu[]>(`/api/menu?type=${type}`);
 
-console.log(activeMenu.value);
+const activeMenu = ref<WeeklyMenu>(menus.value?.find((menu: WeeklyMenu) => menu.type === type) as WeeklyMenu);
+
+function getMenu(type: string) {
+  const filteredMenu = menus.value?.find((menu: WeeklyMenu) => menu.type === type) as WeeklyMenu;
+  activeMenu.value = filteredMenu;
+  return filteredMenu;
+}
+
+// const activeMenu = computed(() => menus.value?.find((menu: WeeklyMenu) => menu.type === type && menu.isActive));
+
+const startDate = computed(() => formatDate(activeMenu.value?.startDate as string));
+const endDate = computed(() => formatDate(activeMenu.value?.endDate as string));
+
+useSeoMeta({
+  title: 'Menú de la semana',
+  description: 'Consulta el menú de la semana',
+});
 </script>
 
 <template>
   <UContainer>
     <BaseSection title="Menú de la semana">
       <template #description>
-        {{ formatDate(activeMenu?.startDate as string) }} -
-        {{ formatDate(activeMenu?.endDate as string) }}
+        <Icon name="lucide:calendar-days" size="24" /> <span>{{ startDate }}</span> - <span>{{ endDate }}</span>
       </template>
 
-      <section class="space-y-8 mt-6 flex gap-4">
-        <MenuCard :days="activeMenu?.days" />
+      <section>
+        <section class="flex justify-end">
+          <SelectMenu @type-changed="(e) => getMenu(e)" />
+        </section>
+        <section class="space-y-4 mt-6 flex flex-col md:flex-row gap-4">
+          <MenuCard :days="activeMenu?.days" />
+        </section>
       </section>
     </BaseSection>
 

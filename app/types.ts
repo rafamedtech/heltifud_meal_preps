@@ -20,8 +20,8 @@ export interface FoodItem {
 export interface Meal {
   id: number;
   mainDish: FoodItem;
-  side1: FoodItem;
-  side2: FoodItem;
+  side1?: FoodItem | null;
+  side2?: FoodItem | null;
   ramekin: FoodItem;
   contenedor: string;
   image: string;

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 interface SectionProps {
   title: string;
-  titleSize?: "base" | "lg";
-  layout?: "rows" | "columns";
+  titleSize?: 'base' | 'lg';
+  layout?: 'rows' | 'columns';
 }
 
-const { layout = "rows", titleSize = "base" } = defineProps<SectionProps>();
+const { layout = 'rows', titleSize = 'base' } = defineProps<SectionProps>();
 </script>
 
 <template>
@@ -15,8 +15,7 @@ const { layout = "rows", titleSize = "base" } = defineProps<SectionProps>();
       :class="{
         'flex-col': layout === 'rows',
 
-        'flex-col-reverse gap-4 md:flex-row-reverse md:items-center md:justify-between':
-          layout === 'columns',
+        'flex-col-reverse gap-4 md:flex-row-reverse md:items-center md:justify-between': layout === 'columns',
       }"
     >
       <article :class="{ 'md:w-1/2': layout === 'columns' }">
@@ -29,14 +28,11 @@ const { layout = "rows", titleSize = "base" } = defineProps<SectionProps>();
         >
           {{ title }}
         </h2>
-        <p class="py-4 text-lg" :class="{ 'lg:w-1/2': layout === 'rows' }">
+        <p class="py-4 text-lg flex items-center gap-2" :class="{ 'lg:w-1/2': layout === 'rows' }">
           <slot name="description" />
         </p>
 
-        <section
-          v-if="layout === 'columns'"
-          class="flex justify-center md:justify-start"
-        >
+        <section v-if="layout === 'columns'" class="flex justify-center md:justify-start">
           <slot name="actions" />
         </section>
       </article>
