@@ -1,9 +1,14 @@
 <template>
   <figure class="w-40 rounded-lg p-2">
     <img
-      src="https://heltifud.com/_nuxt/logo-horizontal.CO9MA3uZ.png"
+      src="https://res.cloudinary.com/rafamed-dev/image/upload/v1746203521/heltifud/Logo_black_zkgsyy.png"
       alt=""
-      class="max-w-full"
-    >
+      class="max-w-full dark:hidden"
+    />
+    <img
+      src="https://res.cloudinary.com/rafamed-dev/image/upload/v1746203521/heltifud/Logo_white_qx81lb.png"
+      alt=""
+      class="max-w-full hidden dark:block"
+    />
   </figure>
 </template>

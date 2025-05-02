@@ -13,7 +13,7 @@ const isDark = computed({
 
 <template>
   <header class="flex items-center justify-between py-4">
-    <AppLogo class="bg-black" />
+    <AppLogo />
     <section class="hidden md:flex">
       <NavigationMenu />
     </section>

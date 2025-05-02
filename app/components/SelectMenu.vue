@@ -3,12 +3,12 @@ import type { SelectItem } from '@nuxt/ui';
 
 const items = ref([
   {
-    label: 'Menú regular',
+    label: 'Regular',
     value: 'std',
     icon: 'i-lucide-beef',
   },
   {
-    label: 'Menú vegetariano',
+    label: 'Vegetariano',
     value: 'veg',
     icon: 'i-lucide-leaf',
   },
@@ -18,12 +18,6 @@ const value = ref(route.query.type === 'std' ? items.value[0]?.value : items.val
 
 const icon = computed(() => items.value.find((item) => item.value === value.value)?.icon);
 
-watch(value, (newValue) => {
-  return navigateTo(`/menu?type=${newValue}`, {
-    replace: true,
-  });
-});
-
 const emits = defineEmits(['typeChanged']);
 
 const typeChanged = (event: string) => {
@@ -32,12 +26,17 @@ const typeChanged = (event: string) => {
 </script>
 
 <template>
-  <USelect
-    v-model="value"
-    @update:model-value="typeChanged"
-    :items="items"
-    value-key="value"
-    :icon="icon"
-    class="w-52"
-  />
+  <UFormField label="Tipo de menú" class="w-52">
+    <USelect
+      v-model="value"
+      @update:model-value="typeChanged"
+      :items="items"
+      value-key="value"
+      :icon="icon"
+      class="w-52"
+      :ui="{
+        leadingIcon: value === 'std' ? 'text-amber-800' : 'text-primary-500',
+      }"
+    />
+  </UFormField>
 </template>

@@ -10,10 +10,22 @@ const activeMenu = ref<WeeklyMenu>(menus.value?.find((menu: WeeklyMenu) => menu.
 function getMenu(type: string) {
   const filteredMenu = menus.value?.find((menu: WeeklyMenu) => menu.type === type) as WeeklyMenu;
   activeMenu.value = filteredMenu;
-  return filteredMenu;
+  return (
+    filteredMenu &&
+    navigateTo(`/menu?type=${type}`, {
+      replace: true,
+    })
+  );
 }
 
-// const activeMenu = computed(() => menus.value?.find((menu: WeeklyMenu) => menu.type === type && menu.isActive));
+watch(
+  () => type,
+  (newValue) => {
+    return navigateTo(`/menu?type=${newValue}`, {
+      replace: true,
+    });
+  }
+);
 
 const startDate = computed(() => formatDate(activeMenu.value?.startDate as string));
 const endDate = computed(() => formatDate(activeMenu.value?.endDate as string));

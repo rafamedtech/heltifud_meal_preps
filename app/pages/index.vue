@@ -16,7 +16,12 @@
       </div>
       <figure class="overflow-hidden rounded-2xl shadow-2xl md:ml-14">
         <!-- <img src="/hero-new.jpeg" alt="Hero" width="400" height="550" /> -->
-        <NuxtImg src="/hero-new.jpeg" alt="Hero" width="400" height="550" />
+        <NuxtImg
+          src="https://res.cloudinary.com/rafamed-dev/image/upload/v1746204406/heltifud/hero-new_mkqivn.jpg"
+          alt="Hero"
+          width="400"
+          height="550"
+        />
       </figure>
     </section>
 
@@ -29,7 +34,12 @@
       </template>
 
       <figure class="flex items-center justify-center overflow-hidden">
-        <NuxtImg src="/hero.png" width="400" height="550" class="rounded-2xl shadow-2xl md:m-12" />
+        <NuxtImg
+          src="https://res.cloudinary.com/rafamed-dev/image/upload/v1746204408/heltifud/hero_or5twy.png"
+          width="400"
+          height="550"
+          class="rounded-2xl shadow-2xl md:m-12"
+        />
       </figure>
     </BaseSection>
 
@@ -133,7 +143,12 @@
       </template>
 
       <figure class="flex items-center justify-center overflow-hidden">
-        <NuxtImg src="/promo.png" width="400" height="550" class="rounded-2xl shadow-2xl md:m-12" />
+        <NuxtImg
+          src="https://res.cloudinary.com/rafamed-dev/image/upload/v1746204411/heltifud/promo_hbku0g.png"
+          width="400"
+          height="550"
+          class="rounded-2xl shadow-2xl md:m-12"
+        />
       </figure>
     </BaseSection>
 
@@ -151,7 +166,7 @@
       </div>
 
       <section class="hidden pt-4 md:grid md:grid-cols-4 md:justify-between md:gap-4">
-        <BaseCard v-for="{ id, title, description, image } in benefits" :key="id" :title :description :image/>
+        <BaseCard v-for="{ id, title, description, image } in benefits" :key="id" :title :description :image />
       </section>
     </BaseSection>
 

@@ -21,7 +21,7 @@ export const links: NavigationMenuItem[][] = [
     {
       label: 'Menú',
       icon: 'i-heroicons-clipboard-document-list',
-      to: '/menu',
+      to: '/menu?type=std',
     },
     {
       label: 'Blog',
@@ -104,7 +104,7 @@ export const steps = [
         return navigateTo('/planes');
       },
     },
-    image: '/step1.png',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204407/heltifud/step1_drzeo7.png',
   },
   {
     id: 2,
@@ -115,7 +115,7 @@ export const steps = [
       icon: 'i-heroicons-rocket-launch',
       click: () => navigateTo('https://wa.me/c/5216648161284', { external: true }),
     },
-    image: '/step2.png',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204409/heltifud/step2_m2tljn.png',
   },
   {
     id: 3,
@@ -126,7 +126,7 @@ export const steps = [
       icon: 'i-heroicons-newspaper',
       click: () => navigateTo('/menu'),
     },
-    image: '/step3.png',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204411/heltifud/step3_m9ust9.png',
   },
   {
     id: 4,
@@ -146,7 +146,7 @@ export const steps = [
         modal.open();
       },
     },
-    image: '/step4.png',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204410/heltifud/step4_ztgrwf.png',
   },
 ];
 
@@ -155,48 +155,68 @@ export const benefits = [
     id: 1,
     title: 'Comodidad',
     description: 'Olvídate de las compras y el tiempo en la cocina.',
-    image: '/comodidad.png',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204407/heltifud/comodidad_yai8kj.png',
   },
   {
     id: 2,
     title: 'Salud',
     description: 'Menús diseñados para mantener una dieta equilibrada y nutritiva.',
-    image: '/salud.png',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204409/heltifud/salud_ywsmel.png',
   },
   {
     id: 3,
     title: 'Variedad',
     description: 'Nuevos menús cada semana para mantener tu dieta interesante.',
-    image: '/variedad.png',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204408/heltifud/variedad_bobmoo.png',
   },
   {
     id: 4,
     title: 'Personalización',
     description: 'Adapta tus comidas a tus necesidades y preferencias.',
-    image: '/personalizacion.png',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204408/heltifud/personalizacion_ketk6a.png',
   },
 ];
 
 export const menuItems = [
   {
     id: 1,
-    title: 'Albondigas',
-    image: '/albondigas.jpeg',
+    title: '',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1715308238/heltifud/IMG_1704_Large_k5jt5v.jpg',
   },
   {
     id: 2,
-    title: 'Pechuga a la plancha',
-    image: '/pechuga-plancha.jpeg',
+    title: '',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746205300/heltifud/pechuga-plancha_qjd7a5.jpg',
   },
   {
     id: 3,
-    title: 'Pechuga al chipotle',
-    image: '/pechuga-chipotle.jpeg',
+    title: '',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1715308239/heltifud/IMG_1709_Large_nfmo3s.jpg',
   },
   {
     id: 4,
-    title: 'Carne asada',
-    image: '/carne-asada.jpeg',
+    title: '',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746205298/heltifud/nopales_hry5rp.jpg',
+  },
+  {
+    id: 5,
+    title: '',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1715308238/heltifud/IMG_1698_Large_pgmvgu.jpg',
+  },
+  {
+    id: 6,
+    title: '',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746205297/heltifud/pechuga-chipotle_oopb3b.jpg',
+  },
+  {
+    id: 7,
+    title: '',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1715308238/heltifud/IMG_1707_Large_euasv8.jpg',
+  },
+  {
+    id: 8,
+    title: '',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746205297/heltifud/albondigas_cguj6x.jpg',
   },
 ];
 
@@ -255,7 +275,7 @@ export const weeklyPlans: WeeklyPlan[] = [
     title: 'Plan desayunos',
     price: 1200,
     description: 'Desayunos saludables a domicilio para empezar tu día con energía.',
-    image: '/desayunos.png',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204413/heltifud/desayunos_xoypat.png',
     button: {
       label: 'Ver opciones',
       icon: 'i-heroicons-numbered-list',
@@ -293,7 +313,7 @@ export const weeklyPlans: WeeklyPlan[] = [
     title: 'Plan comidas',
     price: 2400,
     description: 'Comidas caseras y balanceadas listas para tu semana sin cocinar.',
-    image: '/comidas.png',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204412/heltifud/comidas_zjbuum.png',
     button: {
       label: 'Ver opciones',
       icon: 'i-heroicons-numbered-list',
@@ -331,7 +351,7 @@ export const weeklyPlans: WeeklyPlan[] = [
     title: 'Plan cenas',
     price: 4800,
     description: 'Cenas ligeras, nutritivas y deliciosas, entregadas listas para servir.',
-    image: '/cenas.png',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204411/heltifud/cenas_wfp48j.png',
     button: {
       label: 'Ver opciones',
       icon: 'i-heroicons-numbered-list',
@@ -369,7 +389,7 @@ export const weeklyPlans: WeeklyPlan[] = [
     title: 'Plan toda la semana',
     price: 1900,
     description: 'Meal prep completo semanal con desayuno, comida y cena saludable.',
-    image: '/todas.png',
+    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204413/heltifud/todas_pdzwgw.png',
     button: {
       label: 'Ver opciones',
       icon: 'i-heroicons-numbered-list',

@@ -56,7 +56,7 @@ const {
 
     <slot />
 
-    <template v-if="button" #footer>
+    <template v-if="button.label !== ''" #footer>
       <section class="flex items-center justify-center">
         <BaseButton :label="button?.label" :icon="button?.icon" @click="button?.click" />
       </section>
