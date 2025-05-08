@@ -3,11 +3,10 @@
 </script>
 
 <template>
-  <UContainer>
+  <section>
     <BaseSection title="Planes semanales">
       <template #description>
-        Elige el plan que mejor se adapte a tus necesidades y disfruta de la
-        comodidad de recibir tus comidas en casa.
+        Elige el plan que mejor se adapte a tus necesidades y disfruta de la comodidad de recibir tus comidas en casa.
       </template>
 
       <section class="grid gap-8 py-8 md:grid-cols-4 md:gap-4">
@@ -16,5 +15,5 @@
     </BaseSection>
 
     <USeparator />
-  </UContainer>
+  </section>
 </template>

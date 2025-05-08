@@ -3,8 +3,8 @@ import type { WeeklyMenu } from '~/types';
 
 const route = useRoute();
 const { type = 'std' } = route.query;
-const { data: menus } = await useFetch<WeeklyMenu[]>(`/api/menu?type=${type}`);
 
+const { data: menus } = await useFetch<WeeklyMenu[]>(`/api/menu?type=${type}`);
 const activeMenu = ref<WeeklyMenu>(menus.value?.find((menu: WeeklyMenu) => menu.type === type) as WeeklyMenu);
 
 function getMenu(type: string) {
@@ -18,15 +18,6 @@ function getMenu(type: string) {
   );
 }
 
-watch(
-  () => type,
-  (newValue) => {
-    return navigateTo(`/menu?type=${newValue}`, {
-      replace: true,
-    });
-  }
-);
-
 const startDate = computed(() => formatDate(activeMenu.value?.startDate as string));
 const endDate = computed(() => formatDate(activeMenu.value?.endDate as string));
 
@@ -37,7 +28,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <UContainer>
+  <section>
     <BaseSection title="Menú de la semana">
       <template #description>
         <Icon name="lucide:calendar-days" size="24" /> <span>{{ startDate }}</span> - <span>{{ endDate }}</span>
@@ -54,5 +45,5 @@ useSeoMeta({
     </BaseSection>
 
     <USeparator />
-  </UContainer>
+  </section>
 </template>
