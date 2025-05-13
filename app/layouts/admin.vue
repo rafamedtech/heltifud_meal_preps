@@ -1,10 +1,8 @@
 <template>
   <div class="bg-green-50/50 dark:bg-neutral-900/50">
-    <UContainer class="pb-24 md:pb-0">
+    <UContainer class="pb-24 md:pb-0 flex gap-4">
       <!-- Header -->
-      <TheHeader />
-
-      <USeparator />
+      <AdminHeader />
 
       <!-- Contenido principal -->
       <section class="relative min-h-screen pt-4">
@@ -19,12 +17,12 @@
       </section>
 
       <!-- Footer -->
-      <footer class="flex items-center justify-between py-8">
+      <!-- <footer class="flex items-center justify-between py-8">
         <AppLogo />
         <section class="flex gap-2">
           <BaseButton v-for="link in socialLinks" :key="link.id" :icon="link.icon" :to="link.link" variant="subtle" />
         </section>
-      </footer>
+      </footer> -->
     </UContainer>
   </div>
 </template>

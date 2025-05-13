@@ -30,6 +30,25 @@ export const links: NavigationMenuItem[][] = [
     },
   ],
 ];
+export const adminLinks: NavigationMenuItem[][] = [
+  [
+    {
+      label: 'Inicio',
+      icon: 'i-heroicons-home',
+      to: '/admin',
+    },
+    {
+      label: 'Planes',
+      icon: 'i-heroicons-newspaper',
+      to: '/admin/planes',
+    },
+    {
+      label: 'Menú',
+      icon: 'i-heroicons-clipboard-document-list',
+      to: '/admin/menu',
+    },
+  ],
+];
 
 export const dateOptions: Intl.DateTimeFormatOptions = {
   year: 'numeric',

@@ -18,8 +18,8 @@ function getMenu(type: string) {
   );
 }
 
-const startDate = computed(() => formatDate(activeMenu.value?.startDate as string));
-const endDate = computed(() => formatDate(activeMenu.value?.endDate as string));
+const startDate = computed(() => formatDate(activeMenu.value?.startDate));
+const endDate = computed(() => formatDate(activeMenu.value?.endDate));
 
 useSeoMeta({
   title: 'Menú de la semana',
@@ -38,8 +38,20 @@ useSeoMeta({
         <section class="flex justify-end">
           <SelectMenu @type-changed="(e) => getMenu(e)" />
         </section>
-        <section class="space-y-4 mt-6 flex flex-col md:flex-row gap-4">
-          <MenuCard :days="activeMenu?.days" />
+        <section>
+          <UCarousel
+            v-slot="{ item }"
+            class-names
+            :items="activeMenu?.days"
+            :ui="{
+              item: 'basis-[80%] transition-opacity [&:not(.is-snapped)]:opacity-25',
+              viewport: 'p-0.5',
+            }"
+            class="mx-auto max-w-sm py-6 px-2"
+          >
+            <MenuCard :day="item" />
+          </UCarousel>
+          <!-- <MenuCard :days="activeMenu?.days" /> -->
         </section>
       </section>
     </BaseSection>

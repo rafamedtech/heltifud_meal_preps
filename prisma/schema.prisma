@@ -24,12 +24,13 @@ model Menu {
 }
 
 model DayMenu {
-    id          Int       @id @default(autoincrement())
-    menuId      Int
-    dayOfWeek   DayOfWeek
-    breakfastId Int?      @unique
-    lunchId     Int?      @unique
-    dinnerId    Int?      @unique
+    id             Int            @id @default(autoincrement())
+    menuId         Int
+    dayOfWeek      DayOfWeek
+    DayMenuVariant DayMenuVariant @default(STD)
+    breakfastId    Int?           @unique
+    lunchId        Int?           @unique
+    dinnerId       Int?           @unique
 
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
@@ -127,4 +128,9 @@ enum Unit {
     GR
     ML
     PZ
+}
+
+enum DayMenuVariant {
+    STD
+    VEG
 }

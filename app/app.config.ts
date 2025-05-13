@@ -8,5 +8,20 @@ export default defineAppConfig({
         linkLeadingIcon: 'text-xl',
       },
     },
+    button: {
+      slots: {
+        base: 'rounded-none',
+      },
+    },
+    card: {
+      slots: {
+        root: 'rounded-none',
+      },
+    },
+    input: {
+      slots: {
+        base: 'rounded-none',
+      },
+    },
   },
 });
