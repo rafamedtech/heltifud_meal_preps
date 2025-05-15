@@ -35,7 +35,7 @@ const {
 </script>
 
 <template>
-  <UCard :variant="variant" class="rounded-xl shadow">
+  <UCard :variant="variant" class="shadow">
     <template v-if="cardStyle === 'complex'" #header>
       <h3 class="text-xl font-bold">{{ title }}</h3>
     </template>

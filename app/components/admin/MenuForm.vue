@@ -2,10 +2,18 @@
 import * as z from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
 
+// interface Menu {
+//   name: string;
+//   startDate: Date;
+//   endDate: Date;
+//   isActive: boolean;
+// }
+
 const schema = z.object({
   name: z.string().min(2),
   startDate: z.date(),
   endDate: z.date(),
+  isActive: z.boolean().default(false),
 });
 
 type Schema = z.output<typeof schema>;
@@ -14,11 +22,15 @@ const state = reactive<Partial<Schema>>({
   name: '',
   startDate: new Date(),
   endDate: new Date(Date.now()),
+  isActive: false,
 });
 
 const toast = useToast();
+const { createMenuOnDB } = useMenu();
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
+  await createMenuOnDB(event.data);
+
   toast.add({ title: 'Success', description: 'The form has been submitted.', color: 'success' });
   console.log(event.data);
 }

@@ -1,0 +1,136 @@
+// // This is your Prisma schema file,
+// // learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// generator client {
+//     provider      = "prisma-client-js"
+//     binaryTargets = ["native", "darwin-arm64"]
+// }
+
+// datasource db {
+//     provider = "postgresql"
+//     url      = env("DATABASE_URL")
+// }
+
+// model Menu {
+//     id        Int       @id @default(autoincrement())
+//     name      String
+//     isActive  Boolean   @default(false)
+//     startDate DateTime
+//     endDate   DateTime
+//     dayMenus  DayMenu[]
+//     createdAt DateTime  @default(now())
+//     updatedAt DateTime  @default(now()) @updatedAt
+//     type      MenuType
+// }
+
+// model DayMenu {
+//     id             Int            @id @default(autoincrement())
+//     menuId         Int
+//     dayOfWeek      DayOfWeek
+//     DayMenuVariant DayMenuVariant @default(STD)
+//     breakfastId    Int?           @unique
+//     lunchId        Int?           @unique
+//     dinnerId       Int?           @unique
+
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @default(now()) @updatedAt
+
+//     menu      Menu  @relation(fields: [menuId], references: [id])
+//     breakfast Meal? @relation("Breakfast", fields: [breakfastId], references: [id])
+//     lunch     Meal? @relation("Lunch", fields: [lunchId], references: [id])
+//     dinner    Meal? @relation("Dinner", fields: [dinnerId], references: [id])
+// }
+
+// model Meal {
+//     id         Int      @id @default(autoincrement())
+//     mainDishId Int
+//     side1Id    Int?
+//     side2Id    Int?
+//     ramekin1Id Int?
+//     ramekin2Id Int?
+//     createdAt  DateTime @default(now())
+//     updatedAt  DateTime @default(now()) @updatedAt
+
+//     mainDish  Dish?     @relation("mainDish", fields: [mainDishId], references: [id])
+//     side1     Dish?     @relation("side1", fields: [side1Id], references: [id])
+//     side2     Dish?     @relation("side2", fields: [side2Id], references: [id])
+//     ramekin1  Dish?     @relation("ramekin1", fields: [ramekin1Id], references: [id])
+//     ramekin2  Dish?     @relation("ramekin2", fields: [ramekin2Id], references: [id])
+//     container Container
+
+//     DayMenuBreakfast DayMenu? @relation("Breakfast")
+//     DayMenuLunch     DayMenu? @relation("Lunch")
+//     DayMenuDinner    DayMenu? @relation("Dinner")
+// }
+
+// model Dish {
+//     id           Int          @id @default(autoincrement())
+//     name         String
+//     cover        String?
+//     calories     Int
+//     type         DishType
+//     ingredients  Ingredient[]
+//     createdAt    DateTime     @default(now())
+//     updatedAt    DateTime     @default(now()) @updatedAt
+//     MealMainDish Meal[]       @relation("mainDish")
+//     MealSide1    Meal[]       @relation("side1")
+//     MealSide2    Meal[]       @relation("side2")
+//     MealRamekin1 Meal[]       @relation("ramekin1")
+//     MealRamekin2 Meal[]       @relation("ramekin2")
+// }
+
+// model Ingredient {
+//     id        Int      @id @default(autoincrement())
+//     name      String
+//     calories  Int?
+//     protein   Int?
+//     carbs     Int?
+//     fat       Int?
+//     qty       Int
+//     unit      Unit
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @default(now()) @updatedAt
+//     Dish      Dish?    @relation(fields: [dishId], references: [id])
+//     dishId    Int?
+// }
+
+// enum DayOfWeek {
+//     LUNES
+//     MARTES
+//     MIERCOLES
+//     JUEVES
+//     VIERNES
+// }
+
+// enum DishType {
+//     BREAKFAST
+//     LUNCH
+//     DINNER
+//     SIDE
+//     SNACK
+// }
+
+// enum MenuType {
+//     std
+//     veg
+// }
+
+// enum Container {
+//     S_DIV
+//     S_DIV_ALT
+//     C_DIV
+//     S_DIV_PEQ
+//     R_PEQ
+//     R_GRA
+// }
+
+// enum Unit {
+//     GR
+//     ML
+//     PZ
+// }
+
+// enum DayMenuVariant {
+//     STD
+//     VEG
+// }
