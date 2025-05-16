@@ -41,7 +41,7 @@ const {
     </template>
 
     <figure class="mx-auto mb-4 overflow-hidden">
-      <NuxtImg :src="image" :alt="imageAlt" :width="imageWidth" :height="imageHeight" />
+      <img :src="image" :alt="imageAlt" :width="imageWidth" :height="imageHeight" />
     </figure>
     <h3
       v-if="cardStyle === 'basic'"

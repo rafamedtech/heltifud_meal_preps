@@ -1,3 +1,3 @@
 <template>
-  <UNavigationMenu :items="links" class="w-full justify-center" />
+  <UNavigationMenu :items="links" variant="link" class="w-full justify-center" />
 </template>
