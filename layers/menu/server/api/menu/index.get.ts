@@ -1,13 +1,11 @@
-// import { menus } from '../utils/menu';
-
 export default defineEventHandler(() => {
-  const activeMenus = menus.filter((menu) => menu.isActive);
+  const activeMenu = menus.find((menu) => menu.isActive);
 
-  if (!activeMenus.length) {
+  if (!activeMenu) {
     return {
       error: 'No hay ningun menú activo.',
     };
   }
 
-  return activeMenus;
+  return activeMenu;
 });

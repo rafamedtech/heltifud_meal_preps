@@ -1,0 +1,136 @@
+// This is your Prisma schema file for the meal prep system
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+// Main table to store weekly meal plans
+model MealPlan {
+    id        String   @id @default(uuid())
+    planName  String   @map("plan_name")
+    startDate DateTime @map("start_date") @db.Date
+    endDate   DateTime @map("end_date") @db.Date
+    createdAt DateTime @default(now()) @map("created_at")
+    isActive  Boolean  @default(false)
+
+    // Relation field
+    plannedMeals PlannedMeal[]
+
+    @@map("MealPlans")
+}
+
+// Table for meal types (breakfast, lunch, dinner)
+model MealType {
+    id   String @id @default(uuid()) @map("meal_type_id")
+    name String @unique
+
+    // Relation field
+    plannedMeals PlannedMeal[]
+
+    @@map("MealTypes")
+}
+
+// Table for weekdays
+model Weekday {
+    id   String @id @default(uuid()) @map("weekday_id")
+    name String @unique
+
+    // Relation field
+    plannedMeals PlannedMeal[]
+
+    @@map("Weekdays")
+}
+
+// Table for container types
+model ContainerType {
+    id          String  @id @default(uuid()) @map("container_id")
+    name        String
+    description String? @db.Text
+    capacity    String?
+
+    // Relation field
+    plannedMeals PlannedMeal[]
+
+    @@map("ContainerTypes")
+}
+
+// Table for food items (dishes, sides, dressings)
+model FoodItem {
+    id              String   @id @default(uuid()) @map("food_item_id")
+    name            String
+    description     String?  @db.Text
+    category        Category
+    calories        Int?
+    proteinGrams    Float?   @map("protein_grams")
+    carbsGrams      Float?   @map("carbs_grams")
+    fatGrams        Float?   @map("fat_grams")
+    preparationTime Int?     @map("preparation_time")
+    ingredients     String?  @db.Text
+    instructions    String?  @db.Text
+
+    // Relation fields
+    mainDishMeals PlannedMeal[]  @relation("MainDish")
+    sideItems     MealSide[]
+    dressingItems MealDressing[]
+
+    @@map("FoodItems")
+}
+
+// Enum for food categories
+enum Category {
+    Main
+    Side
+    Dressing
+}
+
+// Table for planned meals (main table connecting everything)
+model PlannedMeal {
+    id          String @id @default(uuid()) @map("planned_meal_id")
+    planId      String @map("plan_id")
+    weekdayId   String @map("weekday_id")
+    mealTypeId  String @map("meal_type_id")
+    mainDishId  String @map("main_dish_id")
+    containerId String @map("container_id")
+
+    // Relations
+    mealPlan  MealPlan       @relation(fields: [planId], references: [id], onDelete: Cascade)
+    weekday   Weekday        @relation(fields: [weekdayId], references: [id])
+    mealType  MealType       @relation(fields: [mealTypeId], references: [id])
+    mainDish  FoodItem       @relation("MainDish", fields: [mainDishId], references: [id])
+    container ContainerType  @relation(fields: [containerId], references: [id])
+    sides     MealSide[]
+    dressings MealDressing[]
+
+    @@unique([planId, weekdayId, mealTypeId])
+    @@map("PlannedMeals")
+}
+
+// Table for meal sides (connects sides to planned meals)
+model MealSide {
+    id            String @id @default(uuid()) @map("meal_side_id")
+    plannedMealId String @map("planned_meal_id")
+    sideItemId    String @map("side_item_id")
+
+    // Relations
+    plannedMeal PlannedMeal @relation(fields: [plannedMealId], references: [id], onDelete: Cascade)
+    sideItem    FoodItem    @relation(fields: [sideItemId], references: [id])
+
+    @@map("MealSides")
+}
+
+// Table for meal dressings
+model MealDressing {
+    id            String @id @default(uuid()) @map("meal_dressing_id")
+    plannedMealId String @map("planned_meal_id")
+    dressingId    String @map("dressing_id")
+
+    // Relations
+    plannedMeal PlannedMeal @relation(fields: [plannedMealId], references: [id], onDelete: Cascade)
+    dressing    FoodItem    @relation(fields: [dressingId], references: [id])
+
+    @@map("MealDressings")
+}

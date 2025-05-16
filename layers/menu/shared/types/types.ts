@@ -45,9 +45,9 @@ export interface WeeklyMenu {
   startDate: string;
   endDate: string;
   name: string;
-  type: 'std' | 'veg' | 'lowcarb' | string;
   isActive: boolean;
-  days: DayMenu[];
+  daysStd: DayMenu[];
+  daysVeg: DayMenu[];
 }
 
 export interface Menu {

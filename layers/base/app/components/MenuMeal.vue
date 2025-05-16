@@ -19,19 +19,19 @@ const totalCalories = computed(() => {
 </script>
 
 <template>
-  <section>
+  <UCard variant="subtle">
     <h3 class="font-bold text-lg flex items-center gap-2">
       <Icon :name="icon" /><span>{{ title }}</span>
     </h3>
     <section class="flex items-center justify-between">
-      <article class="flex flex-col gap-2 mt-2 text-sm basis-2/3">
+      <article class="flex flex-col gap-2 mt-2 text-sm basis-3/4">
         <span>- {{ meal.mainDish.name }}</span>
-        <span>- {{ meal.side1?.name }}</span>
-        <span v-if="meal.side2">- {{ meal.side2?.name }}</span>
+        <span :class="{ 'opacity-0': !meal.side1 }">- {{ meal.side1?.name }}</span>
+        <span :class="{ 'opacity-0': !meal.side2 }">- {{ meal.side2?.name }}</span>
       </article>
-      <article class="basis-1/3 w-full flex items-center justify-end">
+      <article class="basis-1/4 w-full flex items-center justify-end">
         <span class="font-semibold text-primary-500">{{ totalCalories }} Cal</span>
       </article>
     </section>
-  </section>
+  </UCard>
 </template>

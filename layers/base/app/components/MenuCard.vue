@@ -7,15 +7,15 @@ const { day } = defineProps<MenuCardProps>();
 </script>
 
 <template>
-  <UCard variant="subtle" class="basis-1/3 max-h-[32rem] h-[32rem]" :ui="{ body: 'sm:p-4' }">
+  <UCard variant="subtle" class="basis-1/3" :ui="{ body: 'sm:p-0 p-0' }">
     <template #header>
       <h3 class="text-xl font-bold text-primary-500">{{ day.dayOfWeek }}</h3>
     </template>
 
-    <section class="flex flex-col gap-4 h-full justify-between">
-      <MenuMeal :meal="day.breakfast" title="Desayuno" />
-      <MenuMeal :meal="day.lunch" title="Comida" />
-      <MenuMeal :meal="day.dinner" title="Cena" />
+    <section class="flex flex-col justify-between">
+      <MenuMeal :meal="day.breakfast" title="Desayuno" class="basis-1/3" />
+      <MenuMeal :meal="day.lunch" title="Comida" class="basis-1/3" />
+      <MenuMeal :meal="day.dinner" title="Cena" class="basis-1/3" />
     </section>
   </UCard>
 </template>

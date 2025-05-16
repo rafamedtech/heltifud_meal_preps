@@ -1,22 +1,22 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// // This is your Prisma schema file,
+// // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-generator client {
-    provider      = "prisma-client-js"
-    binaryTargets = ["native", "darwin-arm64"]
-}
+// generator client {
+//     provider      = "prisma-client-js"
+//     binaryTargets = ["native", "darwin-arm64"]
+// }
 
-datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
-}
+// datasource db {
+//     provider = "postgresql"
+//     url      = env("DATABASE_URL")
+// }
 
-model Menu {
-    id        Int      @id @default(autoincrement())
-    name      String
-    isActive  Boolean  @default(false)
-    startDate DateTime
-    endDate   DateTime
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
-}
+// model Menu {
+//     id        Int      @id @default(autoincrement())
+//     name      String
+//     isActive  Boolean  @default(false)
+//     startDate DateTime
+//     endDate   DateTime
+//     createdAt DateTime @default(now())
+//     updatedAt DateTime @default(now()) @updatedAt
+// }
