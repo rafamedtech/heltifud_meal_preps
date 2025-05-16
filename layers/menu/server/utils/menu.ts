@@ -70,7 +70,7 @@ export const menus: WeeklyMenu[] = [
         dayOfWeek: 'Martes',
         breakfast: {
           id: 2,
-          mainDish: { id: 106, name: 'Burrito americano', calories: 501 },
+          mainDish: { id: 106, name: 'Breakfast burrito', calories: 501 },
           side1: null,
           side2: null,
           ramekin: { id: 306, name: 'Salsa picante', calories: 20 },
