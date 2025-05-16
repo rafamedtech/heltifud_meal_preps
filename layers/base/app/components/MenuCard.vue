@@ -12,7 +12,7 @@ const { day } = defineProps<MenuCardProps>();
       <h3 class="text-xl font-bold text-primary-500">{{ day.dayOfWeek }}</h3>
     </template>
 
-    <section class="flex flex-col justify-between">
+    <section class="flex flex-col justify-between md:flex-row">
       <MenuMeal :meal="day.breakfast" title="Desayuno" class="basis-1/3" />
       <MenuMeal :meal="day.lunch" title="Comida" class="basis-1/3" />
       <MenuMeal :meal="day.dinner" title="Cena" class="basis-1/3" />

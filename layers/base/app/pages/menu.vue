@@ -61,14 +61,14 @@ useSeoMeta({
         <!-- <section class="flex justify-center md:justify-end">
           <SelectMenu @type-changed="(e) => getMenu(e)" />
         </section> -->
-        <section class="mb-8">
+        <section class="mb-8 md:hidden">
           <UCarousel
             ref="carousel"
             v-slot="{ item }"
             class-names
             :items="days"
             :ui="{
-              item: 'basis-[100%] transition-opacity [&:not(.is-snapped)]:opacity-25',
+              item: 'basis-[100%] md:basis-1/5 transition-opacity [&:not(.is-snapped)]:opacity-25',
               viewport: 'p-0.5',
             }"
             class="mx-auto max-w-sm py-6 px-2"
@@ -91,9 +91,17 @@ useSeoMeta({
           </div> -->
           <!-- <MenuCard :days="activeMenu?.days" /> -->
         </section>
+
+        <section class="hidden md:flex md:flex-col md:gap-8">
+          <MenuCard v-for="item in days" :day="item" :key="item.id" />
+        </section>
+
+        <section class="pt-8 flex justify-center items-center">
+          <UButton label="Quiero hacer un pedido" icon="i-mdi-whatsapp" />
+        </section>
       </section>
     </BaseSection>
 
-    <USeparator />
+    <!-- <USeparator /> -->
   </section>
 </template>

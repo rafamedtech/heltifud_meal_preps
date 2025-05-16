@@ -19,6 +19,7 @@
       </section>
 
       <!-- Footer -->
+      <USeparator />
       <footer class="flex items-center justify-between py-8">
         <AppLogo />
         <section class="flex gap-2">
