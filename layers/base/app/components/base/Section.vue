@@ -9,7 +9,7 @@ const { layout = 'rows', titleSize = 'base' } = defineProps<SectionProps>();
 </script>
 
 <template>
-  <section class="py-8">
+  <section class="md:py-8">
     <section
       class="flex"
       :class="{
