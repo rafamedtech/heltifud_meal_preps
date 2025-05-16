@@ -7,4 +7,9 @@ export default defineNuxtConfig({
   },
 
   modules: ['@nuxt/eslint', '@nuxt/image'],
+
+  app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'page', mode: 'out-in' },
+  },
 });

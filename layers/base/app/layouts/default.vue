@@ -23,7 +23,14 @@
       <footer class="flex items-center justify-between py-8">
         <AppLogo />
         <section class="flex gap-2">
-          <BaseButton v-for="link in socialLinks" :key="link.id" :icon="link.icon" :to="link.link" variant="subtle" />
+          <BaseButton
+            v-for="link in socialLinks"
+            :key="link.id"
+            :icon="link.icon"
+            :to="link.link"
+            variant="subtle"
+            target="_blank"
+          />
         </section>
       </footer>
     </UContainer>

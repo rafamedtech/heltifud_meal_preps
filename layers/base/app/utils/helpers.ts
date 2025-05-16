@@ -132,7 +132,7 @@ export const steps = [
     button: {
       label: '¡Ordenar ahora!',
       icon: 'i-heroicons-rocket-launch',
-      click: () => navigateTo('https://wa.me/c/5216648161284', { external: true }),
+      click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
     },
     image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204409/heltifud/step2_m2tljn.png',
   },
@@ -319,7 +319,7 @@ export const weeklyPlans: WeeklyPlan[] = [
             button: {
               icon: 'i-heroicons-rocket-launch',
               label: 'Ordenar',
-              click: () => navigateTo('/planes'),
+              click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
             },
           },
         });
@@ -357,7 +357,7 @@ export const weeklyPlans: WeeklyPlan[] = [
             button: {
               icon: 'i-heroicons-rocket-launch',
               label: 'Ordenar',
-              click: () => navigateTo('/planes'),
+              click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
             },
           },
         });
@@ -395,7 +395,7 @@ export const weeklyPlans: WeeklyPlan[] = [
             button: {
               icon: 'i-heroicons-rocket-launch',
               label: 'Ordenar',
-              click: () => navigateTo('/planes'),
+              click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
             },
           },
         });
@@ -418,6 +418,10 @@ export const weeklyPlans: WeeklyPlan[] = [
             title: 'Opciones del plan Toda la semana',
             variants: [
               {
+                title: '3 días',
+                price: '1300',
+              },
+              {
                 title: '5 días',
                 price: '1900',
               },
@@ -425,7 +429,7 @@ export const weeklyPlans: WeeklyPlan[] = [
             button: {
               icon: 'i-heroicons-rocket-launch',
               label: 'Ordenar',
-              click: () => navigateTo('/planes'),
+              click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
             },
           },
         });
