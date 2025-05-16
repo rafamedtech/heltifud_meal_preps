@@ -23,11 +23,11 @@ export const links: NavigationMenuItem[][] = [
       icon: 'i-heroicons-clipboard-document-list',
       to: '/menu?type=std',
     },
-    {
-      label: 'Blog',
-      icon: 'i-heroicons-chat-bubble-bottom-center-text',
-      to: '/blog',
-    },
+    // {
+    //   label: 'Blog',
+    //   icon: 'i-heroicons-chat-bubble-bottom-center-text',
+    //   to: '/blog',
+    // },
   ],
 ];
 export const adminLinks: NavigationMenuItem[][] = [

@@ -14,7 +14,7 @@
           <BaseButton variant="outline" to="/menu" label="Ver Menú" icon="i-heroicons-newspaper" />
         </section>
       </div>
-      <figure class="overflow-hidden rounded-2xl shadow-2xl md:ml-14">
+      <figure class="overflow-hidden shadow-2xl md:ml-14 border border-primary-500">
         <!-- <img src="/hero-new.jpeg" alt="Hero" width="400" height="550" /> -->
         <NuxtImg
           src="https://res.cloudinary.com/rafamed-dev/image/upload/v1746204406/heltifud/hero-new_mkqivn.jpg"
@@ -38,7 +38,7 @@
           src="https://res.cloudinary.com/rafamed-dev/image/upload/v1746204408/heltifud/hero_or5twy.png"
           width="400"
           height="550"
-          class="rounded-2xl shadow-2xl md:m-12"
+          class="shadow-2xl md:m-12"
         />
       </figure>
     </BaseSection>
@@ -46,7 +46,7 @@
     <!-- <section
       class="container mx-auto flex w-full flex-col-reverse items-center justify-center gap-8 py-8 md:flex-row md:gap-12 md:py-20"
     >
-      <figure class="overflow-hidden rounded-2xl shadow-2xl">
+      <figure class="overflow-hidden  shadow-2xl">
         <NuxtImg src="/hero.png" alt="Why Us" width="400" height="400" />
       </figure>
       <div class="md:w-1/2">
@@ -147,7 +147,7 @@
           src="https://res.cloudinary.com/rafamed-dev/image/upload/v1746204411/heltifud/promo_hbku0g.png"
           width="400"
           height="550"
-          class="rounded-2xl shadow-2xl md:m-12"
+          class="shadow-2xl md:m-12"
         />
       </figure>
     </BaseSection>

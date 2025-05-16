@@ -5,8 +5,8 @@ export const menus: WeeklyMenu[] = [
     id: 1,
     createdAt: '2023-10-01',
     updatedAt: '2023-10-01',
-    startDate: '2023-10-01',
-    endDate: '2023-10-07',
+    startDate: '2025-05-20',
+    endDate: '2025-05-24',
     name: 'Menú Semanal 1',
     isActive: true,
     daysStd: [

@@ -40,7 +40,7 @@ const {
       <h3 class="text-xl font-bold">{{ title }}</h3>
     </template>
 
-    <figure class="mx-auto mb-4 overflow-hidden rounded-lg">
+    <figure class="mx-auto mb-4 overflow-hidden">
       <NuxtImg :src="image" :alt="imageAlt" :width="imageWidth" :height="imageHeight" />
     </figure>
     <h3
