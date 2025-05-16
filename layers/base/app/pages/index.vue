@@ -139,7 +139,12 @@
       </template>
 
       <template #actions>
-        <BaseButton label="Reclamar promoción" icon="i-lucide-rocket" />
+        <BaseButton
+          label="Reclamar promoción"
+          icon="i-lucide-rocket"
+          to="https://wa.me/c/5216648161284"
+          target="_blank"
+        />
       </template>
 
       <figure class="flex items-center justify-center overflow-hidden">

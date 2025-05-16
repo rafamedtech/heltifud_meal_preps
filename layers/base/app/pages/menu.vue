@@ -65,13 +65,8 @@ useSeoMeta({
           <UCarousel
             ref="carousel"
             v-slot="{ item }"
-            class-names
             :items="days"
-            :ui="{
-              item: 'basis-[100%] md:basis-1/5 transition-opacity [&:not(.is-snapped)]:opacity-25',
-              viewport: 'p-0.5',
-            }"
-            class="mx-auto max-w-sm py-6 px-2"
+            class="w-full max-w-xs mx-auto py-6"
             wheel-gestures
             dots
           >

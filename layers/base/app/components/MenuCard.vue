@@ -7,7 +7,7 @@ const { day } = defineProps<MenuCardProps>();
 </script>
 
 <template>
-  <UCard variant="subtle" class="basis-1/3" :ui="{ body: 'sm:p-0 p-0' }">
+  <UCard variant="subtle" class="basis-1/3 m-1" :ui="{ body: 'sm:p-0 p-0' }">
     <template #header>
       <h3 class="text-xl font-bold text-primary-500">{{ day.dayOfWeek }}</h3>
     </template>
