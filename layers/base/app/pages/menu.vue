@@ -54,7 +54,9 @@ useSeoMeta({
   <section>
     <BaseSection title="Menú de la semana">
       <template #description>
-        <Icon name="lucide:calendar-days" size="24" /> <span>{{ startDate }}</span> - <span>{{ endDate }}</span>
+        <ClientOnly>
+          <Icon name="lucide:calendar-days" size="24" /> <span>{{ startDate }}</span> - <span>{{ endDate }}</span>
+        </ClientOnly>
       </template>
 
       <section>
