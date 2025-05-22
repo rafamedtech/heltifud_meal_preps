@@ -8,41 +8,8 @@ const { data: activeMenu } = await useFetch<WeeklyMenu>(`/api/menu?type=${type}`
 
 const days = ref(activeMenu.value?.daysStd);
 
-// function getMenu(type: string) {
-//   const filteredDays = type === 'std' ? activeMenu.value?.daysStd : activeMenu.value?.daysVeg;
-
-//   days.value = filteredDays;
-
-//   return (
-//     filteredDays &&
-//     navigateTo(`/menu?type=${type}`, {
-//       replace: true,
-//     })
-//   );
-// }
-
 const startDate = computed(() => formatDate(activeMenu.value?.startDate));
 const endDate = computed(() => formatDate(activeMenu.value?.endDate));
-// const carousel = useTemplateRef('carousel');
-// const activeIndex = ref(0);
-
-// function onClickPrev() {
-//   activeIndex.value--;
-// }
-// function onClickNext() {
-//   activeIndex.value++;
-// }
-
-// function onSelect(index: number) {
-//   activeIndex.value = index;
-//   carousel.value?.emblaApi?.scrollTo(index);
-// }
-
-// function select(index: number) {
-//   activeIndex.value = index;
-
-//   carousel.value?.emblaApi?.scrollTo(index);
-// }
 
 useSeoMeta({
   title: 'Menú de la semana',
