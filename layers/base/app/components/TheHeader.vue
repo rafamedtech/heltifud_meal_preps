@@ -27,7 +27,13 @@ const isDark = computed({
           :ui="{ leadingIcon: 'text-xl', trailingIcon: 'text-xl' }"
           @click="isDark = !isDark"
         />
-        <BaseButton icon="i-lucide-rocket" label="Ordenar" to="https://wa.me/c/5216648161284" target="_blank" />
+        <BaseButton
+          icon="i-lucide-rocket"
+          label="Ordenar"
+          to="https://wa.me/c/5216648161284"
+          target="_blank"
+          prefetch
+        />
       </nav>
     </section>
   </header>

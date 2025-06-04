@@ -21,7 +21,7 @@ export const links: NavigationMenuItem[][] = [
     {
       label: 'Menú',
       icon: 'i-heroicons-clipboard-document-list',
-      to: '/menu?type=std',
+      to: '/menu',
     },
     // {
     //   label: 'Blog',

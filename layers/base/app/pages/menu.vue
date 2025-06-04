@@ -2,11 +2,11 @@
 const route = useRoute();
 const { type = 'std' } = route.query;
 
-const { data: activeMenu } = await useFetch<WeeklyMenu>(`/api/menu?type=${type}`, {
+const menuType = ref(type || 'std');
+
+const { data: activeMenu, status } = await useLazyFetch<WeeklyMenu>(`/api/menu?type=${menuType.value}`, {
   default: () => ({} as WeeklyMenu),
 });
-
-const days = ref(activeMenu.value?.daysStd);
 
 const startDate = computed(() => formatDate(activeMenu.value?.startDate));
 const endDate = computed(() => formatDate(activeMenu.value?.endDate));
@@ -31,41 +31,31 @@ useSeoMeta({
           <SelectMenu @type-changed="(e) => getMenu(e)" />
         </section> -->
         <section class="mb-8 md:hidden">
+          <section v-if="status === 'pending'">
+            <!-- <UIcon name="i-lucide-loader" class="animate-spin" /> -->
+            cargado...
+          </section>
           <UCarousel
+            v-if="status === 'success'"
             ref="carousel"
             v-slot="{ item }"
-            :items="days"
+            :items="activeMenu?.daysStd"
             class="w-full max-w-xs mx-auto py-6"
             wheel-gestures
             dots
           >
             <MenuCard :day="item" />
           </UCarousel>
-
-          <!-- <div class="flex gap-1 justify-between pt-4 max-w-xs mx-auto">
-            <div
-              v-for="(_, index) in days"
-              :key="index"
-              class="size-11 opacity-25 hover:opacity-100 transition-opacity"
-              :class="{ 'opacity-100': activeIndex === index }"
-              @click="select(index)"
-            >
-              <UButton :label="indexName(index + 1)" />
-            </div>
-          </div> -->
-          <!-- <MenuCard :days="activeMenu?.days" /> -->
         </section>
 
         <section class="hidden md:flex md:flex-col md:gap-8">
-          <MenuCard v-for="item in days" :day="item" :key="item.id" />
+          <MenuCard v-for="item in activeMenu?.daysStd" :day="item" :key="item.id" />
         </section>
 
         <section class="pt-8 flex justify-center items-center">
-          <UButton label="Quiero hacer un pedido" icon="i-mdi-whatsapp" />
+          <UButton label="Quiero hacer un pedido" icon="i-mdi-whatsapp" prefetch size="lg" />
         </section>
       </section>
     </BaseSection>
-
-    <!-- <USeparator /> -->
   </section>
 </template>
