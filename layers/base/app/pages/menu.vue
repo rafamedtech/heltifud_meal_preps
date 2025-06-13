@@ -1,10 +1,10 @@
 <script setup lang="ts">
-const route = useRoute();
-const { type = 'std' } = route.query;
+// const route = useRoute();
+// const { type = 'std' } = route.query;
 
-const menuType = ref(type || 'std');
+// const menuType = ref(type || 'std');
 
-const { data: activeMenu, status } = await useLazyFetch<WeeklyMenu>(`/api/menu?type=${menuType.value}`, {
+const { data: activeMenu, status } = await useLazyFetch<WeeklyMenu>(`/api/menu`, {
   default: () => ({} as WeeklyMenu),
 });
 
