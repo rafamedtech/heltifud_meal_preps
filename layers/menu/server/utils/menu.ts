@@ -1704,8 +1704,8 @@ export const menus: WeeklyMenu[] = [
         dayOfWeek: 'Miércoles',
         breakfast: {
           id: 2,
-          mainDish: { id: 106, name: 'Huevos con verduras', calories: 270 },
-          side1: { id: 206, name: 'Frijol', calories: 278 },
+          mainDish: { id: 106, name: 'Omelette de rajas', calories: 315 },
+          side1: { id: 206, name: 'Papas campesinas', calories: 171 },
           side2: null,
           ramekin: { id: 306, name: 'Miel de abeja', calories: 20 },
           contenedor: 'Contenedor 1',
@@ -1714,8 +1714,8 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Pechuga en salsa roja', calories: 355 },
-          side1: { id: 213, name: 'Arroz blanco', calories: 222 },
+          mainDish: { id: 107, name: 'Pollo honey garlic con arroz', calories: 517 },
+          side1: null,
           side2: null,
           ramekin: { id: 307, name: '', calories: 100 },
           contenedor: 'Contenedor 2',
@@ -1724,7 +1724,7 @@ export const menus: WeeklyMenu[] = [
         },
         dinner: {
           id: 2,
-          mainDish: { id: 108, name: 'Atún a la mexicana', calories: 420 },
+          mainDish: { id: 108, name: 'Huarache de carne asada', calories: 527 },
           side1: null,
           side2: null,
           ramekin: { id: 308, name: 'Salsa', calories: 80 },
@@ -1758,7 +1758,7 @@ export const menus: WeeklyMenu[] = [
         dayOfWeek: 'Jueves',
         breakfast: {
           id: 2,
-          mainDish: { id: 106, name: 'Chilaquiles en chipotle con huevo', calories: 492 },
+          mainDish: { id: 106, name: 'Entomatadas de queso panela', calories: 456 },
           side1: null,
           side2: null,
           ramekin: { id: 306, name: 'Catsup', calories: 20 },
@@ -1768,8 +1768,8 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Arrachera con papa horneada', calories: 481 },
-          side1: { id: 213, name: 'Verduras salteadas', calories: 41 },
+          mainDish: { id: 107, name: 'Chiles rellenos de carne', calories: 246 },
+          side1: { id: 213, name: 'Arroz blanco', calories: 222 },
           side2: null,
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
@@ -1778,7 +1778,7 @@ export const menus: WeeklyMenu[] = [
         },
         dinner: {
           id: 2,
-          mainDish: { id: 108, name: 'Wrap de pollo con tocino', calories: 601 },
+          mainDish: { id: 108, name: 'Ensalada de pollo fría', calories: 568 },
           side1: null,
           side2: null,
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
@@ -1812,8 +1812,8 @@ export const menus: WeeklyMenu[] = [
         dayOfWeek: 'Viernes',
         breakfast: {
           id: 2,
-          mainDish: { id: 106, name: 'Omelette de jamón serrano', calories: 311 },
-          side1: { id: 107, name: 'Papas horneadas', calories: 131 },
+          mainDish: { id: 106, name: 'Papas mexicanas con huevo', calories: 442 },
+          side1: null,
           side2: null,
           ramekin: { id: 306, name: 'Catsup', calories: 20 },
           contenedor: 'Contenedor 1',
@@ -1822,8 +1822,8 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Teriyaki de pollo', calories: 278 },
-          side1: { id: 213, name: 'Arroz blanco', calories: 222 },
+          mainDish: { id: 107, name: 'Pollo en mole', calories: 367 },
+          side1: { id: 213, name: 'Arroz rojo', calories: 226 },
           side2: null,
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
@@ -1832,8 +1832,8 @@ export const menus: WeeklyMenu[] = [
         },
         dinner: {
           id: 2,
-          mainDish: { id: 108, name: 'Sándwich de pollo', calories: 353 },
-          side1: { id: 109, name: 'Sopa de verduras', calories: 72 },
+          mainDish: { id: 108, name: 'Calabacitas a la mexicana', calories: 421 },
+          side1: null,
           side2: null,
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
           contenedor: 'Contenedor 3',
