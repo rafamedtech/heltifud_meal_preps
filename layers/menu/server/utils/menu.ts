@@ -189,7 +189,7 @@ export const menus: WeeklyMenu[] = [
         lunch: {
           id: 2,
           mainDish: { id: 107, name: 'Picadillo de res', calories: 250 },
-          side1: { id: 213, name: 'Frijol', calories: 278 },
+          side1: { id: 213, name: 'Arroz blanco', calories: 222 },
           side2: null,
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
