@@ -403,7 +403,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2025-07-08',
     endDate: '2025-07-12',
     name: 'Menú Semanal 2',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
@@ -795,10 +795,10 @@ export const menus: WeeklyMenu[] = [
     id: 3,
     createdAt: '2023-10-01',
     updatedAt: '2023-10-01',
-    startDate: '2025-06-03',
-    endDate: '2025-06-07',
+    startDate: '2025-07-14',
+    endDate: '2025-07-19',
     name: 'Menú Semanal 3',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
@@ -870,8 +870,8 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Carne asada', calories: 633 },
-          side1: null,
+          mainDish: { id: 107, name: 'Fajitas de res', calories: 386 },
+          side1: { id: 207, name: 'Arroz con cilantro', calories: 222 },
           side2: null,
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
@@ -988,8 +988,8 @@ export const menus: WeeklyMenu[] = [
         },
         dinner: {
           id: 2,
-          mainDish: { id: 108, name: 'Carne deshebrada', calories: 309 },
-          side1: { id: 215, name: 'Frijol', calories: 278 },
+          mainDish: { id: 108, name: 'Chiles rellenos de panela', calories: 440 },
+          side1: { id: 215, name: 'Arroz blanco', calories: 222 },
           side2: null,
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
           contenedor: 'Contenedor 3',
