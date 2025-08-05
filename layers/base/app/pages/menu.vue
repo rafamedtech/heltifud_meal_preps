@@ -1,15 +1,16 @@
 <script setup lang="ts">
-// const route = useRoute();
-// const { type = 'std' } = route.query;
-
-// const menuType = ref(type || 'std');
-
 const { data: activeMenu, status } = await useLazyFetch<WeeklyMenu>(`/api/menu`, {
-  default: () => ({} as WeeklyMenu),
+  default: () => ({}) as WeeklyMenu,
 });
 
 const startDate = computed(() => formatDate(activeMenu.value?.startDate));
 const endDate = computed(() => formatDate(activeMenu.value?.endDate));
+
+const { data: menu } = await useAsyncData('menu', () => {
+  return queryCollection('menu').where('isActive', '=', true).first();
+});
+
+console.log(menu.value?.meta.body);
 
 useSeoMeta({
   title: 'Menú de la semana',
@@ -27,14 +28,8 @@ useSeoMeta({
       </template>
 
       <section>
-        <!-- <section class="flex justify-center md:justify-end">
-          <SelectMenu @type-changed="(e) => getMenu(e)" />
-        </section> -->
         <section class="mb-8 md:hidden">
-          <section v-if="status === 'pending'">
-            <!-- <UIcon name="i-lucide-loader" class="animate-spin" /> -->
-            cargado...
-          </section>
+          <section v-if="status === 'pending'">cargado...</section>
           <UCarousel
             v-if="status === 'success'"
             ref="carousel"
