@@ -6,11 +6,11 @@ const { data: activeMenu, status } = await useLazyFetch<WeeklyMenu>(`/api/menu`,
 const startDate = computed(() => formatDate(activeMenu.value?.startDate));
 const endDate = computed(() => formatDate(activeMenu.value?.endDate));
 
-const { data: menu } = await useAsyncData('menu', () => {
-  return queryCollection('menu').where('isActive', '=', true).first();
-});
+// const { data: menu } = await useAsyncData('menu', () => {
+//   return queryCollection('menu').where('isActive', '=', true).first();
+// });
 
-console.log(menu.value?.meta.body);
+// console.log(menu.value?.meta.body);
 
 useSeoMeta({
   title: 'Menú de la semana',

@@ -1,0 +1,43 @@
+{
+  "createdAt": "2023-10-01",
+  "updatedAt": "2023-10-01",
+  "startDate": "2025-07-08",
+  "endDate": "2025-07-12",
+  "name": "Menú Semanal 2",
+  "isActive": true,
+  "days": [
+    {
+      "dayOfWeek": "Monday",
+      "breakfast": {
+        "mainDish": {
+          "name": "Omelette",
+          "calories": 250
+        }
+      }
+    },
+    {
+      "dayOfWeek": "Tuesday",
+      "breakfast": {
+        "mainDish": {
+          "name": "Omelette",
+          "calories": 250
+        }
+      }
+    },
+    {
+      "dayOfWeek": "Wednesday",
+      "breakfast": {
+        "mainDish": {
+          "name": "Omelette",
+          "calories": 250
+        }
+      }
+    },
+    {
+      "dayOfWeek": "Thursday"
+    },
+    {
+      "dayOfWeek": "Friday"
+    }
+  ]
+}
