@@ -17,7 +17,5 @@ export default defineNuxtConfig({
     layoutTransition: { name: 'page', mode: 'out-in' },
   },
 
-  nitro: {
-    preset: 'cloudflare_pages',
-  },
+  
 });
