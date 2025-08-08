@@ -6,7 +6,12 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
 
-  modules: ['@nuxt/eslint', '@nuxt/image', '@nuxt/content'],
+  modules: [
+    '@nuxt/eslint',
+    '@nuxt/image',
+    '@nuxt/content',
+    '@nuxthub/core',
+  ],
 
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
