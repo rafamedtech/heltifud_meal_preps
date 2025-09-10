@@ -1,4 +1,4 @@
-import type { WeeklyMenu } from '~~/layers/menu/shared/types/types';
+import type { WeeklyMenu } from '~~/layers/menu/shared/types/types'
 
 export const menus: WeeklyMenu[] = [
   {
@@ -8,7 +8,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2025-09-09',
     endDate: '2025-09-13',
     name: 'Menú Semanal 1',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
@@ -401,10 +401,10 @@ export const menus: WeeklyMenu[] = [
     id: 2,
     createdAt: '2023-10-01',
     updatedAt: '2023-10-01',
-    startDate: '2025-08-12',
-    endDate: '2025-08-16',
+    startDate: '2025-09-16',
+    endDate: '2025-09-20',
     name: 'Menú Semanal 2',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
@@ -422,7 +422,7 @@ export const menus: WeeklyMenu[] = [
         lunch: {
           id: 1,
           mainDish: { id: 102, name: 'Enchiladas verdes', calories: 413 },
-          side1: { id: 203, name: 'Verduras al vapor', calories: 43 },
+          side1: { id: 203, name: 'Arroz blanco', calories: 222 },
           side2: null,
           ramekin: { id: 302, name: '', calories: 0 },
           contenedor: 'Contenedor 2',
@@ -584,8 +584,8 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Espagueti a la boloñesa', calories: 432 },
-          side1: { id: 213, name: 'Verduras al vapor', calories: 43 },
+          mainDish: { id: 107, name: 'Rollitos de carne con verduras', calories: 432 },
+          side1: { id: 213, name: 'Arroz rojo', calories: 226 },
           side2: null,
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
@@ -638,8 +638,8 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Pechuga BBQ', calories: 293 },
-          side1: { id: 213, name: 'Mac n cheese', calories: 282 },
+          mainDish: { id: 107, name: 'Pechuga en salsa tatemada', calories: 305 },
+          side1: { id: 213, name: 'Arroz rojo', calories: 226 },
           side2: null,
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
@@ -2372,4 +2372,4 @@ export const menus: WeeklyMenu[] = [
       },
     ],
   },
-];
+]
