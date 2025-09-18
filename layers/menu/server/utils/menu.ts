@@ -404,7 +404,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2025-09-16',
     endDate: '2025-09-20',
     name: 'Menú Semanal 2',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
@@ -796,10 +796,10 @@ export const menus: WeeklyMenu[] = [
     id: 3,
     createdAt: '2023-10-01',
     updatedAt: '2023-10-01',
-    startDate: '2025-08-19',
-    endDate: '2025-08-23',
+    startDate: '2025-09-23',
+    endDate: '2025-09-27',
     name: 'Menú Semanal 3',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
@@ -979,7 +979,7 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Bistec en salsa tatemada', calories: 317 },
+          mainDish: { id: 107, name: 'Bistec en salsa roja', calories: 306 },
           side1: { id: 213, name: 'Arroz blanco', calories: 222 },
           side2: null,
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
