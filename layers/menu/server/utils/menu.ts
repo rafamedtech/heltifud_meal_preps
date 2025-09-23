@@ -1201,7 +1201,7 @@ export const menus: WeeklyMenu[] = [
         dayOfWeek: 'Lunes',
         breakfast: {
           id: 1,
-          mainDish: { id: 101, name: 'Enfrijoladas de queso panela', calories: 597 },
+          mainDish: { id: 101, name: 'Pancakes de zanahoria', calories: 456 },
           side1: null,
           side2: null,
           ramekin: { id: 301, name: 'Salsa', calories: 0 },
@@ -1211,8 +1211,8 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 1,
-          mainDish: { id: 102, name: 'Sándwich de pollo búfalo', calories: 533 },
-          side1: null,
+          mainDish: { id: 102, name: 'Sándwich de pollo búfalo', calories: 362 },
+          side1: { id: 202, name: 'Fries de camote', calories: 171 },
           side2: null,
           ramekin: { id: 302, name: '', calories: 0 },
           contenedor: 'Contenedor 2',
@@ -1320,7 +1320,7 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Pechuga en salsa roja', calories: 355 },
+          mainDish: { id: 107, name: 'Estofado de pollo', calories: 355 },
           side1: { id: 213, name: 'Arroz blanco', calories: 222 },
           side2: null,
           ramekin: { id: 307, name: '', calories: 100 },
@@ -1374,8 +1374,8 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Arrachera con papa horneada', calories: 481 },
-          side1: { id: 213, name: 'Verduras salteadas', calories: 41 },
+          mainDish: { id: 107, name: 'Pescado al vapor', calories: 238 },
+          side1: { id: 213, name: 'Arroz blanco', calories: 222 },
           side2: null,
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
