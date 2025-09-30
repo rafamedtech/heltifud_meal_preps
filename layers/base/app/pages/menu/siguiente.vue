@@ -6,12 +6,6 @@ const { data: nextMenu, status } = await useLazyFetch<WeeklyMenu>(`/api/menu/nex
 const startDate = computed(() => formatDate(nextMenu.value?.startDate))
 const endDate = computed(() => formatDate(nextMenu.value?.endDate))
 
-// const { data: menu } = await useAsyncData('menu', () => {
-//   return queryCollection('menu').where('isActive', '=', true).first();
-// });
-
-// console.log(menu.value?.meta.body);
-
 useSeoMeta({
   title: 'Menú de la siguiente semana',
   description: 'Versión preliminar del menú de la siguiente semana',
@@ -20,7 +14,7 @@ useSeoMeta({
 
 <template>
   <section>
-    <BaseSection title="Menú de la semana">
+    <BaseSection title="Menú de la siguiente semana">
       <template #description>
         <ClientOnly>
           <Icon
