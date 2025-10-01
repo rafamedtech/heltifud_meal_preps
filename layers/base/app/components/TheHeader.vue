@@ -13,7 +13,6 @@
 
     <template #right>
       <section class="flex gap-2">
-        <!-- <section class="flex items-center gap-2"> -->
         <ColorMode>
           <template #fallback>
             <UButton

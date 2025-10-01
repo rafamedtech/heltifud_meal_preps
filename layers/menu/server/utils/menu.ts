@@ -1716,7 +1716,7 @@ export const menus: WeeklyMenu[] = [
         lunch: {
           id: 2,
           mainDish: { id: 107, name: 'Alambre de pollo', calories: 359 },
-          side1: { id: 206, name: 'Frijol', calories: 278 },
+          side1: { id: 206, name: 'Lentejas', calories: 174 },
           side2: null,
           ramekin: { id: 307, name: '', calories: 100 },
           contenedor: 'Contenedor 2',
@@ -1824,7 +1824,7 @@ export const menus: WeeklyMenu[] = [
         lunch: {
           id: 2,
           mainDish: { id: 107, name: 'Pechuga con rajas', calories: 245 },
-          side1: { id: 213, name: 'Arroz blanco', calories: 222 },
+          side1: { id: 213, name: 'Arroz rojo', calories: 226 },
           side2: null,
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
