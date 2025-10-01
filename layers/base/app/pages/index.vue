@@ -9,9 +9,19 @@
           Transforma tu alimentación con comidas caseras, equilibradas y deliciosas, sin complicaciones.
         </p>
         <section class="flex gap-4">
-          <BaseButton to="/planes" size="lg" icon="i-heroicons-list-bullet-20-solid" label="Ver planes" />
+          <BaseButton
+            to="/planes"
+            size="lg"
+            icon="i-heroicons-list-bullet-20-solid"
+            label="Ver planes"
+          />
 
-          <BaseButton variant="outline" to="/menu" label="Ver Menú" icon="i-heroicons-newspaper" />
+          <BaseButton
+            variant="outline"
+            to="/menu"
+            label="Ver Menú"
+            icon="i-heroicons-newspaper"
+          />
         </section>
       </div>
       <figure class="overflow-hidden shadow-2xl md:ml-14 border border-primary-500">
@@ -27,7 +37,10 @@
 
     <USeparator />
 
-    <BaseSection title="¿Qué es Heltifud Meal Preps?" layout="columns">
+    <BaseSection
+      title="¿Qué es Heltifud Meal Preps?"
+      layout="columns"
+    >
       <template #description>
         Somos un servicio de meal prep semanal que ofrece comida casera, saludable y balanceada. Te entregamos todo
         listo para disfrutar, sin cocinar ni preocuparte por planear tus comidas.
@@ -42,24 +55,6 @@
         />
       </figure>
     </BaseSection>
-
-    <!-- <section
-      class="container mx-auto flex w-full flex-col-reverse items-center justify-center gap-8 py-8 md:flex-row md:gap-12 md:py-20"
-    >
-      <figure class="overflow-hidden  shadow-2xl">
-        <NuxtImg src="/hero.png" alt="Why Us" width="400" height="400" />
-      </figure>
-      <div class="md:w-1/2">
-        <h2 class="text-primary-500 mb-4 text-3xl font-bold">
-          ¿Qué es Heltifud Meal Preps?
-        </h2>
-        <p class="pt-2 text-lg">
-          Somos un servicio de meal prep semanal que ofrece comida casera,
-          saludable y balanceada. Te entregamos todo listo para disfrutar, sin
-          cocinar ni preocuparte por planear tus comidas.
-        </p>
-      </div>
-    </section> -->
 
     <USeparator />
 
@@ -97,12 +92,19 @@
       </template>
 
       <section class="pb-4">
-        <BaseGallery :items="menuItems" :autoplay="3000" />
+        <BaseGallery
+          :items="menuItems"
+          :autoplay="3000"
+        />
       </section>
 
       <template #footer>
         <p class="text-center text-lg md:text-left">Consulta lo que prepararemos para la próxima semana</p>
-        <BaseButton to="/menu" label="Ver Menú" icon="i-heroicons-newspaper" />
+        <BaseButton
+          to="/menu"
+          label="Ver Menú"
+          icon="i-heroicons-newspaper"
+        />
       </template>
     </BaseSection>
 
@@ -133,7 +135,11 @@
     <USeparator />
 
     <!-- Sección de promoción -->
-    <BaseSection title="¡Promoción en tu primer pedido!" title-size="lg" layout="columns">
+    <BaseSection
+      title="¡Promoción en tu primer pedido!"
+      title-size="lg"
+      layout="columns"
+    >
       <template #description>
         Recibe $100 pesos de descuento así como un set de cubiertos reutilizables en tu primer pedido
       </template>
@@ -167,11 +173,21 @@
       </template>
 
       <div class="md:hidden">
-        <BaseGallery :items="benefits" :autoplay="4000" dots />
+        <BaseGallery
+          :items="benefits"
+          :autoplay="4000"
+          dots
+        />
       </div>
 
       <section class="hidden pt-4 md:grid md:grid-cols-4 md:justify-between md:gap-4">
-        <BaseCard v-for="{ id, title, description, image } in benefits" :key="id" :title :description :image />
+        <BaseCard
+          v-for="{ id, title, description, image } in benefits"
+          :key="id"
+          :title
+          :description
+          :image
+        />
       </section>
     </BaseSection>
 
@@ -192,7 +208,5 @@
         />
       </section>
     </BaseSection>
-
-    <USeparator />
   </div>
 </template>

@@ -38,7 +38,7 @@
         :items="links"
         orientation="vertical"
         class="-mx-2.5"
-        :ui="{ link: 'text-base' }"
+        :ui="{ link: 'text-lg' }"
       />
       <section class="pt-2.5 flex justify-center">
         <UButton
