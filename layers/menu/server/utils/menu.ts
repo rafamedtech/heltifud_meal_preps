@@ -1194,7 +1194,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2025-09-30',
     endDate: '2025-10-04',
     name: 'Menú Semanal 4',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
@@ -1589,7 +1589,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2025-10-07',
     endDate: '2025-10-11',
     name: 'Menú Semanal 5',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,

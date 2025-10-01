@@ -39,7 +39,7 @@ useSeoMeta({
             ref="carousel"
             v-slot="{ item }"
             :items="activeMenu?.daysStd"
-            class="w-full max-w-xs mx-auto py-6"
+            class="w-full max-w-xs mx-auto pt-6"
             wheel-gestures
             dots
           >
