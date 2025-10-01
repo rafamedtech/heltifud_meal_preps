@@ -39,6 +39,7 @@
         :items="links"
         orientation="vertical"
         class="-mx-2.5"
+        :ui="{ link: 'text-base' }"
       />
       <section class="pt-2.5 flex justify-center">
         <UButton
@@ -47,6 +48,7 @@
           to="https://wa.me/c/5216648161284"
           target="_blank"
           prefetch
+          size="lg"
         />
       </section>
     </template>
