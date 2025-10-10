@@ -1589,7 +1589,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2025-10-07',
     endDate: '2025-10-11',
     name: 'Menú Semanal 5',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
@@ -1981,10 +1981,10 @@ export const menus: WeeklyMenu[] = [
     id: 6,
     createdAt: '2023-10-01',
     updatedAt: '2023-10-01',
-    startDate: '2025-09-02',
-    endDate: '2025-09-06',
+    startDate: '2025-10-14',
+    endDate: '2025-10-18',
     name: 'Menú Semanal 6',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
@@ -2056,8 +2056,8 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Taco bowl', calories: 510 },
-          side1: null,
+          mainDish: { id: 107, name: 'Chile relleno de carne y queso', calories: 266 },
+          side1: { id: 213, name: 'Arroz rojo', calories: 226 },
           side2: null,
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
@@ -2164,8 +2164,8 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Chile relleno de carne y queso', calories: 266 },
-          side1: { id: 213, name: 'Arroz rojo', calories: 226 },
+          mainDish: { id: 107, name: 'Taco bowl', calories: 510 },
+          side1: null,
           side2: null,
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
@@ -2218,7 +2218,7 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Pollo en mole', calories: 367 },
+          mainDish: { id: 107, name: 'Enmoladas de pollo', calories: 333 },
           side1: { id: 213, name: 'Arroz rojo', calories: 226 },
           side2: null,
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
