@@ -13,15 +13,8 @@
 
     <template #right>
       <section class="flex gap-2">
-        <ColorMode>
-          <template #fallback>
-            <UButton
-              icon="mdi:theme-light-dark"
-              variant="ghost"
-              color="neutral"
-            />
-          </template>
-        </ColorMode>
+        <ColorMode />
+
         <BaseButton
           icon="i-lucide-rocket"
           label="Ordenar"

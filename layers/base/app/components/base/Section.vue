@@ -28,12 +28,12 @@ const { layout = 'rows', titleSize = 'base' } = defineProps<SectionProps>()
         >
           {{ title }}
         </h2>
-        <p
+        <section
           class="py-4 text-lg flex items-center gap-2"
           :class="{ 'lg:w-1/2': layout === 'rows' }"
         >
           <slot name="description" />
-        </p>
+        </section>
 
         <section
           v-if="layout === 'columns'"

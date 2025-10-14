@@ -23,11 +23,16 @@ useSeoMeta({
     <BaseSection title="Menú de la semana">
       <template #description>
         <ClientOnly>
-          <Icon
-            name="lucide:calendar-days"
-            size="24"
-          />
-          <span>{{ startDate }}</span> - <span>{{ endDate }}</span>
+          <section class="flex items-center gap-2">
+            <Icon
+              name="lucide:calendar-days"
+              size="24"
+            />
+            <span>{{ startDate }}</span> - <span>{{ endDate }}</span>
+          </section>
+          <template #fallback>
+            <USkeleton class="h-6 w-[200px]" />
+          </template>
         </ClientOnly>
       </template>
 
