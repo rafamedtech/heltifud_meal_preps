@@ -5,6 +5,10 @@ export default defineEventHandler(() => {
   const activeMenu = menus.find((menu) => menu.isActive) as WeeklyMenu
   const nextMenu = menus[menus.indexOf(activeMenu) + 1] as WeeklyMenu | undefined
 
+  if (!nextMenu && activeMenu) {
+    return menus[0] as WeeklyMenu
+  }
+
   if (!nextMenu) {
     return {
       error: 'No hay ningun menú activo.',
