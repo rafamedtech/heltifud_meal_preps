@@ -5,10 +5,10 @@ export const menus: WeeklyMenu[] = [
     id: 1,
     createdAt: '2023-10-01',
     updatedAt: '2023-10-01',
-    startDate: '2025-09-09',
-    endDate: '2025-09-13',
+    startDate: '2025-10-21',
+    endDate: '2025-10-25',
     name: 'Menú Semanal 1',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
@@ -16,7 +16,7 @@ export const menus: WeeklyMenu[] = [
         breakfast: {
           id: 1,
           mainDish: { id: 101, name: 'Omelette vegetariano', calories: 309 },
-          side1: { id: 201, name: 'Papas campesinas', calories: 134 },
+          side1: { id: 201, name: 'Chilaquiles rojo', calories: 169 },
           side2: null,
           ramekin: { id: 301, name: 'Salsa', calories: 0 },
           contenedor: 'Contenedor 1',
@@ -26,7 +26,7 @@ export const menus: WeeklyMenu[] = [
         lunch: {
           id: 1,
           mainDish: { id: 102, name: 'Pollo en crema de cilantro', calories: 307 },
-          side1: { id: 203, name: 'Verduras al vapor', calories: 43 },
+          side1: { id: 203, name: 'Verduras salteadas', calories: 42 },
           side2: { id: 204, name: 'Puré de papa', calories: 123 },
           ramekin: { id: 302, name: '', calories: 0 },
           contenedor: 'Contenedor 2',
@@ -36,7 +36,7 @@ export const menus: WeeklyMenu[] = [
         dinner: {
           id: 1,
           mainDish: { id: 103, name: 'Sándwich de panela', calories: 411 },
-          side1: { id: 205, name: 'Papas horneadas', calories: 131 },
+          side1: { id: 205, name: 'Camote horneado', calories: 114 },
           side2: null,
           ramekin: { id: 303, name: 'Salsa de yogur y eneldo', calories: 50 },
           contenedor: 'Contenedor 3',
@@ -135,8 +135,9 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Pollo con champiñones', calories: 296 },
-          side1: { id: 213, name: 'Puré de papa', calories: 123 },
+
+          mainDish: { id: 107, name: 'Fajitas de pollo', calories: 305 },
+          side1: { id: 213, name: 'Arroz con cilantro', calories: 222 },
           side2: null,
           ramekin: { id: 307, name: '', calories: 100 },
           contenedor: 'Contenedor 2',
@@ -180,7 +181,7 @@ export const menus: WeeklyMenu[] = [
         breakfast: {
           id: 2,
           mainDish: { id: 106, name: 'Sándwich de huevo', calories: 353 },
-          side1: { id: 107, name: 'Papas horneadas', calories: 131 },
+          side1: { id: 107, name: 'Fruta de temporada', calories: 74 },
           side2: null,
           ramekin: { id: 306, name: 'Catsup', calories: 20 },
           contenedor: 'Contenedor 1',
@@ -243,8 +244,9 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Fajitas de pollo', calories: 305 },
-          side1: { id: 213, name: 'Arroz con cilantro', calories: 222 },
+          mainDish: { id: 107, name: 'Pollo con champiñones', calories: 296 },
+          side1: { id: 213, name: 'Puré de papa', calories: 123 },
+
           side2: null,
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
@@ -1984,7 +1986,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2025-10-14',
     endDate: '2025-10-18',
     name: 'Menú Semanal 6',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
