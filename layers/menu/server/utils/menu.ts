@@ -543,7 +543,7 @@ export const menus: WeeklyMenu[] = [
         },
         dinner: {
           id: 2,
-          mainDish: { id: 108, name: 'Salpicón', calories: 428 },
+          mainDish: { id: 108, name: 'Chow mein de pollo', calories: 545 },
           side1: null,
           side2: null,
           ramekin: { id: 308, name: 'Salsa', calories: 80 },
