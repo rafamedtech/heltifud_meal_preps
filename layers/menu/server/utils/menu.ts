@@ -800,8 +800,8 @@ export const menus: WeeklyMenu[] = [
     id: 3,
     createdAt: '2023-10-01',
     updatedAt: '2023-10-01',
-    startDate: '2025-09-23',
-    endDate: '2025-09-27',
+    startDate: '2025-11-04',
+    endDate: '2025-11-08',
     name: 'Menú Semanal 3',
     isActive: false,
     daysStd: [
