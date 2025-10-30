@@ -406,7 +406,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2025-10-28',
     endDate: '2025-11-01',
     name: 'Menú Semanal 2',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
@@ -803,7 +803,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2025-11-04',
     endDate: '2025-11-08',
     name: 'Menú Semanal 3',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
@@ -876,7 +876,7 @@ export const menus: WeeklyMenu[] = [
         lunch: {
           id: 2,
           mainDish: { id: 107, name: 'Fajitas de res', calories: 386 },
-          side1: { id: 207, name: 'Frijol', calories: 278 },
+          side1: { id: 207, name: 'Arroz con cilantro', calories: 222 },
           side2: null,
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
@@ -939,7 +939,7 @@ export const menus: WeeklyMenu[] = [
         },
         dinner: {
           id: 2,
-          mainDish: { id: 108, name: 'Quesadilla de pollo', calories: 455 },
+          mainDish: { id: 108, name: 'Pita de pollo pesto', calories: 455 },
           side1: null,
           side2: null,
           ramekin: { id: 308, name: 'Salsa', calories: 80 },
@@ -976,8 +976,8 @@ export const menus: WeeklyMenu[] = [
           mainDish: { id: 106, name: 'Burritos de huevo con chorizo', calories: 558 },
           side1: null,
           side2: null,
-          ramekin: { id: 306, name: 'Catsup', calories: 20 },
-          contenedor: 'Contenedor 1',
+          ramekin: { id: 306, name: 'Salsa', calories: 20 },
+          contenedor: 'Sin divisón',
           image: '',
           description: '',
         },
@@ -1037,8 +1037,8 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Milanesa de pollo', calories: 313 },
-          side1: { id: 213, name: 'Puré de papa', calories: 123 },
+          mainDish: { id: 107, name: 'Milanesa de pollo', calories: 259 },
+          side1: { id: 213, name: 'Mac n cheese', calories: 282 },
           side2: { id: 214, name: 'Verduras al vapor', calories: 43 },
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
