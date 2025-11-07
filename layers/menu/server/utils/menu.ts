@@ -803,7 +803,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2025-11-04',
     endDate: '2025-11-08',
     name: 'Menú Semanal 3',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
@@ -977,17 +977,17 @@ export const menus: WeeklyMenu[] = [
           side1: null,
           side2: null,
           ramekin: { id: 306, name: 'Salsa', calories: 20 },
-          contenedor: 'Sin divisón',
+          contenedor: 'Sin división',
           image: '',
           description: '',
         },
         lunch: {
           id: 2,
           mainDish: { id: 107, name: 'Bistec en salsa roja', calories: 306 },
-          side1: { id: 213, name: 'Arroz blanco', calories: 222 },
+          side1: { id: 213, name: 'Frijol', calories: 278 },
           side2: null,
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
-          contenedor: 'Contenedor 2',
+          contenedor: 'Sin división',
           image: '',
           description: '',
         },
@@ -1039,7 +1039,7 @@ export const menus: WeeklyMenu[] = [
           id: 2,
           mainDish: { id: 107, name: 'Milanesa de pollo', calories: 259 },
           side1: { id: 213, name: 'Mac n cheese', calories: 282 },
-          side2: { id: 214, name: 'Verduras al vapor', calories: 43 },
+          side2: { id: 214, name: 'Verduras salteadas', calories: 43 },
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
@@ -1198,7 +1198,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2025-11-11',
     endDate: '2025-11-15',
     name: 'Menú Semanal 4',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
@@ -1590,8 +1590,8 @@ export const menus: WeeklyMenu[] = [
     id: 5,
     createdAt: '2023-10-01',
     updatedAt: '2023-10-01',
-    startDate: '2025-10-07',
-    endDate: '2025-10-11',
+    startDate: '2025-11-18',
+    endDate: '2025-11-22',
     name: 'Menú Semanal 5',
     isActive: false,
     daysStd: [
