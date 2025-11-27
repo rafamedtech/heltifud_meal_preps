@@ -5,10 +5,10 @@ export const menus: WeeklyMenu[] = [
     id: 1,
     createdAt: '2023-10-01',
     updatedAt: '2023-10-01',
-    startDate: '2025-10-21',
-    endDate: '2025-10-25',
+    startDate: '2025-12-02',
+    endDate: '2025-12-06',
     name: 'Menú Semanal 1',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
@@ -16,7 +16,7 @@ export const menus: WeeklyMenu[] = [
         breakfast: {
           id: 1,
           mainDish: { id: 101, name: 'Omelette vegetariano', calories: 309 },
-          side1: { id: 201, name: 'Chilaquiles rojo', calories: 169 },
+          side1: { id: 201, name: 'Chilaquiles rojos', calories: 169 },
           side2: null,
           ramekin: { id: 301, name: 'Salsa', calories: 0 },
           contenedor: 'Contenedor 1',
@@ -137,7 +137,7 @@ export const menus: WeeklyMenu[] = [
           id: 2,
 
           mainDish: { id: 107, name: 'Fajitas de pollo', calories: 305 },
-          side1: { id: 213, name: 'Arroz con cilantro', calories: 222 },
+          side1: { id: 213, name: 'Lentejas', calories: 174 },
           side2: null,
           ramekin: { id: 307, name: '', calories: 100 },
           contenedor: 'Contenedor 2',
@@ -190,8 +190,8 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Picadillo de res', calories: 250 },
-          side1: { id: 213, name: 'Arroz blanco', calories: 222 },
+          mainDish: { id: 107, name: 'Salteado de res', calories: 493 },
+          side1: null,
           side2: null,
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
@@ -1988,7 +1988,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2025-11-25',
     endDate: '2025-11-29',
     name: 'Menú Semanal 6',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
