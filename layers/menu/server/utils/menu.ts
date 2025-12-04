@@ -8,7 +8,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2025-12-02',
     endDate: '2025-12-06',
     name: 'Menú Semanal 1',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
@@ -403,10 +403,10 @@ export const menus: WeeklyMenu[] = [
     id: 2,
     createdAt: '2023-10-01',
     updatedAt: '2023-10-01',
-    startDate: '2025-10-28',
-    endDate: '2025-11-01',
+    startDate: '2025-12-09',
+    endDate: '2025-12-13',
     name: 'Menú Semanal 2',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
@@ -477,11 +477,11 @@ export const menus: WeeklyMenu[] = [
           description: '',
         },
         lunch: {
-          id: 2,
-          mainDish: { id: 107, name: 'Rollitos de carne con verduras', calories: 432 },
-          side1: { id: 213, name: 'Arroz rojo', calories: 226 },
+          id: 3,
+          mainDish: { id: 107, name: 'Sándwich patty melt', calories: 410 },
+          side1: { id: 213, name: 'Fries de camote', calories: 114 },
           side2: null,
-          ramekin: { id: 307, name: 'Salsa', calories: 100 },
+          ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
           description: '',
@@ -489,7 +489,7 @@ export const menus: WeeklyMenu[] = [
         dinner: {
           id: 2,
           mainDish: { id: 108, name: 'Sándwich de pollo pesto', calories: 435 },
-          side1: { id: 215, name: 'Crema de zanahoria', calories: 115 },
+          side1: { id: 215, name: 'Fries de camote', calories: 114 },
           side2: null,
           ramekin: null,
           contenedor: 'Contenedor 3',
@@ -586,15 +586,16 @@ export const menus: WeeklyMenu[] = [
           description: '',
         },
         lunch: {
-          id: 3,
-          mainDish: { id: 107, name: 'Sándwich patty melt', calories: 410 },
-          side1: { id: 213, name: 'Fries de camote', calories: 114 },
+          id: 2,
+          mainDish: { id: 107, name: 'Carne en su jugo', calories: 524 },
+          side1: null,
           side2: null,
-          ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
+          ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
           description: '',
         },
+
         dinner: {
           id: 2,
           mainDish: { id: 108, name: 'Tacos de pollo adobado', calories: 418 },
