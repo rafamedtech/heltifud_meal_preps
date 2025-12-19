@@ -1,0 +1,70 @@
+generator client {
+    provider = "prisma-client"
+    output   = "../generated/prisma"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model WeeklyMenu {
+    id        String    @id @default(uuid())
+    name      String
+    type      String
+    isActive  Boolean
+    startDate DateTime
+    endDate   DateTime
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    days      DayMenu[]
+}
+
+model DayMenu {
+    id           String     @id @default(uuid())
+    dayOfWeek    String
+    weeklyMenu   WeeklyMenu @relation(fields: [weeklyMenuId], references: [id])
+    weeklyMenuId String
+    meals        Meal[]
+}
+
+model Meal {
+    id        String   @id @default(uuid())
+    type      MealType
+    dayMenu   DayMenu  @relation(fields: [dayMenuId], references: [id])
+    dayMenuId String
+
+    mainDish   Dish   @relation("MainDish", fields: [mainDishId], references: [id])
+    mainDishId String
+
+    side1   Dish   @relation("Side1Dish", fields: [side1Id], references: [id])
+    side1Id String
+
+    side2   Dish   @relation("Side2Dish", fields: [side2Id], references: [id])
+    side2Id String
+
+    ramekin   Dish   @relation("RamekinDish", fields: [ramekinId], references: [id])
+    ramekinId String
+
+    contenedor  String
+    image       String
+    description String
+}
+
+model Dish {
+    id       String @id @default(uuid())
+    name     String
+    calories Int
+
+    asMainDish Meal[] @relation("MainDish")
+    asSide1    Meal[] @relation("Side1Dish")
+    asSide2    Meal[] @relation("Side2Dish")
+    asRamekin  Meal[] @relation("RamekinDish")
+}
+
+enum MealType {
+    desayuno
+    comida
+    cena
+    snack1
+    snack2
+}
