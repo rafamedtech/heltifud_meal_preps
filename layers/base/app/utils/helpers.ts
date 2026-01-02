@@ -1,10 +1,10 @@
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { AppModal } from '#components';
-import type { NavigationMenuItem } from '@nuxt/ui';
-import type { WeeklyPlan } from '~~/layers/menu/shared/types/types';
+import { format } from 'date-fns'
+import { es } from 'date-fns/locale'
+import { AppModal } from '#components'
+import type { NavigationMenuItem } from '@nuxt/ui'
+import type { WeeklyPlan } from '~~/layers/menu/shared/types/types'
 
-export const menuDate = '20 Mayo - 24 Mayo';
+export const menuDate = '20 Mayo - 24 Mayo'
 
 export const links: NavigationMenuItem[][] = [
   [
@@ -29,7 +29,7 @@ export const links: NavigationMenuItem[][] = [
     //   to: '/blog',
     // },
   ],
-];
+]
 export const adminLinks: NavigationMenuItem[][] = [
   [
     {
@@ -48,19 +48,19 @@ export const adminLinks: NavigationMenuItem[][] = [
       to: '/admin/menu',
     },
   ],
-];
+]
 
 export const dateOptions: Intl.DateTimeFormatOptions = {
   year: 'numeric',
   month: 'short',
   day: 'numeric',
-};
+}
 export const shortDateOptions: Intl.DateTimeFormatOptions = {
   month: 'short',
   day: 'numeric',
-};
+}
 
-export const expenseOptions = ['Todas', 'Gasto', 'Ingreso'];
+export const expenseOptions = ['Todas', 'Gasto', 'Ingreso']
 
 export const monthOptions = [
   'Todos',
@@ -76,40 +76,39 @@ export const monthOptions = [
   'Octubre',
   'Noviembre',
   'Diciembre',
-];
+]
 
 export const background =
-  'https://res.cloudinary.com/rafamed-dev/image/upload/v1714075109/heltifud/background_xxcijf.jpg';
+  'https://res.cloudinary.com/rafamed-dev/image/upload/v1714075109/heltifud/background_xxcijf.jpg'
 
 export function transformPrice(item: number): string {
   return new Intl.NumberFormat('es-MX', {
     style: 'currency',
     currency: 'MXN',
-  }).format(item);
+  }).format(item)
 }
 
 export function formatDate(date: Date | string): string {
-  const newDate = new Date(date);
-  const formattedDate = format(newDate, 'd MMM', { locale: es });
-  return formattedDate;
+  const formattedDate = format(date, 'd MMM', { locale: es })
+  return formattedDate
 }
 
 export function indexName(index: number) {
-  if (index === 1) return 'Lun';
-  if (index === 2) return 'Mar';
-  if (index === 3) return 'Mie';
-  if (index === 4) return 'Jue';
-  if (index === 5) return 'Vie';
+  if (index === 1) return 'Lun'
+  if (index === 2) return 'Mar'
+  if (index === 3) return 'Mie'
+  if (index === 4) return 'Jue'
+  if (index === 5) return 'Vie'
 }
 
 export function indexPlans(index: number) {
-  if (index === 1) return 'Desayuno';
-  if (index === 2) return 'Comida';
-  if (index === 3) return 'Cena';
-  if (index === 4) return 'Todos';
+  if (index === 1) return 'Desayuno'
+  if (index === 2) return 'Comida'
+  if (index === 3) return 'Cena'
+  if (index === 4) return 'Todos'
 }
 
-const overlay = useOverlay();
+const overlay = useOverlay()
 
 export const steps = [
   {
@@ -120,7 +119,7 @@ export const steps = [
       label: 'Ver planes',
       icon: 'i-heroicons-list-bullet-20-solid',
       click: () => {
-        return navigateTo('/planes');
+        return navigateTo('/planes')
       },
     },
     image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204407/heltifud/step1_drzeo7.png',
@@ -161,13 +160,13 @@ export const steps = [
             description:
               'Realizamos las entregas en dos partes a la semana, la primera mitad el domingo por la tarde o el lunes por la mañana y la segunda mitad el miércoles por la tarde o el jueves por la mañana. Las entregas son gratuitas y el horario depende de tu ubicación.',
           },
-        });
-        modal.open();
+        })
+        modal.open()
       },
     },
     image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204410/heltifud/step4_ztgrwf.png',
   },
-];
+]
 
 export const benefits = [
   {
@@ -194,7 +193,7 @@ export const benefits = [
     description: 'Adapta tus comidas a tus necesidades y preferencias.',
     image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204408/heltifud/personalizacion_ketk6a.png',
   },
-];
+]
 
 export const menuItems = [
   {
@@ -237,7 +236,7 @@ export const menuItems = [
     title: '',
     image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746205297/heltifud/albondigas_cguj6x.jpg',
   },
-];
+]
 
 export const faqQuestions = [
   {
@@ -268,7 +267,7 @@ export const faqQuestions = [
     question: '¿Cómo puedo realizar un pedido?',
     answer: "Puedes realizar tu pedido a través de WhatsApp. Haz clic en el botón 'Ordenar' para comenzar.",
   },
-];
+]
 
 export const socialLinks = [
   {
@@ -286,7 +285,7 @@ export const socialLinks = [
     icon: 'i-mdi-facebook-box',
     link: 'https://www.facebook.com/heltifud',
   },
-];
+]
 
 export const weeklyPlans: WeeklyPlan[] = [
   {
@@ -322,8 +321,8 @@ export const weeklyPlans: WeeklyPlan[] = [
               click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
             },
           },
-        });
-        modal.open();
+        })
+        modal.open()
       },
     },
   },
@@ -360,8 +359,8 @@ export const weeklyPlans: WeeklyPlan[] = [
               click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
             },
           },
-        });
-        modal.open();
+        })
+        modal.open()
       },
     },
   },
@@ -398,8 +397,8 @@ export const weeklyPlans: WeeklyPlan[] = [
               click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
             },
           },
-        });
-        modal.open();
+        })
+        modal.open()
       },
     },
   },
@@ -432,9 +431,9 @@ export const weeklyPlans: WeeklyPlan[] = [
               click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
             },
           },
-        });
-        modal.open();
+        })
+        modal.open()
       },
     },
   },
-];
+]

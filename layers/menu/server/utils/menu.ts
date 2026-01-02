@@ -1199,7 +1199,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2025-12-23',
     endDate: '2025-12-27',
     name: 'Menú Semanal 4',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
@@ -1595,15 +1595,15 @@ export const menus: WeeklyMenu[] = [
     startDate: '2026-01-06',
     endDate: '2026-01-10',
     name: 'Menú Semanal 5',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
         dayOfWeek: 'Lunes',
         breakfast: {
           id: 1,
-          mainDish: { id: 101, name: 'Huevos rancheros', calories: 598 },
-          side1: null,
+          mainDish: { id: 101, name: 'Omelette de panela y nopales', calories: 324 },
+          side1: { id: 201, name: 'Papas campesinas', calories: 171 },
           side2: null,
           ramekin: { id: 301, name: 'Salsa', calories: 0 },
           contenedor: 'Contenedor 1',
@@ -1667,7 +1667,7 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Albóndigas en chipotle', calories: 229 },
+          mainDish: { id: 107, name: 'Albóndigas en chipotle', calories: 255 },
           side1: { id: 207, name: 'Puré de papa', calories: 123 },
           side2: { id: 307, name: 'Verduras al vapor', calories: 29 },
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
