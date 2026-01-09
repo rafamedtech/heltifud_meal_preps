@@ -1,5 +1,3 @@
-import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
 import { AppModal } from '#components'
 import type { NavigationMenuItem } from '@nuxt/ui'
 import type { WeeklyPlan } from '~~/layers/menu/shared/types/types'
@@ -88,9 +86,8 @@ export function transformPrice(item: number): string {
   }).format(item)
 }
 
-export function formatDate(date: Date | string): string {
-  const formattedDate = format(date, 'd MMM', { locale: es })
-  return formattedDate
+export function formatDate(date: string): string {
+  return new Intl.DateTimeFormat('es-MX', shortDateOptions).format(new Date(date))
 }
 
 export function indexName(index: number) {
