@@ -5,10 +5,10 @@ export const menus: WeeklyMenu[] = [
     id: 1,
     createdAt: '2023-10-01',
     updatedAt: '2023-10-01',
-    startDate: '2025-12-02',
-    endDate: '2025-12-06',
+    startDate: '2026/01/19',
+    endDate: '2026/01/23',
     name: 'Menú Semanal 1',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
@@ -25,9 +25,9 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 1,
-          mainDish: { id: 102, name: 'Pollo en crema de cilantro', calories: 307 },
-          side1: { id: 203, name: 'Verduras salteadas', calories: 42 },
-          side2: { id: 204, name: 'Puré de papa', calories: 123 },
+          mainDish: { id: 102, name: 'Pasta con pollo en crema de cilantro', calories: 374 },
+          side1: { id: 203, name: 'Verduras al vapor', calories: 43 },
+          side2: null,
           ramekin: { id: 302, name: '', calories: 0 },
           contenedor: 'Contenedor 2',
           image: '',
@@ -244,7 +244,7 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Pollo con champiñones', calories: 296 },
+          mainDish: { id: 107, name: 'Wrap de ensalada cesar', calories: 347 },
           side1: { id: 213, name: 'Puré de papa', calories: 123 },
 
           side2: null,
@@ -1990,7 +1990,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2026/01/12',
     endDate: '2026/01/16',
     name: 'Menú Semanal 6',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
