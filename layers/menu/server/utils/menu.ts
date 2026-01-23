@@ -488,10 +488,10 @@ export const menus: WeeklyMenu[] = [
         },
         dinner: {
           id: 2,
-          mainDish: { id: 108, name: 'Sándwich de pollo pesto', calories: 435 },
-          side1: { id: 215, name: 'Fries de camote', calories: 114 },
+          mainDish: { id: 108, name: 'Tacos de pollo adobado', calories: 418 },
+          side1: null,
           side2: null,
-          ramekin: null,
+          ramekin: { id: 308, name: 'Aceite de oliva virgen extra', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
           description: '',
@@ -598,10 +598,10 @@ export const menus: WeeklyMenu[] = [
 
         dinner: {
           id: 2,
-          mainDish: { id: 108, name: 'Tacos de pollo adobado', calories: 418 },
-          side1: null,
+          mainDish: { id: 108, name: 'Sándwich de pollo pesto', calories: 435 },
+          side1: { id: 215, name: 'Fries de camote', calories: 114 },
           side2: null,
-          ramekin: { id: 308, name: 'Aceite de oliva virgen extra', calories: 80 },
+          ramekin: null,
           contenedor: 'Contenedor 3',
           image: '',
           description: '',
