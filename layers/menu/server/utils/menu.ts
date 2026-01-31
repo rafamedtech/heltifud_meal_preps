@@ -401,12 +401,12 @@ export const menus: WeeklyMenu[] = [
   },
   {
     id: 2,
-    createdAt: '2023-10-01',
-    updatedAt: '2023-10-01',
-    startDate: '2026-01-26',
-    endDate: '2026-01-30',
+    createdAt: '2023/10/01',
+    updatedAt: '2023/10/01',
+    startDate: '2026/01/26',
+    endDate: '2026/01/30',
     name: 'Menú Semanal 2',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
@@ -799,12 +799,12 @@ export const menus: WeeklyMenu[] = [
   },
   {
     id: 3,
-    createdAt: '2023-10-01',
-    updatedAt: '2023-10-01',
-    startDate: '2025-12-16',
-    endDate: '2025-12-20',
+    createdAt: '2023/10/01',
+    updatedAt: '2023/10/01',
+    startDate: '2026/02/2',
+    endDate: '2026/02/6',
     name: 'Menú Semanal 3',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
