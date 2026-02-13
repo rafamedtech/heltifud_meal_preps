@@ -1199,7 +1199,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2026/02/09',
     endDate: '2026/02/13',
     name: 'Menú Semanal 4',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
@@ -1595,7 +1595,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2026/02/16',
     endDate: '2026/02/20',
     name: 'Menú Semanal 5',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
@@ -1611,15 +1611,16 @@ export const menus: WeeklyMenu[] = [
           description: '',
         },
         lunch: {
-          id: 1,
-          mainDish: { id: 102, name: 'Pollo a la mostaza', calories: 268 },
-          side1: { id: 202, name: 'Arroz blanco', calories: 222 },
+          id: 2,
+          mainDish: { id: 107, name: 'Pechuga con rajas', calories: 245 },
+          side1: { id: 213, name: 'Arroz rojo', calories: 226 },
           side2: null,
-          ramekin: { id: 302, name: '', calories: 0 },
+          ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
           description: '',
         },
+
         dinner: {
           id: 1,
           mainDish: { id: 108, name: 'Tortitas de atún', calories: 447 },
@@ -1657,8 +1658,8 @@ export const menus: WeeklyMenu[] = [
         dayOfWeek: 'Martes',
         breakfast: {
           id: 2,
-          mainDish: { id: 106, name: 'Breakfast bagel', calories: 488 },
-          side1: null,
+          mainDish: { id: 106, name: 'Bagel de pechuga de pavo', calories: 505 },
+          side1: { id: 206, name: 'Fruta de temporada', calories: 50 },
           side2: null,
           ramekin: { id: 306, name: 'Salsa picante', calories: 20 },
           contenedor: 'Contenedor 1',
@@ -1667,9 +1668,9 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: 'Albóndigas en chipotle', calories: 255 },
-          side1: { id: 207, name: 'Puré de papa', calories: 123 },
-          side2: { id: 307, name: 'Verduras al vapor', calories: 29 },
+          mainDish: { id: 107, name: 'Espagueti con albóndigas', calories: 408 },
+          side1: null,
+          side2: null,
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
@@ -1677,7 +1678,7 @@ export const menus: WeeklyMenu[] = [
         },
         dinner: {
           id: 2,
-          mainDish: { id: 108, name: 'Tinga de pollo', calories: 458 },
+          mainDish: { id: 108, name: 'Tinga de pollo', calories: 558 },
           side1: null,
           side2: null,
           ramekin: { id: 308, name: 'Aceite de oliva virgen extra', calories: 80 },
@@ -1785,8 +1786,8 @@ export const menus: WeeklyMenu[] = [
         },
         dinner: {
           id: 2,
-          mainDish: { id: 108, name: 'Pollo deshebrado', calories: 240 },
-          side1: { id: 206, name: 'Frijol', calories: 278 },
+          mainDish: { id: 108, name: 'Tenders de pechuga de pollo', calories: 265 },
+          side1: { id: 206, name: 'Papas horneadas', calories: 174 },
           side2: null,
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
           contenedor: 'Contenedor 3',
@@ -1828,18 +1829,18 @@ export const menus: WeeklyMenu[] = [
           description: '',
         },
         lunch: {
-          id: 2,
-          mainDish: { id: 107, name: 'Pechuga con rajas', calories: 245 },
-          side1: { id: 213, name: 'Arroz rojo', calories: 226 },
+          id: 1,
+          mainDish: { id: 102, name: 'Pechuga BBQ', calories: 293 },
+          side1: { id: 202, name: 'Puré de papa', calories: 123 },
           side2: null,
-          ramekin: { id: 307, name: 'Salsa', calories: 100 },
+          ramekin: { id: 302, name: '', calories: 0 },
           contenedor: 'Contenedor 2',
           image: '',
           description: '',
         },
         dinner: {
           id: 2,
-          mainDish: { id: 108, name: 'Salteado de pollo y verduras', calories: 235 },
+          mainDish: { id: 108, name: 'Panela en salsa', calories: 361 },
           side1: { id: 208, name: 'Arroz blanco', calories: 222 },
           side2: null,
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
@@ -1987,8 +1988,8 @@ export const menus: WeeklyMenu[] = [
     id: 6,
     createdAt: '2023-10-01',
     updatedAt: '2023-10-01',
-    startDate: '2026/01/12',
-    endDate: '2026/01/16',
+    startDate: '2026/02/23',
+    endDate: '2026/02/27',
     name: 'Menú Semanal 6',
     isActive: false,
     daysStd: [
