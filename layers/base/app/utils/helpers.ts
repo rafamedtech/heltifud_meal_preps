@@ -86,7 +86,7 @@ export function transformPrice(item: number): string {
   }).format(item)
 }
 
-export function formatDate(date: string): string {
+export function formatDate(date: string | Date): string {
   return new Intl.DateTimeFormat('es-MX', shortDateOptions).format(new Date(date))
 }
 

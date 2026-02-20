@@ -5,8 +5,8 @@ export const menus: WeeklyMenu[] = [
     id: 1,
     createdAt: '2023-10-01',
     updatedAt: '2023-10-01',
-    startDate: '2026/01/19',
-    endDate: '2026/01/23',
+    startDate: '2026/03/02',
+    endDate: '2026/03/06',
     name: 'Menú Semanal 1',
     isActive: false,
     daysStd: [
@@ -21,7 +21,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 301, name: 'Salsa', calories: 0 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 1,
@@ -31,7 +31,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 302, name: '', calories: 0 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 1,
@@ -41,7 +41,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 303, name: 'Salsa de yogur y eneldo', calories: 50 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 1,
@@ -51,7 +51,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 304, name: 'Miel', calories: 60 },
           contenedor: 'Contenedor 4',
           image: '/barra-granola.jpeg',
-          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.',
+          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.'
         },
         snack2: {
           id: 1,
@@ -62,8 +62,8 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 5',
           image: '/batido-espinacas.jpeg',
           description:
-            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.',
-        },
+            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.'
+        }
       },
       {
         id: 2,
@@ -76,7 +76,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Salsa picante', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -86,7 +86,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -97,7 +97,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aceite de oliva virgen extra', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -107,7 +107,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -117,8 +117,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 3,
@@ -131,7 +131,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Miel de abeja', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -142,7 +142,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: '', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -152,7 +152,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Salsa', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -162,7 +162,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -172,8 +172,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 4,
@@ -186,7 +186,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Catsup', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -196,7 +196,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -206,7 +206,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -216,7 +216,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -226,8 +226,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 5,
@@ -240,7 +240,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Catsup', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -251,7 +251,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -261,7 +261,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -271,7 +271,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -281,9 +281,9 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
-      },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
+      }
     ],
     daysVeg: [
       {
@@ -298,7 +298,7 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 1',
           image: '/tortilla-espinacas.jpeg',
           description:
-            'Tortilla de espinacas con queso feta y tomate, acompañada de fruta de temporada y yogur natural.',
+            'Tortilla de espinacas con queso feta y tomate, acompañada de fruta de temporada y yogur natural.'
         },
         lunch: {
           id: 1,
@@ -308,7 +308,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 302, name: 'Aderezo de mostaza y miel', calories: 90 },
           contenedor: 'Contenedor 2',
           image: '/pechuga-plancha.jpeg',
-          description: 'Pechuga a la plancha con ensalada de lechuga y tomate, acompañada de arroz integral.',
+          description: 'Pechuga a la plancha con ensalada de lechuga y tomate, acompañada de arroz integral.'
         },
         dinner: {
           id: 1,
@@ -318,7 +318,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 303, name: 'Salsa de yogur y eneldo', calories: 50 },
           contenedor: 'Contenedor 3',
           image: '/salmón-horno.jpeg',
-          description: 'Salmón al horno con espárragos al vapor y quinoa, acompañado de salsa de yogur y eneldo.',
+          description: 'Salmón al horno con espárragos al vapor y quinoa, acompañado de salsa de yogur y eneldo.'
         },
         snack1: {
           id: 1,
@@ -328,7 +328,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 304, name: 'Miel', calories: 60 },
           contenedor: 'Contenedor 4',
           image: '/barra-granola.jpeg',
-          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.',
+          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.'
         },
         snack2: {
           id: 1,
@@ -339,8 +339,8 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 5',
           image: '/batido-espinacas.jpeg',
           description:
-            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.',
-        },
+            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.'
+        }
       },
       {
         id: 2,
@@ -353,7 +353,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Salsa picante', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '/tostadas-aguacate.jpeg',
-          description: 'Tostadas de aguacate con huevo pochado y fruta de temporada, acompañadas de salsa picante.',
+          description: 'Tostadas de aguacate con huevo pochado y fruta de temporada, acompañadas de salsa picante.'
         },
         lunch: {
           id: 2,
@@ -363,7 +363,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '/ensalada-cesar.jpeg',
-          description: 'Ensalada César con pollo, crutones y queso parmesano, acompañada de aderezo César.',
+          description: 'Ensalada César con pollo, crutones y queso parmesano, acompañada de aderezo César.'
         },
         dinner: {
           id: 2,
@@ -374,7 +374,7 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 3',
           image: '/pasta-verduras.jpeg',
           description:
-            'Pasta integral con verduras salteadas, aceitunas negras y parmesano rallado, acompañada de aceite de oliva virgen extra.',
+            'Pasta integral con verduras salteadas, aceitunas negras y parmesano rallado, acompañada de aceite de oliva virgen extra.'
         },
         snack1: {
           id: 2,
@@ -384,7 +384,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -394,10 +394,10 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
-      },
-    ],
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
+      }
+    ]
   },
   {
     id: 2,
@@ -419,7 +419,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 301, name: 'Salsa', calories: 0 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 1,
@@ -429,7 +429,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 302, name: '', calories: 0 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 1,
@@ -439,7 +439,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 303, name: 'Salsa de yogur y eneldo', calories: 50 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 1,
@@ -449,7 +449,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 304, name: 'Miel', calories: 60 },
           contenedor: 'Contenedor 4',
           image: '/barra-granola.jpeg',
-          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.',
+          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.'
         },
         snack2: {
           id: 1,
@@ -460,8 +460,8 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 5',
           image: '/batido-espinacas.jpeg',
           description:
-            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.',
-        },
+            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.'
+        }
       },
       {
         id: 2,
@@ -474,7 +474,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Salsa picante', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 3,
@@ -484,7 +484,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -494,7 +494,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aceite de oliva virgen extra', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
 
         snack1: {
@@ -505,7 +505,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -515,8 +515,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 3,
@@ -529,7 +529,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Miel de abeja', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -539,7 +539,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: '', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -549,7 +549,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Salsa', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -559,7 +559,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -569,8 +569,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 4,
@@ -583,7 +583,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Catsup', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -593,7 +593,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
 
         dinner: {
@@ -604,7 +604,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: null,
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
 
         snack1: {
@@ -615,7 +615,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -625,8 +625,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 5,
@@ -639,7 +639,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Catsup', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -649,7 +649,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -659,7 +659,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -669,7 +669,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -679,9 +679,9 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
-      },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
+      }
     ],
     daysVeg: [
       {
@@ -696,7 +696,7 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 1',
           image: '/tortilla-espinacas.jpeg',
           description:
-            'Tortilla de espinacas con queso feta y tomate, acompañada de fruta de temporada y yogur natural.',
+            'Tortilla de espinacas con queso feta y tomate, acompañada de fruta de temporada y yogur natural.'
         },
         lunch: {
           id: 1,
@@ -706,7 +706,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 302, name: 'Aderezo de mostaza y miel', calories: 90 },
           contenedor: 'Contenedor 2',
           image: '/pechuga-plancha.jpeg',
-          description: 'Pechuga a la plancha con ensalada de lechuga y tomate, acompañada de arroz integral.',
+          description: 'Pechuga a la plancha con ensalada de lechuga y tomate, acompañada de arroz integral.'
         },
         dinner: {
           id: 1,
@@ -716,7 +716,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 303, name: 'Salsa de yogur y eneldo', calories: 50 },
           contenedor: 'Contenedor 3',
           image: '/salmón-horno.jpeg',
-          description: 'Salmón al horno con espárragos al vapor y quinoa, acompañado de salsa de yogur y eneldo.',
+          description: 'Salmón al horno con espárragos al vapor y quinoa, acompañado de salsa de yogur y eneldo.'
         },
         snack1: {
           id: 1,
@@ -726,7 +726,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 304, name: 'Miel', calories: 60 },
           contenedor: 'Contenedor 4',
           image: '/barra-granola.jpeg',
-          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.',
+          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.'
         },
         snack2: {
           id: 1,
@@ -737,8 +737,8 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 5',
           image: '/batido-espinacas.jpeg',
           description:
-            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.',
-        },
+            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.'
+        }
       },
       {
         id: 2,
@@ -751,7 +751,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Salsa picante', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '/tostadas-aguacate.jpeg',
-          description: 'Tostadas de aguacate con huevo pochado y fruta de temporada, acompañadas de salsa picante.',
+          description: 'Tostadas de aguacate con huevo pochado y fruta de temporada, acompañadas de salsa picante.'
         },
         lunch: {
           id: 2,
@@ -761,7 +761,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '/ensalada-cesar.jpeg',
-          description: 'Ensalada César con pollo, crutones y queso parmesano, acompañada de aderezo César.',
+          description: 'Ensalada César con pollo, crutones y queso parmesano, acompañada de aderezo César.'
         },
         dinner: {
           id: 2,
@@ -772,7 +772,7 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 3',
           image: '/pasta-verduras.jpeg',
           description:
-            'Pasta integral con verduras salteadas, aceitunas negras y parmesano rallado, acompañada de aceite de oliva virgen extra.',
+            'Pasta integral con verduras salteadas, aceitunas negras y parmesano rallado, acompañada de aceite de oliva virgen extra.'
         },
         snack1: {
           id: 2,
@@ -782,7 +782,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -792,10 +792,10 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
-      },
-    ],
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
+      }
+    ]
   },
   {
     id: 3,
@@ -817,7 +817,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 301, name: 'Salsa', calories: 0 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 1,
@@ -827,7 +827,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 302, name: '', calories: 0 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 1,
@@ -837,7 +837,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 303, name: 'Salsa de yogur y eneldo', calories: 50 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 1,
@@ -847,7 +847,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 304, name: 'Miel', calories: 60 },
           contenedor: 'Contenedor 4',
           image: '/barra-granola.jpeg',
-          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.',
+          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.'
         },
         snack2: {
           id: 1,
@@ -858,8 +858,8 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 5',
           image: '/batido-espinacas.jpeg',
           description:
-            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.',
-        },
+            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.'
+        }
       },
       {
         id: 2,
@@ -872,7 +872,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Salsa picante', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -882,7 +882,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -892,7 +892,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aceite de oliva virgen extra', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -902,7 +902,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -912,8 +912,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 3,
@@ -926,7 +926,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Miel de abeja', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -936,7 +936,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: '', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -946,7 +946,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Salsa', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -956,7 +956,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -966,8 +966,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 4,
@@ -980,7 +980,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Salsa', calories: 20 },
           contenedor: 'Sin división',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -990,7 +990,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Sin división',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -1000,7 +1000,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -1010,7 +1010,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -1020,8 +1020,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 5,
@@ -1034,7 +1034,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Catsup', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -1044,7 +1044,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -1054,7 +1054,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -1064,7 +1064,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -1074,9 +1074,9 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
-      },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
+      }
     ],
     daysVeg: [
       {
@@ -1091,7 +1091,7 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 1',
           image: '/tortilla-espinacas.jpeg',
           description:
-            'Tortilla de espinacas con queso feta y tomate, acompañada de fruta de temporada y yogur natural.',
+            'Tortilla de espinacas con queso feta y tomate, acompañada de fruta de temporada y yogur natural.'
         },
         lunch: {
           id: 1,
@@ -1101,7 +1101,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 302, name: 'Aderezo de mostaza y miel', calories: 90 },
           contenedor: 'Contenedor 2',
           image: '/pechuga-plancha.jpeg',
-          description: 'Pechuga a la plancha con ensalada de lechuga y tomate, acompañada de arroz integral.',
+          description: 'Pechuga a la plancha con ensalada de lechuga y tomate, acompañada de arroz integral.'
         },
         dinner: {
           id: 1,
@@ -1111,7 +1111,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 303, name: 'Salsa de yogur y eneldo', calories: 50 },
           contenedor: 'Contenedor 3',
           image: '/salmón-horno.jpeg',
-          description: 'Salmón al horno con espárragos al vapor y quinoa, acompañado de salsa de yogur y eneldo.',
+          description: 'Salmón al horno con espárragos al vapor y quinoa, acompañado de salsa de yogur y eneldo.'
         },
         snack1: {
           id: 1,
@@ -1121,7 +1121,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 304, name: 'Miel', calories: 60 },
           contenedor: 'Contenedor 4',
           image: '/barra-granola.jpeg',
-          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.',
+          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.'
         },
         snack2: {
           id: 1,
@@ -1132,8 +1132,8 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 5',
           image: '/batido-espinacas.jpeg',
           description:
-            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.',
-        },
+            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.'
+        }
       },
       {
         id: 2,
@@ -1146,7 +1146,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Salsa picante', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '/tostadas-aguacate.jpeg',
-          description: 'Tostadas de aguacate con huevo pochado y fruta de temporada, acompañadas de salsa picante.',
+          description: 'Tostadas de aguacate con huevo pochado y fruta de temporada, acompañadas de salsa picante.'
         },
         lunch: {
           id: 2,
@@ -1156,7 +1156,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '/ensalada-cesar.jpeg',
-          description: 'Ensalada César con pollo, crutones y queso parmesano, acompañada de aderezo César.',
+          description: 'Ensalada César con pollo, crutones y queso parmesano, acompañada de aderezo César.'
         },
         dinner: {
           id: 2,
@@ -1167,7 +1167,7 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 3',
           image: '/pasta-verduras.jpeg',
           description:
-            'Pasta integral con verduras salteadas, aceitunas negras y parmesano rallado, acompañada de aceite de oliva virgen extra.',
+            'Pasta integral con verduras salteadas, aceitunas negras y parmesano rallado, acompañada de aceite de oliva virgen extra.'
         },
         snack1: {
           id: 2,
@@ -1177,7 +1177,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -1187,10 +1187,10 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
-      },
-    ],
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
+      }
+    ]
   },
   {
     id: 4,
@@ -1212,7 +1212,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 301, name: 'Salsa', calories: 0 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 1,
@@ -1222,7 +1222,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 302, name: '', calories: 0 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 1,
@@ -1232,7 +1232,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 303, name: 'Salsa de yogur y eneldo', calories: 50 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 1,
@@ -1242,7 +1242,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 304, name: 'Miel', calories: 60 },
           contenedor: 'Contenedor 4',
           image: '/barra-granola.jpeg',
-          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.',
+          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.'
         },
         snack2: {
           id: 1,
@@ -1253,8 +1253,8 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 5',
           image: '/batido-espinacas.jpeg',
           description:
-            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.',
-        },
+            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.'
+        }
       },
       {
         id: 2,
@@ -1267,7 +1267,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Salsa picante', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -1277,7 +1277,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -1287,7 +1287,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aceite de oliva virgen extra', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -1297,7 +1297,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -1307,8 +1307,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 3,
@@ -1321,7 +1321,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Miel de abeja', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -1331,7 +1331,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: '', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -1341,7 +1341,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Salsa', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -1351,7 +1351,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -1361,8 +1361,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 4,
@@ -1375,7 +1375,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Catsup', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -1386,7 +1386,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -1396,7 +1396,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -1406,7 +1406,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -1416,8 +1416,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 5,
@@ -1430,7 +1430,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Catsup', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -1440,7 +1440,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -1450,7 +1450,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -1460,7 +1460,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -1470,9 +1470,9 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
-      },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
+      }
     ],
     daysVeg: [
       {
@@ -1487,7 +1487,7 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 1',
           image: '/tortilla-espinacas.jpeg',
           description:
-            'Tortilla de espinacas con queso feta y tomate, acompañada de fruta de temporada y yogur natural.',
+            'Tortilla de espinacas con queso feta y tomate, acompañada de fruta de temporada y yogur natural.'
         },
         lunch: {
           id: 1,
@@ -1497,7 +1497,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 302, name: 'Aderezo de mostaza y miel', calories: 90 },
           contenedor: 'Contenedor 2',
           image: '/pechuga-plancha.jpeg',
-          description: 'Pechuga a la plancha con ensalada de lechuga y tomate, acompañada de arroz integral.',
+          description: 'Pechuga a la plancha con ensalada de lechuga y tomate, acompañada de arroz integral.'
         },
         dinner: {
           id: 1,
@@ -1507,7 +1507,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 303, name: 'Salsa de yogur y eneldo', calories: 50 },
           contenedor: 'Contenedor 3',
           image: '/salmón-horno.jpeg',
-          description: 'Salmón al horno con espárragos al vapor y quinoa, acompañado de salsa de yogur y eneldo.',
+          description: 'Salmón al horno con espárragos al vapor y quinoa, acompañado de salsa de yogur y eneldo.'
         },
         snack1: {
           id: 1,
@@ -1517,7 +1517,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 304, name: 'Miel', calories: 60 },
           contenedor: 'Contenedor 4',
           image: '/barra-granola.jpeg',
-          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.',
+          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.'
         },
         snack2: {
           id: 1,
@@ -1528,8 +1528,8 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 5',
           image: '/batido-espinacas.jpeg',
           description:
-            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.',
-        },
+            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.'
+        }
       },
       {
         id: 2,
@@ -1542,7 +1542,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Salsa picante', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '/tostadas-aguacate.jpeg',
-          description: 'Tostadas de aguacate con huevo pochado y fruta de temporada, acompañadas de salsa picante.',
+          description: 'Tostadas de aguacate con huevo pochado y fruta de temporada, acompañadas de salsa picante.'
         },
         lunch: {
           id: 2,
@@ -1552,7 +1552,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '/ensalada-cesar.jpeg',
-          description: 'Ensalada César con pollo, crutones y queso parmesano, acompañada de aderezo César.',
+          description: 'Ensalada César con pollo, crutones y queso parmesano, acompañada de aderezo César.'
         },
         dinner: {
           id: 2,
@@ -1563,7 +1563,7 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 3',
           image: '/pasta-verduras.jpeg',
           description:
-            'Pasta integral con verduras salteadas, aceitunas negras y parmesano rallado, acompañada de aceite de oliva virgen extra.',
+            'Pasta integral con verduras salteadas, aceitunas negras y parmesano rallado, acompañada de aceite de oliva virgen extra.'
         },
         snack1: {
           id: 2,
@@ -1573,7 +1573,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -1583,10 +1583,10 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
-      },
-    ],
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
+      }
+    ]
   },
   {
     id: 5,
@@ -1595,7 +1595,7 @@ export const menus: WeeklyMenu[] = [
     startDate: '2026/02/16',
     endDate: '2026/02/20',
     name: 'Menú Semanal 5',
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
@@ -1608,7 +1608,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 301, name: 'Salsa', calories: 0 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -1618,7 +1618,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
 
         dinner: {
@@ -1629,7 +1629,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 303, name: 'Salsa de yogur y eneldo', calories: 50 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 1,
@@ -1639,7 +1639,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 304, name: 'Miel', calories: 60 },
           contenedor: 'Contenedor 4',
           image: '/barra-granola.jpeg',
-          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.',
+          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.'
         },
         snack2: {
           id: 1,
@@ -1650,8 +1650,8 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 5',
           image: '/batido-espinacas.jpeg',
           description:
-            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.',
-        },
+            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.'
+        }
       },
       {
         id: 2,
@@ -1664,7 +1664,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Salsa picante', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -1674,7 +1674,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -1684,7 +1684,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aceite de oliva virgen extra', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -1694,7 +1694,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -1704,8 +1704,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 3,
@@ -1718,7 +1718,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Miel de abeja', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -1728,7 +1728,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: '', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -1738,7 +1738,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Salsa', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -1748,7 +1748,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -1758,8 +1758,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 4,
@@ -1772,7 +1772,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Catsup', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -1782,7 +1782,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -1792,7 +1792,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -1802,7 +1802,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -1812,8 +1812,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 5,
@@ -1826,7 +1826,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Catsup', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 1,
@@ -1836,7 +1836,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 302, name: '', calories: 0 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -1846,7 +1846,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -1856,7 +1856,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -1866,9 +1866,9 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
-      },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
+      }
     ],
     daysVeg: [
       {
@@ -1883,7 +1883,7 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 1',
           image: '/tortilla-espinacas.jpeg',
           description:
-            'Tortilla de espinacas con queso feta y tomate, acompañada de fruta de temporada y yogur natural.',
+            'Tortilla de espinacas con queso feta y tomate, acompañada de fruta de temporada y yogur natural.'
         },
         lunch: {
           id: 1,
@@ -1893,7 +1893,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 302, name: 'Aderezo de mostaza y miel', calories: 90 },
           contenedor: 'Contenedor 2',
           image: '/pechuga-plancha.jpeg',
-          description: 'Pechuga a la plancha con ensalada de lechuga y tomate, acompañada de arroz integral.',
+          description: 'Pechuga a la plancha con ensalada de lechuga y tomate, acompañada de arroz integral.'
         },
         dinner: {
           id: 1,
@@ -1903,7 +1903,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 303, name: 'Salsa de yogur y eneldo', calories: 50 },
           contenedor: 'Contenedor 3',
           image: '/salmón-horno.jpeg',
-          description: 'Salmón al horno con espárragos al vapor y quinoa, acompañado de salsa de yogur y eneldo.',
+          description: 'Salmón al horno con espárragos al vapor y quinoa, acompañado de salsa de yogur y eneldo.'
         },
         snack1: {
           id: 1,
@@ -1913,7 +1913,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 304, name: 'Miel', calories: 60 },
           contenedor: 'Contenedor 4',
           image: '/barra-granola.jpeg',
-          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.',
+          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.'
         },
         snack2: {
           id: 1,
@@ -1924,8 +1924,8 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 5',
           image: '/batido-espinacas.jpeg',
           description:
-            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.',
-        },
+            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.'
+        }
       },
       {
         id: 2,
@@ -1938,7 +1938,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Salsa picante', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '/tostadas-aguacate.jpeg',
-          description: 'Tostadas de aguacate con huevo pochado y fruta de temporada, acompañadas de salsa picante.',
+          description: 'Tostadas de aguacate con huevo pochado y fruta de temporada, acompañadas de salsa picante.'
         },
         lunch: {
           id: 2,
@@ -1948,7 +1948,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '/ensalada-cesar.jpeg',
-          description: 'Ensalada César con pollo, crutones y queso parmesano, acompañada de aderezo César.',
+          description: 'Ensalada César con pollo, crutones y queso parmesano, acompañada de aderezo César.'
         },
         dinner: {
           id: 2,
@@ -1959,7 +1959,7 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 3',
           image: '/pasta-verduras.jpeg',
           description:
-            'Pasta integral con verduras salteadas, aceitunas negras y parmesano rallado, acompañada de aceite de oliva virgen extra.',
+            'Pasta integral con verduras salteadas, aceitunas negras y parmesano rallado, acompañada de aceite de oliva virgen extra.'
         },
         snack1: {
           id: 2,
@@ -1969,7 +1969,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -1979,19 +1979,19 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
-      },
-    ],
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
+      }
+    ]
   },
   {
     id: 6,
-    createdAt: '2023-10-01',
-    updatedAt: '2023-10-01',
-    startDate: '2026/02/23',
-    endDate: '2026/02/27',
+    createdAt: '02/23/2026',
+    updatedAt: '02/23/2026',
+    startDate: '02/23/2026',
+    endDate: '02/27/2026',
     name: 'Menú Semanal 6',
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
@@ -2004,7 +2004,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 301, name: 'Miel', calories: 0 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 1,
@@ -2014,7 +2014,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 302, name: '', calories: 0 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 1,
@@ -2024,7 +2024,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 303, name: 'Salsa de yogur y eneldo', calories: 50 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 1,
@@ -2034,7 +2034,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 304, name: 'Miel', calories: 60 },
           contenedor: 'Contenedor 4',
           image: '/barra-granola.jpeg',
-          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.',
+          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.'
         },
         snack2: {
           id: 1,
@@ -2045,8 +2045,8 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 5',
           image: '/batido-espinacas.jpeg',
           description:
-            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.',
-        },
+            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.'
+        }
       },
       {
         id: 2,
@@ -2059,7 +2059,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Salsa picante', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -2069,7 +2069,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -2079,7 +2079,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Aceite de oliva virgen extra', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -2089,7 +2089,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -2099,8 +2099,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 3,
@@ -2113,7 +2113,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Miel de abeja', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -2123,7 +2123,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: '', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
@@ -2133,7 +2133,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 308, name: 'Salsa', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -2143,7 +2143,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -2153,8 +2153,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 4,
@@ -2167,7 +2167,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Catsup', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -2177,17 +2177,17 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
-          mainDish: { id: 108, name: 'Panela en salsa', calories: 361 },
-          side1: { id: 208, name: 'Arroz blanco', calories: 222 },
+          mainDish: { id: 108, name: 'Sándwich de pollo', calories: 353 },
+          side1: { id: 208, name: 'Papas horneadas', calories: 131 },
           side2: null,
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -2197,7 +2197,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -2207,8 +2207,8 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
       },
       {
         id: 5,
@@ -2221,7 +2221,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Catsup', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '',
-          description: '',
+          description: ''
         },
         lunch: {
           id: 2,
@@ -2231,17 +2231,17 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Salsa', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '',
-          description: '',
+          description: ''
         },
         dinner: {
           id: 2,
           mainDish: { id: 108, name: 'Crunchwrap de carne', calories: 353 },
-          side1: { id: 208, name: 'Papas horneadas', calories: 131 },
+          side1: null,
           side2: null,
           ramekin: { id: 308, name: 'Aguacate', calories: 80 },
           contenedor: 'Contenedor 3',
           image: '',
-          description: '',
+          description: ''
         },
         snack1: {
           id: 2,
@@ -2251,7 +2251,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -2261,9 +2261,9 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
-      },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
+      }
     ],
     daysVeg: [
       {
@@ -2278,7 +2278,7 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 1',
           image: '/tortilla-espinacas.jpeg',
           description:
-            'Tortilla de espinacas con queso feta y tomate, acompañada de fruta de temporada y yogur natural.',
+            'Tortilla de espinacas con queso feta y tomate, acompañada de fruta de temporada y yogur natural.'
         },
         lunch: {
           id: 1,
@@ -2288,7 +2288,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 302, name: 'Aderezo de mostaza y miel', calories: 90 },
           contenedor: 'Contenedor 2',
           image: '/pechuga-plancha.jpeg',
-          description: 'Pechuga a la plancha con ensalada de lechuga y tomate, acompañada de arroz integral.',
+          description: 'Pechuga a la plancha con ensalada de lechuga y tomate, acompañada de arroz integral.'
         },
         dinner: {
           id: 1,
@@ -2298,7 +2298,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 303, name: 'Salsa de yogur y eneldo', calories: 50 },
           contenedor: 'Contenedor 3',
           image: '/salmón-horno.jpeg',
-          description: 'Salmón al horno con espárragos al vapor y quinoa, acompañado de salsa de yogur y eneldo.',
+          description: 'Salmón al horno con espárragos al vapor y quinoa, acompañado de salsa de yogur y eneldo.'
         },
         snack1: {
           id: 1,
@@ -2308,7 +2308,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 304, name: 'Miel', calories: 60 },
           contenedor: 'Contenedor 4',
           image: '/barra-granola.jpeg',
-          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.',
+          description: 'Barra de granola con fruta de temporada y nueces, acompañada de miel.'
         },
         snack2: {
           id: 1,
@@ -2319,8 +2319,8 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 5',
           image: '/batido-espinacas.jpeg',
           description:
-            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.',
-        },
+            'Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo.'
+        }
       },
       {
         id: 2,
@@ -2333,7 +2333,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 306, name: 'Salsa picante', calories: 20 },
           contenedor: 'Contenedor 1',
           image: '/tostadas-aguacate.jpeg',
-          description: 'Tostadas de aguacate con huevo pochado y fruta de temporada, acompañadas de salsa picante.',
+          description: 'Tostadas de aguacate con huevo pochado y fruta de temporada, acompañadas de salsa picante.'
         },
         lunch: {
           id: 2,
@@ -2343,7 +2343,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 307, name: 'Aderezo César', calories: 100 },
           contenedor: 'Contenedor 2',
           image: '/ensalada-cesar.jpeg',
-          description: 'Ensalada César con pollo, crutones y queso parmesano, acompañada de aderezo César.',
+          description: 'Ensalada César con pollo, crutones y queso parmesano, acompañada de aderezo César.'
         },
         dinner: {
           id: 2,
@@ -2354,7 +2354,7 @@ export const menus: WeeklyMenu[] = [
           contenedor: 'Contenedor 3',
           image: '/pasta-verduras.jpeg',
           description:
-            'Pasta integral con verduras salteadas, aceitunas negras y parmesano rallado, acompañada de aceite de oliva virgen extra.',
+            'Pasta integral con verduras salteadas, aceitunas negras y parmesano rallado, acompañada de aceite de oliva virgen extra.'
         },
         snack1: {
           id: 2,
@@ -2364,7 +2364,7 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 4',
           image: '/yogur-griego.jpeg',
-          description: 'Yogur griego con miel y nueces.',
+          description: 'Yogur griego con miel y nueces.'
         },
         snack2: {
           id: 2,
@@ -2374,9 +2374,9 @@ export const menus: WeeklyMenu[] = [
           ramekin: { id: 0, name: '', calories: 0 },
           contenedor: 'Contenedor 5',
           image: '/palitos-zanahoria.jpeg',
-          description: 'Palitos de zanahoria y apio con hummus.',
-        },
-      },
-    ],
-  },
+          description: 'Palitos de zanahoria y apio con hummus.'
+        }
+      }
+    ]
+  }
 ]

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-const { data: activeMenu, status } = await useLazyFetch<WeeklyMenu>(`/api/menu`, {
-  default: () => ({} as WeeklyMenu),
+const { data: activeMenu, status } = await useFetch<WeeklyMenu>(`/api/menu`, {
+  default: () => ({}) as WeeklyMenu,
+  lazy: true,
 })
 
 const startDate = computed(() => formatDate(activeMenu.value?.startDate))
@@ -8,7 +9,7 @@ const endDate = computed(() => formatDate(activeMenu.value?.endDate))
 
 useSeoMeta({
   title: 'Menú de la semana',
-  description: 'Consulta el menú de la semana',
+  description: 'Descubre nuestro menú de la semana.',
 })
 </script>
 
@@ -17,13 +18,11 @@ useSeoMeta({
     <BaseSection title="Menú de la semana">
       <template #description>
         <ClientOnly>
-          <section class="flex items-center gap-2">
-            <Icon
-              name="lucide:calendar-days"
-              size="24"
-            />
-            <span>{{ startDate }}</span> - <span>{{ endDate }}</span>
-          </section>
+          <MenuDate
+            v-if="status === 'success'"
+            :start-date="startDate"
+            :end-date="endDate"
+          />
           <template #fallback>
             <USkeleton class="h-6 w-[200px]" />
           </template>
