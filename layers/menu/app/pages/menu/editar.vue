@@ -4,29 +4,21 @@ const { data: activeMenu, status } = await useFetch<WeeklyMenu>(`/api/menu`, {
   lazy: true
 })
 
-const startDate = computed(() => formatDate(activeMenu.value?.startDate))
-const endDate = computed(() => formatDate(activeMenu.value?.endDate))
+// const startDate = computed(() => formatDate(activeMenu.value?.startDate))
+// const endDate = computed(() => formatDate(activeMenu.value?.endDate))
+const startDate = ref<Date>(new Date())
 
 useSeoMeta({
-  title: 'Menú de la semana',
-  description: 'Descubre nuestro menú de la semana.'
+  title: "Menú de la semana",
+  description: "Descubre nuestro menú de la semana."
 })
 </script>
 
 <template>
   <section>
-    <BaseSection title="Menú de la semana">
+    <BaseSection title="Editar menú de la semana">
       <template #description>
-        <ClientOnly>
-          <MenuDate
-            v-if="status === 'success'"
-            :start-date="startDate"
-            :end-date="endDate"
-          />
-          <template #fallback>
-            <USkeleton class="h-6 w-[200px]" />
-          </template>
-        </ClientOnly>
+        <StartDate v-model:start-date="startDate" />
       </template>
 
       <section>
