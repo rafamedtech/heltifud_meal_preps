@@ -34,8 +34,8 @@ export interface DayMenu {
   breakfast: Meal
   lunch: Meal
   dinner: Meal
-  snack1: Meal
-  snack2: Meal
+  snack1: Meal | null
+  snack2: Meal | null
 }
 
 export interface WeeklyMenu {

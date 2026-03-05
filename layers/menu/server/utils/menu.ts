@@ -8,7 +8,7 @@ export const menus: WeeklyMenu[] = [
     startDate: "2026/03/02",
     endDate: "2026/03/06",
     name: "Menú Semanal 1",
-    isActive: true,
+    isActive: false,
     daysStd: [
       {
         id: 1,
@@ -406,7 +406,7 @@ export const menus: WeeklyMenu[] = [
     startDate: "2026/03/09",
     endDate: "2026/03/13",
     name: "Menú Semanal 2",
-    isActive: false,
+    isActive: true,
     daysStd: [
       {
         id: 1,
@@ -416,15 +416,15 @@ export const menus: WeeklyMenu[] = [
           mainDish: { id: 101, name: "Toasts de aguacate y huevo", calories: 491 },
           side1: null,
           side2: null,
-          ramekin: { id: 301, name: "Salsa", calories: 0 },
+          ramekin: { id: 301, name: "Sriracha", calories: 0 },
           contenedor: "Contenedor 1",
           image: "",
           description: ""
         },
         lunch: {
           id: 1,
-          mainDish: { id: 102, name: "Enchiladas verdes", calories: 413 },
-          side1: { id: 203, name: "Arroz blanco", calories: 222 },
+          mainDish: { id: 102, name: "Enchiladas rojas", calories: 463 },
+          side1: null,
           side2: null,
           ramekin: { id: 302, name: "", calories: 0 },
           contenedor: "Contenedor 2",
@@ -433,35 +433,16 @@ export const menus: WeeklyMenu[] = [
         },
         dinner: {
           id: 1,
-          mainDish: { id: 108, name: "Pescado cajún", calories: 202 },
-          side1: { id: 215, name: "Arroz blanco", calories: 222 },
-          side2: { id: 216, name: "Verduras al vapor", calories: 43 },
+          mainDish: { id: 108, name: "Pescado a la veracruzana", calories: 230 },
+          side1: { id: 215, name: "Arroz rojo", calories: 227 },
+          side2: null,
           ramekin: { id: 303, name: "Salsa de yogur y eneldo", calories: 50 },
           contenedor: "Contenedor 3",
           image: "",
           description: ""
         },
-        snack1: {
-          id: 1,
-          mainDish: { id: 104, name: "Barra de granola", calories: 150 },
-          side1: { id: 207, name: "Fruta de temporada", calories: 80 },
-          side2: { id: 208, name: "Nueces", calories: 100 },
-          ramekin: { id: 304, name: "Miel", calories: 60 },
-          contenedor: "Contenedor 4",
-          image: "/barra-granola.jpeg",
-          description: "Barra de granola con fruta de temporada y nueces, acompañada de miel."
-        },
-        snack2: {
-          id: 1,
-          mainDish: { id: 105, name: "Batido de plátano y espinacas", calories: 200 },
-          side1: { id: 209, name: "Semillas de chía", calories: 90 },
-          side2: { id: 210, name: "Leche de almendras", calories: 70 },
-          ramekin: { id: 305, name: "Proteína en polvo", calories: 110 },
-          contenedor: "Contenedor 5",
-          image: "/batido-espinacas.jpeg",
-          description:
-            "Batido de plátano y espinacas con semillas de chía y leche de almendras, acompañado de proteína en polvo."
-        }
+        snack1: null,
+        snack2: null
       },
       {
         id: 2,
@@ -471,7 +452,7 @@ export const menus: WeeklyMenu[] = [
           mainDish: { id: 106, name: "Hash de papa", calories: 487 },
           side1: null,
           side2: null,
-          ramekin: { id: 306, name: "Salsa picante", calories: 20 },
+          ramekin: { id: 306, name: "Salsa roja", calories: 20 },
           contenedor: "Contenedor 1",
           image: "",
           description: ""
@@ -481,7 +462,7 @@ export const menus: WeeklyMenu[] = [
           mainDish: { id: 107, name: "Sándwich patty melt", calories: 410 },
           side1: { id: 213, name: "Fries de camote", calories: 114 },
           side2: null,
-          ramekin: { id: 307, name: "Aderezo César", calories: 100 },
+          ramekin: { id: 307, name: "Aderezo chipotle", calories: 100 },
           contenedor: "Contenedor 2",
           image: "",
           description: ""
@@ -491,32 +472,14 @@ export const menus: WeeklyMenu[] = [
           mainDish: { id: 108, name: "Tacos de pollo adobado", calories: 418 },
           side1: null,
           side2: null,
-          ramekin: { id: 308, name: "Aceite de oliva virgen extra", calories: 80 },
+          ramekin: { id: 308, name: "Salsa roja", calories: 80 },
           contenedor: "Contenedor 3",
           image: "",
           description: ""
         },
 
-        snack1: {
-          id: 2,
-          mainDish: { id: 109, name: "Yogur griego con miel y nueces", calories: 200 },
-          side1: { id: 0, name: "", calories: 0 },
-          side2: { id: 0, name: "", calories: 0 },
-          ramekin: { id: 0, name: "", calories: 0 },
-          contenedor: "Contenedor 4",
-          image: "/yogur-griego.jpeg",
-          description: "Yogur griego con miel y nueces."
-        },
-        snack2: {
-          id: 2,
-          mainDish: { id: 110, name: "Palitos de zanahoria y apio con hummus", calories: 160 },
-          side1: { id: 0, name: "", calories: 0 },
-          side2: { id: 0, name: "", calories: 0 },
-          ramekin: { id: 0, name: "", calories: 0 },
-          contenedor: "Contenedor 5",
-          image: "/palitos-zanahoria.jpeg",
-          description: "Palitos de zanahoria y apio con hummus."
-        }
+        snack1: null,
+        snack2: null
       },
       {
         id: 3,
@@ -533,17 +496,17 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: "Papa rellena con pollo", calories: 427 },
-          side1: null,
+          mainDish: { id: 107, name: "Pechuga en salsa tatemada", calories: 305 },
+          side1: { id: 213, name: "Arroz rojo", calories: 226 },
           side2: null,
-          ramekin: { id: 307, name: "", calories: 100 },
+          ramekin: { id: 307, name: "Salsa", calories: 100 },
           contenedor: "Contenedor 2",
           image: "",
           description: ""
         },
         dinner: {
           id: 2,
-          mainDish: { id: 108, name: "Chow mein de pollo", calories: 545 },
+          mainDish: { id: 108, name: "Ensalada de atún con pasta", calories: 494 },
           side1: null,
           side2: null,
           ramekin: { id: 308, name: "Salsa", calories: 80 },
@@ -551,34 +514,16 @@ export const menus: WeeklyMenu[] = [
           image: "",
           description: ""
         },
-        snack1: {
-          id: 2,
-          mainDish: { id: 109, name: "Yogur griego con miel y nueces", calories: 200 },
-          side1: { id: 0, name: "", calories: 0 },
-          side2: { id: 0, name: "", calories: 0 },
-          ramekin: { id: 0, name: "", calories: 0 },
-          contenedor: "Contenedor 4",
-          image: "/yogur-griego.jpeg",
-          description: "Yogur griego con miel y nueces."
-        },
-        snack2: {
-          id: 2,
-          mainDish: { id: 110, name: "Palitos de zanahoria y apio con hummus", calories: 160 },
-          side1: { id: 0, name: "", calories: 0 },
-          side2: { id: 0, name: "", calories: 0 },
-          ramekin: { id: 0, name: "", calories: 0 },
-          contenedor: "Contenedor 5",
-          image: "/palitos-zanahoria.jpeg",
-          description: "Palitos de zanahoria y apio con hummus."
-        }
+        snack1: null,
+        snack2: null
       },
       {
         id: 4,
         dayOfWeek: "Jueves",
         breakfast: {
           id: 2,
-          mainDish: { id: 106, name: "Omelette italiano", calories: 274 },
-          side1: { id: 107, name: "Papas campesinas", calories: 171 },
+          mainDish: { id: 106, name: "Pancakes verdes", calories: 559 },
+          side1: null,
           side2: null,
           ramekin: { id: 306, name: "Catsup", calories: 20 },
           contenedor: "Contenedor 1",
@@ -598,8 +543,8 @@ export const menus: WeeklyMenu[] = [
 
         dinner: {
           id: 2,
-          mainDish: { id: 108, name: "Sándwich de pollo pesto", calories: 435 },
-          side1: { id: 215, name: "Fries de camote", calories: 114 },
+          mainDish: { id: 108, name: "Sándwich estilo Nashville", calories: 534 },
+          side1: null,
           side2: null,
           ramekin: null,
           contenedor: "Contenedor 3",
@@ -607,26 +552,8 @@ export const menus: WeeklyMenu[] = [
           description: ""
         },
 
-        snack1: {
-          id: 2,
-          mainDish: { id: 109, name: "Yogur griego con miel y nueces", calories: 200 },
-          side1: { id: 0, name: "", calories: 0 },
-          side2: { id: 0, name: "", calories: 0 },
-          ramekin: { id: 0, name: "", calories: 0 },
-          contenedor: "Contenedor 4",
-          image: "/yogur-griego.jpeg",
-          description: "Yogur griego con miel y nueces."
-        },
-        snack2: {
-          id: 2,
-          mainDish: { id: 110, name: "Palitos de zanahoria y apio con hummus", calories: 160 },
-          side1: { id: 0, name: "", calories: 0 },
-          side2: { id: 0, name: "", calories: 0 },
-          ramekin: { id: 0, name: "", calories: 0 },
-          contenedor: "Contenedor 5",
-          image: "/palitos-zanahoria.jpeg",
-          description: "Palitos de zanahoria y apio con hummus."
-        }
+        snack1: null,
+        snack2: null
       },
       {
         id: 5,
@@ -643,10 +570,10 @@ export const menus: WeeklyMenu[] = [
         },
         lunch: {
           id: 2,
-          mainDish: { id: 107, name: "Pechuga en salsa tatemada", calories: 305 },
-          side1: { id: 213, name: "Arroz rojo", calories: 226 },
+          mainDish: { id: 107, name: "Chow mein de pollo", calories: 545 },
+          side1: null,
           side2: null,
-          ramekin: { id: 307, name: "Salsa", calories: 100 },
+          ramekin: { id: 307, name: "", calories: 100 },
           contenedor: "Contenedor 2",
           image: "",
           description: ""
