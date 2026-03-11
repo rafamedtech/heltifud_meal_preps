@@ -1,0 +1,99 @@
+generator client {
+    provider = "prisma-client"
+    output   = "../layers/menu/generated/prisma"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model WeeklyMenu {
+    id        String    @id @default(uuid())
+    name      String
+    isActive  Boolean   @default(false)
+    startDate DateTime
+    endDate   DateTime
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    days      MenuDay[]
+
+    @@index([isActive])
+    @@index([startDate])
+    @@index([endDate])
+}
+
+model MenuDay {
+    id           String     @id @default(uuid())
+    weeklyMenuId String
+    dayOfWeek    DayOfWeek
+    order        Int
+    weeklyMenu   WeeklyMenu @relation(fields: [weeklyMenuId], references: [id], onDelete: Cascade)
+    slots        DaySlot[]
+
+    @@unique([weeklyMenuId, dayOfWeek])
+    @@unique([weeklyMenuId, order])
+}
+
+model DaySlot {
+    id         String          @id @default(uuid())
+    menuDayId  String
+    slotType   SlotType
+    contenedor String?
+    menuDay    MenuDay         @relation(fields: [menuDayId], references: [id], onDelete: Cascade)
+    components FoodComponent[]
+
+    @@unique([menuDayId, slotType])
+}
+
+model FoodComponent {
+    id            String        @id @default(uuid())
+    daySlotId     String
+    componentRole ComponentRole
+    nombre        String
+    descripcion   String
+    calorias      Int
+    imagen        String
+    tipo          String
+    daySlot       DaySlot       @relation(fields: [daySlotId], references: [id], onDelete: Cascade)
+
+    @@index([daySlotId, componentRole])
+}
+
+model FoodCatalogItem {
+    id          String   @id @default(uuid())
+    nombre      String
+    descripcion String
+    calorias    Int
+    imagen      String
+    tipo        String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([nombre])
+    @@index([tipo])
+}
+
+enum DayOfWeek {
+    LUNES
+    MARTES
+    MIERCOLES
+    JUEVES
+    VIERNES
+    SABADO
+    DOMINGO
+}
+
+enum SlotType {
+    DESAYUNO
+    COMIDA
+    CENA
+    SNACK1
+    SNACK2
+}
+
+enum ComponentRole {
+    PLATILLO_PRINCIPAL
+    GUARNICION_1
+    GUARNICION_2
+    ADICIONAL
+}

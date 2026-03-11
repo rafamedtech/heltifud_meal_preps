@@ -3,8 +3,24 @@
 
 @source '../../../../';
 
+html {
+  scrollbar-gutter: stable both-edges;
+  overflow-y: scroll;
+}
+
 body {
   font-family: Montserrat, sans-serif;
+  scrollbar-gutter: stable both-edges;
+}
+
+html[style*='overflow: hidden'],
+body[style*='overflow: hidden'],
+html[data-scroll-locked],
+body[data-scroll-locked],
+html.with-scroll-bars-hidden,
+body.with-scroll-bars-hidden {
+  padding-right: var(--removed-body-scroll-bar-size, 0px) !important;
+  margin-right: 0 !important;
 }
 
 .page-enter-from {

@@ -2,14 +2,14 @@
 definePageMeta({
   layout: 'admin',
 });
+
+function onSaved() {
+  navigateTo('/admin/menu');
+}
 </script>
 
 <template>
   <main>
-    <AdminSection title="Crear menú">
-      <section>
-        <AdminMenuForm />
-      </section>
-    </AdminSection>
+    <AdminMenuForm @saved="onSaved" />
   </main>
 </template>

@@ -1,19 +1,13 @@
-import type { WeeklyMenu } from '~~/layers/menu/shared/types/types'
+import { createError } from 'h3';
 
-export default defineEventHandler(() => {
-  // find the menu after the active one
-  const activeMenu = menus.find((menu) => menu.isActive) as WeeklyMenu
-  const nextMenu = menus[menus.indexOf(activeMenu) + 1] as WeeklyMenu | undefined
+import { getNextMenu } from '../../utils/menu';
 
-  if (!nextMenu && activeMenu) {
-    return menus[0] as WeeklyMenu
-  }
+export default defineEventHandler(async () => {
+  const nextMenu = await getNextMenu();
 
   if (!nextMenu) {
-    return {
-      error: 'No hay ningun menú activo.',
-    }
+    throw createError({ statusCode: 404, statusMessage: 'No hay un menú próximo disponible.' });
   }
 
-  return nextMenu
-})
+  return nextMenu;
+});

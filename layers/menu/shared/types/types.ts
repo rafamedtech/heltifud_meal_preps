@@ -1,58 +1,78 @@
-export type WeeklyPlan = {
-  id: number
-  title: string
-  price: number
-  description: string
-  image: string
+export const DAY_OF_WEEK_VALUES = [
+  'LUNES',
+  'MARTES',
+  'MIERCOLES',
+  'JUEVES',
+  'VIERNES',
+  'SABADO',
+  'DOMINGO',
+] as const;
+
+export const SLOT_KEYS = ['desayuno', 'comida', 'cena', 'snack1', 'snack2'] as const;
+
+export type DayOfWeek = (typeof DAY_OF_WEEK_VALUES)[number];
+export type SlotKey = (typeof SLOT_KEYS)[number];
+
+export interface WeeklyPlan {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  image: string;
   button: {
-    label: string
-    icon: string
-    click: () => void
-  }
+    label: string;
+    icon: string;
+    click: () => void;
+  };
 }
 
-export interface FoodItem {
-  id: number
-  name: string
-  calories: number
+export interface FoodItemDetail {
+  nombre: string;
+  descripcion: string;
+  calorias: number;
+  imagen: string;
+  tipo: string;
 }
 
-export interface Meal {
-  id: number
-  mainDish: FoodItem
-  side1?: FoodItem | null
-  side2?: FoodItem | null
-  ramekin: FoodItem | null
-  contenedor: string
-  image: string
-  description: string
+export interface FoodCatalogItem extends FoodItemDetail {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type FoodCatalogItemInput = FoodItemDetail;
+
+export interface MenuSlot {
+  platilloPrincipal: FoodItemDetail;
+  guarnicion1?: FoodItemDetail | null;
+  guarnicion2?: FoodItemDetail | null;
+  contenedor?: string | null;
+  adicionales: FoodItemDetail[];
 }
 
 export interface DayMenu {
-  id: number
-  dayOfWeek: string
-  breakfast: Meal
-  lunch: Meal
-  dinner: Meal
-  snack1: Meal | null
-  snack2: Meal | null
+  dayOfWeek: DayOfWeek;
+  desayuno: MenuSlot;
+  comida: MenuSlot;
+  cena: MenuSlot;
+  snack1: MenuSlot;
+  snack2: MenuSlot;
 }
 
 export interface WeeklyMenu {
-  id: number
-  createdAt: string
-  updatedAt: string
-  startDate: string
-  endDate: string
-  name: string
-  isActive: boolean
-  daysStd: DayMenu[]
-  daysVeg: DayMenu[]
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
+  startDate: string;
+  endDate: string;
+  name: string;
+  days: DayMenu[];
 }
 
-export interface Menu {
-  name: string
-  startDate: Date
-  endDate: Date
-  isActive: boolean
+export interface WeeklyMenuInput {
+  name: string;
+  startDate: string | Date;
+  endDate: string | Date;
+  days: DayMenu[];
 }

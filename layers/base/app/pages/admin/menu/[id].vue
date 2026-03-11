@@ -1,0 +1,38 @@
+<script setup lang="ts">
+import type { WeeklyMenu } from '~~/layers/menu/shared/types/types';
+
+definePageMeta({
+  layout: 'admin',
+});
+
+const route = useRoute();
+
+const { data: menu, status, refresh, error } = await useFetch<WeeklyMenu>(`/api/menu/${route.params.id}`, {
+  key: `admin-menu-${route.params.id}`,
+});
+
+async function onSaved() {
+  await refresh();
+  await navigateTo('/admin/menu');
+}
+</script>
+
+<template>
+  <main>
+    <section v-if="status === 'pending'" class="space-y-4">
+      <USkeleton class="h-12 w-1/3" />
+      <USkeleton class="h-[600px] w-full" />
+    </section>
+
+    <UAlert
+      v-else-if="error"
+      color="error"
+      variant="soft"
+      title="No se pudo cargar el menú"
+      :description="error.statusMessage || 'Intenta de nuevo en unos segundos.'"
+      icon="i-lucide-circle-alert"
+    />
+
+    <AdminMenuForm v-else-if="menu" :menu="menu" mode="edit" @saved="onSaved" />
+  </main>
+</template>

@@ -41,9 +41,21 @@ export const adminLinks: NavigationMenuItem[][] = [
       to: '/admin/planes',
     },
     {
-      label: 'Menú',
+      label: 'Menús',
       icon: 'i-heroicons-clipboard-document-list',
-      to: '/admin/menu',
+      type: 'trigger',
+      value: 'menus',
+      defaultOpen: true,
+      children: [
+        {
+          label: 'Menú semanal',
+          to: '/admin/menu',
+        },
+        {
+          label: 'Platillos',
+          to: '/admin/platillos',
+        },
+      ],
     },
   ],
 ]

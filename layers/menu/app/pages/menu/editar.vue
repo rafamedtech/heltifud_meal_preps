@@ -28,7 +28,7 @@ useSeoMeta({
             v-if="status === 'success'"
             ref="carousel"
             v-slot="{ item }"
-            :items="activeMenu?.daysStd"
+            :items="activeMenu?.days"
             class="w-full max-w-xs mx-auto pt-6"
             wheel-gestures
             dots
@@ -39,9 +39,9 @@ useSeoMeta({
 
         <section class="hidden md:flex md:flex-col md:gap-8">
           <MenuCard
-            v-for="item in activeMenu?.daysStd"
+            v-for="item in activeMenu?.days"
             :day="item"
-            :key="item.id"
+            :key="item.dayOfWeek"
           />
         </section>
 

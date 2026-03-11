@@ -1,21 +1,37 @@
 <script setup lang="ts">
+import type { DayMenu } from '~~/layers/menu/shared/types/types';
+
 interface MenuCardProps {
   day: DayMenu;
 }
 
 const { day } = defineProps<MenuCardProps>();
+
+const labels: Record<DayMenu['dayOfWeek'], string> = {
+  LUNES: 'Lunes',
+  MARTES: 'Martes',
+  MIERCOLES: 'Miércoles',
+  JUEVES: 'Jueves',
+  VIERNES: 'Viernes',
+  SABADO: 'Sábado',
+  DOMINGO: 'Domingo',
+};
 </script>
 
 <template>
-  <UCard variant="subtle" class="basis-1/3 m-1" :ui="{ body: 'sm:p-0 p-0' }">
+  <UCard
+    variant="subtle"
+    class="m-1 h-full min-h-[360px] md:min-h-0"
+    :ui="{ root: 'h-full', body: 'p-0 sm:p-0 h-full' }"
+  >
     <template #header>
-      <h3 class="text-xl font-bold text-primary-500">{{ day.dayOfWeek }}</h3>
+      <h3 class="text-xl font-bold text-primary-500">{{ labels[day.dayOfWeek] }}</h3>
     </template>
 
-    <section class="flex flex-col justify-between md:flex-row">
-      <MenuMeal :meal="day.breakfast" title="Desayuno" class="basis-1/3" />
-      <MenuMeal :meal="day.lunch" title="Comida" class="basis-1/3" />
-      <MenuMeal :meal="day.dinner" title="Cena" class="basis-1/3" />
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-0">
+      <MenuMeal :meal="day.desayuno" title="Desayuno" />
+      <MenuMeal :meal="day.comida" title="Comida" />
+      <MenuMeal :meal="day.cena" title="Cena" />
     </section>
   </UCard>
 </template>
