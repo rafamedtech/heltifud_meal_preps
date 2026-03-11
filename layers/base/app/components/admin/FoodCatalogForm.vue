@@ -134,7 +134,7 @@ async function onSubmit() {
             class="mt-2 w-full"
             variant="ghost"
             placeholder="Ej. Pechuga a la plancha"
-            :ui="{ base: 'px-0 text-base', leading: 'ps-0', trailing: 'pe-0' }"
+            :ui="{ base: 'px-0 text-base bg-transparent hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent', leading: 'ps-0', trailing: 'pe-0' }"
           />
         </section>
 
@@ -146,7 +146,7 @@ async function onSubmit() {
             variant="ghost"
             :rows="3"
             placeholder="Descripción breve"
-            :ui="{ base: 'px-0 text-base' }"
+            :ui="{ base: 'px-0 text-base bg-transparent hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent' }"
           />
         </section>
 
@@ -158,7 +158,7 @@ async function onSubmit() {
             variant="ghost"
             type="number"
             min="0"
-            :ui="{ base: 'px-0 text-base', leading: 'ps-0', trailing: 'pe-0' }"
+            :ui="{ base: 'px-0 text-base bg-transparent hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent', leading: 'ps-0', trailing: 'pe-0' }"
           />
         </section>
 
@@ -171,7 +171,7 @@ async function onSubmit() {
             class="mt-2 w-full"
             variant="ghost"
             placeholder="Selecciona un tipo"
-            :ui="{ base: 'px-0 text-base' }"
+            :ui="{ base: 'px-0 text-base bg-transparent hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent' }"
           />
         </section>
 
@@ -182,7 +182,7 @@ async function onSubmit() {
             class="mt-2 w-full"
             variant="ghost"
             placeholder="https://..."
-            :ui="{ base: 'px-0 text-base', leading: 'ps-0', trailing: 'pe-0' }"
+            :ui="{ base: 'px-0 text-base bg-transparent hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent', leading: 'ps-0', trailing: 'pe-0' }"
           />
         </section>
 

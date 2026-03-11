@@ -49,10 +49,12 @@ export const adminLinks: NavigationMenuItem[][] = [
       children: [
         {
           label: 'Menú semanal',
+          icon: 'i-heroicons-calendar-days',
           to: '/admin/menu',
         },
         {
           label: 'Platillos',
+          icon: 'i-heroicons-squares-2x2',
           to: '/admin/platillos',
         },
       ],
