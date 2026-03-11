@@ -41,7 +41,16 @@ const {
     </template>
 
     <figure class="mx-auto mb-4 overflow-hidden">
-      <img :src="image" :alt="imageAlt" :width="imageWidth" :height="imageHeight" />
+      <img
+        :src="image"
+        :alt="imageAlt"
+        :width="imageWidth"
+        :height="imageHeight"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        class="block h-auto w-full"
+      />
     </figure>
     <h3
       v-if="cardStyle === 'basic'"

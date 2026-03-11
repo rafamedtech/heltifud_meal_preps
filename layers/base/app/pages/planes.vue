@@ -1,5 +1,11 @@
 <script setup lang="ts">
-// Aquí podrías importar composables o datos si se requiere
+useHead({
+  link: weeklyPlans.map((plan) => ({
+    rel: 'preload',
+    as: 'image',
+    href: plan.image,
+  })),
+})
 </script>
 
 <template>
