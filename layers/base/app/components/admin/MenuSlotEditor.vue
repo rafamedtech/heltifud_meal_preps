@@ -286,8 +286,7 @@ function afterLeave(el: Element) {
         class="space-y-4 overflow-hidden"
       >
         <section class="grid grid-cols-1 gap-3">
-          <button
-            type="button"
+          <div
             class="relative flex items-center justify-between rounded-xl border border-default bg-default px-4 py-3 text-left transition hover:bg-elevated"
           >
             <span>
@@ -316,14 +315,13 @@ function afterLeave(el: Element) {
                 </span>
               </template>
             </USelectMenu>
-          </button>
+          </div>
 
           <section
             v-if="props.showSides"
             class="grid grid-cols-1 xl:grid-cols-2 gap-3"
           >
-            <button
-              type="button"
+            <div
               class="relative flex items-center justify-between rounded-xl border border-default bg-default px-4 py-3 text-left transition hover:bg-elevated"
             >
               <span>
@@ -352,10 +350,9 @@ function afterLeave(el: Element) {
                   </span>
                 </template>
               </USelectMenu>
-            </button>
+            </div>
 
-            <button
-              type="button"
+            <div
               class="relative flex items-center justify-between rounded-xl border border-default bg-default px-4 py-3 text-left transition hover:bg-elevated"
             >
               <span>
@@ -384,7 +381,7 @@ function afterLeave(el: Element) {
                   </span>
                 </template>
               </USelectMenu>
-            </button>
+            </div>
           </section>
 
           <button

@@ -8,6 +8,7 @@ import {
 
 const df = new DateFormatter('es-MX', {
   dateStyle: 'medium',
+  timeZone: 'UTC',
 });
 
 const model = defineModel<Date | string>({
@@ -38,12 +39,14 @@ const calendarValue = computed<CalendarDate>({
     model.value = value.toDate(getLocalTimeZone());
   },
 });
+
+const displayDate = computed(() => df.format(calendarValue.value.toDate('UTC')));
 </script>
 
 <template>
   <UPopover>
     <UButton color="neutral" variant="subtle" icon="i-lucide-calendar">
-      {{ df.format(calendarValue.toDate(getLocalTimeZone())) }}
+      {{ displayDate }}
     </UButton>
 
     <template #content>

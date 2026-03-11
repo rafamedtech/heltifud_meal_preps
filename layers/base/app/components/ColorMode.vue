@@ -12,14 +12,16 @@ const isDark = computed({
 </script>
 
 <template>
-  <UColorModeButton
-    :icon="isDark ? 'i-lucide-moon' : 'i-lucide-sun'"
-    color="neutral"
-    variant="ghost"
-    size="lg"
-    :ui="{ leadingIcon: 'text-xl', trailingIcon: 'text-xl' }"
-    @click="isDark = !isDark"
-  >
+  <ClientOnly>
+    <UColorModeButton
+      :icon="isDark ? 'i-lucide-moon' : 'i-lucide-sun'"
+      color="neutral"
+      variant="ghost"
+      size="lg"
+      :ui="{ leadingIcon: 'text-xl', trailingIcon: 'text-xl' }"
+      @click="isDark = !isDark"
+    />
+
     <template #fallback>
       <UButton
         loading
@@ -27,5 +29,5 @@ const isDark = computed({
         color="neutral"
       />
     </template>
-  </UColorModeButton>
+  </ClientOnly>
 </template>

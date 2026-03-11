@@ -1,9 +1,13 @@
+<script setup lang="ts">
+const currentYear = new Date().getFullYear();
+</script>
+
 <template>
   <UFooter>
     <template #left>
       <section class="flex flex-col items-center gap-2">
         <AppLogo />
-        <p class="text-xs">© {{ new Date().getFullYear() }} Todos los derechos reservados.</p>
+        <p class="text-xs">© {{ currentYear }} Todos los derechos reservados.</p>
       </section>
     </template>
 
