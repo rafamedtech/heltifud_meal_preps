@@ -115,15 +115,6 @@ definePageMeta({
                 {{ menu.days.length }} días configurados con 5 momentos por día.
               </p>
 
-              <UAlert
-                v-if="menu.isActive"
-                title="Este es el menú activo"
-                description="La ruta pública /menu mostrará este menú hasta que actives otro manualmente."
-                color="success"
-                variant="soft"
-                icon="i-lucide-circle-check-big"
-              />
-
               <section class="grid grid-cols-2 gap-2 text-sm">
                 <div class="rounded-lg bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
                   <span class="text-muted">Creado</span>

@@ -127,32 +127,64 @@ async function onSubmit() {
       </template>
 
       <UForm :state="state" class="space-y-4" @submit="onSubmit">
-        <UFormField label="Nombre">
-          <UInput v-model="state.nombre" placeholder="Ej. Pechuga a la plancha" />
-        </UFormField>
-
-        <UFormField label="Descripción">
-          <UTextarea v-model="state.descripcion" :rows="3" placeholder="Descripción breve" />
-        </UFormField>
-
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <UFormField label="Calorías">
-            <UInput v-model.number="state.calorias" type="number" min="0" />
-          </UFormField>
-
-          <UFormField label="Tipo">
-            <USelect
-              v-model="state.tipo"
-              :items="typeOptions"
-              value-key="value"
-              placeholder="Selecciona un tipo"
-            />
-          </UFormField>
+        <section class="rounded-xl border border-default bg-default px-4 py-3">
+          <p class="text-xs uppercase tracking-[0.18em] text-muted">Nombre</p>
+          <UInput
+            v-model="state.nombre"
+            class="mt-2 w-full"
+            variant="ghost"
+            placeholder="Ej. Pechuga a la plancha"
+            :ui="{ base: 'px-0 text-base', leading: 'ps-0', trailing: 'pe-0' }"
+          />
         </section>
 
-        <UFormField label="Imagen (URL)">
-          <UInput v-model="state.imagen" placeholder="https://..." />
-        </UFormField>
+        <section class="rounded-xl border border-default bg-default px-4 py-3">
+          <p class="text-xs uppercase tracking-[0.18em] text-muted">Descripción</p>
+          <UTextarea
+            v-model="state.descripcion"
+            class="mt-2 w-full"
+            variant="ghost"
+            :rows="3"
+            placeholder="Descripción breve"
+            :ui="{ base: 'px-0 text-base' }"
+          />
+        </section>
+
+        <section class="rounded-xl border border-default bg-default px-4 py-3">
+          <p class="text-xs uppercase tracking-[0.18em] text-muted">Calorías</p>
+          <UInput
+            v-model.number="state.calorias"
+            class="mt-2 w-full"
+            variant="ghost"
+            type="number"
+            min="0"
+            :ui="{ base: 'px-0 text-base', leading: 'ps-0', trailing: 'pe-0' }"
+          />
+        </section>
+
+        <section class="rounded-xl border border-default bg-default px-4 py-3">
+          <p class="text-xs uppercase tracking-[0.18em] text-muted">Tipo</p>
+          <USelect
+            v-model="state.tipo"
+            :items="typeOptions"
+            value-key="value"
+            class="mt-2 w-full"
+            variant="ghost"
+            placeholder="Selecciona un tipo"
+            :ui="{ base: 'px-0 text-base' }"
+          />
+        </section>
+
+        <section class="rounded-xl border border-default bg-default px-4 py-3">
+          <p class="text-xs uppercase tracking-[0.18em] text-muted">Imagen (URL)</p>
+          <UInput
+            v-model="state.imagen"
+            class="mt-2 w-full"
+            variant="ghost"
+            placeholder="https://..."
+            :ui="{ base: 'px-0 text-base', leading: 'ps-0', trailing: 'pe-0' }"
+          />
+        </section>
 
         <section class="flex justify-end">
           <UButton type="submit" :loading="saving" icon="i-lucide-save">
