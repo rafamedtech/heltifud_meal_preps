@@ -140,6 +140,13 @@ const isModalOpen = computed({
   }
 })
 
+const contenedorModel = computed<string | undefined>({
+  get: () => model.value.contenedor ?? undefined,
+  set: (value) => {
+    model.value.contenedor = value ?? ""
+  }
+})
+
 function itemSummary(item?: FoodItemDetail | null, fallback = "Sin capturar") {
   return item?.nombre?.trim() || fallback
 }
@@ -406,7 +413,7 @@ function afterLeave(el: Element) {
               <span class="text-base">📦</span>
             </div>
             <USelect
-              v-model="model.contenedor"
+              v-model="contenedorModel"
               :items="contenedorOptions"
               placeholder="Selecciona un contenedor"
               icon="i-lucide-package"
@@ -427,7 +434,7 @@ function afterLeave(el: Element) {
     v-model:open="isModalOpen"
     title="Adicionales"
     :description="props.title"
-    :content="{ class: 'max-w-3xl' }"
+    :ui="{ content: 'max-w-3xl' }"
   >
     <template #body>
       <section class="space-y-4">
