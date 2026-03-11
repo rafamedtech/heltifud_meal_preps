@@ -1,11 +1,12 @@
 <script setup lang="ts">
-const { data: activeMenu, status } = await useFetch<WeeklyMenu>(`/api/menu`, {
+const { data: activeMenu, status } = useLazyFetch<WeeklyMenu>(`/api/menu`, {
   default: () => ({}) as WeeklyMenu,
 })
 
 const startDate = computed(() => formatDate(activeMenu.value?.startDate))
 const endDate = computed(() => formatDate(activeMenu.value?.endDate))
 const skeletonDays = Array.from({ length: 3 }, (_, index) => index)
+const isLoading = computed(() => status.value === 'idle' || status.value === 'pending')
 const publicDays = computed(() =>
   (activeMenu.value?.days ?? []).filter((day) => !['SABADO', 'DOMINGO'].includes(day.dayOfWeek))
 )
@@ -30,7 +31,7 @@ useSeoMeta({
 
       <section>
         <section class="mb-8 md:hidden">
-          <section v-if="status === 'pending'" class="w-full max-w-xs mx-auto pt-6">
+          <section v-if="isLoading" class="w-full max-w-xs mx-auto pt-6">
             <UCard variant="subtle" :ui="{ body: 'sm:p-4 p-4' }">
               <template #header>
                 <USkeleton class="h-7 w-28" />
@@ -55,7 +56,7 @@ useSeoMeta({
           </section>
 
           <UCarousel
-            v-if="status === 'success'"
+            v-else-if="status === 'success'"
             ref="carousel"
             v-slot="{ item }"
             :items="publicDays"
@@ -68,7 +69,7 @@ useSeoMeta({
         </section>
 
         <section class="hidden md:flex md:flex-col md:gap-8">
-          <template v-if="status === 'pending'">
+          <template v-if="isLoading">
             <UCard
               v-for="day in 5"
               :key="`desktop-skeleton-${day}`"
