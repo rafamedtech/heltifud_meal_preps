@@ -27,7 +27,7 @@
       <figure class="overflow-hidden shadow-2xl md:ml-14 border border-primary-500">
         <!-- <img src="/hero-new.jpeg" alt="Hero" width="400" height="550" /> -->
         <NuxtImg
-          src="https://res.cloudinary.com/rafamed-dev/image/upload/v1746204406/heltifud/hero-new_mkqivn.jpg"
+          src="v1746204406/heltifud/hero-new_mkqivn.jpg"
           alt="Hero"
           width="400"
           height="550"
@@ -50,7 +50,7 @@
 
       <figure class="flex items-center justify-center overflow-hidden">
         <NuxtImg
-          src="https://res.cloudinary.com/rafamed-dev/image/upload/v1746204408/heltifud/hero_or5twy.png"
+          src="v1746204408/heltifud/hero_or5twy.png"
           width="400"
           height="550"
           alt="Meal prep saludable"
@@ -159,7 +159,7 @@
 
       <figure class="flex items-center justify-center overflow-hidden">
         <NuxtImg
-          src="https://res.cloudinary.com/rafamed-dev/image/upload/v1746204411/heltifud/promo_hbku0g.png"
+          src="v1746204411/heltifud/promo_hbku0g.png"
           width="400"
           height="550"
           alt="Promocion de primer pedido"

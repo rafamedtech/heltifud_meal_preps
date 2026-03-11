@@ -29,7 +29,6 @@ const typeChanged = (event: string) => {
   <UFormField label="Tipo de menú" class="w-52">
     <USelect
       v-model="value"
-      @update:model-value="typeChanged"
       :items="items"
       value-key="value"
       :icon="icon"
@@ -37,6 +36,7 @@ const typeChanged = (event: string) => {
       :ui="{
         leadingIcon: value === 'std' ? 'text-amber-800' : 'text-primary-500',
       }"
+      @update:model-value="typeChanged"
     />
   </UFormField>
 </template>

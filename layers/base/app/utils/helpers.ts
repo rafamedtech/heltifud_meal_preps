@@ -119,7 +119,34 @@ export function indexPlans(index: number) {
   if (index === 4) return 'Todos'
 }
 
-const overlay = useOverlay()
+function openInfoModal(title: string, description: string) {
+  const overlay = useOverlay()
+  const modal = overlay.create(AppModal, {
+    props: {
+      title,
+      description,
+    },
+  })
+
+  modal.open()
+}
+
+function openPlanModal(title: string, variants: { title: string; price: string }[]) {
+  const overlay = useOverlay()
+  const modal = overlay.create(AppModal, {
+    props: {
+      title,
+      variants,
+      button: {
+        icon: 'i-heroicons-rocket-launch',
+        label: 'Ordenar',
+        click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
+      },
+    },
+  })
+
+  modal.open()
+}
 
 export const steps = [
   {
@@ -133,7 +160,7 @@ export const steps = [
         return navigateTo('/planes')
       },
     },
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204407/heltifud/step1_drzeo7.png',
+    image: 'v1746204407/heltifud/step1_drzeo7.png',
   },
   {
     id: 2,
@@ -144,7 +171,7 @@ export const steps = [
       icon: 'i-heroicons-rocket-launch',
       click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
     },
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204409/heltifud/step2_m2tljn.png',
+    image: 'v1746204409/heltifud/step2_m2tljn.png',
   },
   {
     id: 3,
@@ -155,7 +182,7 @@ export const steps = [
       icon: 'i-heroicons-newspaper',
       click: () => navigateTo('/menu'),
     },
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204411/heltifud/step3_m9ust9.png',
+    image: 'v1746204411/heltifud/step3_m9ust9.png',
   },
   {
     id: 4,
@@ -165,17 +192,13 @@ export const steps = [
       label: 'Más información',
       icon: 'i-heroicons-information-circle',
       click: () => {
-        const modal = overlay.create(AppModal, {
-          props: {
-            title: '¿Cómo funcionan las entregas?',
-            description:
-              'Realizamos las entregas en dos partes a la semana, la primera mitad el domingo por la tarde o el lunes por la mañana y la segunda mitad el miércoles por la tarde o el jueves por la mañana. Las entregas son gratuitas y el horario depende de tu ubicación.',
-          },
-        })
-        modal.open()
+        openInfoModal(
+          '¿Cómo funcionan las entregas?',
+          'Realizamos las entregas en dos partes a la semana, la primera mitad el domingo por la tarde o el lunes por la mañana y la segunda mitad el miércoles por la tarde o el jueves por la mañana. Las entregas son gratuitas y el horario depende de tu ubicación.'
+        )
       },
     },
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204410/heltifud/step4_ztgrwf.png',
+    image: 'v1746204410/heltifud/step4_ztgrwf.png',
   },
 ]
 
@@ -184,25 +207,25 @@ export const benefits = [
     id: 1,
     title: 'Comodidad',
     description: 'Olvídate de las compras y el tiempo en la cocina.',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204407/heltifud/comodidad_yai8kj.png',
+    image: 'v1746204407/heltifud/comodidad_yai8kj.png',
   },
   {
     id: 2,
     title: 'Salud',
     description: 'Menús diseñados para mantener una dieta equilibrada y nutritiva.',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204409/heltifud/salud_ywsmel.png',
+    image: 'v1746204409/heltifud/salud_ywsmel.png',
   },
   {
     id: 3,
     title: 'Variedad',
     description: 'Nuevos menús cada semana para mantener tu dieta interesante.',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204408/heltifud/variedad_bobmoo.png',
+    image: 'v1746204408/heltifud/variedad_bobmoo.png',
   },
   {
     id: 4,
     title: 'Personalización',
     description: 'Adapta tus comidas a tus necesidades y preferencias.',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204408/heltifud/personalizacion_ketk6a.png',
+    image: 'v1746204408/heltifud/personalizacion_ketk6a.png',
   },
 ]
 
@@ -210,42 +233,42 @@ export const menuItems = [
   {
     id: 1,
     title: '',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1715308238/heltifud/IMG_1704_Large_k5jt5v.jpg',
+    image: 'v1715308238/heltifud/IMG_1704_Large_k5jt5v.jpg',
   },
   {
     id: 2,
     title: '',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746205300/heltifud/pechuga-plancha_qjd7a5.jpg',
+    image: 'v1746205300/heltifud/pechuga-plancha_qjd7a5.jpg',
   },
   {
     id: 3,
     title: '',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1715308239/heltifud/IMG_1709_Large_nfmo3s.jpg',
+    image: 'v1715308239/heltifud/IMG_1709_Large_nfmo3s.jpg',
   },
   {
     id: 4,
     title: '',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746205298/heltifud/nopales_hry5rp.jpg',
+    image: 'v1746205298/heltifud/nopales_hry5rp.jpg',
   },
   {
     id: 5,
     title: '',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1715308238/heltifud/IMG_1698_Large_pgmvgu.jpg',
+    image: 'v1715308238/heltifud/IMG_1698_Large_pgmvgu.jpg',
   },
   {
     id: 6,
     title: '',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746205297/heltifud/pechuga-chipotle_oopb3b.jpg',
+    image: 'v1746205297/heltifud/pechuga-chipotle_oopb3b.jpg',
   },
   {
     id: 7,
     title: '',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1715308238/heltifud/IMG_1707_Large_euasv8.jpg',
+    image: 'v1715308238/heltifud/IMG_1707_Large_euasv8.jpg',
   },
   {
     id: 8,
     title: '',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746205297/heltifud/albondigas_cguj6x.jpg',
+    image: 'v1746205297/heltifud/albondigas_cguj6x.jpg',
   },
 ]
 
@@ -304,37 +327,24 @@ export const weeklyPlans: WeeklyPlan[] = [
     title: 'Plan desayunos',
     price: 1200,
     description: 'Desayunos saludables a domicilio para empezar tu día con energía.',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204413/heltifud/desayunos_xoypat.png',
+    image: 'v1746204413/heltifud/desayunos_xoypat.png',
     button: {
       label: 'Ver opciones',
       icon: 'i-heroicons-numbered-list',
-      click: () => {
-        const modal = overlay.create(AppModal, {
-          props: {
-            title: 'Opciones del plan desayunos',
-            variants: [
-              {
-                title: '3 días',
-                price: '400',
-              },
-              {
-                title: '4 días',
-                price: '500',
-              },
-              {
-                title: '5 días',
-                price: '600',
-              },
-            ],
-            button: {
-              icon: 'i-heroicons-rocket-launch',
-              label: 'Ordenar',
-              click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
-            },
-          },
-        })
-        modal.open()
-      },
+      click: () => openPlanModal('Opciones del plan desayunos', [
+        {
+          title: '3 días',
+          price: '400',
+        },
+        {
+          title: '4 días',
+          price: '500',
+        },
+        {
+          title: '5 días',
+          price: '600',
+        },
+      ]),
     },
   },
   {
@@ -342,37 +352,24 @@ export const weeklyPlans: WeeklyPlan[] = [
     title: 'Plan comidas',
     price: 2400,
     description: 'Comidas caseras y balanceadas listas para tu semana sin cocinar.',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204412/heltifud/comidas_zjbuum.png',
+    image: 'v1746204412/heltifud/comidas_zjbuum.png',
     button: {
       label: 'Ver opciones',
       icon: 'i-heroicons-numbered-list',
-      click: () => {
-        const modal = overlay.create(AppModal, {
-          props: {
-            title: 'Opciones del plan comidas',
-            variants: [
-              {
-                title: '3 días',
-                price: '500',
-              },
-              {
-                title: '4 días',
-                price: '600',
-              },
-              {
-                title: '5 días',
-                price: '700',
-              },
-            ],
-            button: {
-              icon: 'i-heroicons-rocket-launch',
-              label: 'Ordenar',
-              click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
-            },
-          },
-        })
-        modal.open()
-      },
+      click: () => openPlanModal('Opciones del plan comidas', [
+        {
+          title: '3 días',
+          price: '500',
+        },
+        {
+          title: '4 días',
+          price: '600',
+        },
+        {
+          title: '5 días',
+          price: '700',
+        },
+      ]),
     },
   },
   {
@@ -380,37 +377,24 @@ export const weeklyPlans: WeeklyPlan[] = [
     title: 'Plan cenas',
     price: 4800,
     description: 'Cenas ligeras, nutritivas y deliciosas, entregadas listas para servir.',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204411/heltifud/cenas_wfp48j.png',
+    image: 'v1746204411/heltifud/cenas_wfp48j.png',
     button: {
       label: 'Ver opciones',
       icon: 'i-heroicons-numbered-list',
-      click: () => {
-        const modal = overlay.create(AppModal, {
-          props: {
-            title: 'Opciones del plan cenas',
-            variants: [
-              {
-                title: '3 días',
-                price: '450',
-              },
-              {
-                title: '4 días',
-                price: '550',
-              },
-              {
-                title: '5 días',
-                price: '650',
-              },
-            ],
-            button: {
-              icon: 'i-heroicons-rocket-launch',
-              label: 'Ordenar',
-              click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
-            },
-          },
-        })
-        modal.open()
-      },
+      click: () => openPlanModal('Opciones del plan cenas', [
+        {
+          title: '3 días',
+          price: '450',
+        },
+        {
+          title: '4 días',
+          price: '550',
+        },
+        {
+          title: '5 días',
+          price: '650',
+        },
+      ]),
     },
   },
   {
@@ -418,33 +402,20 @@ export const weeklyPlans: WeeklyPlan[] = [
     title: 'Plan toda la semana',
     price: 1900,
     description: 'Meal prep completo semanal con desayuno, comida y cena saludable.',
-    image: 'https://res.cloudinary.com/rafamed-dev/image/upload/v1746204413/heltifud/todas_pdzwgw.png',
+    image: 'v1746204413/heltifud/todas_pdzwgw.png',
     button: {
       label: 'Ver opciones',
       icon: 'i-heroicons-numbered-list',
-      click: () => {
-        const modal = overlay.create(AppModal, {
-          props: {
-            title: 'Opciones del plan Toda la semana',
-            variants: [
-              {
-                title: '3 días',
-                price: '1300',
-              },
-              {
-                title: '5 días',
-                price: '1900',
-              },
-            ],
-            button: {
-              icon: 'i-heroicons-rocket-launch',
-              label: 'Ordenar',
-              click: () => navigateTo('https://wa.me/c/5216648161284', { external: true, open: { target: '_blank' } }),
-            },
-          },
-        })
-        modal.open()
-      },
+      click: () => openPlanModal('Opciones del plan Toda la semana', [
+        {
+          title: '3 días',
+          price: '1300',
+        },
+        {
+          title: '5 días',
+          price: '1900',
+        },
+      ]),
     },
   },
 ]

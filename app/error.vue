@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { NuxtError } from '#app'
 
-const { error } = defineProps({
-  error: Object as () => NuxtError,
-})
+const props = defineProps<{
+  error?: NuxtError
+}>()
 </script>
 
 <template>
@@ -12,7 +12,7 @@ const { error } = defineProps({
       <NuxtLayout>
         <UError
           :error="{
-            statusCode: error?.statusCode,
+            statusCode: props.error?.statusCode,
             message: 'No se encontró la página que buscas.',
           }"
           :clear="{ label: 'Volver al inicio', icon: 'i-heroicons-home' }"

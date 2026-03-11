@@ -8,11 +8,10 @@ interface Props {
   showToggle?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  showSides: true,
-  catalogItems: () => [],
-  showToggle: true
-})
+const props = defineProps<Props>()
+const showSides = computed(() => props.showSides ?? true)
+const catalogItems = computed(() => props.catalogItems ?? [])
+const showToggle = computed(() => props.showToggle ?? true)
 
 const contenedorOptions = [
   { label: "Charola", value: "Charola" },
@@ -31,15 +30,15 @@ const GUARNICION_TYPES = new Set(["guarnicion"])
 const ADICIONAL_TYPES = new Set(["ramekin"])
 
 const platilloPrincipalItems = computed(() =>
-  props.catalogItems.filter((item) => PLATILLO_PRINCIPAL_TYPES.has(item.tipo))
+  catalogItems.value.filter((item) => PLATILLO_PRINCIPAL_TYPES.has(item.tipo))
 )
 
 const guarnicionItems = computed(() =>
-  props.catalogItems.filter((item) => GUARNICION_TYPES.has(item.tipo))
+  catalogItems.value.filter((item) => GUARNICION_TYPES.has(item.tipo))
 )
 
 const adicionalItems = computed(() =>
-  props.catalogItems.filter((item) => ADICIONAL_TYPES.has(item.tipo))
+  catalogItems.value.filter((item) => ADICIONAL_TYPES.has(item.tipo))
 )
 
 function toCatalogOptions(items: FoodCatalogItem[]) {
@@ -90,7 +89,7 @@ const guarnicion2Model = computed<FoodItemDetail>({
 })
 
 watchEffect(() => {
-  if (props.showSides) {
+  if (showSides.value) {
     if (!model.value.guarnicion1) {
       model.value.guarnicion1 = createEmptyFoodItem()
     }
@@ -158,7 +157,7 @@ function matchCatalogItem(item?: FoodItemDetail | null) {
     return undefined
   }
 
-  return props.catalogItems.find((catalogItem) =>
+  return catalogItems.value.find((catalogItem) =>
     catalogItem.nombre === item.nombre &&
     catalogItem.descripcion === (item.descripcion ?? "") &&
     catalogItem.calorias === (item.calorias ?? 0) &&
@@ -172,7 +171,7 @@ function applyCatalogItem(target: FoodItemDetail, itemId: string | undefined) {
     return
   }
 
-  const selected = props.catalogItems.find((item) => item.id === itemId)
+  const selected = catalogItems.value.find((item) => item.id === itemId)
 
   if (!selected) {
     return
@@ -253,7 +252,7 @@ function afterLeave(el: Element) {
         <div>
           <h3 class="text-lg font-bold text-primary">{{ props.title }}</h3>
           <p
-            v-if="props.showToggle && !isOpen"
+            v-if="showToggle && !isOpen"
             class="text-xs text-muted mt-1"
           >
             {{ summary }}
@@ -261,7 +260,7 @@ function afterLeave(el: Element) {
         </div>
 
         <UButton
-          v-if="props.showToggle"
+          v-if="showToggle"
           size="sm"
           variant="ghost"
           color="neutral"
@@ -318,7 +317,7 @@ function afterLeave(el: Element) {
           </div>
 
           <section
-            v-if="props.showSides"
+            v-if="showSides"
             class="grid grid-cols-1 xl:grid-cols-2 gap-3"
           >
             <div

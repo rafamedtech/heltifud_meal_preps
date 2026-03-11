@@ -100,10 +100,10 @@ useSeoMeta({
           </template>
 
           <MenuCard
-            v-else
             v-for="item in publicDays"
-            :day="item"
+            v-else
             :key="item.dayOfWeek"
+            :day="item"
           />
         </section>
 

@@ -7,10 +7,9 @@ interface Props {
   mode?: 'create' | 'edit';
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  item: null,
-  mode: 'create',
-});
+const props = defineProps<Props>();
+const item = computed(() => props.item ?? null);
+const mode = computed(() => props.mode ?? 'create');
 
 const emit = defineEmits<{
   saved: [itemId: string];
@@ -48,13 +47,13 @@ const returnTo = computed(() =>
   typeof route.query.returnTo === 'string' ? route.query.returnTo : undefined
 );
 
-const title = computed(() => (props.mode === 'edit' ? 'Editar platillo' : 'Nuevo platillo'));
-const actionLabel = computed(() => (props.mode === 'edit' ? 'Guardar cambios' : 'Crear platillo'));
+const title = computed(() => (mode.value === 'edit' ? 'Editar platillo' : 'Nuevo platillo'));
+const actionLabel = computed(() => (mode.value === 'edit' ? 'Guardar cambios' : 'Crear platillo'));
 
 const { createFoodCatalogItem, updateFoodCatalogItem } = useFoodCatalog();
 
 watch(
-  () => props.item,
+  () => item.value,
   (item) => {
     Object.assign(state, item ? {
       nombre: item.nombre,
@@ -83,12 +82,12 @@ async function onSubmit() {
 
   try {
     const savedItem =
-      props.mode === 'edit' && props.item?.id
-        ? await updateFoodCatalogItem(props.item.id, parsed.data)
+      mode.value === 'edit' && item.value?.id
+        ? await updateFoodCatalogItem(item.value.id, parsed.data)
         : await createFoodCatalogItem(parsed.data);
 
     toast.add({
-      title: props.mode === 'edit' ? 'Platillo actualizado' : 'Platillo creado',
+      title: mode.value === 'edit' ? 'Platillo actualizado' : 'Platillo creado',
       color: 'success',
     });
 

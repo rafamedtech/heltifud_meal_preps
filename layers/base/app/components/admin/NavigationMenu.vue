@@ -5,9 +5,8 @@ interface Props {
   collapsed?: boolean;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  collapsed: false,
-});
+const props = defineProps<Props>();
+const collapsed = computed(() => props.collapsed ?? false);
 
 const route = useRoute();
 
@@ -44,7 +43,7 @@ function isCurrent(item: AdminLinkItem) {
 <template>
   <nav class="flex h-full flex-col">
     <section
-      v-if="props.collapsed"
+      v-if="collapsed"
       class="flex flex-1 flex-col items-center gap-2 py-1"
     >
       <UTooltip

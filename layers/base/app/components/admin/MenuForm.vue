@@ -18,10 +18,9 @@ interface Props {
 
 type MenuSectionKey = 'desayuno' | 'comida' | 'cena' | 'snacks';
 
-const props = withDefaults(defineProps<Props>(), {
-  menu: null,
-  mode: 'create',
-});
+const props = defineProps<Props>();
+const menu = computed(() => props.menu ?? null);
+const mode = computed(() => props.mode ?? 'create');
 
 const emit = defineEmits<{
   saved: [menuId: string];
@@ -123,18 +122,18 @@ function createStateFromMenu(menu?: WeeklyMenu | null): WeeklyMenuInput {
   };
 }
 
-const state = reactive<WeeklyMenuInput>(createStateFromMenu(props.menu));
+const state = reactive<WeeklyMenuInput>(createStateFromMenu(menu.value));
 const selectedDayIndex = ref(0);
 const loading = ref(false);
 const activeSection = ref<MenuSectionKey | null>('desayuno');
 const hiddenDays = new Set<DayOfWeek>(['SABADO', 'DOMINGO']);
-const markAsActive = ref(Boolean(props.menu?.isActive));
+const markAsActive = ref(Boolean(menu.value?.isActive));
 
 const selectedDay = computed<DayMenu>(() => state.days[selectedDayIndex.value] ?? createDay(DAY_OF_WEEK_VALUES[0]));
-const title = computed(() => (props.mode === 'edit' ? 'Editar menú semanal' : 'Nuevo menú semanal'));
-const actionLabel = computed(() => (props.mode === 'edit' ? 'Guardar cambios' : 'Crear menú'));
+const title = computed(() => (mode.value === 'edit' ? 'Editar menú semanal' : 'Nuevo menú semanal'));
+const actionLabel = computed(() => (mode.value === 'edit' ? 'Guardar cambios' : 'Crear menú'));
 const activeActionLabel = computed(() => {
-  if (props.menu?.isActive || markAsActive.value) {
+  if (menu.value?.isActive || markAsActive.value) {
     return 'Menú activo';
   }
 
@@ -160,7 +159,7 @@ const { data: catalogItems } = await useFetch<FoodCatalogItem[]>('/api/food-comp
 const resolvedCatalogItems = computed<FoodCatalogItem[]>(() => catalogItems.value ?? []);
 
 watch(
-  () => props.menu,
+  () => menu.value,
   (menu) => {
     Object.assign(state, createStateFromMenu(menu));
     selectedDayIndex.value = 0;
@@ -195,8 +194,8 @@ async function onSubmit() {
 
   try {
     const savedMenu =
-      props.mode === 'edit' && props.menu?.id
-        ? await updateMenuOnDB(props.menu.id, parsed.data)
+      mode.value === 'edit' && menu.value?.id
+        ? await updateMenuOnDB(menu.value.id, parsed.data)
         : await createMenuOnDB(parsed.data);
 
     if (markAsActive.value && !savedMenu.isActive) {
@@ -204,7 +203,7 @@ async function onSubmit() {
     }
 
     toast.add({
-      title: props.mode === 'edit' ? 'Menú actualizado' : 'Menú creado',
+      title: mode.value === 'edit' ? 'Menú actualizado' : 'Menú creado',
       description: markAsActive.value
         ? 'La información se guardó y este menú quedó como activo.'
         : 'La información se guardó correctamente.',
@@ -310,8 +309,8 @@ function setOpenSection(section: MenuSectionKey, open: boolean) {
                 </div>
                 <UButton
                   size="sm"
-                  :variant="markAsActive || props.menu?.isActive ? 'soft' : 'outline'"
-                  :color="markAsActive || props.menu?.isActive ? 'success' : 'primary'"
+                  :variant="markAsActive || menu?.isActive ? 'soft' : 'outline'"
+                  :color="markAsActive || menu?.isActive ? 'success' : 'primary'"
                   icon="i-lucide-badge-check"
                   @click="markAsActive = true"
                 >

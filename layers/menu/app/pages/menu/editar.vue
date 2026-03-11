@@ -40,8 +40,8 @@ useSeoMeta({
         <section class="hidden md:flex md:flex-col md:gap-8">
           <MenuCard
             v-for="item in activeMenu?.days"
-            :day="item"
             :key="item.dayOfWeek"
+            :day="item"
           />
         </section>
 

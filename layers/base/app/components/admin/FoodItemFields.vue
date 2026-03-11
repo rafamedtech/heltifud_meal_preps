@@ -7,12 +7,11 @@ interface Props {
   catalogItems?: FoodCatalogItem[];
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  optional: false,
-  catalogItems: () => [],
-});
+const props = defineProps<Props>();
 const model = defineModel<FoodItemDetail>({ required: true });
 const route = useRoute();
+const optional = computed(() => props.optional ?? false);
+const catalogItems = computed(() => props.catalogItems ?? []);
 
 const typeOptions = [
   { label: 'Desayuno', value: 'desayuno' },
@@ -31,7 +30,7 @@ const typeOptions = [
 const selectedCatalogId = ref<string | undefined>();
 
 const catalogOptions = computed(() =>
-  props.catalogItems.map((item) => ({
+  catalogItems.value.map((item) => ({
     label: item.nombre,
     calorias: item.calorias,
     tipo: item.tipo,
@@ -60,7 +59,7 @@ function applyCatalogItem(itemId: string | undefined) {
     return;
   }
 
-  const selected = props.catalogItems.find((item) => item.id === itemId);
+  const selected = catalogItems.value.find((item) => item.id === itemId);
 
   if (!selected) {
     return;
