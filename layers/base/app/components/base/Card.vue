@@ -41,15 +41,13 @@ const {
     </template>
 
     <figure class="mx-auto mb-4 overflow-hidden">
-      <img
+      <NuxtImg
         :src="image"
         :alt="imageAlt"
         :width="imageWidth"
         :height="imageHeight"
-        loading="eager"
-        fetchpriority="high"
-        decoding="async"
         class="block h-auto w-full"
+        placeholder
       />
     </figure>
     <h3

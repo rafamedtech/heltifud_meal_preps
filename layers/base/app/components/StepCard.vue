@@ -22,7 +22,7 @@ const { title, description, image, button } = step;
     </template>
 
     <figure class="mx-auto h-56 w-56">
-      <img :src="image" :alt="title" class="h-full w-full" >
+      <NuxtImg :src="image" :alt="title" width="224" height="224" class="h-full w-full" placeholder />
     </figure>
     <p class="text-dark text-lg dark:text-gray-50">{{ description }}</p>
 
