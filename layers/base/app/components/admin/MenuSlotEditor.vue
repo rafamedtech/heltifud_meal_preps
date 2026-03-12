@@ -161,6 +161,18 @@ function caloriesSummary(item?: FoodItemDetail | null) {
   return `${item.calorias ?? 0} cal`
 }
 
+function hasValue(item?: FoodItemDetail | null) {
+  return Boolean(item?.nombre?.trim())
+}
+
+function clearFoodItem(target: FoodItemDetail) {
+  target.nombre = ""
+  target.descripcion = ""
+  target.calorias = 0
+  target.imagen = ""
+  target.tipo = ""
+}
+
 function matchCatalogItem(item?: FoodItemDetail | null) {
   if (!item?.nombre?.trim()) {
     return undefined
@@ -177,6 +189,11 @@ function matchCatalogItem(item?: FoodItemDetail | null) {
 
 function applyCatalogItem(target: FoodItemDetail, itemId: string | undefined) {
   if (!itemId) {
+    target.nombre = ""
+    target.descripcion = ""
+    target.calorias = 0
+    target.imagen = ""
+    target.tipo = ""
     return
   }
 
@@ -301,11 +318,26 @@ function afterLeave(el: Element) {
               <span class="block text-xs uppercase tracking-[0.18em] text-muted">Platillo principal</span>
               <span class="mt-1 block font-medium text-highlighted">{{ itemSummary(model.platilloPrincipal) }}</span>
             </span>
-            <span class="text-sm font-semibold text-primary">{{ caloriesSummary(model.platilloPrincipal) }}</span>
+            <span class="flex items-center gap-2">
+              <UButton
+                v-if="hasValue(model.platilloPrincipal)"
+                type="button"
+                size="xs"
+                variant="ghost"
+                color="neutral"
+                class="relative z-10"
+                icon="i-lucide-x"
+                @click.stop="clearFoodItem(model.platilloPrincipal)"
+              >
+                Limpiar
+              </UButton>
+              <span class="text-sm font-semibold text-primary">{{ caloriesSummary(model.platilloPrincipal) }}</span>
+            </span>
             <USelectMenu
               v-model="selectedPrimaryId"
               :items="platilloPrincipalOptions"
               value-key="value"
+              clearable
               search-input
               placeholder="Escribe para buscar un platillo"
               class="absolute inset-0 opacity-0"
@@ -336,11 +368,26 @@ function afterLeave(el: Element) {
                 <span class="block text-xs uppercase tracking-[0.18em] text-muted">Guarnición 1</span>
                 <span class="mt-1 block font-medium text-highlighted">{{ itemSummary(model.guarnicion1) }}</span>
               </span>
-              <span class="text-sm font-semibold text-primary">{{ caloriesSummary(model.guarnicion1) }}</span>
+              <span class="flex items-center gap-2">
+                <UButton
+                  v-if="hasValue(model.guarnicion1)"
+                  type="button"
+                  size="xs"
+                  variant="ghost"
+                  color="neutral"
+                  class="relative z-10"
+                  icon="i-lucide-x"
+                  @click.stop="clearFoodItem(guarnicion1Model)"
+                >
+                  Limpiar
+                </UButton>
+                <span class="text-sm font-semibold text-primary">{{ caloriesSummary(model.guarnicion1) }}</span>
+              </span>
               <USelectMenu
                 v-model="selectedGuarnicion1Id"
                 :items="guarnicionOptions"
                 value-key="value"
+                clearable
                 search-input
                 placeholder="Escribe para buscar una guarnición"
                 class="absolute inset-0 opacity-0"
@@ -367,11 +414,26 @@ function afterLeave(el: Element) {
                 <span class="block text-xs uppercase tracking-[0.18em] text-muted">Guarnición 2</span>
                 <span class="mt-1 block font-medium text-highlighted">{{ itemSummary(model.guarnicion2) }}</span>
               </span>
-              <span class="text-sm font-semibold text-primary">{{ caloriesSummary(model.guarnicion2) }}</span>
+              <span class="flex items-center gap-2">
+                <UButton
+                  v-if="hasValue(model.guarnicion2)"
+                  type="button"
+                  size="xs"
+                  variant="ghost"
+                  color="neutral"
+                  class="relative z-10"
+                  icon="i-lucide-x"
+                  @click.stop="clearFoodItem(guarnicion2Model)"
+                >
+                  Limpiar
+                </UButton>
+                <span class="text-sm font-semibold text-primary">{{ caloriesSummary(model.guarnicion2) }}</span>
+              </span>
               <USelectMenu
                 v-model="selectedGuarnicion2Id"
                 :items="guarnicionOptions"
                 value-key="value"
+                clearable
                 search-input
                 placeholder="Escribe para buscar una guarnición"
                 class="absolute inset-0 opacity-0"
