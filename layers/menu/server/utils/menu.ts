@@ -371,8 +371,24 @@ export async function updateWeeklyMenu(id: string, input: WeeklyMenuInput) {
   const payload = validatePayload(input)
   await assertNoOverlap(payload.startDate, payload.endDate, id)
 
-  const updated = await prisma.$transaction(async (tx) => {
-    await tx.weeklyMenu.update({
+  const existingDays = await prisma.menuDay.findMany({
+    where: { weeklyMenuId: id },
+    select: { id: true }
+  })
+
+  const menuDayIds = existingDays.map((day) => day.id)
+
+  const existingSlots = menuDayIds.length
+    ? await prisma.daySlot.findMany({
+        where: { menuDayId: { in: menuDayIds } },
+        select: { id: true }
+      })
+    : []
+
+  const daySlotIds = existingSlots.map((slot) => slot.id)
+
+  const operations: Prisma.PrismaPromise<unknown>[] = [
+    prisma.weeklyMenu.update({
       where: { id },
       data: {
         name: payload.name,
@@ -380,38 +396,29 @@ export async function updateWeeklyMenu(id: string, input: WeeklyMenuInput) {
         endDate: payload.endDate
       }
     })
+  ]
 
-    const existingDays = await tx.menuDay.findMany({
-      where: { weeklyMenuId: id },
-      select: { id: true }
-    })
-
-    const menuDayIds = existingDays.map((day) => day.id)
-
-    if (menuDayIds.length) {
-      const existingSlots = await tx.daySlot.findMany({
-        where: { menuDayId: { in: menuDayIds } },
-        select: { id: true }
+  if (daySlotIds.length) {
+    operations.push(
+      prisma.foodComponent.deleteMany({
+        where: { daySlotId: { in: daySlotIds } }
+      }),
+      prisma.daySlot.deleteMany({
+        where: { id: { in: daySlotIds } }
       })
+    )
+  }
 
-      const daySlotIds = existingSlots.map((slot) => slot.id)
-
-      if (daySlotIds.length) {
-        await tx.foodComponent.deleteMany({
-          where: { daySlotId: { in: daySlotIds } }
-        })
-
-        await tx.daySlot.deleteMany({
-          where: { id: { in: daySlotIds } }
-        })
-      }
-
-      await tx.menuDay.deleteMany({
+  if (menuDayIds.length) {
+    operations.push(
+      prisma.menuDay.deleteMany({
         where: { id: { in: menuDayIds } }
       })
-    }
+    )
+  }
 
-    return tx.weeklyMenu.update({
+  operations.push(
+    prisma.weeklyMenu.update({
       where: { id },
       data: {
         days: {
@@ -420,7 +427,10 @@ export async function updateWeeklyMenu(id: string, input: WeeklyMenuInput) {
       },
       include: menuInclude
     })
-  })
+  )
+
+  const results = await prisma.$transaction(operations)
+  const updated = results[results.length - 1] as WeeklyMenuRecord
 
   return mapMenu(updated)
 }
