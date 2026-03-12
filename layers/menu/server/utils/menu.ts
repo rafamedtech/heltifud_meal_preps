@@ -381,7 +381,35 @@ export async function updateWeeklyMenu(id: string, input: WeeklyMenuInput) {
       }
     })
 
-    await tx.menuDay.deleteMany({ where: { weeklyMenuId: id } })
+    const existingDays = await tx.menuDay.findMany({
+      where: { weeklyMenuId: id },
+      select: { id: true }
+    })
+
+    const menuDayIds = existingDays.map((day) => day.id)
+
+    if (menuDayIds.length) {
+      const existingSlots = await tx.daySlot.findMany({
+        where: { menuDayId: { in: menuDayIds } },
+        select: { id: true }
+      })
+
+      const daySlotIds = existingSlots.map((slot) => slot.id)
+
+      if (daySlotIds.length) {
+        await tx.foodComponent.deleteMany({
+          where: { daySlotId: { in: daySlotIds } }
+        })
+
+        await tx.daySlot.deleteMany({
+          where: { id: { in: daySlotIds } }
+        })
+      }
+
+      await tx.menuDay.deleteMany({
+        where: { id: { in: menuDayIds } }
+      })
+    }
 
     return tx.weeklyMenu.update({
       where: { id },
