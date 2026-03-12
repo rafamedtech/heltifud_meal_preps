@@ -8,10 +8,12 @@ interface Props {
   showToggle?: boolean
 }
 
-const props = defineProps<Props>()
-const showSides = computed(() => props.showSides ?? true)
-const catalogItems = computed(() => props.catalogItems ?? [])
-const showToggle = computed(() => props.showToggle ?? true)
+const {
+  title,
+  showSides = true,
+  catalogItems = [],
+  showToggle = true
+} = defineProps<Props>()
 
 const contenedorOptions = [
   { label: "Charola", value: "Charola" },
@@ -30,15 +32,15 @@ const GUARNICION_TYPES = new Set(["guarnicion"])
 const ADICIONAL_TYPES = new Set(["ramekin"])
 
 const platilloPrincipalItems = computed(() =>
-  catalogItems.value.filter((item) => PLATILLO_PRINCIPAL_TYPES.has(item.tipo))
+  catalogItems.filter((item) => PLATILLO_PRINCIPAL_TYPES.has(item.tipo))
 )
 
 const guarnicionItems = computed(() =>
-  catalogItems.value.filter((item) => GUARNICION_TYPES.has(item.tipo))
+  catalogItems.filter((item) => GUARNICION_TYPES.has(item.tipo))
 )
 
 const adicionalItems = computed(() =>
-  catalogItems.value.filter((item) => ADICIONAL_TYPES.has(item.tipo))
+  catalogItems.filter((item) => ADICIONAL_TYPES.has(item.tipo))
 )
 
 function toCatalogOptions(items: FoodCatalogItem[]) {
@@ -89,7 +91,7 @@ const guarnicion2Model = computed<FoodItemDetail>({
 })
 
 watchEffect(() => {
-  if (showSides.value) {
+  if (showSides) {
     if (!model.value.guarnicion1) {
       model.value.guarnicion1 = createEmptyFoodItem()
     }
@@ -164,7 +166,7 @@ function matchCatalogItem(item?: FoodItemDetail | null) {
     return undefined
   }
 
-  return catalogItems.value.find((catalogItem) =>
+  return catalogItems.find((catalogItem) =>
     catalogItem.nombre === item.nombre &&
     catalogItem.descripcion === (item.descripcion ?? "") &&
     catalogItem.calorias === (item.calorias ?? 0) &&
@@ -178,7 +180,7 @@ function applyCatalogItem(target: FoodItemDetail, itemId: string | undefined) {
     return
   }
 
-  const selected = catalogItems.value.find((item) => item.id === itemId)
+  const selected = catalogItems.find((item) => item.id === itemId)
 
   if (!selected) {
     return
@@ -257,7 +259,7 @@ function afterLeave(el: Element) {
     <template #header>
       <section class="flex items-center justify-between gap-3">
         <div>
-          <h3 class="text-lg font-bold text-primary">{{ props.title }}</h3>
+          <h3 class="text-lg font-bold text-primary">{{ title }}</h3>
           <p
             v-if="showToggle && !isOpen"
             class="text-xs text-muted mt-1"
@@ -433,7 +435,7 @@ function afterLeave(el: Element) {
   <UModal
     v-model:open="isModalOpen"
     title="Adicionales"
-    :description="props.title"
+    :description="title"
     :ui="{ content: 'max-w-3xl' }"
   >
     <template #body>

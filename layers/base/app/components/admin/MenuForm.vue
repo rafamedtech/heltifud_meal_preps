@@ -150,6 +150,24 @@ const snacksOpen = computed({
     activeSection.value = value ? 'snacks' : null;
   },
 });
+const desayunoOpen = computed({
+  get: () => activeSection.value === 'desayuno',
+  set: (value: boolean) => {
+    setOpenSection('desayuno', value);
+  },
+});
+const comidaOpen = computed({
+  get: () => activeSection.value === 'comida',
+  set: (value: boolean) => {
+    setOpenSection('comida', value);
+  },
+});
+const cenaOpen = computed({
+  get: () => activeSection.value === 'cena',
+  set: (value: boolean) => {
+    setOpenSection('cena', value);
+  },
+});
 
 const toast = useToast();
 const { createMenuOnDB, updateMenuOnDB, setActiveMenuOnDB } = useMenu();
@@ -339,24 +357,21 @@ function setOpenSection(section: MenuSectionKey, open: boolean) {
         <section class="space-y-4 px-0">
           <AdminMenuSlotEditor
             v-model="selectedDay.desayuno"
-            :open="activeSection === 'desayuno'"
+            v-model:open="desayunoOpen"
             title="Desayuno"
             :catalog-items="resolvedCatalogItems"
-            @update:open="setOpenSection('desayuno', $event)"
           />
           <AdminMenuSlotEditor
             v-model="selectedDay.comida"
-            :open="activeSection === 'comida'"
+            v-model:open="comidaOpen"
             title="Comida"
             :catalog-items="resolvedCatalogItems"
-            @update:open="setOpenSection('comida', $event)"
           />
           <AdminMenuSlotEditor
             v-model="selectedDay.cena"
-            :open="activeSection === 'cena'"
+            v-model:open="cenaOpen"
             title="Cena"
             :catalog-items="resolvedCatalogItems"
-            @update:open="setOpenSection('cena', $event)"
           />
         </section>
 
