@@ -424,7 +424,7 @@ function selectCatalogItemFromModal(itemId: string) {
             </span>
           </button>
 
-          <section class="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          <section class="grid grid-cols-1 gap-3">
             <button type="button" :class="selectFieldClass" @click="openSelectionModal('select-guarnicion-1')">
               <span class="min-w-0">
                 <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Guarnición 1</span>

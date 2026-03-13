@@ -261,153 +261,159 @@ async function onSubmit() {
                   Define el nombre del menú y el rango de fechas en el que estará disponible.
                 </p>
               </div>
+
+              <div class="flex items-center gap-3">
+                <UButton
+                  :variant="markAsActive || menu?.isActive ? 'soft' : 'outline'"
+                  :color="markAsActive || menu?.isActive ? 'success' : 'primary'"
+                  icon="i-lucide-badge-check"
+                  @click="markAsActive = true"
+                >
+                  {{ activeActionLabel }}
+                </UButton>
+
+                <UButton
+                  type="submit"
+                  :loading="loading"
+                  icon="i-lucide-save"
+                >
+                  {{ actionLabel }}
+                </UButton>
+              </div>
             </div>
           </template>
 
           <div class="grid gap-6 px-6 py-6 lg:grid-cols-3">
-            <UFormField
-              label="Nombre del menú"
-              name="name"
-            >
-              <UInput
-                v-model="state.name"
-                placeholder="Ej. Menú Semana 12"
-                icon="i-lucide-notebook-pen"
-                size="xl"
-                variant="outline"
-                class="w-full"
-                :ui="{
-                  base: 'rounded-xl border-default bg-default px-3.5 py-2.5 shadow-xs hover:bg-default focus:bg-default',
-                  leadingIcon: 'text-muted'
-                }"
+            <UFormField name="name">
+              <section class="app-control-surface px-4 py-3">
+                <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">
+                  Nombre del menú
+                </span>
+
+                <UInput
+                  v-model="state.name"
+                  placeholder="Ej. Menú Semana 12"
+                  icon="i-lucide-notebook-pen"
+                  variant="ghost"
+                  class="mt-1.5 w-full"
+                  :ui="{
+                    base: 'border-0 bg-transparent px-0 py-0 text-sm font-medium text-highlighted shadow-none hover:bg-transparent focus:bg-transparent',
+                    leadingIcon: 'size-4 text-muted'
+                  }"
+                />
+              </section>
+            </UFormField>
+
+            <UFormField name="startDate">
+              <section class="app-control-surface px-4 py-3">
+                <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">
+                  Fecha de inicio
+                </span>
+
+                <DatePicker
+                  v-model="state.startDate"
+                  class="mt-1.5"
+                />
+              </section>
+            </UFormField>
+
+            <UFormField name="endDate">
+              <section class="app-control-surface px-4 py-3">
+                <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">
+                  Fecha final
+                </span>
+
+                <DatePicker
+                  v-model="state.endDate"
+                  class="mt-1.5"
+                />
+              </section>
+            </UFormField>
+          </div>
+
+        </UCard>
+
+        <section class="space-y-5">
+          <UCard
+            v-for="entry in visibleDayEntries"
+            :key="entry.day.dayOfWeek"
+            variant="subtle"
+            class="app-surface-soft overflow-hidden"
+            :ui="{ root: 'app-surface-soft overflow-hidden', header: 'px-5 py-4 sm:px-5', body: 'p-0 sm:p-0' }"
+          >
+            <template #header>
+              <div class="flex items-center justify-between gap-4">
+                <h3 class="text-base font-semibold text-primary">
+                  {{ DAY_LABELS[entry.day.dayOfWeek] }}
+                </h3>
+              </div>
+            </template>
+
+            <section class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-3">
+              <AdminMenuSlotEditor
+                v-model="entry.day.desayuno"
+                title="Desayuno"
+                :show-toggle="false"
+                :catalog-items="resolvedCatalogItems"
+                class="lg:border-r lg:border-default/70"
               />
-            </UFormField>
+              <AdminMenuSlotEditor
+                v-model="entry.day.comida"
+                title="Comida"
+                :show-toggle="false"
+                :catalog-items="resolvedCatalogItems"
+                class="lg:border-r lg:border-default/70"
+              />
+              <AdminMenuSlotEditor
+                v-model="entry.day.cena"
+                title="Cena"
+                :show-toggle="false"
+                :catalog-items="resolvedCatalogItems"
+              />
+            </section>
 
-            <UFormField
-              label="Fecha de inicio"
-              name="startDate"
-            >
-              <DatePicker v-model="state.startDate" />
-            </UFormField>
-
-            <UFormField
-              label="Fecha final"
-              name="endDate"
-            >
-              <DatePicker v-model="state.endDate" />
-            </UFormField>
-          </div>
-
-          <template #footer>
-            <div class="flex items-center justify-end">
-              <UButton
-                :variant="markAsActive || menu?.isActive ? 'soft' : 'outline'"
-                :color="markAsActive || menu?.isActive ? 'success' : 'primary'"
-                icon="i-lucide-badge-check"
-                @click="markAsActive = true"
+            <section class="border-t border-default/70">
+              <button
+                type="button"
+                class="flex w-full items-center justify-between px-5 py-3 text-left transition-colors hover:bg-elevated/20"
+                @click="toggleSnacks(entry.day.dayOfWeek)"
               >
-                {{ activeActionLabel }}
-              </UButton>
-            </div>
-          </template>
-        </UCard>
-
-        <UCard :ui="cardSurfaceUi">
-          <div class="space-y-5 px-6 py-6">
-            <UCard
-              v-for="entry in visibleDayEntries"
-              :key="entry.day.dayOfWeek"
-              variant="subtle"
-              class="app-surface-soft overflow-hidden"
-              :ui="{ root: 'app-surface-soft overflow-hidden', header: 'px-5 py-4 sm:px-5', body: 'p-0 sm:p-0' }"
-            >
-              <template #header>
-                <div class="flex items-center justify-between gap-4">
-                  <h3 class="text-base font-semibold text-primary">
-                    {{ DAY_LABELS[entry.day.dayOfWeek] }}
-                  </h3>
-                </div>
-              </template>
-
-              <section class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-3">
-                <AdminMenuSlotEditor
-                  v-model="entry.day.desayuno"
-                  title="Desayuno"
-                  :show-toggle="false"
-                  :catalog-items="resolvedCatalogItems"
-                  class="lg:border-r lg:border-default/70"
-                />
-                <AdminMenuSlotEditor
-                  v-model="entry.day.comida"
-                  title="Comida"
-                  :show-toggle="false"
-                  :catalog-items="resolvedCatalogItems"
-                  class="lg:border-r lg:border-default/70"
-                />
-                <AdminMenuSlotEditor
-                  v-model="entry.day.cena"
-                  title="Cena"
-                  :show-toggle="false"
-                  :catalog-items="resolvedCatalogItems"
-                />
-              </section>
-
-              <section class="border-t border-default/70">
-                <button
-                  type="button"
-                  class="flex w-full items-center justify-between px-5 py-3 text-left transition-colors hover:bg-elevated/20"
-                  @click="toggleSnacks(entry.day.dayOfWeek)"
-                >
-                  <span>
-                    <span class="block text-sm font-semibold text-primary">Snacks</span>
-                    <span class="mt-1 block text-xs text-muted">
-                      {{ snacksExpanded[entry.day.dayOfWeek] ? 'Oculta colaciones y snacks de este día.' : 'Muestra Snack 1 y Snack 2 de este día.' }}
-                    </span>
+                <span>
+                  <span class="block text-sm font-semibold text-primary">Snacks</span>
+                  <span class="mt-1 block text-xs text-muted">
+                    {{ snacksExpanded[entry.day.dayOfWeek] ? 'Oculta colaciones y snacks de este día.' : 'Muestra Snack 1 y Snack 2 de este día.' }}
                   </span>
+                </span>
 
-                  <UIcon
-                    :name="snacksExpanded[entry.day.dayOfWeek] ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-                    class="size-4 text-muted"
-                  />
-                </button>
+                <UIcon
+                  :name="snacksExpanded[entry.day.dayOfWeek] ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+                  class="size-4 text-muted"
+                />
+              </button>
 
-                <section
-                  v-if="snacksExpanded[entry.day.dayOfWeek]"
-                  class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-2"
-                >
-                  <AdminMenuSlotEditor
-                    v-model="entry.day.snack1"
-                    title="Snack 1"
-                    :show-sides="false"
-                    :show-toggle="false"
-                    :catalog-items="resolvedCatalogItems"
-                    class="lg:border-r lg:border-default/70"
-                  />
-                  <AdminMenuSlotEditor
-                    v-model="entry.day.snack2"
-                    title="Snack 2"
-                    :show-sides="false"
-                    :show-toggle="false"
-                    :catalog-items="resolvedCatalogItems"
-                  />
-                </section>
-              </section>
-            </UCard>
-          </div>
-
-          <template #footer>
-            <div class="flex items-center justify-end">
-              <UButton
-                type="submit"
-                :loading="loading"
-                icon="i-lucide-save"
-                size="lg"
+              <section
+                v-if="snacksExpanded[entry.day.dayOfWeek]"
+                class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-2"
               >
-                {{ actionLabel }}
-              </UButton>
-            </div>
-          </template>
-        </UCard>
+                <AdminMenuSlotEditor
+                  v-model="entry.day.snack1"
+                  title="Snack 1"
+                  :show-sides="false"
+                  :show-toggle="false"
+                  :catalog-items="resolvedCatalogItems"
+                  class="lg:border-r lg:border-default/70"
+                />
+                <AdminMenuSlotEditor
+                  v-model="entry.day.snack2"
+                  title="Snack 2"
+                  :show-sides="false"
+                  :show-toggle="false"
+                  :catalog-items="resolvedCatalogItems"
+                />
+              </section>
+            </section>
+          </UCard>
+        </section>
     </UForm>
   </section>
 </template>

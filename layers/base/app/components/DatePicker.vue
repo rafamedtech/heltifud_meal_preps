@@ -47,12 +47,12 @@ const displayDate = computed(() => df.format(calendarValue.value.toDate('UTC')))
   <UPopover>
     <UButton
       color="neutral"
-      variant="outline"
+      variant="ghost"
       icon="i-lucide-calendar"
       trailing-icon="i-lucide-chevron-down"
-      class="app-control-surface w-full justify-between text-left font-medium hover:bg-[var(--app-surface-soft)]"
+      class="w-full justify-between text-left text-sm font-medium text-highlighted hover:bg-transparent"
       :ui="{
-        base: 'w-full justify-between px-3.5 py-2.5',
+        base: 'w-full justify-between border-0 bg-transparent px-0 py-0 text-sm font-medium text-highlighted shadow-none hover:bg-transparent focus:bg-transparent',
         leadingIcon: 'size-4 text-muted',
         trailingIcon: 'size-4 text-muted'
       }"

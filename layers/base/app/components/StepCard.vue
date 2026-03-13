@@ -21,8 +21,15 @@ const { title, description, image, button } = step;
       <h3 class="text-primary-500 text-xl">{{ title }}</h3>
     </template>
 
-    <figure class="mx-auto h-56 w-56">
-      <NuxtImg :src="image" :alt="title" width="224" height="224" class="h-full w-full" placeholder />
+    <figure class="mx-auto aspect-square h-56 w-56 overflow-hidden">
+      <NuxtImg
+        :src="image"
+        :alt="title"
+        width="224"
+        height="224"
+        class="h-full w-full object-contain"
+        placeholder
+      />
     </figure>
     <p class="text-dark text-lg dark:text-gray-50">{{ description }}</p>
 

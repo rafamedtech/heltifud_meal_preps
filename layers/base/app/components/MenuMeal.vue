@@ -33,7 +33,7 @@ const guarnicion2Name = computed(() => meal.guarnicion2?.nombre?.trim());
 </script>
 
 <template>
-  <UCard variant="subtle" class="h-full border-transparent" :ui="{ root: 'border-transparent shadow-none' }">
+  <section class="h-full px-4 py-4">
     <h3 class="font-bold text-lg flex items-center gap-2">
       <Icon :name="icon" /><span>{{ title }}</span>
     </h3>
@@ -56,5 +56,5 @@ const guarnicion2Name = computed(() => meal.guarnicion2?.nombre?.trim());
         <span class="font-semibold text-primary-500">{{ totalCalories }} Cal</span>
       </article>
     </section>
-  </UCard>
+  </section>
 </template>

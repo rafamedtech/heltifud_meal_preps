@@ -28,7 +28,7 @@ const labels: Record<DayMenu['dayOfWeek'], string> = {
       <h3 class="text-xl font-bold text-primary-500">{{ labels[day.dayOfWeek] }}</h3>
     </template>
 
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-0">
+    <section class="grid grid-cols-1 gap-0 divide-y divide-default/70 md:grid-cols-3 md:divide-y-0 md:divide-x">
       <MenuMeal :meal="day.desayuno" title="Desayuno" />
       <MenuMeal :meal="day.comida" title="Comida" />
       <MenuMeal :meal="day.cena" title="Cena" />

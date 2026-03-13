@@ -35,15 +35,16 @@ useSeoMeta({
           />
         </section>
       </div>
-      <figure class="overflow-hidden shadow-2xl md:ml-14 border border-primary-500">
-        <!-- <img src="/hero-new.jpeg" alt="Hero" width="400" height="550" /> -->
+      <figure class="aspect-[8/11] w-full max-w-[400px] overflow-hidden border border-primary-500 shadow-2xl md:ml-14">
         <NuxtImg
           src="v1746204406/heltifud/hero-new_mkqivn.jpg"
           alt="Hero"
           width="400"
           height="550"
-          preload
           placeholder
+          loading="eager"
+          fetchpriority="high"
+          class="h-full w-full object-cover"
         />
       </figure>
     </section>
@@ -59,14 +60,12 @@ useSeoMeta({
         listo para disfrutar, sin cocinar ni preocuparte por planear tus comidas.
       </template>
 
-      <figure class="flex items-center justify-center overflow-hidden">
+      <figure class="flex w-full max-w-[440px] items-center justify-center overflow-hidden">
         <NuxtImg
           src="v1746204408/heltifud/hero_or5twy.png"
-          width="400"
-          height="550"
           alt="Meal prep saludable"
           placeholder
-          class="shadow-2xl md:m-12"
+          class="h-auto w-full object-contain shadow-2xl md:m-12"
         />
       </figure>
     </BaseSection>
@@ -168,14 +167,14 @@ useSeoMeta({
         />
       </template>
 
-      <figure class="flex items-center justify-center overflow-hidden">
+      <figure class="flex aspect-[8/11] w-full max-w-[400px] items-center justify-center overflow-hidden">
         <NuxtImg
           src="v1746204411/heltifud/promo_hbku0g.png"
           width="400"
           height="550"
           alt="Promocion de primer pedido"
           placeholder
-          class="shadow-2xl md:m-12"
+          class="h-full w-full object-cover shadow-2xl md:m-12"
         />
       </figure>
     </BaseSection>

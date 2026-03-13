@@ -7,14 +7,6 @@ useSeoMeta({
   twitterTitle: 'Planes semanales | Heltifud Meal Preps',
   twitterDescription: 'Elige un plan semanal y recibe tus comidas saludables a domicilio.',
 })
-
-useHead({
-  link: weeklyPlans.map((plan) => ({
-    rel: 'preload',
-    as: 'image',
-    href: plan.image,
-  })),
-})
 </script>
 
 <template>
