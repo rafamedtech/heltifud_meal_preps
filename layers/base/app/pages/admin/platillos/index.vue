@@ -19,9 +19,11 @@ const {
   data: items,
   refresh,
   status
-} = await useFetch<FoodCatalogItem[]>("/api/food-components", {
+} = useLazyFetch<FoodCatalogItem[]>("/api/food-components", {
   default: () => []
 })
+
+const isLoading = computed(() => status.value === "idle" || status.value === "pending")
 
 const { deleteFoodCatalogItem } = useFoodCatalog()
 
@@ -150,7 +152,7 @@ async function onDelete(id: string) {
       </template>
 
       <section
-        v-if="status === 'pending'"
+        v-if="isLoading"
         class="space-y-3 px-5 py-5 sm:px-6"
       >
         <USkeleton

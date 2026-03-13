@@ -13,9 +13,11 @@ useSeoMeta({
   robots: 'noindex, nofollow',
 })
 
-const { data: item, error } = await useFetch<FoodCatalogItem>(`/api/food-components/${route.params.id}`, {
+const { data: item, status, error } = useLazyFetch<FoodCatalogItem>(`/api/food-components/${route.params.id}`, {
   key: `food-catalog-${route.params.id}`,
 });
+
+const isLoading = computed(() => status.value === 'idle' || status.value === 'pending');
 
 async function onSaved() {
   if (typeof route.query.returnTo === 'string') {
@@ -28,9 +30,19 @@ async function onSaved() {
 </script>
 
 <template>
-  <main>
+  <main class="space-y-6">
+    <section v-if="isLoading" class="space-y-6">
+      <section class="space-y-2">
+        <USkeleton class="h-4 w-24 rounded-lg" />
+        <USkeleton class="h-10 w-72 rounded-lg" />
+        <USkeleton class="h-5 w-full max-w-2xl rounded-lg" />
+      </section>
+
+      <USkeleton class="h-[640px] w-full rounded-xl" />
+    </section>
+
     <UAlert
-      v-if="error"
+      v-else-if="error"
       color="error"
       variant="soft"
       title="No se pudo cargar el platillo"
