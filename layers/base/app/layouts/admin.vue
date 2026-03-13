@@ -8,13 +8,15 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
   <div class="admin-shell h-dvh min-h-dvh overflow-hidden bg-neutral-50 text-highlighted dark:bg-neutral-950">
     <div class="flex h-full w-full">
       <aside
-        class="hidden h-full shrink-0 border-r border-default/70 bg-default/95 backdrop-blur transition-[width] duration-200 md:flex md:flex-col"
+        class="hidden h-full shrink-0 border-r border-default/70 bg-[color-mix(in_srgb,var(--ui-bg)_92%,white)]/95 backdrop-blur-xl transition-[width] duration-200 md:flex md:flex-col"
         :class="sidebarWidthClass"
       >
-        <div class="border-b border-default/70 py-5">
-          <div class="flex flex-col items-center gap-3 px-3 xl:hidden">
+        <div class="relative flex min-h-24 items-center border-b border-default/70 px-3 py-4 xl:px-4">
+          <div class="pointer-events-none absolute inset-x-3 top-3 h-20 rounded-[28px] bg-gradient-to-br from-primary/10 via-primary/5 to-transparent blur-2xl" />
+
+          <div class="relative flex w-full flex-col items-center gap-3 xl:hidden">
             <NuxtLink to="/admin" class="flex items-center justify-center rounded-xl">
-              <div class="flex size-12 items-center justify-center rounded-xl border border-default bg-elevated text-primary shadow-sm">
+              <div class="app-surface-soft flex size-12 items-center justify-center text-primary">
                 <UIcon name="i-heroicons-squares-2x2" class="size-7" />
               </div>
             </NuxtLink>
@@ -22,10 +24,10 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
 
           <div
             v-if="isSidebarCollapsed"
-            class="hidden flex-col items-center gap-3 px-3 xl:flex"
+            class="relative hidden w-full flex-col items-center gap-3 xl:flex"
           >
             <NuxtLink to="/admin" class="flex items-center justify-center rounded-xl">
-              <div class="flex size-12 items-center justify-center rounded-xl border border-default bg-elevated text-primary shadow-sm">
+              <div class="app-surface-soft flex size-12 items-center justify-center text-primary">
                 <UIcon name="i-heroicons-squares-2x2" class="size-7" />
               </div>
             </NuxtLink>
@@ -33,33 +35,46 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
 
           <div
             v-else
-            class="hidden items-center px-4 xl:flex"
+            class="relative hidden w-full items-center xl:flex"
           >
-            <NuxtLink to="/admin" class="min-w-0">
-              <AppLogo />
+            <NuxtLink
+              to="/admin"
+              class="app-surface-soft flex min-w-0 items-center gap-3 px-3 py-2"
+            >
+              <div class="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <UIcon
+                  name="i-heroicons-squares-2x2"
+                  class="size-5"
+                />
+              </div>
+
+              <div class="min-w-0">
+                <p class="truncate text-sm font-semibold text-highlighted">Heltifud Admin</p>
+                <p class="truncate text-xs text-muted">Gestión de operación</p>
+              </div>
             </NuxtLink>
           </div>
         </div>
 
-        <div class="flex min-h-0 flex-1 flex-col py-5 px-3 xl:hidden">
+        <div class="admin-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto py-5 px-3 xl:hidden">
           <AdminNavigationMenu collapsed />
         </div>
 
         <div
           v-if="isSidebarCollapsed"
-          class="hidden min-h-0 flex-1 flex-col py-5 px-3 xl:flex"
+          class="admin-scrollbar hidden min-h-0 flex-1 flex-col overflow-y-auto py-5 px-3 xl:flex"
         >
           <AdminNavigationMenu collapsed />
         </div>
 
         <div
           v-else
-          class="hidden min-h-0 flex-1 flex-col py-4 px-3 xl:flex"
+          class="admin-scrollbar hidden min-h-0 flex-1 flex-col overflow-y-auto py-4 px-3 xl:flex"
         >
           <AdminNavigationMenu :collapsed="false" />
         </div>
 
-        <div class="border-t border-default/70 py-4 px-3 xl:hidden">
+        <div class="border-t border-default/70 bg-default/60 py-4 px-3 xl:hidden">
           <div class="flex w-full justify-center">
             <ColorMode compact />
           </div>
@@ -67,7 +82,7 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
 
         <div
           v-if="isSidebarCollapsed"
-          class="hidden border-t border-default/70 py-4 px-3 xl:block"
+          class="hidden border-t border-default/70 bg-default/60 py-4 px-3 xl:block"
         >
           <div class="flex flex-col items-center gap-3">
             <div class="flex w-full justify-center">
@@ -81,7 +96,7 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
                 variant="soft"
                 color="neutral"
                 icon="i-lucide-panel-left-open"
-                class="flex size-11 items-center justify-center rounded-xl border border-default bg-elevated p-0 shadow-sm"
+                class="app-surface-soft flex size-11 items-center justify-center p-0"
                 :ui="{ leadingIcon: 'm-0 size-7 shrink-0' }"
                 @click="isSidebarCollapsed = !isSidebarCollapsed"
               />
@@ -91,7 +106,7 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
 
         <div
           v-else
-          class="hidden border-t border-default/70 py-4 px-3 xl:block"
+          class="hidden border-t border-default/70 bg-default/60 py-4 px-3 xl:block"
         >
           <div class="flex items-center justify-between gap-2">
             <ColorMode />
@@ -111,7 +126,7 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
       </aside>
 
       <main class="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <div class="border-b border-default/70 bg-default/80 px-4 py-4 backdrop-blur md:px-8">
+        <div class="h-24 border-b border-default/70 bg-default/70 px-4 backdrop-blur-xl md:px-8">
           <div class="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-3">
             <section class="min-w-0 flex-1">
               <AdminHeader :collapsed="isSidebarCollapsed" />
@@ -119,7 +134,7 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
           </div>
         </div>
 
-        <section class="min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable] px-4 py-5 pb-24 md:px-8 md:pb-8">
+        <section class="admin-scrollbar min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable] px-4 py-6 pb-24 md:px-8 md:pb-8">
           <div class="mx-auto w-full max-w-[1600px]">
             <slot />
           </div>

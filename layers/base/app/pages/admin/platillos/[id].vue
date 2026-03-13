@@ -6,6 +6,7 @@ definePageMeta({
 });
 
 const route = useRoute();
+const returnTo = computed(() => (typeof route.query.returnTo === 'string' ? route.query.returnTo : undefined));
 
 useSeoMeta({
   title: 'Gestión de platillos | Editar platillo | Heltifud Meal Preps',
@@ -33,7 +34,6 @@ async function onSaved() {
   <main class="space-y-6">
     <section v-if="isLoading" class="space-y-6">
       <section class="space-y-2">
-        <USkeleton class="h-4 w-24 rounded-lg" />
         <USkeleton class="h-10 w-72 rounded-lg" />
         <USkeleton class="h-5 w-full max-w-2xl rounded-lg" />
       </section>
@@ -50,12 +50,31 @@ async function onSaved() {
       icon="i-lucide-circle-alert"
     />
 
-    <AdminSection v-else title="Platillos" title-size="lg">
-      <template #description>
-        <span>Edita un platillo existente y conserva su información actualizada.</span>
-      </template>
+    <template v-else>
+      <section class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div class="space-y-1">
+          <h1 class="text-3xl font-semibold tracking-tight text-primary">Editar platillo</h1>
+          <p class="max-w-2xl text-sm text-muted">
+            Edita un platillo existente y conserva su información actualizada dentro del catálogo reusable.
+          </p>
+        </div>
+
+        <div
+          v-if="returnTo"
+          class="flex items-center gap-3 lg:justify-end"
+        >
+          <UButton
+            :to="returnTo"
+            variant="ghost"
+            color="neutral"
+            icon="i-lucide-arrow-left"
+          >
+            Regresar
+          </UButton>
+        </div>
+      </section>
 
       <AdminFoodCatalogForm :item="item" mode="edit" @saved="onSaved" />
-    </AdminSection>
+    </template>
   </main>
 </template>

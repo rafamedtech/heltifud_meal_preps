@@ -50,9 +50,9 @@ const displayDate = computed(() => df.format(calendarValue.value.toDate('UTC')))
       variant="outline"
       icon="i-lucide-calendar"
       trailing-icon="i-lucide-chevron-down"
-      class="w-full justify-between rounded-xl border-default bg-default text-left font-medium shadow-xs hover:bg-default"
+      class="app-control-surface w-full justify-between text-left font-medium hover:bg-[var(--app-surface-soft)]"
       :ui="{
-        base: 'w-full justify-between rounded-xl px-3.5 py-2.5',
+        base: 'w-full justify-between px-3.5 py-2.5',
         leadingIcon: 'size-4 text-muted',
         trailingIcon: 'size-4 text-muted'
       }"

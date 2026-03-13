@@ -50,16 +50,16 @@ function isCurrent(item: AdminLinkItem) {
         v-for="item in flatItems"
         :key="`${item.label}-${item.to}`"
         :to="item.to"
-        class="flex w-full max-w-[3.75rem] flex-col items-center justify-center gap-1.5 rounded-xl border px-1 py-2 text-center transition"
+        class="app-nav-item group relative flex w-full max-w-[3.9rem] flex-col items-center justify-center gap-1.5 border px-1 py-2.5 text-center transition-all duration-200"
         :class="
           isCurrent(item)
-            ? 'border-primary/20 bg-primary/8 text-primary shadow-sm'
-            : 'border-default bg-elevated text-muted shadow-sm hover:bg-elevated hover:text-highlighted'
+            ? 'border-primary/20 bg-primary/10 text-primary shadow-sm ring-1 ring-primary/10'
+            : 'border-default/70 bg-default/90 text-muted shadow-sm hover:-translate-y-0.5 hover:border-primary/15 hover:bg-default hover:text-highlighted'
         "
       >
         <UIcon
           :name="item.icon || 'i-heroicons-chevron-right'"
-          class="size-7 shrink-0"
+          class="size-6.5 shrink-0"
         />
         <span class="text-[12px] font-medium leading-tight">
           {{ item.label }}
@@ -69,7 +69,7 @@ function isCurrent(item: AdminLinkItem) {
 
     <section
       v-else
-      class="flex flex-1 flex-col gap-6 py-1"
+      class="flex flex-1 flex-col gap-6 py-2"
     >
       <section
         v-for="(group, groupIndex) in sections"
@@ -83,11 +83,11 @@ function isCurrent(item: AdminLinkItem) {
           <NuxtLink
             v-if="!item.children?.length && item.to"
             :to="item.to"
-            class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition-colors"
+            class="app-nav-item group flex items-center gap-3 border border-transparent px-3 py-2.5 text-sm font-medium transition-all duration-200"
             :class="
               isCurrent(item)
-                ? 'bg-elevated text-highlighted'
-                : 'text-muted hover:bg-elevated/80 hover:text-highlighted'
+                ? 'border-primary/15 bg-primary/10 text-primary shadow-sm'
+                : 'text-muted hover:border-default/70 hover:bg-default/90 hover:text-highlighted'
             "
           >
             <UIcon
@@ -99,10 +99,10 @@ function isCurrent(item: AdminLinkItem) {
 
           <section
             v-else
-            class="space-y-1.5"
+            class="space-y-2"
           >
             <div
-              class="flex items-center gap-2.5 px-3 py-1.5 text-[11px] font-semibold tracking-[0.18em] text-muted uppercase"
+              class="flex items-center gap-2.5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted"
             >
               <UIcon
                 :name="item.icon || 'i-heroicons-chevron-right'"
@@ -111,16 +111,16 @@ function isCurrent(item: AdminLinkItem) {
               <span>{{ item.label }}</span>
             </div>
 
-            <div class="ml-2 space-y-1 pl-5">
+            <div class="ml-2 space-y-1.5 border-l border-default/60 pl-4">
               <NuxtLink
                 v-for="child in item.children"
                 :key="`${child.label}-${child.to}`"
                 :to="child.to"
-                class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors"
+                class="app-nav-item flex items-center gap-2.5 border border-transparent px-3 py-2 text-sm transition-all duration-200"
                 :class="
                   isCurrent(child)
-                    ? 'bg-elevated font-medium text-highlighted'
-                    : 'text-muted hover:bg-elevated/80 hover:text-highlighted'
+                    ? 'border-primary/15 bg-primary/10 font-medium text-primary shadow-sm'
+                    : 'text-muted hover:border-default/70 hover:bg-default/90 hover:text-highlighted'
                 "
               >
                 <UIcon

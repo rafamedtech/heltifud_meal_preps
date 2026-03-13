@@ -12,7 +12,7 @@ const { titleSize = 'base' } = defineProps<SectionProps>();
     <section class="flex flex-col gap-6">
       <article>
         <h2
-          class="font-semibold text-highlighted"
+          class="font-semibold tracking-tight text-primary"
           :class="{
             'text-2xl': titleSize === 'base',
             'text-3xl': titleSize === 'lg',
@@ -20,7 +20,7 @@ const { titleSize = 'base' } = defineProps<SectionProps>();
         >
           {{ title }}
         </h2>
-        <p class="pt-2 text-sm text-muted flex items-center gap-2">
+        <p class="flex items-center gap-2 pt-2 text-sm text-muted">
           <slot name="description" />
         </p>
       </article>

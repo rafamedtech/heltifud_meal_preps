@@ -4,6 +4,7 @@ definePageMeta({
 });
 
 const route = useRoute();
+const returnTo = computed(() => (typeof route.query.returnTo === 'string' ? route.query.returnTo : undefined));
 
 useSeoMeta({
   title: 'Gestión de platillos | Crear nuevo platillo | Heltifud Meal Preps',
@@ -22,13 +23,30 @@ async function onSaved() {
 </script>
 
 <template>
-  <main>
-    <AdminSection title="Platillos" title-size="lg">
-      <template #description>
-        <span>Crea un nuevo platillo y guárdalo en el catálogo reusable.</span>
-      </template>
+  <main class="space-y-6">
+    <section class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div class="space-y-1">
+        <h1 class="text-3xl font-semibold tracking-tight text-primary">Crear nuevo platillo</h1>
+        <p class="max-w-2xl text-sm text-muted">
+          Crea un nuevo platillo y guárdalo en el catálogo reusable para usarlo en los menús semanales.
+        </p>
+      </div>
 
-      <AdminFoodCatalogForm mode="create" @saved="onSaved" />
-    </AdminSection>
+      <div
+        v-if="returnTo"
+        class="flex items-center gap-3 lg:justify-end"
+      >
+        <UButton
+          :to="returnTo"
+          variant="ghost"
+          color="neutral"
+          icon="i-lucide-arrow-left"
+        >
+          Regresar
+        </UButton>
+      </div>
+    </section>
+
+    <AdminFoodCatalogForm mode="create" @saved="onSaved" />
   </main>
 </template>

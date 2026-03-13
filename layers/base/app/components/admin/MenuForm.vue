@@ -16,8 +16,6 @@ interface Props {
   mode?: "create" | "edit"
 }
 
-type MenuSectionKey = "desayuno" | "comida" | "cena" | "snacks"
-
 const props = defineProps<Props>()
 const menu = computed(() => props.menu ?? null)
 const mode = computed(() => props.mode ?? "create")
@@ -125,13 +123,16 @@ function createStateFromMenu(menu?: WeeklyMenu | null): WeeklyMenuInput {
 }
 
 const state = reactive<WeeklyMenuInput>(createStateFromMenu(menu.value))
-const selectedDayIndex = ref(0)
 const loading = ref(false)
-const activeSection = ref<MenuSectionKey | null>("desayuno")
 const hiddenDays = new Set<DayOfWeek>(["SABADO", "DOMINGO"])
 const markAsActive = ref(Boolean(menu.value?.isActive))
+const snacksExpanded = reactive<Record<DayOfWeek, boolean>>(
+  DAY_OF_WEEK_VALUES.reduce((acc, day) => {
+    acc[day] = false
+    return acc
+  }, {} as Record<DayOfWeek, boolean>)
+)
 
-const selectedDay = computed<DayMenu>(() => state.days[selectedDayIndex.value] ?? createDay(DAY_OF_WEEK_VALUES[0]))
 const title = computed(() => {
   if (mode.value === "edit") {
     return state.name.trim() ? `Editar ${state.name}` : "Editar menú semanal"
@@ -148,38 +149,14 @@ const activeActionLabel = computed(() => {
   return "Hacer menú activo"
 })
 const visibleDayEntries = computed(() =>
-  state.days.map((day, index) => ({ day, index })).filter(({ day }) => !hiddenDays.has(day.dayOfWeek))
+  state.days.map((day) => ({ day })).filter(({ day }) => !hiddenDays.has(day.dayOfWeek))
 )
 const cardSurfaceUi = {
-  root: "rounded-xl border border-default/70 bg-default/95 shadow-sm",
+  root: "app-surface",
   body: "p-0 sm:p-0",
   header: "px-6 py-5 sm:px-6",
   footer: "px-6 py-5 sm:px-6"
 }
-const snacksOpen = computed({
-  get: () => activeSection.value === "snacks",
-  set: (value: boolean) => {
-    activeSection.value = value ? "snacks" : null
-  }
-})
-const desayunoOpen = computed({
-  get: () => activeSection.value === "desayuno",
-  set: (value: boolean) => {
-    setOpenSection("desayuno", value)
-  }
-})
-const comidaOpen = computed({
-  get: () => activeSection.value === "comida",
-  set: (value: boolean) => {
-    setOpenSection("comida", value)
-  }
-})
-const cenaOpen = computed({
-  get: () => activeSection.value === "cena",
-  set: (value: boolean) => {
-    setOpenSection("cena", value)
-  }
-})
 
 const toast = useToast()
 const { createMenuOnDB, updateMenuOnDB, setActiveMenuOnDB } = useMenu()
@@ -192,19 +169,16 @@ watch(
   () => menu.value,
   (menu) => {
     Object.assign(state, createStateFromMenu(menu))
-    selectedDayIndex.value = 0
-    activeSection.value = "desayuno"
     markAsActive.value = Boolean(menu?.isActive)
+    for (const day of DAY_OF_WEEK_VALUES) {
+      snacksExpanded[day] = false
+    }
   }
 )
 
-watch(selectedDayIndex, (index) => {
-  const dayOfWeek = state.days[index]?.dayOfWeek
-
-  if (dayOfWeek && hiddenDays.has(dayOfWeek)) {
-    selectedDayIndex.value = visibleDayEntries.value[0]?.index ?? 0
-  }
-})
+function toggleSnacks(dayOfWeek: DayOfWeek) {
+  snacksExpanded[dayOfWeek] = !snacksExpanded[dayOfWeek]
+}
 
 async function onSubmit() {
   const parsed = weeklyMenuInputSchema.safeParse(state)
@@ -247,55 +221,6 @@ async function onSubmit() {
   } finally {
     loading.value = false
   }
-}
-
-function beforeEnter(el: Element) {
-  const element = el as HTMLElement
-  element.style.height = "0"
-  element.style.opacity = "0"
-  element.style.transform = "translateY(-8px)"
-}
-
-function enter(el: Element) {
-  const element = el as HTMLElement
-  element.style.transition = "height 220ms ease, opacity 180ms ease, transform 220ms ease"
-  requestAnimationFrame(() => {
-    element.style.height = `${element.scrollHeight}px`
-    element.style.opacity = "1"
-    element.style.transform = "translateY(0)"
-  })
-}
-
-function afterEnter(el: Element) {
-  const element = el as HTMLElement
-  element.style.height = "auto"
-  element.style.transition = ""
-}
-
-function beforeLeave(el: Element) {
-  const element = el as HTMLElement
-  element.style.height = `${element.scrollHeight}px`
-  element.style.opacity = "1"
-  element.style.transform = "translateY(0)"
-}
-
-function leave(el: Element) {
-  const element = el as HTMLElement
-  element.style.transition = "height 220ms ease, opacity 160ms ease, transform 220ms ease"
-  requestAnimationFrame(() => {
-    element.style.height = "0"
-    element.style.opacity = "0"
-    element.style.transform = "translateY(-8px)"
-  })
-}
-
-function afterLeave(el: Element) {
-  const element = el as HTMLElement
-  element.style.transition = ""
-}
-
-function setOpenSection(section: MenuSectionKey, open: boolean) {
-  activeSection.value = open ? section : null
 }
 </script>
 
@@ -388,101 +313,86 @@ function setOpenSection(section: MenuSectionKey, open: boolean) {
         </UCard>
 
         <UCard :ui="cardSurfaceUi">
-          <template #header>
-            <div>
-              <h2 class="text-base font-semibold text-highlighted">
-                Días de la semana
-              </h2>
-            </div>
-          </template>
-
-          <div class="space-y-6 border-t border-default/70 px-6 py-6">
-            <div class="rounded-xl border border-default/70 bg-elevated/40 p-1">
-              <div class="grid grid-cols-5 gap-1">
-                <button
-                  v-for="entry in visibleDayEntries"
-                  :key="entry.day.dayOfWeek"
-                  type="button"
-                  class="rounded-xl px-3 py-2 text-sm font-medium transition-colors"
-                  :class="selectedDayIndex === entry.index
-                    ? 'bg-primary/10 text-primary shadow-sm ring-1 ring-primary/20'
-                    : 'text-muted hover:bg-default/80 hover:text-highlighted'"
-                  @click="selectedDayIndex = entry.index"
-                >
-                  {{ DAY_LABELS[entry.day.dayOfWeek] }}
-                </button>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 gap-4">
-            <AdminMenuSlotEditor
-              v-model="selectedDay.desayuno"
-              v-model:open="desayunoOpen"
-              title="Desayuno"
-              :catalog-items="resolvedCatalogItems"
-            />
-            <AdminMenuSlotEditor
-              v-model="selectedDay.comida"
-              v-model:open="comidaOpen"
-              title="Comida"
-              :catalog-items="resolvedCatalogItems"
-            />
-            <AdminMenuSlotEditor
-              v-model="selectedDay.cena"
-              v-model:open="cenaOpen"
-              title="Cena"
-              :catalog-items="resolvedCatalogItems"
-            />
-            </div>
-
-            <section class="space-y-4">
-              <section class="flex items-center justify-between gap-3">
-                <div>
-                  <h2 class="text-base font-semibold text-highlighted">
-                    Snacks
-                  </h2>
+          <div class="space-y-5 px-6 py-6">
+            <UCard
+              v-for="entry in visibleDayEntries"
+              :key="entry.day.dayOfWeek"
+              variant="subtle"
+              class="app-surface-soft overflow-hidden"
+              :ui="{ root: 'app-surface-soft overflow-hidden', header: 'px-5 py-4 sm:px-5', body: 'p-0 sm:p-0' }"
+            >
+              <template #header>
+                <div class="flex items-center justify-between gap-4">
+                  <h3 class="text-base font-semibold text-primary">
+                    {{ DAY_LABELS[entry.day.dayOfWeek] }}
+                  </h3>
                 </div>
+              </template>
 
-                <UButton
-                  size="sm"
-                  variant="ghost"
-                  color="neutral"
-                  :icon="snacksOpen ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-                  @click="snacksOpen = !snacksOpen"
-                >
-                  {{ snacksOpen ? "Ocultar" : "Mostrar" }}
-                </UButton>
+              <section class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-3">
+                <AdminMenuSlotEditor
+                  v-model="entry.day.desayuno"
+                  title="Desayuno"
+                  :show-toggle="false"
+                  :catalog-items="resolvedCatalogItems"
+                  class="lg:border-r lg:border-default/70"
+                />
+                <AdminMenuSlotEditor
+                  v-model="entry.day.comida"
+                  title="Comida"
+                  :show-toggle="false"
+                  :catalog-items="resolvedCatalogItems"
+                  class="lg:border-r lg:border-default/70"
+                />
+                <AdminMenuSlotEditor
+                  v-model="entry.day.cena"
+                  title="Cena"
+                  :show-toggle="false"
+                  :catalog-items="resolvedCatalogItems"
+                />
               </section>
 
-              <Transition
-                @before-enter="beforeEnter"
-                @enter="enter"
-                @after-enter="afterEnter"
-                @before-leave="beforeLeave"
-                @leave="leave"
-                @after-leave="afterLeave"
-              >
+              <section class="border-t border-default/70">
+                <button
+                  type="button"
+                  class="flex w-full items-center justify-between px-5 py-3 text-left transition-colors hover:bg-elevated/20"
+                  @click="toggleSnacks(entry.day.dayOfWeek)"
+                >
+                  <span>
+                    <span class="block text-sm font-semibold text-primary">Snacks</span>
+                    <span class="mt-1 block text-xs text-muted">
+                      {{ snacksExpanded[entry.day.dayOfWeek] ? 'Oculta colaciones y snacks de este día.' : 'Muestra Snack 1 y Snack 2 de este día.' }}
+                    </span>
+                  </span>
+
+                  <UIcon
+                    :name="snacksExpanded[entry.day.dayOfWeek] ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+                    class="size-4 text-muted"
+                  />
+                </button>
+
                 <section
-                  v-if="snacksOpen"
-                  class="grid grid-cols-1 gap-4 overflow-hidden xl:grid-cols-2"
+                  v-if="snacksExpanded[entry.day.dayOfWeek]"
+                  class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-2"
                 >
                   <AdminMenuSlotEditor
-                    v-model="selectedDay.snack1"
+                    v-model="entry.day.snack1"
                     title="Snack 1"
                     :show-sides="false"
                     :show-toggle="false"
                     :catalog-items="resolvedCatalogItems"
+                    class="lg:border-r lg:border-default/70"
                   />
                   <AdminMenuSlotEditor
-                    v-model="selectedDay.snack2"
+                    v-model="entry.day.snack2"
                     title="Snack 2"
                     :show-sides="false"
                     :show-toggle="false"
                     :catalog-items="resolvedCatalogItems"
                   />
                 </section>
-              </Transition>
-            </section>
+              </section>
+            </UCard>
           </div>
 
           <template #footer>

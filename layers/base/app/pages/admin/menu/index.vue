@@ -10,7 +10,8 @@ const {
 })
 
 const isLoading = computed(() => status.value === "idle" || status.value === "pending")
-const activeMenusCount = computed(() => menus.value.filter((menu) => menu.isActive).length)
+const activeMenu = computed(() => menus.value.find((menu) => menu.isActive) ?? null)
+const latestCreatedMenu = computed(() => menus.value[0] ?? null)
 
 const { deleteMenuOnDB, setActiveMenuOnDB } = useMenu()
 const toast = useToast()
@@ -62,7 +63,6 @@ useSeoMeta({
   <main class="flex min-h-full flex-col space-y-6">
     <section class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
       <div class="space-y-2">
-        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-muted">Catálogo</p>
         <div class="space-y-1">
           <h1 class="text-3xl font-semibold tracking-tight text-primary">Menú semanal</h1>
           <p class="max-w-2xl text-sm text-muted">
@@ -82,47 +82,62 @@ useSeoMeta({
     </section>
 
     <section class="space-y-4">
-      <UCard
-        variant="subtle"
-        class="rounded-xl border border-default/70 shadow-sm"
-      >
-        <section class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p class="text-xs uppercase tracking-[0.2em] text-muted">Panel</p>
-            <h3 class="text-2xl font-bold text-primary-500">Administra tu rotación semanal</h3>
-            <p class="text-sm text-muted mt-1">Cada menú guarda 5 días con desayuno, comida, cena y dos snacks.</p>
-          </div>
+      <section class="grid gap-3 lg:grid-cols-3">
+            <div class="app-surface-soft px-4 py-4">
+              <p class="text-xs uppercase tracking-[0.18em] text-muted">Menú activo</p>
+              <USkeleton
+                v-if="isLoading"
+                class="mt-3 h-6 w-40 rounded-lg"
+              />
+              <div
+                v-else
+                class="mt-3 space-y-1"
+              >
+                <p class="line-clamp-1 text-base font-semibold text-highlighted">
+                  {{ activeMenu?.name ?? "Sin menú activo" }}
+                </p>
+                <p class="text-sm text-muted">
+                  {{ activeMenu ? `${formatDate(activeMenu.startDate)} - ${formatDate(activeMenu.endDate)}` : "Activa uno desde la lista inferior." }}
+                </p>
+              </div>
+            </div>
 
-          <div class="grid grid-cols-2 gap-3 lg:w-[300px]">
-            <UCard class="rounded-xl border border-default/70 shadow-sm">
-              <p class="text-xs text-muted">Menús creados</p>
+            <div class="app-surface-soft px-4 py-4">
+              <p class="text-xs uppercase tracking-[0.18em] text-muted">Último agregado</p>
               <USkeleton
                 v-if="isLoading"
-                class="mt-2 h-8 w-14 rounded-lg"
+                class="mt-3 h-6 w-40 rounded-lg"
               />
-              <p
+              <div
                 v-else
-                class="text-2xl font-bold"
+                class="mt-3 space-y-1"
               >
-                {{ menus.length }}
-              </p>
-            </UCard>
-            <UCard class="rounded-xl border border-default/70 shadow-sm">
-              <p class="text-xs text-muted">Activo manual</p>
+                <p class="line-clamp-1 text-base font-semibold text-highlighted">
+                  {{ latestCreatedMenu?.name ?? "Sin registros" }}
+                </p>
+                <p class="text-sm text-muted">
+                  {{ latestCreatedMenu ? `Creado el ${formatDate(latestCreatedMenu.createdAt)}` : "Crea tu primer menú semanal." }}
+                </p>
+              </div>
+            </div>
+
+            <div class="app-surface-soft px-4 py-4">
+              <p class="text-xs uppercase tracking-[0.18em] text-muted">Menús creados</p>
               <USkeleton
                 v-if="isLoading"
-                class="mt-2 h-8 w-14 rounded-lg"
+                class="mt-3 h-8 w-14 rounded-lg"
               />
-              <p
+              <div
                 v-else
-                class="text-2xl font-bold"
+                class="mt-3 space-y-1"
               >
-                {{ activeMenusCount }}
-              </p>
-            </UCard>
-          </div>
-        </section>
-      </UCard>
+                <p class="text-2xl font-bold text-highlighted">
+                  {{ menus.length }}
+                </p>
+                <p class="text-sm text-muted">Total de menús semanales registrados.</p>
+              </div>
+            </div>
+      </section>
 
       <section
         v-if="isLoading"
@@ -151,7 +166,7 @@ useSeoMeta({
         <UCard
           v-for="menu in menus"
           :key="menu.id"
-          class="rounded-xl border border-default/70 shadow-sm"
+          class="app-surface"
         >
           <template #header>
             <section class="flex items-start justify-between gap-3">

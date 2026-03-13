@@ -113,20 +113,21 @@ async function onSubmit() {
       </UButton>
     </section>
 
-    <UCard class="rounded-xl border border-default/70 bg-default/95 shadow-sm">
+    <UCard class="app-surface">
       <template #header>
         <section class="flex items-center justify-between gap-3">
           <div>
-            <h3 class="text-lg font-bold text-primary-500">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Formulario</p>
+            <h3 class="mt-2 text-lg font-bold text-primary">
               {{ title }}
             </h3>
-            <p class="text-sm text-muted mt-1">Guarda piezas reutilizables para insertarlas rápido en tus tiempos.</p>
+            <p class="mt-1 text-sm text-muted">Guarda piezas reutilizables para insertarlas rápido en tus tiempos.</p>
           </div>
         </section>
       </template>
 
       <UForm :state="state" class="space-y-4" @submit="onSubmit">
-        <section class="rounded-xl border border-default/70 bg-default px-4 py-3 shadow-xs">
+        <section class="app-control-surface px-4 py-3">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Nombre</p>
           <UInput
             v-model="state.nombre"
@@ -137,7 +138,7 @@ async function onSubmit() {
           />
         </section>
 
-        <section class="rounded-xl border border-default/70 bg-default px-4 py-3 shadow-xs">
+        <section class="app-control-surface px-4 py-3">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Descripción</p>
           <UTextarea
             v-model="state.descripcion"
@@ -149,7 +150,7 @@ async function onSubmit() {
           />
         </section>
 
-        <section class="rounded-xl border border-default/70 bg-default px-4 py-3 shadow-xs">
+        <section class="app-control-surface px-4 py-3">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Calorías</p>
           <UInput
             v-model.number="state.calorias"
@@ -161,7 +162,7 @@ async function onSubmit() {
           />
         </section>
 
-        <section class="rounded-xl border border-default/70 bg-default px-4 py-3 shadow-xs">
+        <section class="app-control-surface px-4 py-3">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Tipo</p>
           <USelect
             v-model="state.tipo"
@@ -174,7 +175,7 @@ async function onSubmit() {
           />
         </section>
 
-        <section class="rounded-xl border border-default/70 bg-default px-4 py-3 shadow-xs">
+        <section class="app-control-surface px-4 py-3">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Imagen (URL)</p>
           <UInput
             v-model="state.imagen"
@@ -185,8 +186,8 @@ async function onSubmit() {
           />
         </section>
 
-        <section class="flex justify-end">
-          <UButton type="submit" :loading="saving" icon="i-lucide-save">
+        <section class="flex justify-end pt-2">
+          <UButton type="submit" :loading="saving" icon="i-lucide-save" class="shadow-sm">
             {{ actionLabel }}
           </UButton>
         </section>

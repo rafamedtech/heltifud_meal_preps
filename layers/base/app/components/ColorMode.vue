@@ -25,7 +25,7 @@ const isDark = computed({
       :variant="compact ? 'soft' : 'ghost'"
       :size="compact ? 'sm' : 'lg'"
       :square="compact"
-      :class="compact ? 'flex size-11 items-center justify-center rounded-xl border border-default bg-elevated p-0 shadow-sm' : ''"
+      :class="compact ? 'app-surface-soft flex size-11 items-center justify-center p-0' : ''"
       :ui="compact
         ? { leadingIcon: 'm-0 size-7 shrink-0', trailingIcon: 'm-0 size-7 shrink-0' }
         : { leadingIcon: 'text-xl', trailingIcon: 'text-xl' }"
@@ -38,7 +38,7 @@ const isDark = computed({
         :variant="compact ? 'soft' : 'ghost'"
         color="neutral"
         :square="compact"
-        :class="compact ? 'size-11 rounded-xl border border-default bg-elevated shadow-sm' : ''"
+        :class="compact ? 'app-surface-soft size-11' : ''"
       />
     </template>
   </ClientOnly>

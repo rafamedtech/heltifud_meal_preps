@@ -3,11 +3,43 @@
 
 @source '../../../../';
 
+:root {
+  --ui-radius: 0.375rem;
+  --app-radius: var(--radius-xl);
+  --app-control-radius: var(--radius-md);
+  --app-border-color: color-mix(in srgb, var(--ui-border) 68%, transparent);
+  --app-border-color-strong: color-mix(in srgb, var(--ui-border) 88%, transparent);
+  --app-surface: color-mix(in srgb, var(--ui-bg) 94%, white);
+  --app-surface-soft: color-mix(in srgb, var(--ui-bg) 91%, white);
+  --app-surface-elevated: color-mix(in srgb, var(--ui-bg) 87%, white);
+  --app-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06), 0 10px 24px rgba(15, 23, 42, 0.04);
+  --app-shadow-xs: 0 1px 1px rgba(15, 23, 42, 0.03), 0 3px 10px rgba(15, 23, 42, 0.025);
+  --app-ring: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  --app-ring-soft: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.dark {
+  --app-border-color: rgba(255, 255, 255, 0.07);
+  --app-border-color-strong: rgba(255, 255, 255, 0.14);
+  --app-surface: rgba(24, 24, 27, 0.78);
+  --app-surface-soft: rgba(28, 28, 33, 0.74);
+  --app-surface-elevated: rgba(32, 32, 38, 0.8);
+  --app-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28), 0 14px 28px rgba(0, 0, 0, 0.22);
+  --app-shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.18), 0 4px 12px rgba(0, 0, 0, 0.1);
+  --app-ring: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --app-ring-soft: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
 body {
   font-family: Montserrat, sans-serif;
   background:
-    radial-gradient(circle at top left, color-mix(in srgb, var(--ui-primary) 8%, transparent), transparent 28%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--ui-bg) 96%, white), var(--ui-bg));
+    radial-gradient(circle at top left, color-mix(in srgb, var(--ui-primary) 12%, transparent), transparent 24%),
+    radial-gradient(circle at 85% 12%, color-mix(in srgb, var(--ui-secondary, var(--ui-primary)) 8%, transparent), transparent 20%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ui-bg) 95%, white) 0%,
+      color-mix(in srgb, var(--ui-bg) 98%, black 2%) 100%
+    );
 }
 
 .page-enter-from {
@@ -34,5 +66,100 @@ body {
     linear-gradient(to right, color-mix(in srgb, var(--ui-border) 45%, transparent) 1px, transparent 1px),
     linear-gradient(to bottom, color-mix(in srgb, var(--ui-border) 45%, transparent) 1px, transparent 1px);
   background-size: 24px 24px;
-  opacity: 0.14;
+  opacity: 0.08;
+}
+
+.admin-shell::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--ui-primary) 10%, transparent), transparent 18%),
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--ui-primary) 6%, transparent), transparent 20%);
+  opacity: 0.7;
+}
+
+.dark .admin-shell::before {
+  opacity: 0.04;
+}
+
+.dark .admin-shell::after {
+  opacity: 0.45;
+}
+
+.app-surface,
+.app-surface-soft,
+.app-surface-elevated {
+  border-radius: var(--app-radius);
+}
+
+.app-surface {
+  border: 1px solid var(--app-border-color);
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow-sm), var(--app-ring);
+}
+
+.app-surface-soft {
+  border: 1px solid var(--app-border-color);
+  background: var(--app-surface-soft);
+  box-shadow: var(--app-shadow-sm), var(--app-ring);
+}
+
+.app-surface-elevated {
+  border: 1px solid var(--app-border-color-strong);
+  background: var(--app-surface-elevated);
+  box-shadow: var(--app-shadow-sm), var(--app-ring);
+}
+
+.app-control-surface {
+  border-radius: var(--app-control-radius);
+  border: 1px solid var(--app-border-color);
+  background: var(--app-surface-soft);
+  box-shadow: var(--app-shadow-xs), var(--app-ring-soft);
+}
+
+.app-chip-surface {
+  border-radius: var(--app-control-radius) !important;
+  border: 1px solid var(--app-border-color);
+  background: var(--app-surface-soft);
+  box-shadow: var(--app-shadow-xs), var(--app-ring-soft);
+}
+
+.app-nav-item {
+  border-radius: var(--app-control-radius);
+}
+
+.app-divider {
+  border-color: var(--app-border-color);
+}
+
+.admin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ui-border) 85%, transparent) transparent;
+}
+
+.dark .admin-scrollbar {
+  scrollbar-color: color-mix(in srgb, white 14%, transparent) transparent;
+}
+
+.admin-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--ui-border) 88%, transparent);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.dark .admin-scrollbar::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, white 14%, transparent);
+  border-color: transparent;
+}
+
+.admin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
 }
