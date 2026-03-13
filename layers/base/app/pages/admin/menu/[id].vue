@@ -26,18 +26,24 @@ async function onSaved() {
 </script>
 
 <template>
-  <main class="space-y-6">
-    <section v-if="isLoading" class="space-y-6">
-      <section class="space-y-2">
-        <USkeleton class="h-4 w-24 rounded-lg" />
-        <USkeleton class="h-10 w-80 rounded-lg" />
-        <USkeleton class="h-5 w-full max-w-2xl rounded-lg" />
-      </section>
+  <main class="min-h-full space-y-6">
+    <section
+      v-if="isLoading"
+      class="flex min-h-[70vh] items-center justify-center"
+    >
+      <div class="flex flex-col items-center gap-4 text-center">
+        <div class="flex size-14 items-center justify-center rounded-full border border-default/70 bg-elevated shadow-sm">
+          <UIcon
+            name="i-lucide-loader-circle"
+            class="size-7 animate-spin text-primary"
+          />
+        </div>
 
-      <section class="space-y-4">
-        <USkeleton class="h-[180px] w-full rounded-xl" />
-        <USkeleton class="h-[720px] w-full rounded-xl" />
-      </section>
+        <div class="space-y-1">
+          <p class="text-lg font-semibold text-primary">Cargando</p>
+          <p class="text-sm text-muted">Estamos preparando el menú semanal para editarlo.</p>
+        </div>
+      </div>
     </section>
 
     <UAlert
