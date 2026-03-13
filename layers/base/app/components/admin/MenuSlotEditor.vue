@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import type { FoodCatalogItem, FoodItemDetail, MenuSlot } from "~~/layers/menu/shared/types/types"
 
+defineOptions({
+  inheritAttrs: false
+})
+
 type DetailModalView =
   | "select-platillo-principal"
   | "select-guarnicion-1"
@@ -21,6 +25,8 @@ const {
   catalogItems = [],
   showToggle = true
 } = defineProps<Props>()
+
+const attrs = useAttrs()
 
 const route = useRoute()
 
@@ -154,6 +160,23 @@ const detailModalTitle = computed(() => {
 
 function openSelectionModal(view: Extract<DetailModalView, "select-platillo-principal" | "select-guarnicion-1" | "select-guarnicion-2">) {
   modalView.value = view
+}
+
+function openSelectionModalFromKeyboard(
+  event: KeyboardEvent,
+  view: Extract<DetailModalView, "select-platillo-principal" | "select-guarnicion-1" | "select-guarnicion-2">
+) {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault()
+    openSelectionModal(view)
+  }
+}
+
+function openExtrasFromKeyboard(event: KeyboardEvent) {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault()
+    modalView.value = "extras"
+  }
 }
 
 const contenedorModel = computed<string | undefined>({
@@ -360,7 +383,7 @@ function selectCatalogItemFromModal(itemId: string) {
 </script>
 
 <template>
-  <UCard :ui="cardUi">
+  <UCard v-bind="attrs" :ui="cardUi">
     <template #header>
       <section class="flex items-center justify-between gap-3">
         <div>
@@ -402,7 +425,13 @@ function selectCatalogItemFromModal(itemId: string) {
           v-if="showSides"
           class="space-y-3"
         >
-          <button type="button" :class="`${selectFieldClass} w-full`" @click="openSelectionModal('select-platillo-principal')">
+          <div
+            role="button"
+            tabindex="0"
+            :class="`${selectFieldClass} w-full cursor-pointer`"
+            @click="openSelectionModal('select-platillo-principal')"
+            @keydown="openSelectionModalFromKeyboard($event, 'select-platillo-principal')"
+          >
             <span class="min-w-0">
               <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Platillo principal</span>
               <span class="mt-1.5 block line-clamp-2 text-sm font-medium text-highlighted">{{ itemSummary(model.platilloPrincipal) }}</span>
@@ -422,10 +451,16 @@ function selectCatalogItemFromModal(itemId: string) {
                 />
               </UDropdownMenu>
             </span>
-          </button>
+          </div>
 
           <section class="grid grid-cols-1 gap-3">
-            <button type="button" :class="selectFieldClass" @click="openSelectionModal('select-guarnicion-1')">
+            <div
+              role="button"
+              tabindex="0"
+              :class="`${selectFieldClass} cursor-pointer`"
+              @click="openSelectionModal('select-guarnicion-1')"
+              @keydown="openSelectionModalFromKeyboard($event, 'select-guarnicion-1')"
+            >
               <span class="min-w-0">
                 <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Guarnición 1</span>
                 <span class="mt-1.5 block line-clamp-2 text-sm font-medium text-highlighted">{{ itemSummary(model.guarnicion1) }}</span>
@@ -445,9 +480,15 @@ function selectCatalogItemFromModal(itemId: string) {
                   />
                 </UDropdownMenu>
               </span>
-            </button>
+            </div>
 
-            <button type="button" :class="selectFieldClass" @click="openSelectionModal('select-guarnicion-2')">
+            <div
+              role="button"
+              tabindex="0"
+              :class="`${selectFieldClass} cursor-pointer`"
+              @click="openSelectionModal('select-guarnicion-2')"
+              @keydown="openSelectionModalFromKeyboard($event, 'select-guarnicion-2')"
+            >
               <span class="min-w-0">
                 <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Guarnición 2</span>
                 <span class="mt-1.5 block line-clamp-2 text-sm font-medium text-highlighted">{{ itemSummary(model.guarnicion2) }}</span>
@@ -467,7 +508,7 @@ function selectCatalogItemFromModal(itemId: string) {
                   />
                 </UDropdownMenu>
               </span>
-            </button>
+            </div>
           </section>
         </section>
 
@@ -475,7 +516,13 @@ function selectCatalogItemFromModal(itemId: string) {
           v-else
           class="grid grid-cols-1 gap-3"
         >
-          <button type="button" :class="`${selectFieldClass} w-full`" @click="openSelectionModal('select-platillo-principal')">
+          <div
+            role="button"
+            tabindex="0"
+            :class="`${selectFieldClass} w-full cursor-pointer`"
+            @click="openSelectionModal('select-platillo-principal')"
+            @keydown="openSelectionModalFromKeyboard($event, 'select-platillo-principal')"
+          >
             <span class="min-w-0">
               <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Principal</span>
               <span class="mt-1.5 block line-clamp-2 text-sm font-medium text-highlighted">{{ itemSummary(model.platilloPrincipal) }}</span>
@@ -495,14 +542,16 @@ function selectCatalogItemFromModal(itemId: string) {
                 />
               </UDropdownMenu>
             </span>
-          </button>
+          </div>
         </section>
 
         <section class="grid grid-cols-1 gap-3">
-          <button
-            type="button"
+          <div
+            role="button"
+            tabindex="0"
             :class="`${selectFieldClass} w-full`"
             @click="modalView = 'extras'"
+            @keydown="openExtrasFromKeyboard"
           >
             <span class="min-w-0">
               <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Adicionales y contenedor</span>
@@ -511,7 +560,7 @@ function selectCatalogItemFromModal(itemId: string) {
               </span>
             </span>
             <UIcon name="i-lucide-chevron-right" class="size-4 shrink-0 text-muted" />
-          </button>
+          </div>
         </section>
 
       </section>

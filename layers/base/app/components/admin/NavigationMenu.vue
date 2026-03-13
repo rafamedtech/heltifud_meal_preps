@@ -36,7 +36,21 @@ function isCurrent(item: AdminLinkItem) {
     return false
   }
 
-  return route.path === item.to
+  const normalizeAdminPath = (path: string) =>
+    path
+      .replace(/\/$/, "")
+      .split("/")
+      .filter(Boolean)
+      .slice(1)
+
+  const currentSegments = normalizeAdminPath(route.path)
+  const itemSegments = normalizeAdminPath(item.to)
+
+  if (!itemSegments.length) {
+    return currentSegments.length === 0
+  }
+
+  return itemSegments.every((segment, index) => currentSegments[index] === segment)
 }
 </script>
 
