@@ -57,6 +57,7 @@ type WeeklyMenuRecord = Prisma.WeeklyMenuGetPayload<{
 }>
 
 type OptionalFoodItemInput = {
+  catalogItemId?: string | null
   nombre?: string
   descripcion?: string
   calorias?: number
@@ -72,6 +73,7 @@ function trimString(value: string | undefined | null): string {
 
 function normalizeFoodItem(item: FoodItemDetail): FoodItemDetail {
   return {
+    catalogItemId: item.catalogItemId ?? null,
     nombre: trimString(item.nombre),
     descripcion: trimString(item.descripcion),
     calorias: item.calorias,
@@ -86,6 +88,7 @@ function normalizeOptionalFoodItem(item: OptionalFoodItemInput): FoodItemDetail 
   }
 
   const normalized: FoodItemDetail = {
+    catalogItemId: item.catalogItemId ?? null,
     nombre: trimString(item.nombre),
     descripcion: trimString(item.descripcion),
     calorias: item.calorias ?? 0,
@@ -196,6 +199,7 @@ function buildDays(days: WeeklyMenuInputParsed["days"]): Prisma.MenuDayCreateWit
 }
 
 function mapFood(item: {
+  catalogItemId: string | null
   nombre: string
   descripcion: string
   calorias: number
@@ -203,6 +207,7 @@ function mapFood(item: {
   tipo: string
 }): FoodItemDetail {
   return {
+    catalogItemId: item.catalogItemId,
     nombre: item.nombre,
     descripcion: item.descripcion,
     calorias: item.calorias,

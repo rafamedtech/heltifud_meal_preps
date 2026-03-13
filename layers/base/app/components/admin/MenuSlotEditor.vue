@@ -64,6 +64,7 @@ const selectedGuarnicion2Id = ref<string | undefined>()
 
 function createEmptyFoodItem(): FoodItemDetail {
   return {
+    catalogItemId: null,
     nombre: "",
     descripcion: "",
     calorias: 0,
@@ -166,6 +167,7 @@ function hasValue(item?: FoodItemDetail | null) {
 }
 
 function clearFoodItem(target: FoodItemDetail) {
+  target.catalogItemId = null
   target.nombre = ""
   target.descripcion = ""
   target.calorias = 0
@@ -174,6 +176,10 @@ function clearFoodItem(target: FoodItemDetail) {
 }
 
 function matchCatalogItem(item?: FoodItemDetail | null) {
+  if (item?.catalogItemId) {
+    return item.catalogItemId
+  }
+
   if (!item?.nombre?.trim()) {
     return undefined
   }
@@ -189,6 +195,7 @@ function matchCatalogItem(item?: FoodItemDetail | null) {
 
 function applyCatalogItem(target: FoodItemDetail, itemId: string | undefined) {
   if (!itemId) {
+    target.catalogItemId = null
     target.nombre = ""
     target.descripcion = ""
     target.calorias = 0
@@ -203,6 +210,7 @@ function applyCatalogItem(target: FoodItemDetail, itemId: string | undefined) {
     return
   }
 
+  target.catalogItemId = selected.id
   target.nombre = selected.nombre
   target.descripcion = selected.descripcion
   target.calorias = selected.calorias
@@ -340,9 +348,9 @@ function afterLeave(el: Element) {
               clearable
               search-input
               placeholder="Escribe para buscar un platillo"
-              class="absolute inset-0 opacity-0"
+              class="absolute inset-0 text-transparent [caret-color:transparent] [&_*]:text-transparent [&_*]:placeholder:text-transparent"
               :content="{ align: 'start', sideOffset: 8 }"
-              :ui="{ base: 'h-full w-full p-0 min-h-0 border-0' }"
+              :ui="{ base: 'h-full w-full p-0 min-h-0 border-0 bg-transparent shadow-none', trailingIcon: 'opacity-0', leadingIcon: 'opacity-0' }"
               @update:model-value="applyCatalogItem(model.platilloPrincipal, $event)"
             >
               <template #item-label="{ item }">
@@ -390,9 +398,9 @@ function afterLeave(el: Element) {
                 clearable
                 search-input
                 placeholder="Escribe para buscar una guarnición"
-                class="absolute inset-0 opacity-0"
+                class="absolute inset-0 text-transparent [caret-color:transparent] [&_*]:text-transparent [&_*]:placeholder:text-transparent"
                 :content="{ align: 'start', sideOffset: 8 }"
-                :ui="{ base: 'h-full w-full p-0 min-h-0 border-0' }"
+                :ui="{ base: 'h-full w-full p-0 min-h-0 border-0 bg-transparent shadow-none', trailingIcon: 'opacity-0', leadingIcon: 'opacity-0' }"
                 @update:model-value="applyCatalogItem(guarnicion1Model, $event)"
               >
                 <template #item-label="{ item }">
@@ -436,9 +444,9 @@ function afterLeave(el: Element) {
                 clearable
                 search-input
                 placeholder="Escribe para buscar una guarnición"
-                class="absolute inset-0 opacity-0"
+                class="absolute inset-0 text-transparent [caret-color:transparent] [&_*]:text-transparent [&_*]:placeholder:text-transparent"
                 :content="{ align: 'start', sideOffset: 8 }"
-                :ui="{ base: 'h-full w-full p-0 min-h-0 border-0' }"
+                :ui="{ base: 'h-full w-full p-0 min-h-0 border-0 bg-transparent shadow-none', trailingIcon: 'opacity-0', leadingIcon: 'opacity-0' }"
                 @update:model-value="applyCatalogItem(guarnicion2Model, $event)"
               >
                 <template #item-label="{ item }">
@@ -482,10 +490,11 @@ function afterLeave(el: Element) {
               placeholder="Selecciona un contenedor"
               icon="i-lucide-package"
               variant="ghost"
-              class="absolute inset-0 opacity-0"
+              class="absolute inset-0 text-transparent [caret-color:transparent] [&_*]:text-transparent [&_*]:placeholder:text-transparent"
               :ui="{
-                base: 'h-full w-full p-0 min-h-0 border-0',
-                trailingIcon: 'text-muted'
+                base: 'h-full w-full p-0 min-h-0 border-0 bg-transparent shadow-none',
+                trailingIcon: 'opacity-0',
+                leadingIcon: 'opacity-0'
               }"
             />
           </div>

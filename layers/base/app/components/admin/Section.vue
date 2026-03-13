@@ -8,19 +8,19 @@ const { titleSize = 'base' } = defineProps<SectionProps>();
 </script>
 
 <template>
-  <section class="py-8">
-    <section class="flex flex-col">
+  <section class="py-6">
+    <section class="flex flex-col gap-6">
       <article>
         <h2
-          class="text-primary-500 font-bold"
+          class="font-semibold text-highlighted"
           :class="{
-            'text-3xl': titleSize === 'base',
-            'text-4xl': titleSize === 'lg',
+            'text-2xl': titleSize === 'base',
+            'text-3xl': titleSize === 'lg',
           }"
         >
           {{ title }}
         </h2>
-        <p class="py-4 text-lg flex items-center gap-2">
+        <p class="pt-2 text-sm text-muted flex items-center gap-2">
           <slot name="description" />
         </p>
       </article>
@@ -30,7 +30,7 @@ const { titleSize = 'base' } = defineProps<SectionProps>();
       </article>
     </section>
 
-    <article class="flex flex-col items-center justify-center gap-4">
+    <article class="flex flex-col items-center justify-center gap-4 pt-6">
       <slot name="footer" />
     </article>
   </section>

@@ -38,6 +38,7 @@ const DAY_LABELS: Record<(typeof DAY_OF_WEEK_VALUES)[number], string> = {
 
 function createEmptyFoodItem(): FoodItemDetail {
   return {
+    catalogItemId: null,
     nombre: '',
     descripcion: '',
     calorias: 0,
@@ -73,6 +74,7 @@ function cloneFoodItem(item?: FoodItemDetail | null): FoodItemDetail {
   }
 
   return {
+    catalogItemId: item.catalogItemId ?? null,
     nombre: item.nombre ?? '',
     descripcion: item.descripcion ?? '',
     calorias: item.calorias ?? 0,

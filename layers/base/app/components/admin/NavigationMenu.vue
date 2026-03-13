@@ -57,45 +57,49 @@ function isCurrent(item: AdminLinkItem) {
           square
           size="lg"
           :color="isCurrent(item) ? 'primary' : 'neutral'"
-          :variant="isCurrent(item) ? 'soft' : 'ghost'"
-          class="size-10 rounded-2xl"
+          variant="soft"
+          class="mx-auto flex size-11 items-center justify-center rounded-2xl border p-0 shadow-sm"
+          :class="isCurrent(item)
+            ? 'border-primary/20 bg-primary/8'
+            : 'border-default bg-elevated hover:bg-elevated'"
           :icon="item.icon"
+          :ui="{ leadingIcon: 'm-0 size-7 shrink-0' }"
         />
       </UTooltip>
     </section>
 
-    <section v-else class="flex flex-1 flex-col gap-6 py-2">
+    <section v-else class="flex flex-1 flex-col gap-8 py-2">
       <section
         v-for="(group, groupIndex) in sections"
         :key="groupIndex"
-        class="space-y-2"
+        class="space-y-3"
       >
         <template v-for="item in group" :key="`${item.label}-${item.to ?? item.value}`">
           <NuxtLink
             v-if="!item.children?.length && item.to"
             :to="item.to"
-            class="flex items-center gap-3 rounded-2xl px-3 py-2 text-sm font-medium transition"
-            :class="isCurrent(item) ? 'bg-primary/10 text-primary' : 'text-highlighted hover:bg-default'"
+            class="flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-medium transition"
+            :class="isCurrent(item) ? 'border border-primary/20 bg-primary/8 text-primary shadow-xs' : 'border border-transparent text-muted hover:bg-elevated hover:text-highlighted'"
           >
-            <UIcon :name="item.icon || 'i-heroicons-chevron-right'" class="size-5 shrink-0" />
+            <UIcon :name="item.icon || 'i-heroicons-chevron-right'" class="size-[1.875rem] shrink-0" />
             <span>{{ item.label }}</span>
           </NuxtLink>
 
           <section v-else class="space-y-2">
-            <div class="flex items-center gap-3 rounded-2xl px-3 py-2 text-sm font-semibold text-highlighted">
-              <UIcon :name="item.icon || 'i-heroicons-chevron-right'" class="size-5 shrink-0" />
+            <div class="flex items-center gap-3 rounded-2xl border border-default/70 bg-elevated px-3.5 py-2.5 text-[11px] font-semibold tracking-[0.18em] text-muted uppercase shadow-sm">
+              <UIcon :name="item.icon || 'i-heroicons-chevron-right'" class="size-[1.875rem] shrink-0" />
               <span>{{ item.label }}</span>
             </div>
 
-            <div class="ml-4 space-y-1 border-l border-default pl-3">
+            <div class="ml-3 space-y-1 border-l border-default/70 pl-4">
               <NuxtLink
                 v-for="child in item.children"
                 :key="`${child.label}-${child.to}`"
                 :to="child.to"
-                class="flex items-center gap-3 rounded-2xl px-3 py-2 text-sm transition"
-                :class="isCurrent(child) ? 'bg-primary/10 font-medium text-primary' : 'text-muted hover:bg-default hover:text-highlighted'"
+                class="flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm transition"
+                :class="isCurrent(child) ? 'border border-primary/20 bg-primary/8 font-medium text-primary shadow-xs' : 'border border-transparent text-muted hover:bg-elevated hover:text-highlighted'"
               >
-                <UIcon :name="child.icon || 'i-heroicons-chevron-right'" class="size-4 shrink-0" />
+                <UIcon :name="child.icon || 'i-heroicons-chevron-right'" class="size-6 shrink-0" />
                 <span>{{ child.label }}</span>
               </NuxtLink>
             </div>

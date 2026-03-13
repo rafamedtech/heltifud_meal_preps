@@ -48,6 +48,7 @@ model DaySlot {
 model FoodComponent {
     id            String        @id @default(uuid())
     daySlotId     String
+    catalogItemId String?
     componentRole ComponentRole
     nombre        String
     descripcion   String
@@ -55,7 +56,9 @@ model FoodComponent {
     imagen        String
     tipo          String
     daySlot       DaySlot       @relation(fields: [daySlotId], references: [id], onDelete: Cascade)
+    catalogItem   FoodCatalogItem? @relation(fields: [catalogItemId], references: [id], onDelete: SetNull)
 
+    @@index([catalogItemId])
     @@index([daySlotId, componentRole])
 }
 
@@ -68,6 +71,7 @@ model FoodCatalogItem {
     tipo        String
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
+    components  FoodComponent[]
 
     @@index([nombre])
     @@index([tipo])

@@ -80,7 +80,14 @@ export async function createFoodCatalogItem(input: FoodCatalogItemInput) {
 export async function updateFoodCatalogItem(id: string, input: FoodCatalogItemInput) {
   const existing = await prisma.foodCatalogItem.findUnique({
     where: { id },
-    select: { id: true },
+    select: {
+      id: true,
+      nombre: true,
+      descripcion: true,
+      calorias: true,
+      imagen: true,
+      tipo: true,
+    },
   });
 
   if (!existing) {
@@ -89,10 +96,31 @@ export async function updateFoodCatalogItem(id: string, input: FoodCatalogItemIn
 
   const data = validateInput(input);
 
-  const updated = await prisma.foodCatalogItem.update({
-    where: { id },
-    data,
-  });
+  const [updated] = await prisma.$transaction([
+    prisma.foodCatalogItem.update({
+      where: { id },
+      data,
+    }),
+    prisma.foodComponent.updateMany({
+      where: {
+        OR: [
+          { catalogItemId: id },
+          {
+            catalogItemId: null,
+            nombre: existing.nombre,
+            descripcion: existing.descripcion,
+            calorias: existing.calorias,
+            imagen: existing.imagen,
+            tipo: existing.tipo,
+          },
+        ],
+      },
+      data: {
+        ...data,
+        catalogItemId: id,
+      },
+    }),
+  ]);
 
   return mapCatalogItem(updated);
 }

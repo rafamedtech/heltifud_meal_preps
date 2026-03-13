@@ -27,6 +27,7 @@ export interface WeeklyPlan {
 }
 
 export interface FoodItemDetail {
+  catalogItemId?: string | null;
   nombre: string;
   descripcion: string;
   calorias: number;
@@ -34,13 +35,13 @@ export interface FoodItemDetail {
   tipo: string;
 }
 
-export interface FoodCatalogItem extends FoodItemDetail {
+export interface FoodCatalogItem extends Omit<FoodItemDetail, 'catalogItemId'> {
   id: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export type FoodCatalogItemInput = FoodItemDetail;
+export type FoodCatalogItemInput = Omit<FoodItemDetail, 'catalogItemId'>;
 
 export interface MenuSlot {
   platilloPrincipal: FoodItemDetail;

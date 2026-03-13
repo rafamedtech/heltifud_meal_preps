@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { DAY_OF_WEEK_VALUES } from './types';
 
 export const foodItemSchema = z.object({
+  catalogItemId: z.string().uuid().nullable().optional(),
   nombre: z.string().min(1, 'El nombre es obligatorio'),
   descripcion: z.string().default(''),
   calorias: z.number().int().min(0),
@@ -11,6 +12,7 @@ export const foodItemSchema = z.object({
 });
 
 const optionalFoodItemSchema = z.object({
+  catalogItemId: z.string().uuid().nullable().optional(),
   nombre: z.string().default(''),
   descripcion: z.string().default(''),
   calorias: z.number().int().min(0).default(0),

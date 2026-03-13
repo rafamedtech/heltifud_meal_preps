@@ -56,6 +56,7 @@ function applyCatalogItem(itemId: string | undefined) {
   selectedCatalogId.value = itemId;
 
   if (!itemId) {
+    model.value.catalogItemId = null;
     return;
   }
 
@@ -65,12 +66,17 @@ function applyCatalogItem(itemId: string | undefined) {
     return;
   }
 
+  model.value.catalogItemId = selected.id;
   model.value.nombre = selected.nombre;
   model.value.descripcion = selected.descripcion;
   model.value.calorias = selected.calorias;
   model.value.imagen = selected.imagen;
   model.value.tipo = selected.tipo;
 }
+
+watchEffect(() => {
+  selectedCatalogId.value = model.value.catalogItemId ?? undefined;
+});
 </script>
 
 <template>

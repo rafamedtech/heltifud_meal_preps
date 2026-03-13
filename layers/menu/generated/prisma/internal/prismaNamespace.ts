@@ -853,6 +853,7 @@ export type DaySlotScalarFieldEnum = (typeof DaySlotScalarFieldEnum)[keyof typeo
 export const FoodComponentScalarFieldEnum = {
   id: 'id',
   daySlotId: 'daySlotId',
+  catalogItemId: 'catalogItemId',
   componentRole: 'componentRole',
   nombre: 'nombre',
   descripcion: 'descripcion',
