@@ -5,9 +5,12 @@ const {
   data: menus,
   refresh,
   status
-} = await useFetch<WeeklyMenu[]>("/api/menu/all", {
+} = useLazyFetch<WeeklyMenu[]>("/api/menu/all", {
   default: () => []
 })
+
+const isLoading = computed(() => status.value === "idle" || status.value === "pending")
+const activeMenusCount = computed(() => menus.value.filter((menu) => menu.isActive).length)
 
 const { deleteMenuOnDB, setActiveMenuOnDB } = useMenu()
 const toast = useToast()
@@ -93,18 +96,36 @@ useSeoMeta({
           <div class="grid grid-cols-2 gap-3 lg:w-[300px]">
             <UCard class="rounded-xl border border-default/70 shadow-sm">
               <p class="text-xs text-muted">Menús creados</p>
-              <p class="text-2xl font-bold">{{ menus.length }}</p>
+              <USkeleton
+                v-if="isLoading"
+                class="mt-2 h-8 w-14 rounded-lg"
+              />
+              <p
+                v-else
+                class="text-2xl font-bold"
+              >
+                {{ menus.length }}
+              </p>
             </UCard>
             <UCard class="rounded-xl border border-default/70 shadow-sm">
               <p class="text-xs text-muted">Activo manual</p>
-              <p class="text-2xl font-bold">{{ menus.filter((menu) => menu.isActive).length }}</p>
+              <USkeleton
+                v-if="isLoading"
+                class="mt-2 h-8 w-14 rounded-lg"
+              />
+              <p
+                v-else
+                class="text-2xl font-bold"
+              >
+                {{ activeMenusCount }}
+              </p>
             </UCard>
           </div>
         </section>
       </UCard>
 
       <section
-        v-if="status === 'pending'"
+        v-if="isLoading"
         class="grid grid-cols-1 xl:grid-cols-2 gap-4"
       >
         <USkeleton
