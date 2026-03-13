@@ -80,7 +80,7 @@ watchEffect(() => {
 </script>
 
 <template>
-  <UCard variant="subtle" :ui="{ body: 'space-y-3' }">
+  <UCard variant="subtle" class="rounded-xl border border-default/70 shadow-sm" :ui="{ body: 'space-y-3' }">
     <h4 class="font-semibold text-sm">
       {{ title }} <span v-if="optional" class="text-xs opacity-70">(opcional)</span>
     </h4>

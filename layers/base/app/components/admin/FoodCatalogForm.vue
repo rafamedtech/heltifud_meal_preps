@@ -113,7 +113,7 @@ async function onSubmit() {
       </UButton>
     </section>
 
-    <UCard>
+    <UCard class="rounded-xl border border-default/70 bg-default/95 shadow-sm">
       <template #header>
         <section class="flex items-center justify-between gap-3">
           <div>
@@ -126,7 +126,7 @@ async function onSubmit() {
       </template>
 
       <UForm :state="state" class="space-y-4" @submit="onSubmit">
-        <section class="rounded-xl border border-default bg-default px-4 py-3">
+        <section class="rounded-xl border border-default/70 bg-default px-4 py-3 shadow-xs">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Nombre</p>
           <UInput
             v-model="state.nombre"
@@ -137,7 +137,7 @@ async function onSubmit() {
           />
         </section>
 
-        <section class="rounded-xl border border-default bg-default px-4 py-3">
+        <section class="rounded-xl border border-default/70 bg-default px-4 py-3 shadow-xs">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Descripción</p>
           <UTextarea
             v-model="state.descripcion"
@@ -149,7 +149,7 @@ async function onSubmit() {
           />
         </section>
 
-        <section class="rounded-xl border border-default bg-default px-4 py-3">
+        <section class="rounded-xl border border-default/70 bg-default px-4 py-3 shadow-xs">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Calorías</p>
           <UInput
             v-model.number="state.calorias"
@@ -161,7 +161,7 @@ async function onSubmit() {
           />
         </section>
 
-        <section class="rounded-xl border border-default bg-default px-4 py-3">
+        <section class="rounded-xl border border-default/70 bg-default px-4 py-3 shadow-xs">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Tipo</p>
           <USelect
             v-model="state.tipo"
@@ -174,7 +174,7 @@ async function onSubmit() {
           />
         </section>
 
-        <section class="rounded-xl border border-default bg-default px-4 py-3">
+        <section class="rounded-xl border border-default/70 bg-default px-4 py-3 shadow-xs">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Imagen (URL)</p>
           <UInput
             v-model="state.imagen"

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { FoodCatalogItem, FoodItemDetail, MenuSlot } from "~~/layers/menu/shared/types/types"
 
+type DetailModalView = "platillo-principal" | "guarnicion-1" | "guarnicion-2" | "adicionales" | null
+
 interface Props {
   title: string
   showSides?: boolean
@@ -57,7 +59,7 @@ const guarnicionOptions = computed(() => toCatalogOptions(guarnicionItems.value)
 
 const model = defineModel<MenuSlot>({ required: true })
 const isOpen = defineModel<boolean>("open", { default: true })
-const modalView = ref<"adicionales" | null>(null)
+const modalView = ref<DetailModalView>(null)
 const selectedPrimaryId = ref<string | undefined>()
 const selectedGuarnicion1Id = ref<string | undefined>()
 const selectedGuarnicion2Id = ref<string | undefined>()
@@ -142,6 +144,38 @@ const isModalOpen = computed({
     }
   }
 })
+
+const detailItem = computed<FoodItemDetail | null>(() => {
+  switch (modalView.value) {
+    case "platillo-principal":
+      return model.value.platilloPrincipal
+    case "guarnicion-1":
+      return guarnicion1Model.value
+    case "guarnicion-2":
+      return guarnicion2Model.value
+    default:
+      return null
+  }
+})
+
+const detailModalTitle = computed(() => {
+  switch (modalView.value) {
+    case "platillo-principal":
+      return "Editar platillo principal"
+    case "guarnicion-1":
+      return "Editar guarnición 1"
+    case "guarnicion-2":
+      return "Editar guarnición 2"
+    case "adicionales":
+      return "Adicionales"
+    default:
+      return ""
+  }
+})
+
+function openDetailModal(view: Exclude<DetailModalView, "adicionales" | null>) {
+  modalView.value = view
+}
 
 const contenedorModel = computed<string | undefined>({
   get: () => model.value.contenedor ?? undefined,
@@ -230,8 +264,19 @@ const summary = computed(() => {
 })
 
 const cardUi = computed(() => ({
-  body: isOpen.value ? "p-4 sm:p-4 space-y-4" : "p-0 sm:p-0"
+  root: "rounded-xl border-default/70 shadow-sm",
+  header: "px-5 py-4 sm:px-5",
+  body: isOpen.value ? "space-y-4 px-5 py-5 sm:px-5 sm:py-5" : "p-0 sm:p-0"
 }))
+
+const fieldClass =
+  "relative rounded-xl border border-default/70 bg-default px-4 py-3 text-left shadow-xs transition-colors hover:bg-default"
+
+const overlayFieldUi = {
+  base: "h-full w-full min-h-0 border-0 bg-transparent p-0 shadow-none",
+  trailingIcon: "opacity-0",
+  leadingIcon: "opacity-0"
+}
 
 function beforeEnter(el: Element) {
   const element = el as HTMLElement
@@ -277,6 +322,16 @@ function afterLeave(el: Element) {
   const element = el as HTMLElement
   element.style.transition = ""
 }
+
+const detailFieldInputUi = {
+  base: "rounded-xl border-default/70 bg-default px-3.5 py-2.5 shadow-xs hover:bg-default focus:bg-default",
+  leading: "ps-0",
+  trailing: "pe-0"
+}
+
+const detailFieldTextareaUi = {
+  base: "rounded-xl border-default/70 bg-default px-3.5 py-2.5 shadow-xs hover:bg-default focus:bg-default"
+}
 </script>
 
 <template>
@@ -318,15 +373,30 @@ function afterLeave(el: Element) {
         v-if="isOpen"
         class="space-y-4 overflow-hidden"
       >
-        <section class="grid grid-cols-1 gap-3">
+        <section
+          v-if="showSides"
+          class="grid grid-cols-1 gap-3 lg:grid-cols-3"
+        >
           <div
-            class="relative flex items-center justify-between rounded-xl border border-default bg-default px-4 py-3 text-left transition hover:bg-elevated"
+            :class="fieldClass"
           >
-            <span>
+            <span class="min-w-0">
               <span class="block text-xs uppercase tracking-[0.18em] text-muted">Platillo principal</span>
-              <span class="mt-1 block font-medium text-highlighted">{{ itemSummary(model.platilloPrincipal) }}</span>
+              <span class="mt-1.5 block text-sm font-medium text-highlighted">{{ itemSummary(model.platilloPrincipal) }}</span>
             </span>
-            <span class="flex items-center gap-2">
+            <span class="relative z-10 flex shrink-0 flex-col items-end justify-center gap-2 self-stretch">
+              <span class="text-sm font-semibold text-primary">{{ caloriesSummary(model.platilloPrincipal) }}</span>
+              <span class="flex items-center gap-2">
+                <UButton
+                  type="button"
+                  size="xs"
+                  variant="ghost"
+                  color="neutral"
+                  icon="i-lucide-square-pen"
+                  @click.stop="openDetailModal('platillo-principal')"
+                >
+                  Detalles
+                </UButton>
               <UButton
                 v-if="hasValue(model.platilloPrincipal)"
                 type="button"
@@ -339,7 +409,7 @@ function afterLeave(el: Element) {
               >
                 Limpiar
               </UButton>
-              <span class="text-sm font-semibold text-primary">{{ caloriesSummary(model.platilloPrincipal) }}</span>
+              </span>
             </span>
             <USelectMenu
               v-model="selectedPrimaryId"
@@ -350,7 +420,7 @@ function afterLeave(el: Element) {
               placeholder="Escribe para buscar un platillo"
               class="absolute inset-0 text-transparent [caret-color:transparent] [&_*]:text-transparent [&_*]:placeholder:text-transparent"
               :content="{ align: 'start', sideOffset: 8 }"
-              :ui="{ base: 'h-full w-full p-0 min-h-0 border-0 bg-transparent shadow-none', trailingIcon: 'opacity-0', leadingIcon: 'opacity-0' }"
+              :ui="overlayFieldUi"
               @update:model-value="applyCatalogItem(model.platilloPrincipal, $event)"
             >
               <template #item-label="{ item }">
@@ -365,122 +435,206 @@ function afterLeave(el: Element) {
             </USelectMenu>
           </div>
 
-          <section
-            v-if="showSides"
-            class="grid grid-cols-1 xl:grid-cols-2 gap-3"
+          <div
+            :class="fieldClass"
           >
-            <div
-              class="relative flex items-center justify-between rounded-xl border border-default bg-default px-4 py-3 text-left transition hover:bg-elevated"
-            >
-              <span>
-                <span class="block text-xs uppercase tracking-[0.18em] text-muted">Guarnición 1</span>
-                <span class="mt-1 block font-medium text-highlighted">{{ itemSummary(model.guarnicion1) }}</span>
-              </span>
+            <span class="min-w-0">
+              <span class="block text-xs uppercase tracking-[0.18em] text-muted">Guarnición 1</span>
+              <span class="mt-1.5 block text-sm font-medium text-highlighted">{{ itemSummary(model.guarnicion1) }}</span>
+            </span>
+            <span class="relative z-10 flex shrink-0 flex-col items-end justify-center gap-2 self-stretch">
+              <span class="text-sm font-semibold text-primary">{{ caloriesSummary(model.guarnicion1) }}</span>
               <span class="flex items-center gap-2">
                 <UButton
-                  v-if="hasValue(model.guarnicion1)"
                   type="button"
                   size="xs"
                   variant="ghost"
                   color="neutral"
-                  class="relative z-10"
-                  icon="i-lucide-x"
-                  @click.stop="clearFoodItem(guarnicion1Model)"
+                  icon="i-lucide-square-pen"
+                  @click.stop="openDetailModal('guarnicion-1')"
                 >
-                  Limpiar
+                  Detalles
                 </UButton>
-                <span class="text-sm font-semibold text-primary">{{ caloriesSummary(model.guarnicion1) }}</span>
-              </span>
-              <USelectMenu
-                v-model="selectedGuarnicion1Id"
-                :items="guarnicionOptions"
-                value-key="value"
-                clearable
-                search-input
-                placeholder="Escribe para buscar una guarnición"
-                class="absolute inset-0 text-transparent [caret-color:transparent] [&_*]:text-transparent [&_*]:placeholder:text-transparent"
-                :content="{ align: 'start', sideOffset: 8 }"
-                :ui="{ base: 'h-full w-full p-0 min-h-0 border-0 bg-transparent shadow-none', trailingIcon: 'opacity-0', leadingIcon: 'opacity-0' }"
-                @update:model-value="applyCatalogItem(guarnicion1Model, $event)"
+              <UButton
+                v-if="hasValue(model.guarnicion1)"
+                type="button"
+                size="xs"
+                variant="ghost"
+                color="neutral"
+                class="relative z-10"
+                icon="i-lucide-x"
+                @click.stop="clearFoodItem(guarnicion1Model)"
               >
-                <template #item-label="{ item }">
-                  <span class="flex items-center justify-between gap-3">
-                    <span>{{ item.label }}</span>
-                    <span class="flex items-center gap-2">
-                      <span class="text-primary">{{ item.calorias }} cal</span>
-                      <UBadge color="neutral" variant="soft" size="sm">{{ item.tipo }}</UBadge>
-                    </span>
-                  </span>
-                </template>
-              </USelectMenu>
-            </div>
-
-            <div
-              class="relative flex items-center justify-between rounded-xl border border-default bg-default px-4 py-3 text-left transition hover:bg-elevated"
-            >
-              <span>
-                <span class="block text-xs uppercase tracking-[0.18em] text-muted">Guarnición 2</span>
-                <span class="mt-1 block font-medium text-highlighted">{{ itemSummary(model.guarnicion2) }}</span>
+                Limpiar
+              </UButton>
               </span>
+            </span>
+            <USelectMenu
+              v-model="selectedGuarnicion1Id"
+              :items="guarnicionOptions"
+              value-key="value"
+              clearable
+              search-input
+              placeholder="Escribe para buscar una guarnición"
+              class="absolute inset-0 text-transparent [caret-color:transparent] [&_*]:text-transparent [&_*]:placeholder:text-transparent"
+              :content="{ align: 'start', sideOffset: 8 }"
+              :ui="overlayFieldUi"
+              @update:model-value="applyCatalogItem(guarnicion1Model, $event)"
+            >
+              <template #item-label="{ item }">
+                <span class="flex items-center justify-between gap-3">
+                  <span>{{ item.label }}</span>
+                  <span class="flex items-center gap-2">
+                    <span class="text-primary">{{ item.calorias }} cal</span>
+                    <UBadge color="neutral" variant="soft" size="sm">{{ item.tipo }}</UBadge>
+                  </span>
+                </span>
+              </template>
+            </USelectMenu>
+          </div>
+
+          <div
+            :class="fieldClass"
+          >
+            <span class="min-w-0">
+              <span class="block text-xs uppercase tracking-[0.18em] text-muted">Guarnición 2</span>
+              <span class="mt-1.5 block text-sm font-medium text-highlighted">{{ itemSummary(model.guarnicion2) }}</span>
+            </span>
+            <span class="relative z-10 flex shrink-0 flex-col items-end justify-center gap-2 self-stretch">
+              <span class="text-sm font-semibold text-primary">{{ caloriesSummary(model.guarnicion2) }}</span>
               <span class="flex items-center gap-2">
                 <UButton
-                  v-if="hasValue(model.guarnicion2)"
                   type="button"
                   size="xs"
                   variant="ghost"
                   color="neutral"
-                  class="relative z-10"
-                  icon="i-lucide-x"
-                  @click.stop="clearFoodItem(guarnicion2Model)"
+                  icon="i-lucide-square-pen"
+                  @click.stop="openDetailModal('guarnicion-2')"
                 >
-                  Limpiar
+                  Detalles
                 </UButton>
-                <span class="text-sm font-semibold text-primary">{{ caloriesSummary(model.guarnicion2) }}</span>
-              </span>
-              <USelectMenu
-                v-model="selectedGuarnicion2Id"
-                :items="guarnicionOptions"
-                value-key="value"
-                clearable
-                search-input
-                placeholder="Escribe para buscar una guarnición"
-                class="absolute inset-0 text-transparent [caret-color:transparent] [&_*]:text-transparent [&_*]:placeholder:text-transparent"
-                :content="{ align: 'start', sideOffset: 8 }"
-                :ui="{ base: 'h-full w-full p-0 min-h-0 border-0 bg-transparent shadow-none', trailingIcon: 'opacity-0', leadingIcon: 'opacity-0' }"
-                @update:model-value="applyCatalogItem(guarnicion2Model, $event)"
+              <UButton
+                v-if="hasValue(model.guarnicion2)"
+                type="button"
+                size="xs"
+                variant="ghost"
+                color="neutral"
+                class="relative z-10"
+                icon="i-lucide-x"
+                @click.stop="clearFoodItem(guarnicion2Model)"
               >
-                <template #item-label="{ item }">
-                  <span class="flex items-center justify-between gap-3">
-                    <span>{{ item.label }}</span>
-                    <span class="flex items-center gap-2">
-                      <span class="text-primary">{{ item.calorias }} cal</span>
-                      <UBadge color="neutral" variant="soft" size="sm">{{ item.tipo }}</UBadge>
-                    </span>
+                Limpiar
+              </UButton>
+              </span>
+            </span>
+            <USelectMenu
+              v-model="selectedGuarnicion2Id"
+              :items="guarnicionOptions"
+              value-key="value"
+              clearable
+              search-input
+              placeholder="Escribe para buscar una guarnición"
+              class="absolute inset-0 text-transparent [caret-color:transparent] [&_*]:text-transparent [&_*]:placeholder:text-transparent"
+              :content="{ align: 'start', sideOffset: 8 }"
+              :ui="overlayFieldUi"
+              @update:model-value="applyCatalogItem(guarnicion2Model, $event)"
+            >
+              <template #item-label="{ item }">
+                <span class="flex items-center justify-between gap-3">
+                  <span>{{ item.label }}</span>
+                  <span class="flex items-center gap-2">
+                    <span class="text-primary">{{ item.calorias }} cal</span>
+                    <UBadge color="neutral" variant="soft" size="sm">{{ item.tipo }}</UBadge>
                   </span>
-                </template>
-              </USelectMenu>
-            </div>
-          </section>
+                </span>
+              </template>
+            </USelectMenu>
+          </div>
+        </section>
 
+        <section
+          v-else
+          class="grid grid-cols-1 gap-3"
+        >
+          <div
+            :class="fieldClass"
+          >
+            <span class="min-w-0">
+              <span class="block text-xs uppercase tracking-[0.18em] text-muted">Platillo principal</span>
+              <span class="mt-1.5 block text-sm font-medium text-highlighted">{{ itemSummary(model.platilloPrincipal) }}</span>
+            </span>
+            <span class="relative z-10 flex shrink-0 flex-col items-end justify-center gap-2 self-stretch">
+              <span class="text-sm font-semibold text-primary">{{ caloriesSummary(model.platilloPrincipal) }}</span>
+              <span class="flex items-center gap-2">
+                <UButton
+                  type="button"
+                  size="xs"
+                  variant="ghost"
+                  color="neutral"
+                  icon="i-lucide-square-pen"
+                  @click.stop="openDetailModal('platillo-principal')"
+                >
+                  Detalles
+                </UButton>
+              <UButton
+                v-if="hasValue(model.platilloPrincipal)"
+                type="button"
+                size="xs"
+                variant="ghost"
+                color="neutral"
+                class="relative z-10"
+                icon="i-lucide-x"
+                @click.stop="clearFoodItem(model.platilloPrincipal)"
+              >
+                Limpiar
+              </UButton>
+              </span>
+            </span>
+            <USelectMenu
+              v-model="selectedPrimaryId"
+              :items="platilloPrincipalOptions"
+              value-key="value"
+              clearable
+              search-input
+              placeholder="Escribe para buscar un platillo"
+              class="absolute inset-0 text-transparent [caret-color:transparent] [&_*]:text-transparent [&_*]:placeholder:text-transparent"
+              :content="{ align: 'start', sideOffset: 8 }"
+              :ui="overlayFieldUi"
+              @update:model-value="applyCatalogItem(model.platilloPrincipal, $event)"
+            >
+              <template #item-label="{ item }">
+                <span class="flex items-center justify-between gap-3">
+                  <span>{{ item.label }}</span>
+                  <span class="flex items-center gap-2">
+                    <span class="text-primary">{{ item.calorias }} cal</span>
+                    <UBadge color="neutral" variant="soft" size="sm">{{ item.tipo }}</UBadge>
+                  </span>
+                </span>
+              </template>
+            </USelectMenu>
+          </div>
+        </section>
+
+        <section class="grid grid-cols-1 gap-3 lg:grid-cols-2">
           <button
             type="button"
-            class="flex items-center justify-between rounded-xl border border-dashed border-default bg-default px-4 py-3 text-left transition hover:bg-elevated"
+            class="flex items-center justify-between rounded-xl border border-dashed border-default/70 bg-default px-4 py-3 text-left shadow-xs transition-colors hover:bg-default"
             @click="modalView = 'adicionales'"
           >
             <span>
               <span class="block text-xs uppercase tracking-[0.18em] text-muted">Adicionales</span>
-              <span class="mt-1 block font-medium text-highlighted">
+              <span class="mt-1.5 block text-sm font-medium text-highlighted">
                 {{ model.adicionales.length ? `${model.adicionales.length} capturados` : "Sin adicionales" }}
               </span>
             </span>
             <UIcon name="i-lucide-chevron-right" class="size-4 text-muted" />
           </button>
 
-          <div class="relative rounded-xl border border-default bg-default px-4 py-3 transition hover:bg-elevated">
+          <div class="relative rounded-xl border border-default/70 bg-default px-4 py-3 shadow-xs transition-colors hover:bg-default">
             <div class="pointer-events-none flex items-center justify-between">
               <span>
                 <span class="block text-xs uppercase tracking-[0.18em] text-muted">Contenedor</span>
-                <span class="mt-1 block font-medium text-highlighted">{{ model.contenedor || 'Sin capturar' }}</span>
+                <span class="mt-1.5 block text-sm font-medium text-highlighted">{{ model.contenedor || 'Sin capturar' }}</span>
               </span>
               <span class="text-base">📦</span>
             </div>
@@ -491,26 +645,26 @@ function afterLeave(el: Element) {
               icon="i-lucide-package"
               variant="ghost"
               class="absolute inset-0 text-transparent [caret-color:transparent] [&_*]:text-transparent [&_*]:placeholder:text-transparent"
-              :ui="{
-                base: 'h-full w-full p-0 min-h-0 border-0 bg-transparent shadow-none',
-                trailingIcon: 'opacity-0',
-                leadingIcon: 'opacity-0'
-              }"
+              :ui="overlayFieldUi"
             />
           </div>
         </section>
+
       </section>
     </Transition>
   </UCard>
 
   <UModal
     v-model:open="isModalOpen"
-    title="Adicionales"
+    :title="detailModalTitle"
     :description="title"
     :ui="{ content: 'max-w-3xl' }"
   >
     <template #body>
-      <section class="space-y-4">
+      <section
+        v-if="modalView === 'adicionales'"
+        class="space-y-4"
+      >
         <section class="flex items-center justify-between gap-3">
           <p class="text-sm text-muted">
             Agrega y organiza los adicionales de este tiempo.
@@ -558,6 +712,59 @@ function afterLeave(el: Element) {
             @update:model-value="setAdicional(index, $event)"
           />
         </section>
+      </section>
+
+      <section
+        v-else-if="detailItem"
+        class="space-y-4"
+      >
+        <p class="text-sm text-muted">
+          Ajusta manualmente el detalle del platillo seleccionado para este tiempo.
+        </p>
+
+        <UFormField label="Nombre">
+          <UInput
+            v-model="detailItem.nombre"
+            placeholder="Nombre del platillo"
+            :ui="detailFieldInputUi"
+          />
+        </UFormField>
+
+        <UFormField label="Descripción">
+          <UTextarea
+            v-model="detailItem.descripcion"
+            :rows="3"
+            placeholder="Descripción breve"
+            :ui="detailFieldTextareaUi"
+          />
+        </UFormField>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <UFormField label="Calorías">
+            <UInput
+              v-model.number="detailItem.calorias"
+              type="number"
+              min="0"
+              :ui="detailFieldInputUi"
+            />
+          </UFormField>
+
+          <UFormField label="Tipo">
+            <UInput
+              v-model="detailItem.tipo"
+              placeholder="Tipo"
+              :ui="detailFieldInputUi"
+            />
+          </UFormField>
+        </div>
+
+        <UFormField label="Imagen (URL)">
+          <UInput
+            v-model="detailItem.imagen"
+            placeholder="https://..."
+            :ui="detailFieldInputUi"
+          />
+        </UFormField>
       </section>
     </template>
   </UModal>

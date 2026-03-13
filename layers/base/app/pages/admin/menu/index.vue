@@ -1,78 +1,89 @@
 <script setup lang="ts">
-import type { WeeklyMenu } from '~~/layers/menu/shared/types/types';
+import type { WeeklyMenu } from "~~/layers/menu/shared/types/types"
 
-const { data: menus, refresh, status } = await useFetch<WeeklyMenu[]>('/api/menu/all', {
-  default: () => [],
-});
+const {
+  data: menus,
+  refresh,
+  status
+} = await useFetch<WeeklyMenu[]>("/api/menu/all", {
+  default: () => []
+})
 
-const { deleteMenuOnDB, setActiveMenuOnDB } = useMenu();
-const toast = useToast();
-const deletingId = ref<string | null>(null);
-const activatingId = ref<string | null>(null);
+const { deleteMenuOnDB, setActiveMenuOnDB } = useMenu()
+const toast = useToast()
+const deletingId = ref<string | null>(null)
+const activatingId = ref<string | null>(null)
 
 async function onDelete(id: string) {
-  deletingId.value = id;
+  deletingId.value = id
 
   try {
-    await deleteMenuOnDB(id);
-    await refresh();
-    toast.add({ title: 'Menú eliminado', color: 'success' });
+    await deleteMenuOnDB(id)
+    await refresh()
+    toast.add({ title: "Menú eliminado", color: "success" })
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'No se pudo eliminar';
-    toast.add({ title: 'Error', description: message, color: 'error' });
+    const message = error instanceof Error ? error.message : "No se pudo eliminar"
+    toast.add({ title: "Error", description: message, color: "error" })
   } finally {
-    deletingId.value = null;
+    deletingId.value = null
   }
 }
 
 async function onSetActive(id: string) {
-  activatingId.value = id;
+  activatingId.value = id
 
   try {
-    await setActiveMenuOnDB(id);
-    await refresh();
-    toast.add({ title: 'Menú activo actualizado', color: 'success' });
+    await setActiveMenuOnDB(id)
+    await refresh()
+    toast.add({ title: "Menú activo actualizado", color: "success" })
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'No se pudo actualizar el menú activo';
-    toast.add({ title: 'Error', description: message, color: 'error' });
+    const message = error instanceof Error ? error.message : "No se pudo actualizar el menú activo"
+    toast.add({ title: "Error", description: message, color: "error" })
   } finally {
-    activatingId.value = null;
+    activatingId.value = null
   }
 }
 
 definePageMeta({
-  layout: 'admin',
-});
+  layout: "admin"
+})
 </script>
 
 <template>
   <main>
-    <AdminSection title="Menú semanal" title-size="lg">
+    <AdminSection
+      title="Menú semanal"
+      title-size="lg"
+    >
       <template #description>
         <span>Crea nuevos menús, edita los existentes y mantén visible la próxima rotación semanal.</span>
       </template>
 
       <template #footer>
         <section class="w-full flex justify-end">
-          <UButton to="/admin/menu/crear-nuevo" icon="i-lucide-plus">Nuevo menú</UButton>
+          <UButton
+            to="/admin/menu/crear-nuevo"
+            icon="i-lucide-plus"
+            >Nuevo menú</UButton
+          >
         </section>
       </template>
 
       <section class="space-y-4">
-        <UCard variant="subtle">
+        <UCard variant="subtle" class="rounded-xl border border-default/70 shadow-sm">
           <section class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p class="text-xs uppercase tracking-[0.2em] text-muted">Panel</p>
               <h3 class="text-2xl font-bold text-primary-500">Administra tu rotación semanal</h3>
-              <p class="text-sm text-muted mt-1">Cada menú guarda 7 días con desayuno, comida, cena y dos snacks.</p>
+              <p class="text-sm text-muted mt-1">Cada menú guarda 5 días con desayuno, comida, cena y dos snacks.</p>
             </div>
 
             <div class="grid grid-cols-2 gap-3 lg:w-[300px]">
-              <UCard>
+              <UCard class="rounded-xl border border-default/70 shadow-sm">
                 <p class="text-xs text-muted">Menús creados</p>
                 <p class="text-2xl font-bold">{{ menus.length }}</p>
               </UCard>
-              <UCard>
+              <UCard class="rounded-xl border border-default/70 shadow-sm">
                 <p class="text-xs text-muted">Activo manual</p>
                 <p class="text-2xl font-bold">{{ menus.filter((menu) => menu.isActive).length }}</p>
               </UCard>
@@ -80,8 +91,15 @@ definePageMeta({
           </section>
         </UCard>
 
-        <section v-if="status === 'pending'" class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-          <USkeleton v-for="index in 4" :key="index" class="h-48 w-full" />
+        <section
+          v-if="status === 'pending'"
+          class="grid grid-cols-1 xl:grid-cols-2 gap-4"
+        >
+          <USkeleton
+            v-for="index in 4"
+            :key="index"
+            class="h-48 w-full"
+          />
         </section>
 
         <UAlert
@@ -93,8 +111,15 @@ definePageMeta({
           icon="i-lucide-notebook-tabs"
         />
 
-        <section v-else class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-          <UCard v-for="menu in menus" :key="menu.id" class="border border-primary-100/80">
+        <section
+          v-else
+          class="grid grid-cols-1 xl:grid-cols-2 gap-4"
+        >
+          <UCard
+            v-for="menu in menus"
+            :key="menu.id"
+            class="rounded-xl border border-default/70 shadow-sm"
+          >
             <template #header>
               <section class="flex items-start justify-between gap-3">
                 <div>
@@ -104,23 +129,24 @@ definePageMeta({
                   </p>
                 </div>
 
-                <UBadge :color="menu.isActive ? 'success' : 'neutral'" variant="soft">
-                  {{ menu.isActive ? 'Activo' : 'Inactivo' }}
+                <UBadge
+                  :color="menu.isActive ? 'success' : 'neutral'"
+                  variant="soft"
+                >
+                  {{ menu.isActive ? "Activo" : "Inactivo" }}
                 </UBadge>
               </section>
             </template>
 
-              <section class="space-y-3">
-              <p class="text-sm text-muted">
-                {{ menu.days.length }} días configurados con 5 momentos por día.
-              </p>
+            <section class="space-y-3">
+              <p class="text-sm text-muted">{{ menu.days.length }} días configurados con 5 momentos por día.</p>
 
               <section class="grid grid-cols-2 gap-2 text-sm">
-                <div class="rounded-lg bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
+                <div class="rounded-xl bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
                   <span class="text-muted">Creado</span>
                   <p class="font-medium">{{ formatDate(menu.createdAt) }}</p>
                 </div>
-                <div class="rounded-lg bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
+                <div class="rounded-xl bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
                   <span class="text-muted">Actualizado</span>
                   <p class="font-medium">{{ formatDate(menu.updatedAt) }}</p>
                 </div>
@@ -137,12 +163,20 @@ definePageMeta({
                   :disabled="menu.isActive"
                   @click="onSetActive(menu.id)"
                 >
-                  {{ menu.isActive ? 'Activo' : 'Activar' }}
+                  {{ menu.isActive ? "Activo" : "Activar" }}
                 </UButton>
-                <UButton :to="`/admin/menu/${menu.id}`" variant="outline" icon="i-lucide-pencil">
+                <UButton
+                  :to="`/admin/menu/${menu.id}`"
+                  variant="outline"
+                  icon="i-lucide-pencil"
+                >
                   Editar
                 </UButton>
-                <UButton :to="'/menu'" variant="ghost" icon="i-lucide-eye">
+                <UButton
+                  :to="'/menu'"
+                  variant="ghost"
+                  icon="i-lucide-eye"
+                >
                   Ver público
                 </UButton>
                 <UButton
