@@ -32,29 +32,29 @@ export const adminLinks: NavigationMenuItem[][] = [
   [
     {
       label: "Inicio",
-      icon: "i-heroicons-home",
+      icon: "i-lucide-house",
       to: "/admin"
     },
     {
       label: "Planes",
-      icon: "i-heroicons-newspaper",
+      icon: "i-lucide-clipboard-list",
       to: "/admin/planes"
     },
     {
       label: "Menús",
-      icon: "i-heroicons-clipboard-document-list",
+      icon: "i-lucide-notebook-tabs",
       type: "trigger",
       value: "menús",
       defaultOpen: true,
       children: [
         {
           label: "Menú",
-          icon: "i-heroicons-calendar-days",
+          icon: "i-lucide-calendar-range",
           to: "/admin/menu"
         },
         {
           label: "Platillos",
-          icon: "i-heroicons-squares-2x2",
+          icon: "i-lucide-utensils-crossed",
           to: "/admin/platillos"
         }
       ]

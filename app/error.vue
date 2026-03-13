@@ -4,6 +4,12 @@ import type { NuxtError } from '#app'
 const props = defineProps<{
   error?: NuxtError
 }>()
+
+useSeoMeta({
+  title: 'Página no encontrada | Heltifud Meal Preps',
+  description: 'La página solicitada no está disponible en Heltifud Meal Preps.',
+  robots: 'noindex, nofollow',
+})
 </script>
 
 <template>

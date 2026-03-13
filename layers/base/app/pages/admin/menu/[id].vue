@@ -11,6 +11,12 @@ const { data: menu, status, refresh, error } = await useFetch<WeeklyMenu>(`/api/
   key: `admin-menu-${route.params.id}`,
 });
 
+useSeoMeta({
+  title: 'Gestión de menús semanales | Editar menú | Heltifud Meal Preps',
+  description: 'Edita un menú semanal existente dentro del panel de gestión de menús de Heltifud Meal Preps.',
+  robots: 'noindex, nofollow',
+})
+
 async function onSaved() {
   await refresh();
   await navigateTo('/admin/menu');

@@ -5,6 +5,12 @@ definePageMeta({
 
 const route = useRoute();
 
+useSeoMeta({
+  title: 'Gestión de platillos | Crear nuevo platillo | Heltifud Meal Preps',
+  description: 'Crea un nuevo platillo dentro del catálogo reutilizable del panel administrativo de Heltifud Meal Preps.',
+  robots: 'noindex, nofollow',
+})
+
 async function onSaved() {
   if (typeof route.query.returnTo === 'string') {
     await navigateTo(route.query.returnTo);

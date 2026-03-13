@@ -9,8 +9,9 @@ const { data: activeMenu, status } = await useFetch<WeeklyMenu>(`/api/menu`, {
 const startDate = ref<Date>(new Date())
 
 useSeoMeta({
-  title: "Menú de la semana",
-  description: "Descubre nuestro menú de la semana."
+  title: "Editar menú semanal | Heltifud Meal Preps",
+  description: "Vista de edición del menú semanal para administración interna.",
+  robots: "noindex, nofollow"
 })
 </script>
 

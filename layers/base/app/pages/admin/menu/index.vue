@@ -47,152 +47,161 @@ async function onSetActive(id: string) {
 definePageMeta({
   layout: "admin"
 })
+
+useSeoMeta({
+  title: "Gestión de menús semanales | Heltifud Meal Preps",
+  description: "Administra la rotación semanal de menús dentro del panel administrativo de Heltifud Meal Preps.",
+  robots: "noindex, nofollow"
+})
 </script>
 
 <template>
-  <main>
-    <AdminSection
-      title="Menú semanal"
-      title-size="lg"
-    >
-      <template #description>
-        <span>Crea nuevos menús, edita los existentes y mantén visible la próxima rotación semanal.</span>
-      </template>
+  <main class="flex min-h-full flex-col space-y-6">
+    <section class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div class="space-y-2">
+        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-muted">Catálogo</p>
+        <div class="space-y-1">
+          <h1 class="text-3xl font-semibold tracking-tight text-primary">Menú semanal</h1>
+          <p class="max-w-2xl text-sm text-muted">
+            Crea nuevos menús, edita los existentes y mantén visible la próxima rotación semanal.
+          </p>
+        </div>
+      </div>
 
-      <template #footer>
-        <section class="w-full flex justify-end">
-          <UButton
-            to="/admin/menu/crear-nuevo"
-            icon="i-lucide-plus"
-            >Nuevo menú</UButton
-          >
-        </section>
-      </template>
-
-      <section class="space-y-4">
-        <UCard variant="subtle" class="rounded-xl border border-default/70 shadow-sm">
-          <section class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p class="text-xs uppercase tracking-[0.2em] text-muted">Panel</p>
-              <h3 class="text-2xl font-bold text-primary-500">Administra tu rotación semanal</h3>
-              <p class="text-sm text-muted mt-1">Cada menú guarda 5 días con desayuno, comida, cena y dos snacks.</p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 lg:w-[300px]">
-              <UCard class="rounded-xl border border-default/70 shadow-sm">
-                <p class="text-xs text-muted">Menús creados</p>
-                <p class="text-2xl font-bold">{{ menus.length }}</p>
-              </UCard>
-              <UCard class="rounded-xl border border-default/70 shadow-sm">
-                <p class="text-xs text-muted">Activo manual</p>
-                <p class="text-2xl font-bold">{{ menus.filter((menu) => menu.isActive).length }}</p>
-              </UCard>
-            </div>
-          </section>
-        </UCard>
-
-        <section
-          v-if="status === 'pending'"
-          class="grid grid-cols-1 xl:grid-cols-2 gap-4"
+      <div class="flex items-center gap-3 lg:justify-end">
+        <UButton
+          to="/admin/menu/crear-nuevo"
+          icon="i-lucide-plus"
         >
-          <USkeleton
-            v-for="index in 4"
-            :key="index"
-            class="h-48 w-full"
-          />
-        </section>
+          Nuevo menú
+        </UButton>
+      </div>
+    </section>
 
-        <UAlert
-          v-else-if="!menus.length"
-          title="Aún no hay menús"
-          description="Empieza creando el primer menú semanal desde el botón de arriba."
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-notebook-tabs"
+    <section class="space-y-4">
+      <UCard
+        variant="subtle"
+        class="rounded-xl border border-default/70 shadow-sm"
+      >
+        <section class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p class="text-xs uppercase tracking-[0.2em] text-muted">Panel</p>
+            <h3 class="text-2xl font-bold text-primary-500">Administra tu rotación semanal</h3>
+            <p class="text-sm text-muted mt-1">Cada menú guarda 5 días con desayuno, comida, cena y dos snacks.</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 lg:w-[300px]">
+            <UCard class="rounded-xl border border-default/70 shadow-sm">
+              <p class="text-xs text-muted">Menús creados</p>
+              <p class="text-2xl font-bold">{{ menus.length }}</p>
+            </UCard>
+            <UCard class="rounded-xl border border-default/70 shadow-sm">
+              <p class="text-xs text-muted">Activo manual</p>
+              <p class="text-2xl font-bold">{{ menus.filter((menu) => menu.isActive).length }}</p>
+            </UCard>
+          </div>
+        </section>
+      </UCard>
+
+      <section
+        v-if="status === 'pending'"
+        class="grid grid-cols-1 xl:grid-cols-2 gap-4"
+      >
+        <USkeleton
+          v-for="index in 4"
+          :key="index"
+          class="h-48 w-full"
         />
-
-        <section
-          v-else
-          class="grid grid-cols-1 xl:grid-cols-2 gap-4"
-        >
-          <UCard
-            v-for="menu in menus"
-            :key="menu.id"
-            class="rounded-xl border border-default/70 shadow-sm"
-          >
-            <template #header>
-              <section class="flex items-start justify-between gap-3">
-                <div>
-                  <h3 class="text-lg font-bold text-primary-500">{{ menu.name }}</h3>
-                  <p class="text-sm text-muted mt-1">
-                    {{ formatDate(menu.startDate) }} - {{ formatDate(menu.endDate) }}
-                  </p>
-                </div>
-
-                <UBadge
-                  :color="menu.isActive ? 'success' : 'neutral'"
-                  variant="soft"
-                >
-                  {{ menu.isActive ? "Activo" : "Inactivo" }}
-                </UBadge>
-              </section>
-            </template>
-
-            <section class="space-y-3">
-              <p class="text-sm text-muted">{{ menu.days.length }} días configurados con 5 momentos por día.</p>
-
-              <section class="grid grid-cols-2 gap-2 text-sm">
-                <div class="rounded-xl bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
-                  <span class="text-muted">Creado</span>
-                  <p class="font-medium">{{ formatDate(menu.createdAt) }}</p>
-                </div>
-                <div class="rounded-xl bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
-                  <span class="text-muted">Actualizado</span>
-                  <p class="font-medium">{{ formatDate(menu.updatedAt) }}</p>
-                </div>
-              </section>
-            </section>
-
-            <template #footer>
-              <section class="flex flex-wrap justify-end gap-2">
-                <UButton
-                  :variant="menu.isActive ? 'soft' : 'outline'"
-                  :color="menu.isActive ? 'success' : 'primary'"
-                  icon="i-lucide-badge-check"
-                  :loading="activatingId === menu.id"
-                  :disabled="menu.isActive"
-                  @click="onSetActive(menu.id)"
-                >
-                  {{ menu.isActive ? "Activo" : "Activar" }}
-                </UButton>
-                <UButton
-                  :to="`/admin/menu/${menu.id}`"
-                  variant="outline"
-                  icon="i-lucide-pencil"
-                >
-                  Editar
-                </UButton>
-                <UButton
-                  :to="'/menu'"
-                  variant="ghost"
-                  icon="i-lucide-eye"
-                >
-                  Ver público
-                </UButton>
-                <UButton
-                  color="error"
-                  variant="ghost"
-                  icon="i-lucide-trash"
-                  :loading="deletingId === menu.id"
-                  @click="onDelete(menu.id)"
-                >
-                  Eliminar
-                </UButton>
-              </section>
-            </template>
-          </UCard>
-        </section>
       </section>
-    </AdminSection>
+
+      <UAlert
+        v-else-if="!menus.length"
+        title="Aún no hay menús"
+        description="Empieza creando el primer menú semanal desde el botón de arriba."
+        color="neutral"
+        variant="soft"
+        icon="i-lucide-notebook-tabs"
+      />
+
+      <section
+        v-else
+        class="grid grid-cols-1 xl:grid-cols-2 gap-4"
+      >
+        <UCard
+          v-for="menu in menus"
+          :key="menu.id"
+          class="rounded-xl border border-default/70 shadow-sm"
+        >
+          <template #header>
+            <section class="flex items-start justify-between gap-3">
+              <div>
+                <h3 class="text-lg font-bold text-primary-500">{{ menu.name }}</h3>
+                <p class="text-sm text-muted mt-1">{{ formatDate(menu.startDate) }} - {{ formatDate(menu.endDate) }}</p>
+              </div>
+
+              <UBadge
+                :color="menu.isActive ? 'success' : 'neutral'"
+                variant="soft"
+              >
+                {{ menu.isActive ? "Activo" : "Inactivo" }}
+              </UBadge>
+            </section>
+          </template>
+
+          <section class="space-y-3">
+            <p class="text-sm text-muted">{{ menu.days.length }} días configurados con 5 momentos por día.</p>
+
+            <section class="grid grid-cols-2 gap-2 text-sm">
+              <div class="rounded-xl bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
+                <span class="text-muted">Creado</span>
+                <p class="font-medium">{{ formatDate(menu.createdAt) }}</p>
+              </div>
+              <div class="rounded-xl bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
+                <span class="text-muted">Actualizado</span>
+                <p class="font-medium">{{ formatDate(menu.updatedAt) }}</p>
+              </div>
+            </section>
+          </section>
+
+          <template #footer>
+            <section class="flex flex-wrap justify-end gap-2">
+              <UButton
+                :variant="menu.isActive ? 'soft' : 'outline'"
+                :color="menu.isActive ? 'success' : 'primary'"
+                icon="i-lucide-badge-check"
+                :loading="activatingId === menu.id"
+                :disabled="menu.isActive"
+                @click="onSetActive(menu.id)"
+              >
+                {{ menu.isActive ? "Activo" : "Activar" }}
+              </UButton>
+              <UButton
+                :to="`/admin/menu/${menu.id}`"
+                variant="outline"
+                icon="i-lucide-pencil"
+              >
+                Editar
+              </UButton>
+              <UButton
+                :to="'/menu'"
+                variant="ghost"
+                icon="i-lucide-eye"
+              >
+                Ver público
+              </UButton>
+              <UButton
+                color="error"
+                variant="ghost"
+                icon="i-lucide-trash"
+                :loading="deletingId === menu.id"
+                @click="onDelete(menu.id)"
+              >
+                Eliminar
+              </UButton>
+            </section>
+          </template>
+        </UCard>
+      </section>
+    </section>
   </main>
 </template>

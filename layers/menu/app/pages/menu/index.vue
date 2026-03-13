@@ -12,8 +12,12 @@ const publicDays = computed(() =>
 )
 
 useSeoMeta({
-  title: 'Menú de la semana',
-  description: 'Descubre nuestro menú de la semana.',
+  title: 'Menú de la semana | Heltifud Meal Preps',
+  description: 'Consulta el menú semanal vigente de Heltifud Meal Preps con desayuno, comida y cena de lunes a viernes.',
+  ogTitle: 'Menú de la semana | Heltifud Meal Preps',
+  ogDescription: 'Consulta el menú semanal vigente de Heltifud Meal Preps.',
+  twitterTitle: 'Menú de la semana | Heltifud Meal Preps',
+  twitterDescription: 'Descubre el menú semanal vigente de Heltifud.',
 })
 </script>
 

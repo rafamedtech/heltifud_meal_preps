@@ -5,6 +5,12 @@ definePageMeta({
   layout: "admin"
 })
 
+useSeoMeta({
+  title: "Gestión de platillos | Heltifud Meal Preps",
+  description: "Administra el catálogo de platillos reutilizables dentro del panel administrativo de Heltifud Meal Preps.",
+  robots: "noindex, nofollow"
+})
+
 const route = useRoute()
 const toast = useToast()
 const deletingId = ref<string | null>(null)
@@ -75,7 +81,7 @@ async function onDelete(id: string) {
       <div class="space-y-2">
         <p class="text-xs font-semibold uppercase tracking-[0.24em] text-muted">Catálogo</p>
         <div class="space-y-1">
-          <h1 class="text-3xl font-semibold tracking-tight text-highlighted">Platillos</h1>
+          <h1 class="text-3xl font-semibold tracking-tight text-primary">Platillos</h1>
           <p class="max-w-2xl text-sm text-muted">Administra el catálogo de platillos para los menús semanales.</p>
         </div>
       </div>
@@ -106,19 +112,19 @@ async function onDelete(id: string) {
     >
       <template #header>
         <section class="border-b border-default/70 px-5 py-4 sm:px-6">
-          <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_740px] xl:items-center">
             <div class="flex flex-col gap-1">
               <h2 class="text-sm font-semibold text-highlighted">Buscar y filtrar</h2>
               <p class="text-sm text-muted">Busca por nombre o tipo.</p>
             </div>
 
-            <div class="flex flex-col gap-3 md:flex-row md:items-center xl:min-w-[640px] xl:justify-end">
+            <div class="grid grid-cols-1 gap-3 md:grid-cols-[360px_220px_140px] md:justify-end">
               <UInput
                 v-model="search"
                 icon="i-lucide-search"
                 placeholder="Buscar platillo"
                 size="lg"
-                class="w-full md:max-w-[360px]"
+                class="w-full"
               />
 
               <USelect
@@ -127,13 +133,14 @@ async function onDelete(id: string) {
                 value-key="value"
                 placeholder="Filtrar por tipo"
                 size="lg"
-                class="w-full md:max-w-[220px]"
+                :content="{ position: 'popper', side: 'bottom', align: 'end', sideOffset: 8 }"
+                class="w-full"
               />
 
               <UBadge
                 color="neutral"
                 variant="subtle"
-                class="justify-center rounded-xl px-3 py-2 text-xs font-medium md:min-w-[120px]"
+                class="justify-center rounded-xl px-3 py-2 text-xs font-medium"
               >
                 {{ totalItemsLabel }}
               </UBadge>

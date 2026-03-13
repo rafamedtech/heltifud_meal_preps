@@ -7,6 +7,12 @@ definePageMeta({
 
 const route = useRoute();
 
+useSeoMeta({
+  title: 'Gestión de platillos | Editar platillo | Heltifud Meal Preps',
+  description: 'Edita un platillo existente dentro del catálogo reutilizable del panel administrativo de Heltifud Meal Preps.',
+  robots: 'noindex, nofollow',
+})
+
 const { data: item, error } = await useFetch<FoodCatalogItem>(`/api/food-components/${route.params.id}`, {
   key: `food-catalog-${route.params.id}`,
 });

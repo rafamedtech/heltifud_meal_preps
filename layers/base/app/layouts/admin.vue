@@ -1,11 +1,11 @@
 <script setup lang="ts">
 const isSidebarCollapsed = useState('admin-sidebar-collapsed', () => false);
 
-const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl:w-24' : 'md:w-24 xl:w-72'));
+const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl:w-24' : 'md:w-24 xl:w-64'));
 </script>
 
 <template>
-  <div class="admin-shell h-screen overflow-hidden bg-neutral-50 text-highlighted dark:bg-neutral-950">
+  <div class="admin-shell h-dvh min-h-dvh overflow-hidden bg-neutral-50 text-highlighted dark:bg-neutral-950">
     <div class="flex h-full w-full">
       <aside
         class="hidden h-full shrink-0 border-r border-default/70 bg-default/95 backdrop-blur transition-[width] duration-200 md:flex md:flex-col"
@@ -33,12 +33,10 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
 
           <div
             v-else
-            class="hidden items-center gap-3 px-5 xl:flex"
+            class="hidden items-center px-4 xl:flex"
           >
-            <NuxtLink to="/admin" class="min-w-0 rounded-xl">
-              <div class="rounded-xl border border-default/60 bg-elevated px-2 shadow-xs">
-                <AppLogo />
-              </div>
+            <NuxtLink to="/admin" class="min-w-0">
+              <AppLogo />
             </NuxtLink>
           </div>
         </div>
@@ -56,7 +54,7 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
 
         <div
           v-else
-          class="hidden min-h-0 flex-1 flex-col py-5 px-3.5 xl:flex"
+          class="hidden min-h-0 flex-1 flex-col py-4 px-3 xl:flex"
         >
           <AdminNavigationMenu :collapsed="false" />
         </div>
@@ -93,16 +91,16 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
 
         <div
           v-else
-          class="hidden border-t border-default/70 py-4 px-3.5 xl:block"
+          class="hidden border-t border-default/70 py-4 px-3 xl:block"
         >
           <div class="flex items-center justify-between gap-2">
             <ColorMode />
 
             <UButton
               size="sm"
-              variant="soft"
+              variant="ghost"
               color="neutral"
-              class="rounded-xl px-3.5"
+              class="rounded-xl px-2.5"
               icon="i-lucide-panel-left-close"
               @click="isSidebarCollapsed = !isSidebarCollapsed"
             >

@@ -11,8 +11,12 @@ const publicDays = computed(() =>
 )
 
 useSeoMeta({
-  title: 'Menú de la siguiente semana',
-  description: 'Versión preliminar del menú de la siguiente semana',
+  title: 'Próximo menú semanal | Heltifud Meal Preps',
+  description: 'Revisa el próximo menú semanal de Heltifud Meal Preps y conoce la siguiente rotación disponible.',
+  ogTitle: 'Próximo menú semanal | Heltifud Meal Preps',
+  ogDescription: 'Consulta la siguiente rotación del menú semanal de Heltifud.',
+  twitterTitle: 'Próximo menú semanal | Heltifud Meal Preps',
+  twitterDescription: 'Conoce el próximo menú semanal de Heltifud.',
 })
 </script>
 

@@ -1,3 +1,14 @@
+<script setup lang="ts">
+useSeoMeta({
+  title: 'Heltifud Meal Preps | Comidas saludables a domicilio',
+  description: 'Comidas caseras, balanceadas y listas para disfrutar. Descubre planes semanales, menú de la semana y promociones de Heltifud Meal Preps.',
+  ogTitle: 'Heltifud Meal Preps | Comidas saludables a domicilio',
+  ogDescription: 'Descubre planes semanales, menú actualizado y comidas saludables directas a tu puerta.',
+  twitterTitle: 'Heltifud Meal Preps | Comidas saludables a domicilio',
+  twitterDescription: 'Planes semanales y menú saludable listo para disfrutar en casa.',
+})
+</script>
+
 <template>
   <div>
     <section

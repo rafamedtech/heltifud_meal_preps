@@ -69,12 +69,12 @@ function isCurrent(item: AdminLinkItem) {
 
     <section
       v-else
-      class="flex flex-1 flex-col gap-8 py-2"
+      class="flex flex-1 flex-col gap-6 py-1"
     >
       <section
         v-for="(group, groupIndex) in sections"
         :key="groupIndex"
-        class="space-y-3"
+        class="space-y-2"
       >
         <template
           v-for="item in group"
@@ -83,49 +83,49 @@ function isCurrent(item: AdminLinkItem) {
           <NuxtLink
             v-if="!item.children?.length && item.to"
             :to="item.to"
-            class="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition"
+            class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition-colors"
             :class="
               isCurrent(item)
-                ? 'border border-primary/20 bg-primary/8 text-primary shadow-xs'
-                : 'border border-transparent text-muted hover:bg-elevated hover:text-highlighted'
+                ? 'bg-elevated text-highlighted'
+                : 'text-muted hover:bg-elevated/80 hover:text-highlighted'
             "
           >
             <UIcon
               :name="item.icon || 'i-heroicons-chevron-right'"
-              class="size-[1.875rem] shrink-0"
+              class="size-5 shrink-0"
             />
             <span>{{ item.label }}</span>
           </NuxtLink>
 
           <section
             v-else
-            class="space-y-2"
+            class="space-y-1.5"
           >
             <div
-              class="flex items-center gap-3 rounded-xl border border-default/70 bg-elevated px-3.5 py-2.5 text-[11px] font-semibold tracking-[0.18em] text-muted uppercase shadow-sm"
+              class="flex items-center gap-2.5 px-3 py-1.5 text-[11px] font-semibold tracking-[0.18em] text-muted uppercase"
             >
               <UIcon
                 :name="item.icon || 'i-heroicons-chevron-right'"
-                class="size-[1.875rem] shrink-0"
+                class="size-4 shrink-0"
               />
               <span>{{ item.label }}</span>
             </div>
 
-            <div class="ml-3 space-y-1 border-l border-default/70 pl-4">
+            <div class="ml-2 space-y-1 pl-5">
               <NuxtLink
                 v-for="child in item.children"
                 :key="`${child.label}-${child.to}`"
                 :to="child.to"
-                class="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm transition"
+                class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors"
                 :class="
                   isCurrent(child)
-                    ? 'border border-primary/20 bg-primary/8 font-medium text-primary shadow-xs'
-                    : 'border border-transparent text-muted hover:bg-elevated hover:text-highlighted'
+                    ? 'bg-elevated font-medium text-highlighted'
+                    : 'text-muted hover:bg-elevated/80 hover:text-highlighted'
                 "
               >
                 <UIcon
                   :name="child.icon || 'i-heroicons-chevron-right'"
-                  class="size-6 shrink-0"
+                  class="size-4 shrink-0"
                 />
                 <span>{{ child.label }}</span>
               </NuxtLink>

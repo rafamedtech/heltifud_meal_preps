@@ -1,4 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+useSeoMeta({
+  title: 'Encuesta | Heltifud Meal Preps',
+  description: 'Comparte tu experiencia y ayúdanos a mejorar el servicio de Heltifud Meal Preps.',
+  ogTitle: 'Encuesta | Heltifud Meal Preps',
+  ogDescription: 'Ayúdanos a mejorar completando la encuesta de Heltifud Meal Preps.',
+  twitterTitle: 'Encuesta | Heltifud Meal Preps',
+  twitterDescription: 'Comparte tu experiencia con Heltifud Meal Preps.',
+})
+</script>
 
 <template>
   <main>

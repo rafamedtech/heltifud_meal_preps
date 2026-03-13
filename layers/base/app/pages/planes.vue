@@ -1,4 +1,13 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: 'Planes semanales | Heltifud Meal Preps',
+  description: 'Explora los planes semanales de Heltifud y elige la opción que mejor se adapte a tus objetivos y estilo de vida.',
+  ogTitle: 'Planes semanales | Heltifud Meal Preps',
+  ogDescription: 'Consulta los planes semanales disponibles y recibe tus comidas saludables en casa.',
+  twitterTitle: 'Planes semanales | Heltifud Meal Preps',
+  twitterDescription: 'Elige un plan semanal y recibe tus comidas saludables a domicilio.',
+})
+
 useHead({
   link: weeklyPlans.map((plan) => ({
     rel: 'preload',
