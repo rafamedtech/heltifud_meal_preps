@@ -51,11 +51,6 @@ const typeOptions = [
   { label: 'Snack', value: 'snack' },
   { label: 'Guarnición', value: 'guarnicion' },
   { label: 'Ramekin', value: 'ramekin' },
-  { label: 'Proteína', value: 'proteina' },
-  { label: 'Verdura', value: 'verdura' },
-  { label: 'Fruta', value: 'fruta' },
-  { label: 'Salsa', value: 'salsa' },
-  { label: 'Adicional', value: 'adicional' },
 ] as const;
 
 const state = reactive<FoodCatalogItemInput>(emptyState());
