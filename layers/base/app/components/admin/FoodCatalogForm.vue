@@ -131,13 +131,12 @@ async function onSubmit() {
 
         <section class="app-control-surface px-4 py-3">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Descripción</p>
-          <UTextarea
+          <UInput
             v-model="state.descripcion"
             class="mt-2 w-full"
             variant="ghost"
-            :rows="3"
             placeholder="Descripción breve"
-            :ui="{ base: 'px-0 text-base bg-transparent hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent' }"
+            :ui="{ base: 'px-0 text-base bg-transparent hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent', leading: 'ps-0', trailing: 'pe-0' }"
           />
         </section>
 
