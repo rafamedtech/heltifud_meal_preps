@@ -79,17 +79,19 @@ function editTo(item: FoodCatalogItem) {
       </div>
     </section>
 
-    <UCard
-      class="app-surface flex-1 overflow-hidden"
-      :ui="{ body: 'p-0 sm:p-0', header: 'p-0 sm:p-0', footer: 'p-0 sm:p-0' }"
-    >
-      <AdminFoodCatalogTable
-        :items="items"
-        :loading="isLoading"
-        :deleting-id="deletingId"
-        :edit-to="editTo"
-        @delete="onDelete"
-      />
-    </UCard>
+    <div class="mx-auto w-full max-w-5xl">
+      <UCard
+        class="app-surface flex-1 overflow-hidden"
+        :ui="{ body: 'p-0 sm:p-0', header: 'p-0 sm:p-0', footer: 'p-0 sm:p-0' }"
+      >
+        <AdminFoodCatalogTable
+          :items="items"
+          :loading="isLoading"
+          :deleting-id="deletingId"
+          :edit-to="editTo"
+          @delete="onDelete"
+        />
+      </UCard>
+    </div>
   </main>
 </template>

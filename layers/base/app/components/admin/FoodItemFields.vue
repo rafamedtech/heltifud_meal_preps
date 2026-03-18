@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FoodCatalogItem, FoodItemDetail } from '~~/layers/menu/shared/types/types';
+import { getFoodTypeAppearance } from '~~/layers/base/app/utils/foodTypeAppearance';
 
 interface Props {
   title: string;
@@ -100,7 +101,15 @@ watchEffect(() => {
               <span>{{ item.label }}</span>
               <span class="flex items-center gap-2">
                 <span class="text-primary">{{ item.calorias }} cal</span>
-                <UBadge color="neutral" variant="soft" size="sm">{{ item.tipo }}</UBadge>
+                <UBadge
+                  :color="getFoodTypeAppearance(item.tipo).color"
+                  variant="soft"
+                  size="sm"
+                  :class="['ring-1 ring-inset', getFoodTypeAppearance(item.tipo).className]"
+                >
+                  <UIcon :name="getFoodTypeAppearance(item.tipo).icon" class="size-3 shrink-0" />
+                  {{ getFoodTypeAppearance(item.tipo).label }}
+                </UBadge>
               </span>
             </span>
           </template>

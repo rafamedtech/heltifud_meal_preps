@@ -38,7 +38,9 @@ async function onSaved() {
         <USkeleton class="h-5 w-full max-w-2xl rounded-lg" />
       </section>
 
-      <USkeleton class="h-[640px] w-full rounded-xl" />
+      <div class="mx-auto w-full max-w-5xl">
+        <USkeleton class="h-[640px] w-full rounded-xl" />
+      </div>
     </section>
 
     <UAlert
@@ -74,7 +76,9 @@ async function onSaved() {
         </div>
       </section>
 
-      <AdminFoodCatalogForm :item="item" mode="edit" @saved="onSaved" />
+      <div class="mx-auto w-full max-w-5xl">
+        <AdminFoodCatalogForm :item="item" mode="edit" @saved="onSaved" />
+      </div>
     </template>
   </main>
 </template>

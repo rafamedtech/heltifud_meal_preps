@@ -17,13 +17,31 @@ const emit = defineEmits<{
 
 const route = useRoute();
 const toast = useToast();
+function getSingleQueryValue(value: unknown) {
+  if (typeof value === 'string') {
+    return value.trim();
+  }
 
-const emptyState = (): FoodCatalogItemInput => ({
-  nombre: '',
+  if (Array.isArray(value) && typeof value[0] === 'string') {
+    return value[0].trim();
+  }
+
+  return '';
+}
+
+const prefilledName = computed(() =>
+  getSingleQueryValue(route.query.nombre)
+);
+const prefilledType = computed(() =>
+  getSingleQueryValue(route.query.tipo)
+);
+
+const emptyState = (nombre = '', tipo = ''): FoodCatalogItemInput => ({
+  nombre,
   descripcion: '',
   calorias: 0,
   imagen: '',
-  tipo: '',
+  tipo,
 });
 
 const typeOptions = [
@@ -43,25 +61,20 @@ const typeOptions = [
 const state = reactive<FoodCatalogItemInput>(emptyState());
 const saving = ref(false);
 
-const returnTo = computed(() =>
-  typeof route.query.returnTo === 'string' ? route.query.returnTo : undefined
-);
-
-const title = computed(() => (mode.value === 'edit' ? 'Editar platillo' : 'Nuevo platillo'));
 const actionLabel = computed(() => (mode.value === 'edit' ? 'Guardar cambios' : 'Crear platillo'));
 
 const { createFoodCatalogItem, updateFoodCatalogItem } = useFoodCatalog();
 
 watch(
-  () => item.value,
-  (item) => {
+  [() => item.value, () => prefilledName.value, () => prefilledType.value],
+  ([item, nombre, tipo]) => {
     Object.assign(state, item ? {
       nombre: item.nombre,
       descripcion: item.descripcion,
       calorias: item.calorias,
       imagen: item.imagen,
       tipo: item.tipo,
-    } : emptyState());
+    } : emptyState(mode.value === 'create' ? nombre : '', mode.value === 'create' ? tipo : ''));
   },
   { immediate: true }
 );
@@ -103,29 +116,7 @@ async function onSubmit() {
 
 <template>
   <main class="space-y-4">
-    <section v-if="returnTo" class="flex justify-start">
-      <UButton
-        :to="returnTo"
-        variant="ghost"
-        icon="i-lucide-arrow-left"
-      >
-        Regresar
-      </UButton>
-    </section>
-
     <UCard class="app-surface">
-      <template #header>
-        <section class="flex items-center justify-between gap-3">
-          <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Formulario</p>
-            <h3 class="mt-2 text-lg font-bold text-primary">
-              {{ title }}
-            </h3>
-            <p class="mt-1 text-sm text-muted">Guarda piezas reutilizables para insertarlas rápido en tus tiempos.</p>
-          </div>
-        </section>
-      </template>
-
       <UForm :state="state" class="space-y-4" @submit="onSubmit">
         <section class="app-control-surface px-4 py-3">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Nombre</p>

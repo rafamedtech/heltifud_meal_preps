@@ -2,6 +2,7 @@
 import type { RouteLocationRaw } from "vue-router"
 
 import type { FoodCatalogItem } from "~~/layers/menu/shared/types/types"
+import { getFoodTypeAppearance } from "~~/layers/base/app/utils/foodTypeAppearance"
 
 interface Props {
   items?: FoodCatalogItem[]
@@ -14,7 +15,6 @@ interface Props {
   emptyDescription?: string
   noResultsTitle?: string
   noResultsDescription?: string
-  footerLabel?: string
   selectLabel?: string
   selectedId?: string | null
   autofocusSearch?: boolean
@@ -28,6 +28,7 @@ const emit = defineEmits<{
 }>()
 
 const items = computed(() => props.items ?? [])
+const route = useRoute()
 const loading = computed(() => props.loading ?? false)
 const mode = computed(() => props.mode ?? "manage")
 const deletingId = computed(() => props.deletingId ?? null)
@@ -36,30 +37,66 @@ const emptyTitle = computed(() => props.emptyTitle ?? "No hay platillos guardado
 const emptyDescription = computed(() => props.emptyDescription ?? "Empieza creando el primero para que aparezca disponible en los tiempos del menú semanal.")
 const noResultsTitle = computed(() => props.noResultsTitle ?? "Sin resultados")
 const noResultsDescription = computed(() => props.noResultsDescription ?? "Ajusta la búsqueda o cambia el filtro para volver a ver platillos.")
-const footerLabel = computed(() => props.footerLabel ?? "Catálogo listo para menú semanal")
 const selectLabel = computed(() => props.selectLabel ?? "Seleccionar")
 const selectedId = computed(() => props.selectedId ?? null)
 const autofocusSearch = computed(() => props.autofocusSearch ?? false)
 const isSelectMode = computed(() => mode.value === "select")
 
 const search = ref("")
-const selectedType = ref<"todos" | string>("todos")
+const selectedType = ref<"todos" | string | { value?: string; label?: string }>("todos")
+const preferredTypeOptions = [
+  { label: "Desayuno", value: "desayuno" },
+  { label: "Comida", value: "comida" },
+  { label: "Cena", value: "cena" },
+  { label: "Snack", value: "snack" },
+  { label: "Guarnición", value: "guarnicion" },
+  { label: "Ramekin", value: "ramekin" }
+] as const
 
-const typeOptions = computed(() => [
-  { label: "Todos", value: "todos" },
-  ...Array.from(new Set(items.value.map((item) => item.tipo).filter(Boolean)))
+const preferredTypeOrder = preferredTypeOptions.map((option) => option.value)
+
+const typeOptions = computed(() => {
+  const dynamicTypes = Array.from(new Set(items.value.map((item) => item.tipo).filter(Boolean)))
+    .filter((tipo) => !preferredTypeOrder.includes(tipo as (typeof preferredTypeOrder)[number]))
     .sort((a, b) => a.localeCompare(b, "es"))
     .map((tipo) => ({
-      label: tipo.charAt(0).toUpperCase() + tipo.slice(1),
+      label: getFoodTypeAppearance(tipo).label,
       value: tipo
     }))
-])
+
+  return [
+    { label: "Todos", value: "todos" },
+    ...preferredTypeOptions,
+    ...dynamicTypes
+  ]
+})
+
+function normalizeTypeValue(value: unknown) {
+  if (typeof value === "string") {
+    return value
+  }
+
+  if (value && typeof value === "object" && "value" in value && typeof value.value === "string") {
+    return value.value
+  }
+
+  return "todos"
+}
+
+const normalizedSelectedType = computed(() => normalizeTypeValue(selectedType.value))
+const selectedTypeLabel = computed(() => {
+  if (normalizedSelectedType.value === "todos") {
+    return ""
+  }
+
+  return getFoodTypeAppearance(normalizedSelectedType.value).label
+})
 
 const filteredItems = computed(() => {
   const query = search.value.trim().toLowerCase()
 
   return items.value.filter((item) => {
-    const matchesType = selectedType.value === "todos" || item.tipo === selectedType.value
+    const matchesType = normalizedSelectedType.value === "todos" || item.tipo === normalizedSelectedType.value
     const matchesSearch =
       !query ||
       item.nombre.toLowerCase().includes(query) ||
@@ -70,12 +107,81 @@ const filteredItems = computed(() => {
   })
 })
 
+const normalizedSearch = computed(() => search.value.trim())
+const canCreateFromSearch = computed(() => mode.value === "manage" && normalizedSearch.value.length > 0)
+const canCreateFromFilter = computed(() =>
+  mode.value === "manage" &&
+  normalizedSearch.value.length === 0 &&
+  normalizedSelectedType.value !== "todos"
+)
+const createFilterLabel = computed(() => {
+  switch (normalizedSelectedType.value) {
+    case "snack":
+      return "Crear un snack"
+    case "ramekin":
+      return "Crear un ramekin"
+    case "desayuno":
+      return "Crear un desayuno"
+    case "comida":
+      return "Crear una comida"
+    case "cena":
+      return "Crear una cena"
+    case "guarnicion":
+      return "Crear una guarnición"
+    default:
+      return `Crear ${selectedTypeLabel.value}`
+  }
+})
+const createButtonLabel = computed(() => {
+  if (canCreateFromSearch.value) {
+    return `Crear "${normalizedSearch.value}"`
+  }
+
+  if (canCreateFromFilter.value) {
+    return createFilterLabel.value
+  }
+
+  return "Crear platillo"
+})
+const createFromSearchTo = computed<RouteLocationRaw>(() => ({
+  path: "/admin/platillos/crear-nuevo",
+  query: {
+    ...(normalizedSearch.value ? { nombre: normalizedSearch.value } : {}),
+    ...(normalizedSelectedType.value !== "todos" ? { tipo: normalizedSelectedType.value } : {}),
+    returnTo: route.fullPath
+  }
+}))
+
 function onDelete(id: string) {
   emit("delete", id)
 }
 
 function onSelect(id: string) {
   emit("select", id)
+}
+
+function actionItems(item: FoodCatalogItem) {
+  if (mode.value !== "manage") {
+    return []
+  }
+
+  return [[
+    {
+      label: "Editar",
+      icon: "i-lucide-square-pen",
+      onSelect: () => {
+        if (props.editTo) {
+          navigateTo(props.editTo(item))
+        }
+      }
+    },
+    {
+      label: "Eliminar",
+      icon: "i-lucide-trash",
+      color: "error" as const,
+      onSelect: () => onDelete(item.id)
+    }
+  ]]
 }
 </script>
 
@@ -87,7 +193,7 @@ function onSelect(id: string) {
     >
       <div
         class="grid gap-4"
-        :class="isSelectMode ? 'grid-cols-1' : 'xl:grid-cols-[minmax(0,1fr)_740px] xl:items-center'"
+        :class="isSelectMode ? 'grid-cols-1' : 'lg:grid-cols-[minmax(0,1fr)_740px] lg:items-center'"
       >
         <div
           v-if="!isSelectMode"
@@ -158,7 +264,7 @@ function onSelect(id: string) {
       v-else-if="!filteredItems.length"
       class="flex min-h-[360px] items-center justify-center px-5 py-10 sm:px-6"
     >
-      <div class="max-w-md space-y-3 text-center">
+      <div class="max-w-md space-y-4 text-center">
         <div class="mx-auto flex size-12 items-center justify-center rounded-xl border border-default bg-elevated">
           <UIcon
             name="i-lucide-search-x"
@@ -167,8 +273,23 @@ function onSelect(id: string) {
         </div>
         <div class="space-y-1">
           <h3 class="text-base font-semibold text-highlighted">{{ noResultsTitle }}</h3>
-          <p class="text-sm text-muted">{{ noResultsDescription }}</p>
+          <p class="text-sm text-muted">
+            {{ noResultsDescription }}
+            <template v-if="canCreateFromSearch">
+              También puedes crear un nuevo platillo usando <span class="font-medium text-highlighted">"{{ normalizedSearch }}"</span>.
+            </template>
+            <template v-else-if="canCreateFromFilter">
+              Todavía no hay platillos de tipo <span class="font-medium text-highlighted">{{ selectedTypeLabel }}</span>, pero puedes crear el primero desde aquí.
+            </template>
+          </p>
         </div>
+        <UButton
+          v-if="canCreateFromSearch || canCreateFromFilter"
+          :to="createFromSearchTo"
+          icon="i-lucide-plus"
+        >
+          {{ createButtonLabel }}
+        </UButton>
       </div>
     </section>
 
@@ -178,71 +299,60 @@ function onSelect(id: string) {
     >
       <table class="min-w-full table-fixed text-sm">
         <colgroup>
-          <col class="w-[72px]" />
-          <col class="w-[46%]" />
-          <col class="w-[20%]" />
-          <col class="w-[14%]" />
-          <col class="w-[20%]" />
+          <col class="w-[72%] sm:w-[58%]" />
+          <col class="hidden sm:table-column sm:w-[18%]" />
+          <col class="w-[28%] sm:w-[24%]" />
         </colgroup>
 
-        <thead class="bg-elevated/70">
+        <thead class="bg-elevated/50">
           <tr class="border-b border-default/70">
-            <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] text-muted sm:px-6">#</th>
-            <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] text-muted sm:px-6">Nombre</th>
-            <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] text-muted sm:px-6">Tipo</th>
-            <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] text-muted sm:px-6">Calorías</th>
+            <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] text-muted sm:px-6">Platillo</th>
+            <th class="hidden px-5 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] text-muted sm:table-cell sm:px-6">Calorías</th>
             <th class="px-5 py-3 text-right text-xs font-medium uppercase tracking-[0.18em] text-muted sm:px-6">Acciones</th>
           </tr>
         </thead>
 
         <tbody>
           <tr
-            v-for="(item, index) in filteredItems"
+            v-for="item in filteredItems"
             :key="item.id"
-            class="border-b border-default/60 transition-colors hover:bg-elevated/40 last:border-b-0"
+            class="border-b border-default/60 transition-colors hover:bg-elevated/30 last:border-b-0"
           >
-            <td class="px-5 py-4 text-sm text-muted sm:px-6">
-              {{ index + 1 }}
-            </td>
             <td class="px-5 py-4 sm:px-6">
               <div class="min-w-0 space-y-1">
                 <p class="truncate font-medium text-highlighted">{{ item.nombre }}</p>
+                <div class="flex flex-wrap items-center gap-2">
+                  <UBadge
+                    :color="getFoodTypeAppearance(item.tipo).color"
+                    variant="soft"
+                    :class="['inline-flex max-w-fit rounded-xl px-2.5 py-1 ring-1 ring-inset', getFoodTypeAppearance(item.tipo).className]"
+                  >
+                    <UIcon :name="getFoodTypeAppearance(item.tipo).icon" class="size-3.5 shrink-0" />
+                    {{ getFoodTypeAppearance(item.tipo).label }}
+                  </UBadge>
+
+                  <span class="text-sm font-medium text-muted sm:hidden">
+                    {{ item.calorias }} cal
+                  </span>
+                </div>
               </div>
             </td>
-            <td class="px-5 py-4 sm:px-6">
-              <UBadge
-                color="neutral"
-                variant="subtle"
-                class="rounded-xl px-2.5 py-1"
-              >
-                {{ item.tipo || "Sin tipo" }}
-              </UBadge>
-            </td>
-            <td class="px-5 py-4 font-medium text-highlighted sm:px-6">
-              {{ item.calorias }}
+            <td class="hidden px-5 py-4 font-medium text-highlighted sm:table-cell sm:px-6">
+              {{ item.calorias }} cal
             </td>
             <td class="px-5 py-4 sm:px-6">
-              <div class="flex justify-end gap-2">
+              <div class="flex justify-end">
                 <template v-if="mode === 'manage'">
-                  <UButton
-                    v-if="editTo"
-                    size="sm"
-                    variant="ghost"
-                    color="neutral"
-                    icon="i-lucide-pencil"
-                    :to="editTo(item)"
-                  >
-                    Editar
-                  </UButton>
-
-                  <UButton
-                    size="sm"
-                    color="error"
-                    variant="ghost"
-                    icon="i-lucide-trash"
-                    :loading="deletingId === item.id"
-                    @click="onDelete(item.id)"
-                  />
+                  <UDropdownMenu :items="actionItems(item)">
+                    <UButton
+                      size="sm"
+                      variant="ghost"
+                      color="neutral"
+                      icon="i-lucide-ellipsis-vertical"
+                      square
+                      :loading="deletingId === item.id"
+                    />
+                  </UDropdownMenu>
                 </template>
 
                 <UButton
@@ -271,14 +381,6 @@ function onSelect(id: string) {
         Mostrando <span class="font-medium text-highlighted">{{ filteredItems.length }}</span> de
         <span class="font-medium text-highlighted">{{ items.length }}</span> platillos registrados.
       </p>
-
-      <UBadge
-        color="primary"
-        variant="soft"
-        class="rounded-xl px-3 py-1.5"
-      >
-        {{ footerLabel }}
-      </UBadge>
     </section>
   </section>
 </template>
