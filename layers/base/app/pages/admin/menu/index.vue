@@ -266,7 +266,7 @@ useSeoMeta({
                 :to="`/admin/menu/${menu.id}`"
                 variant="ghost"
                 color="neutral"
-                icon="i-lucide-pencil"
+                icon="i-lucide-square-pen"
               >
                 Editar
               </UButton>
