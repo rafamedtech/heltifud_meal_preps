@@ -422,49 +422,41 @@ async function onSubmit() {
 
           <div class="grid gap-6 px-6 py-6 lg:grid-cols-3">
             <UFormField name="name">
-              <section :class="['app-control-surface px-4 py-3', invalidFields.name ? 'ring-1 ring-error/40 border-error/50' : '']">
-                <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">
-                  Nombre del menú
-                </span>
-
+              <AdminMetaField
+                label="Nombre del menú"
+                :invalid="invalidFields.name"
+              >
                 <UInput
                   v-model="state.name"
                   placeholder="Ej. Menú Semana 12"
                   icon="i-lucide-notebook-pen"
                   variant="ghost"
-                  class="mt-1.5 w-full"
+                  class="w-full"
                   :ui="{
-                    base: 'border-0 bg-transparent px-0 py-0 text-sm font-medium text-highlighted shadow-none hover:bg-transparent focus:bg-transparent',
+                    base: 'h-5 min-h-5 max-h-5 border-0 bg-transparent px-0 py-0 text-sm font-medium leading-5 text-highlighted shadow-none hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent',
+                    leading: 'ps-0',
                     leadingIcon: 'size-4 text-muted'
                   }"
                 />
-              </section>
+              </AdminMetaField>
             </UFormField>
 
             <UFormField name="startDate">
-              <section :class="['app-control-surface px-4 py-3', invalidFields.startDate ? 'ring-1 ring-error/40 border-error/50' : '']">
-                <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">
-                  Fecha de inicio
-                </span>
-
-                <DatePicker
-                  v-model="state.startDate"
-                  class="mt-1.5"
-                />
-              </section>
+              <AdminMetaField
+                label="Fecha de inicio"
+                :invalid="invalidFields.startDate"
+              >
+                <DatePicker v-model="state.startDate" />
+              </AdminMetaField>
             </UFormField>
 
             <UFormField name="endDate">
-              <section :class="['app-control-surface px-4 py-3', invalidFields.endDate ? 'ring-1 ring-error/40 border-error/50' : '']">
-                <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">
-                  Fecha final
-                </span>
-
-                <DatePicker
-                  v-model="state.endDate"
-                  class="mt-1.5"
-                />
-              </section>
+              <AdminMetaField
+                label="Fecha final"
+                :invalid="invalidFields.endDate"
+              >
+                <DatePicker v-model="state.endDate" />
+              </AdminMetaField>
             </UFormField>
           </div>
 

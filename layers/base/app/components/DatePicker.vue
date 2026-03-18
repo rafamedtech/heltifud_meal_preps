@@ -52,7 +52,7 @@ const displayDate = computed(() => df.format(calendarValue.value.toDate('UTC')))
       trailing-icon="i-lucide-chevron-down"
       class="w-full justify-between text-left text-sm font-medium text-highlighted hover:bg-transparent"
       :ui="{
-        base: 'w-full justify-between border-0 bg-transparent px-0 py-0 text-sm font-medium text-highlighted shadow-none hover:bg-transparent focus:bg-transparent',
+        base: 'w-full h-5 min-h-5 max-h-5 justify-between border-0 bg-transparent px-0 py-0 text-sm font-medium leading-5 text-highlighted shadow-none hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent',
         leadingIcon: 'size-4 text-muted',
         trailingIcon: 'size-4 text-muted'
       }"
