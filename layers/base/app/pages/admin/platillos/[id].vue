@@ -7,6 +7,7 @@ definePageMeta({
 
 const route = useRoute();
 const returnTo = computed(() => (typeof route.query.returnTo === 'string' ? route.query.returnTo : undefined));
+const backTo = computed(() => returnTo.value ?? '/admin/platillos');
 
 useSeoMeta({
   title: 'Gestión de platillos | Editar platillo | Heltifud Meal Preps',
@@ -61,12 +62,9 @@ async function onSaved() {
           </p>
         </div>
 
-        <div
-          v-if="returnTo"
-          class="flex items-center gap-3 lg:justify-end"
-        >
+        <div class="flex items-center gap-3 lg:justify-end">
           <UButton
-            :to="returnTo"
+            :to="backTo"
             variant="ghost"
             color="neutral"
             icon="i-lucide-arrow-left"

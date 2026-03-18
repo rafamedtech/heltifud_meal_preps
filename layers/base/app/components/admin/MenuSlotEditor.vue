@@ -43,11 +43,16 @@ const contenedorOptions = [
 ]
 
 const PLATILLO_PRINCIPAL_TYPES = new Set(["desayuno", "comida", "cena"])
+const SNACK_TYPES = new Set(["snack"])
 const GUARNICION_TYPES = new Set(["guarnicion"])
 const ADICIONAL_TYPES = new Set(["ramekin"])
 
 const platilloPrincipalItems = computed(() =>
   catalogItems.filter((item) => PLATILLO_PRINCIPAL_TYPES.has(item.tipo))
+)
+
+const snackItems = computed(() =>
+  catalogItems.filter((item) => SNACK_TYPES.has(item.tipo))
 )
 
 const guarnicionItems = computed(() =>
@@ -356,7 +361,7 @@ const detailFieldInputUi = {
 const selectionOptions = computed(() => {
   switch (modalView.value) {
     case "select-platillo-principal":
-      return platilloPrincipalItems.value
+      return showSides ? platilloPrincipalItems.value : snackItems.value
     case "select-guarnicion-1":
     case "select-guarnicion-2":
       return guarnicionItems.value

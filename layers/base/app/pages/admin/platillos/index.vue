@@ -14,6 +14,7 @@ useSeoMeta({
 const route = useRoute()
 const toast = useToast()
 const deletingId = ref<string | null>(null)
+const pendingDeleteItem = ref<FoodCatalogItem | null>(null)
 
 const {
   data: items,
@@ -24,16 +25,33 @@ const {
 })
 
 const isLoading = computed(() => status.value === "idle" || status.value === "pending")
+const deleteModalDescription = computed(() =>
+  pendingDeleteItem.value
+    ? `Se eliminará "${pendingDeleteItem.value.nombre}". Esta acción no se puede deshacer.`
+    : undefined
+)
+const isDeleteModalOpen = computed({
+  get: () => Boolean(pendingDeleteItem.value),
+  set: (value) => {
+    if (!value) {
+      pendingDeleteItem.value = null
+    }
+  }
+})
 
 const { deleteFoodCatalogItem } = useFoodCatalog()
 
 const returnTo = computed(() => (typeof route.query.returnTo === "string" ? route.query.returnTo : undefined))
 
-async function onDelete(id: string) {
-  deletingId.value = id
+function requestDelete(item: FoodCatalogItem) {
+  pendingDeleteItem.value = item
+}
+
+async function onDelete(item: FoodCatalogItem) {
+  deletingId.value = item.id
 
   try {
-    await deleteFoodCatalogItem(id)
+    await deleteFoodCatalogItem(item.id)
     await refresh()
     toast.add({ title: "Platillo eliminado", color: "success" })
   } catch (error) {
@@ -41,6 +59,7 @@ async function onDelete(id: string) {
     toast.add({ title: "Error", description: message, color: "error" })
   } finally {
     deletingId.value = null
+    pendingDeleteItem.value = null
   }
 }
 
@@ -89,9 +108,46 @@ function editTo(item: FoodCatalogItem) {
           :loading="isLoading"
           :deleting-id="deletingId"
           :edit-to="editTo"
-          @delete="onDelete"
+          @delete="requestDelete"
         />
       </UCard>
     </div>
+
+    <UModal
+      v-model:open="isDeleteModalOpen"
+      title="Eliminar platillo"
+      :description="deleteModalDescription"
+      :ui="{ content: 'max-w-md' }"
+    >
+      <template #body>
+        <UAlert
+          color="error"
+          variant="soft"
+          icon="i-lucide-triangle-alert"
+          title="Confirma esta acción"
+          description="El platillo dejará de estar disponible para futuras selecciones en el catálogo."
+        />
+      </template>
+
+      <template #footer>
+        <div class="flex w-full justify-end gap-3">
+          <UButton
+            variant="ghost"
+            color="neutral"
+            @click="pendingDeleteItem = null"
+          >
+            Cancelar
+          </UButton>
+
+          <UButton
+            color="error"
+            :loading="deletingId === pendingDeleteItem?.id"
+            @click="pendingDeleteItem && onDelete(pendingDeleteItem)"
+          >
+            Eliminar platillo
+          </UButton>
+        </div>
+      </template>
+    </UModal>
   </main>
 </template>

@@ -23,7 +23,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  delete: [id: string]
+  delete: [item: FoodCatalogItem]
   select: [id: string]
 }>()
 
@@ -152,8 +152,8 @@ const createFromSearchTo = computed<RouteLocationRaw>(() => ({
   }
 }))
 
-function onDelete(id: string) {
-  emit("delete", id)
+function onDelete(item: FoodCatalogItem) {
+  emit("delete", item)
 }
 
 function onSelect(id: string) {
@@ -179,7 +179,7 @@ function actionItems(item: FoodCatalogItem) {
       label: "Eliminar",
       icon: "i-lucide-trash",
       color: "error" as const,
-      onSelect: () => onDelete(item.id)
+      onSelect: () => onDelete(item)
     }
   ]]
 }
@@ -307,7 +307,7 @@ function actionItems(item: FoodCatalogItem) {
         <thead class="bg-elevated/50">
           <tr class="border-b border-default/70">
             <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] text-muted sm:px-6">Platillo</th>
-            <th class="hidden px-5 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] text-muted sm:table-cell sm:px-6">Calorías</th>
+            <th class="hidden px-5 py-3 text-center text-xs font-medium uppercase tracking-[0.18em] text-muted sm:table-cell sm:px-6">Calorías</th>
             <th class="px-5 py-3 text-right text-xs font-medium uppercase tracking-[0.18em] text-muted sm:px-6">Acciones</th>
           </tr>
         </thead>
@@ -337,13 +337,45 @@ function actionItems(item: FoodCatalogItem) {
                 </div>
               </div>
             </td>
-            <td class="hidden px-5 py-4 font-medium text-highlighted sm:table-cell sm:px-6">
+            <td class="hidden px-5 py-4 text-center font-medium text-highlighted sm:table-cell sm:px-6">
               {{ item.calorias }} cal
             </td>
             <td class="px-5 py-4 sm:px-6">
               <div class="flex justify-end">
                 <template v-if="mode === 'manage'">
-                  <UDropdownMenu :items="actionItems(item)">
+                  <div class="hidden items-center justify-end gap-2 lg:flex">
+                    <UButton
+                      variant="ghost"
+                      color="neutral"
+                      icon="i-lucide-square-pen"
+                      :to="editTo?.(item)"
+                      :ui="{
+                        base: 'justify-center px-0 lg:flex-col lg:gap-1 lg:py-1.5',
+                        leadingIcon: 'size-4.5 lg:size-5'
+                      }"
+                    >
+                      <span class="inline-block w-[8ch] text-center text-[11px] leading-none xl:text-xs">Editar</span>
+                    </UButton>
+
+                    <UButton
+                      variant="ghost"
+                      color="error"
+                      icon="i-lucide-trash"
+                      :loading="deletingId === item.id"
+                      :ui="{
+                        base: 'justify-center px-0 lg:flex-col lg:gap-1 lg:py-1.5',
+                        leadingIcon: 'size-4.5 lg:size-5'
+                      }"
+                      @click="onDelete(item)"
+                    >
+                      <span class="inline-block w-[8ch] text-center text-[11px] leading-none xl:text-xs">Eliminar</span>
+                    </UButton>
+                  </div>
+
+                  <UDropdownMenu
+                    :items="actionItems(item)"
+                    class="lg:hidden"
+                  >
                     <UButton
                       size="sm"
                       variant="ghost"
