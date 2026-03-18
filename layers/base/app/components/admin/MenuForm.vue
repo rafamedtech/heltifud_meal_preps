@@ -7,9 +7,11 @@ import {
   type FoodCatalogItem,
   type FoodItemDetail,
   type MenuSlot,
+  type SlotKey,
   type WeeklyMenu,
   type WeeklyMenuInput
 } from "~~/layers/menu/shared/types/types"
+import type { ZodIssue } from "zod"
 
 interface Props {
   menu?: WeeklyMenu | null
@@ -32,6 +34,14 @@ const DAY_LABELS: Record<(typeof DAY_OF_WEEK_VALUES)[number], string> = {
   VIERNES: "Viernes",
   SABADO: "Sábado",
   DOMINGO: "Domingo"
+}
+
+const SLOT_LABELS: Record<keyof Omit<DayMenu, "dayOfWeek">, string> = {
+  desayuno: "Desayuno",
+  comida: "Comida",
+  cena: "Cena",
+  snack1: "Snack 1",
+  snack2: "Snack 2"
 }
 
 function createEmptyFoodItem(): FoodItemDetail {
@@ -164,12 +174,25 @@ const { data: catalogItems } = await useFetch<FoodCatalogItem[]>("/api/food-comp
   default: () => []
 })
 const resolvedCatalogItems = computed<FoodCatalogItem[]>(() => catalogItems.value ?? [])
+const invalidFields = reactive({
+  name: false,
+  startDate: false,
+  endDate: false
+})
+const invalidDays = ref<Set<DayOfWeek>>(new Set())
+const invalidSlots = ref<Record<DayOfWeek, Set<SlotKey>>>(
+  DAY_OF_WEEK_VALUES.reduce((acc, day) => {
+    acc[day] = new Set<SlotKey>()
+    return acc
+  }, {} as Record<DayOfWeek, Set<SlotKey>>)
+)
 
 watch(
   () => menu.value,
   (menu) => {
     Object.assign(state, createStateFromMenu(menu))
     markAsActive.value = Boolean(menu?.isActive)
+    clearValidationHighlights()
     for (const day of DAY_OF_WEEK_VALUES) {
       snacksExpanded[day] = false
     }
@@ -180,20 +203,126 @@ function toggleSnacks(dayOfWeek: DayOfWeek) {
   snacksExpanded[dayOfWeek] = !snacksExpanded[dayOfWeek]
 }
 
+function clearValidationHighlights() {
+  invalidFields.name = false
+  invalidFields.startDate = false
+  invalidFields.endDate = false
+  invalidDays.value = new Set()
+  invalidSlots.value = DAY_OF_WEEK_VALUES.reduce((acc, day) => {
+    acc[day] = new Set<SlotKey>()
+    return acc
+  }, {} as Record<DayOfWeek, Set<SlotKey>>)
+}
+
+function applyValidationHighlights(issues: ZodIssue[]) {
+  clearValidationHighlights()
+
+  for (const issue of issues) {
+    const [root, dayIndex, slotKey] = issue.path
+
+    if (root === "name") {
+      invalidFields.name = true
+      continue
+    }
+
+    if (root === "startDate") {
+      invalidFields.startDate = true
+      continue
+    }
+
+    if (root === "endDate") {
+      invalidFields.endDate = true
+      continue
+    }
+
+    if (
+      root === "days" &&
+      typeof dayIndex === "number" &&
+      typeof slotKey === "string"
+    ) {
+      const day = state.days[dayIndex]
+      const normalizedSlotKey = slotKey as SlotKey
+
+      if (!day || !(normalizedSlotKey in SLOT_LABELS)) {
+        continue
+      }
+
+      invalidDays.value.add(day.dayOfWeek)
+      invalidSlots.value[day.dayOfWeek].add(normalizedSlotKey)
+
+      if (normalizedSlotKey === "snack1" || normalizedSlotKey === "snack2") {
+        snacksExpanded[day.dayOfWeek] = true
+      }
+    }
+  }
+}
+
+function isDayInvalid(dayOfWeek: DayOfWeek) {
+  return invalidDays.value.has(dayOfWeek)
+}
+
+function isSlotInvalid(dayOfWeek: DayOfWeek, slotKey: SlotKey) {
+  return invalidSlots.value[dayOfWeek].has(slotKey)
+}
+
+function formatValidationIssue(issue?: ZodIssue) {
+  if (!issue) {
+    return "Verifica la información del menú."
+  }
+
+  const [root, dayIndex, slotKey, fieldKey, nestedField] = issue.path
+
+  if (root === "name") {
+    return "El nombre del menú es obligatorio."
+  }
+
+  if (
+    root === "days" &&
+    typeof dayIndex === "number" &&
+    typeof slotKey === "string" &&
+    typeof fieldKey === "string"
+  ) {
+    const day = state.days[dayIndex]
+    const dayLabel = day ? DAY_LABELS[day.dayOfWeek] : "el día seleccionado"
+    const slotLabel = SLOT_LABELS[slotKey as keyof typeof SLOT_LABELS] ?? "este tiempo"
+
+    if (fieldKey === "platilloPrincipal" && nestedField === "nombre") {
+      return `Falta el nombre del platillo principal en ${slotLabel} de ${dayLabel}.`
+    }
+
+    if ((fieldKey === "guarnicion1" || fieldKey === "guarnicion2") && nestedField === "nombre") {
+      const guarnicionLabel = fieldKey === "guarnicion1" ? "guarnición 1" : "guarnición 2"
+      return `Falta el nombre de ${guarnicionLabel} en ${slotLabel} de ${dayLabel}.`
+    }
+
+    if (fieldKey === "adicionales" && nestedField !== undefined) {
+      return `Hay un adicional incompleto en ${slotLabel} de ${dayLabel}.`
+    }
+
+    if (fieldKey === "platilloPrincipal" && nestedField === "tipo") {
+      return `Falta el tipo del platillo principal en ${slotLabel} de ${dayLabel}.`
+    }
+  }
+
+  return issue.message || "Verifica la información del menú."
+}
+
 async function onSubmit() {
   const parsed = weeklyMenuInputSchema.safeParse(state)
 
   if (!parsed.success) {
+    applyValidationHighlights(parsed.error.issues)
     const firstIssue = parsed.error.issues[0]
 
     toast.add({
       title: "Error de validación",
-      description: firstIssue?.message ?? "Verifica la información del menú.",
+      description: formatValidationIssue(firstIssue),
       color: "error"
     })
     return
   }
 
+  clearValidationHighlights()
   loading.value = true
 
   try {
@@ -285,7 +414,7 @@ async function onSubmit() {
 
           <div class="grid gap-6 px-6 py-6 lg:grid-cols-3">
             <UFormField name="name">
-              <section class="app-control-surface px-4 py-3">
+              <section :class="['app-control-surface px-4 py-3', invalidFields.name ? 'ring-1 ring-error/40 border-error/50' : '']">
                 <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">
                   Nombre del menú
                 </span>
@@ -305,7 +434,7 @@ async function onSubmit() {
             </UFormField>
 
             <UFormField name="startDate">
-              <section class="app-control-surface px-4 py-3">
+              <section :class="['app-control-surface px-4 py-3', invalidFields.startDate ? 'ring-1 ring-error/40 border-error/50' : '']">
                 <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">
                   Fecha de inicio
                 </span>
@@ -318,7 +447,7 @@ async function onSubmit() {
             </UFormField>
 
             <UFormField name="endDate">
-              <section class="app-control-surface px-4 py-3">
+              <section :class="['app-control-surface px-4 py-3', invalidFields.endDate ? 'ring-1 ring-error/40 border-error/50' : '']">
                 <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">
                   Fecha final
                 </span>
@@ -338,7 +467,10 @@ async function onSubmit() {
             v-for="entry in visibleDayEntries"
             :key="entry.day.dayOfWeek"
             variant="subtle"
-            class="app-surface-soft overflow-hidden"
+            :class="[
+              'app-surface-soft overflow-hidden',
+              isDayInvalid(entry.day.dayOfWeek) ? 'ring-1 ring-error/35 border-error/50' : ''
+            ]"
             :ui="{ root: 'app-surface-soft overflow-hidden', header: 'px-5 py-4 sm:px-5', body: 'p-0 sm:p-0' }"
           >
             <template #header>
@@ -355,20 +487,27 @@ async function onSubmit() {
                 title="Desayuno"
                 :show-toggle="false"
                 :catalog-items="resolvedCatalogItems"
-                class="lg:border-r lg:border-default/70"
+                :class="[
+                  'lg:border-r lg:border-default/70',
+                  isSlotInvalid(entry.day.dayOfWeek, 'desayuno') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
+                ]"
               />
               <AdminMenuSlotEditor
                 v-model="entry.day.comida"
                 title="Comida"
                 :show-toggle="false"
                 :catalog-items="resolvedCatalogItems"
-                class="lg:border-r lg:border-default/70"
+                :class="[
+                  'lg:border-r lg:border-default/70',
+                  isSlotInvalid(entry.day.dayOfWeek, 'comida') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
+                ]"
               />
               <AdminMenuSlotEditor
                 v-model="entry.day.cena"
                 title="Cena"
                 :show-toggle="false"
                 :catalog-items="resolvedCatalogItems"
+                :class="isSlotInvalid(entry.day.dayOfWeek, 'cena') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''"
               />
             </section>
 
@@ -401,7 +540,10 @@ async function onSubmit() {
                   :show-sides="false"
                   :show-toggle="false"
                   :catalog-items="resolvedCatalogItems"
-                  class="lg:border-r lg:border-default/70"
+                  :class="[
+                    'lg:border-r lg:border-default/70',
+                    isSlotInvalid(entry.day.dayOfWeek, 'snack1') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
+                  ]"
                 />
                 <AdminMenuSlotEditor
                   v-model="entry.day.snack2"
@@ -409,6 +551,7 @@ async function onSubmit() {
                   :show-sides="false"
                   :show-toggle="false"
                   :catalog-items="resolvedCatalogItems"
+                  :class="isSlotInvalid(entry.day.dayOfWeek, 'snack2') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''"
                 />
               </section>
             </section>
