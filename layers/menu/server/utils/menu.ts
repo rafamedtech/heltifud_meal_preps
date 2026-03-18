@@ -82,6 +82,31 @@ function normalizeFoodItem(item: FoodItemDetail): FoodItemDetail {
   }
 }
 
+function isFoodItemFilled(item?: FoodItemDetail | null) {
+  if (!item) {
+    return false
+  }
+
+  return Boolean(
+    trimString(item.nombre) ||
+    trimString(item.descripcion) ||
+    trimString(item.imagen) ||
+    trimString(item.tipo) ||
+    item.calorias > 0
+  )
+}
+
+function createEmptyFoodItem(): FoodItemDetail {
+  return {
+    catalogItemId: null,
+    nombre: "",
+    descripcion: "",
+    calorias: 0,
+    imagen: "",
+    tipo: ""
+  }
+}
+
 function normalizeOptionalFoodItem(item: OptionalFoodItemInput): FoodItemDetail | null {
   if (!item) {
     return null
@@ -139,7 +164,9 @@ function normalizePayload(payload: WeeklyMenuInputParsed): WeeklyMenuInputParsed
 }
 
 function normalizeSlot(slot: MenuSlot): MenuSlot {
-  const platilloPrincipal = normalizeFoodItem(slot.platilloPrincipal)
+  const platilloPrincipal = isFoodItemFilled(slot.platilloPrincipal)
+    ? normalizeFoodItem(slot.platilloPrincipal)
+    : createEmptyFoodItem()
 
   return {
     platilloPrincipal,
@@ -151,12 +178,14 @@ function normalizeSlot(slot: MenuSlot): MenuSlot {
 }
 
 function buildComponents(slot: MenuSlot): Prisma.FoodComponentCreateWithoutDaySlotInput[] {
-  const components: Prisma.FoodComponentCreateWithoutDaySlotInput[] = [
-    {
+  const components: Prisma.FoodComponentCreateWithoutDaySlotInput[] = []
+
+  if (isFoodItemFilled(slot.platilloPrincipal)) {
+    components.push({
       componentRole: ComponentRole.PLATILLO_PRINCIPAL,
       ...slot.platilloPrincipal
-    }
-  ]
+    })
+  }
 
   if (slot.guarnicion1) {
     components.push({
@@ -218,16 +247,13 @@ function mapFood(item: {
 
 function mapSlot(record: WeeklyMenuRecord["days"][number]["slots"][number]): MenuSlot {
   const platilloPrincipal = record.components.find((item) => item.componentRole === ComponentRole.PLATILLO_PRINCIPAL)
-  if (!platilloPrincipal) {
-    throw createError({ statusCode: 500, statusMessage: "Slot sin platillo principal." })
-  }
 
   const guarnicion1 = record.components.find((item) => item.componentRole === ComponentRole.GUARNICION_1)
   const guarnicion2 = record.components.find((item) => item.componentRole === ComponentRole.GUARNICION_2)
   const adicionales = record.components.filter((item) => item.componentRole === ComponentRole.ADICIONAL)
 
   return {
-    platilloPrincipal: mapFood(platilloPrincipal),
+    platilloPrincipal: platilloPrincipal ? mapFood(platilloPrincipal) : createEmptyFoodItem(),
     guarnicion1: guarnicion1 ? mapFood(guarnicion1) : null,
     guarnicion2: guarnicion2 ? mapFood(guarnicion2) : null,
     contenedor: record.contenedor,

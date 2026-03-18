@@ -247,6 +247,10 @@ function applyValidationHighlights(issues: ZodIssue[]) {
         continue
       }
 
+      if (hiddenDays.has(day.dayOfWeek)) {
+        continue
+      }
+
       invalidDays.value.add(day.dayOfWeek)
       invalidSlots.value[day.dayOfWeek].add(normalizedSlotKey)
 
@@ -285,6 +289,10 @@ function formatValidationIssue(issue?: ZodIssue) {
     const day = state.days[dayIndex]
     const dayLabel = day ? DAY_LABELS[day.dayOfWeek] : "el día seleccionado"
     const slotLabel = SLOT_LABELS[slotKey as keyof typeof SLOT_LABELS] ?? "este tiempo"
+
+    if (day && hiddenDays.has(day.dayOfWeek)) {
+      return "Verifica la información opcional capturada en fin de semana."
+    }
 
     if (fieldKey === "platilloPrincipal" && nestedField === "nombre") {
       return `Falta el nombre del platillo principal en ${slotLabel} de ${dayLabel}.`
