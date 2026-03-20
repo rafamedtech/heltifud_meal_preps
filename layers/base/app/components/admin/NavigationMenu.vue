@@ -10,6 +10,11 @@ const collapsed = computed(() => props.collapsed ?? false)
 
 const route = useRoute()
 
+const collapsedItemIconClass = 'size-7 shrink-0'
+const collapsedItemLabelClass = 'text-[11px] font-medium leading-tight'
+const expandedItemIconClass = 'size-5 shrink-0'
+const expandedItemLabelClass = 'text-sm font-medium'
+
 type AdminLinkItem = NavigationMenuItem & {
   label?: string
   to?: string
@@ -73,9 +78,9 @@ function isCurrent(item: AdminLinkItem) {
       >
         <UIcon
           :name="item.icon || 'i-heroicons-chevron-right'"
-          class="size-6.5 shrink-0"
+          :class="collapsedItemIconClass"
         />
-        <span class="text-[12px] font-medium leading-tight">
+        <span :class="collapsedItemLabelClass">
           {{ item.label }}
         </span>
       </NuxtLink>
@@ -106,9 +111,9 @@ function isCurrent(item: AdminLinkItem) {
           >
             <UIcon
               :name="item.icon || 'i-heroicons-chevron-right'"
-              class="size-5 shrink-0"
+              :class="expandedItemIconClass"
             />
-            <span>{{ item.label }}</span>
+            <span :class="expandedItemLabelClass">{{ item.label }}</span>
           </NuxtLink>
 
           <section
@@ -116,11 +121,11 @@ function isCurrent(item: AdminLinkItem) {
             class="space-y-2"
           >
             <div
-              class="flex items-center gap-2.5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted"
+              class="flex items-center gap-2.5 px-3 py-1.5 text-sm font-medium uppercase tracking-[0.18em] text-muted"
             >
               <UIcon
                 :name="item.icon || 'i-heroicons-chevron-right'"
-                class="size-4 shrink-0"
+                :class="expandedItemIconClass"
               />
               <span>{{ item.label }}</span>
             </div>
@@ -139,9 +144,9 @@ function isCurrent(item: AdminLinkItem) {
               >
                 <UIcon
                   :name="child.icon || 'i-heroicons-chevron-right'"
-                  class="size-4 shrink-0"
+                  :class="expandedItemIconClass"
                 />
-                <span>{{ child.label }}</span>
+                <span :class="expandedItemLabelClass">{{ child.label }}</span>
               </NuxtLink>
             </div>
           </section>

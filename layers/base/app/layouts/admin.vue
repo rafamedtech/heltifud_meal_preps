@@ -22,106 +22,119 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
             </NuxtLink>
           </div>
 
-          <div
-            v-if="isSidebarCollapsed"
-            class="relative hidden w-full flex-col items-center gap-3 xl:flex"
-          >
-            <NuxtLink to="/admin" class="flex items-center justify-center rounded-xl">
-              <div class="app-surface-soft flex size-12 items-center justify-center text-primary">
-                <UIcon name="i-heroicons-squares-2x2" class="size-7" />
-              </div>
-            </NuxtLink>
-          </div>
-
-          <div
-            v-else
-            class="relative hidden w-full items-center xl:flex"
-          >
-            <NuxtLink
-              to="/admin"
-              class="app-surface-soft flex min-w-0 items-center gap-3 px-3 py-2"
+          <Transition name="sidebar-swap" mode="out-in">
+            <div
+              v-if="isSidebarCollapsed"
+              key="sidebar-header-collapsed"
+              class="relative hidden w-full flex-col items-center gap-3 xl:flex"
             >
-              <div class="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                <UIcon
-                  name="i-heroicons-squares-2x2"
-                  class="size-5"
-                />
-              </div>
+              <NuxtLink to="/admin" class="flex items-center justify-center rounded-xl">
+                <div class="app-surface-soft flex size-12 items-center justify-center text-primary">
+                  <UIcon name="i-heroicons-squares-2x2" class="size-7" />
+                </div>
+              </NuxtLink>
+            </div>
 
-              <div class="min-w-0">
-                <p class="truncate text-sm font-semibold text-highlighted">Heltifud Admin</p>
-                <p class="truncate text-xs text-muted">Gestión de operación</p>
-              </div>
-            </NuxtLink>
-          </div>
+            <div
+              v-else
+              key="sidebar-header-expanded"
+              class="relative hidden w-full items-center xl:flex"
+            >
+              <NuxtLink
+                to="/admin"
+                class="app-surface-soft flex min-w-0 items-center gap-3 px-3 py-2"
+              >
+                <div class="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <UIcon
+                    name="i-heroicons-squares-2x2"
+                    class="size-5"
+                  />
+                </div>
+
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-semibold text-highlighted">Heltifud Admin</p>
+                  <p class="truncate text-xs text-muted">Gestión de operación</p>
+                </div>
+              </NuxtLink>
+            </div>
+          </Transition>
         </div>
 
         <div class="admin-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto py-5 px-3 xl:hidden">
           <AdminNavigationMenu collapsed />
         </div>
 
-        <div
-          v-if="isSidebarCollapsed"
-          class="admin-scrollbar hidden min-h-0 flex-1 flex-col overflow-y-auto py-5 px-3 xl:flex"
-        >
-          <AdminNavigationMenu collapsed />
+        <div class="hidden min-h-0 flex-1 xl:block">
+          <Transition name="sidebar-swap" mode="out-in">
+            <div
+              v-if="isSidebarCollapsed"
+              key="sidebar-nav-collapsed"
+              class="admin-scrollbar min-h-0 h-full flex-1 flex-col overflow-y-auto py-5 px-3"
+            >
+              <AdminNavigationMenu collapsed />
+            </div>
+
+            <div
+              v-else
+              key="sidebar-nav-expanded"
+              class="admin-scrollbar min-h-0 h-full flex-1 flex-col overflow-y-auto py-4 px-3"
+            >
+              <AdminNavigationMenu :collapsed="false" />
+            </div>
+          </Transition>
         </div>
 
-        <div
-          v-else
-          class="admin-scrollbar hidden min-h-0 flex-1 flex-col overflow-y-auto py-4 px-3 xl:flex"
-        >
-          <AdminNavigationMenu :collapsed="false" />
-        </div>
-
-        <div class="border-t border-default/70 bg-default/60 py-4 px-3 xl:hidden">
+        <div class="border-t border-default/70 bg-[color-mix(in_srgb,var(--ui-bg)_92%,white)]/95 py-4 px-3 xl:hidden">
           <div class="flex w-full justify-center">
             <ColorMode compact />
           </div>
         </div>
 
-        <div
-          v-if="isSidebarCollapsed"
-          class="hidden border-t border-default/70 bg-default/60 py-4 px-3 xl:block"
-        >
-          <div class="flex flex-col items-center gap-3">
-            <div class="flex w-full justify-center">
-              <ColorMode compact />
-            </div>
-
-            <div class="flex w-full justify-center">
-              <UButton
-                square
-                size="sm"
-                variant="soft"
-                color="neutral"
-                icon="i-lucide-panel-left-open"
-                class="app-surface-soft flex size-11 items-center justify-center p-0"
-                :ui="{ leadingIcon: 'm-0 size-7 shrink-0' }"
-                @click="isSidebarCollapsed = !isSidebarCollapsed"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div
-          v-else
-          class="hidden border-t border-default/70 bg-default/60 py-4 px-3 xl:block"
-        >
-          <div class="flex items-center justify-between gap-2">
-            <ColorMode />
-
-            <UButton
-              size="sm"
-              variant="ghost"
-              color="neutral"
-              class="rounded-xl px-2.5"
-              icon="i-lucide-panel-left-close"
-              @click="isSidebarCollapsed = !isSidebarCollapsed"
+        <div class="hidden border-t border-default/70 bg-[color-mix(in_srgb,var(--ui-bg)_92%,white)]/95 py-4 px-3 xl:block">
+          <Transition name="sidebar-swap" mode="out-in">
+            <div
+              v-if="isSidebarCollapsed"
+              key="sidebar-footer-collapsed"
+              class="flex flex-col items-center gap-3"
             >
-              <span>Colapsar</span>
-            </UButton>
-          </div>
+              <div class="flex w-full justify-center">
+                <ColorMode compact />
+              </div>
+
+              <div class="flex w-full justify-center">
+                <UButton
+                  square
+                  size="sm"
+                  variant="ghost"
+                  color="neutral"
+                  icon="i-lucide-panel-left-open"
+                  class="app-nav-item border-0 bg-transparent text-muted shadow-none hover:bg-default/90 hover:text-highlighted flex size-11 items-center justify-center p-0"
+                  :ui="{ leadingIcon: 'm-0 size-5 shrink-0' }"
+                  @click="isSidebarCollapsed = !isSidebarCollapsed"
+                />
+              </div>
+            </div>
+
+            <div
+              v-else
+              key="sidebar-footer-expanded"
+              class="flex flex-col items-stretch gap-3"
+            >
+              <ColorMode />
+
+              <UButton
+                size="sm"
+                variant="ghost"
+                color="neutral"
+                class="app-nav-item justify-start border-0 bg-transparent px-3 py-2.5 text-sm font-medium text-muted shadow-none hover:bg-default/90 hover:text-highlighted"
+                :ui="{ base: 'justify-start', leadingIcon: 'm-0 size-5 shrink-0' }"
+                icon="i-lucide-panel-left-close"
+                @click="isSidebarCollapsed = !isSidebarCollapsed"
+              >
+                <span>Colapsar</span>
+              </UButton>
+            </div>
+          </Transition>
         </div>
       </aside>
 
@@ -149,3 +162,16 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
     </section>
   </div>
 </template>
+
+<style scoped>
+.sidebar-swap-enter-active,
+.sidebar-swap-leave-active {
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.sidebar-swap-enter-from,
+.sidebar-swap-leave-to {
+  opacity: 0;
+  transform: translateY(6px);
+}
+</style>

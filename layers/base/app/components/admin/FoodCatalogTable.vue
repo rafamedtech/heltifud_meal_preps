@@ -41,9 +41,13 @@ const selectLabel = computed(() => props.selectLabel ?? "Seleccionar")
 const selectedId = computed(() => props.selectedId ?? null)
 const autofocusSearch = computed(() => props.autofocusSearch ?? false)
 const isSelectMode = computed(() => mode.value === "select")
+type SortKey = "createdAt" | "nombre" | "calorias"
+type SortDirection = "asc" | "desc"
 
 const search = ref("")
 const selectedType = ref<"todos" | string | { value?: string; label?: string }>("todos")
+const sortKey = ref<SortKey>(mode.value === "manage" ? "createdAt" : "nombre")
+const sortDirection = ref<SortDirection>(mode.value === "manage" ? "desc" : "asc")
 const preferredTypeOptions = [
   { label: "Desayuno", value: "desayuno" },
   { label: "Comida", value: "comida" },
@@ -107,6 +111,27 @@ const filteredItems = computed(() => {
   })
 })
 
+const sortedItems = computed(() => {
+  return [...filteredItems.value].sort((a, b) => {
+    let comparison = 0
+
+    switch (sortKey.value) {
+      case "nombre":
+        comparison = a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
+        break
+      case "calorias":
+        comparison = a.calorias - b.calorias
+        break
+      case "createdAt":
+      default:
+        comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        break
+    }
+
+    return sortDirection.value === "asc" ? comparison : -comparison
+  })
+})
+
 const normalizedSearch = computed(() => search.value.trim())
 const canCreateFromSearch = computed(() => mode.value === "manage" && normalizedSearch.value.length > 0)
 const canCreateFromFilter = computed(() =>
@@ -158,6 +183,24 @@ function onDelete(item: FoodCatalogItem) {
 
 function onSelect(id: string) {
   emit("select", id)
+}
+
+function toggleSort(nextKey: SortKey) {
+  if (sortKey.value === nextKey) {
+    sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc"
+    return
+  }
+
+  sortKey.value = nextKey
+  sortDirection.value = nextKey === "createdAt" ? "desc" : "asc"
+}
+
+function sortIcon(key: SortKey) {
+  if (sortKey.value !== key) {
+    return "i-lucide-arrow-up-down"
+  }
+
+  return sortDirection.value === "asc" ? "i-lucide-arrow-up" : "i-lucide-arrow-down"
 }
 
 function actionItems(item: FoodCatalogItem) {
@@ -306,15 +349,33 @@ function actionItems(item: FoodCatalogItem) {
 
         <thead class="bg-elevated/50">
           <tr class="border-b border-default/70">
-            <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] text-muted sm:px-6">Platillo</th>
-            <th class="hidden px-5 py-3 text-center text-xs font-medium uppercase tracking-[0.18em] text-muted sm:table-cell sm:px-6">Calorías</th>
+            <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] text-muted sm:px-6">
+              <button
+                type="button"
+                class="inline-flex items-center gap-2"
+                @click="toggleSort('nombre')"
+              >
+                <span>Platillo</span>
+                <UIcon :name="sortIcon('nombre')" class="size-3.5" />
+              </button>
+            </th>
+            <th class="hidden px-5 py-3 text-center text-xs font-medium uppercase tracking-[0.18em] text-muted sm:table-cell sm:px-6">
+              <button
+                type="button"
+                class="inline-flex items-center justify-center gap-2"
+                @click="toggleSort('calorias')"
+              >
+                <span>Calorías</span>
+                <UIcon :name="sortIcon('calorias')" class="size-3.5" />
+              </button>
+            </th>
             <th class="px-5 py-3 text-right text-xs font-medium uppercase tracking-[0.18em] text-muted sm:px-6">Acciones</th>
           </tr>
         </thead>
 
         <tbody>
           <tr
-            v-for="item in filteredItems"
+            v-for="item in sortedItems"
             :key="item.id"
             class="border-b border-default/60 transition-colors hover:bg-elevated/30 last:border-b-0"
           >

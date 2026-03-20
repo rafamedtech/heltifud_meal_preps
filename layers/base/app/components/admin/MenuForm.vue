@@ -187,6 +187,62 @@ const invalidSlots = ref<Record<DayOfWeek, Set<SlotKey>>>(
   }, {} as Record<DayOfWeek, Set<SlotKey>>)
 )
 
+function toComparableDate(value: Date | string) {
+  const date = value instanceof Date ? value : new Date(value)
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10)
+}
+
+function comparableFoodItem(item?: FoodItemDetail | null) {
+  return {
+    catalogItemId: item?.catalogItemId ?? null,
+    nombre: item?.nombre ?? "",
+    descripcion: item?.descripcion ?? "",
+    calorias: item?.calorias ?? 0,
+    imagen: item?.imagen ?? "",
+    tipo: item?.tipo ?? ""
+  }
+}
+
+function comparableSlot(slot: MenuSlot) {
+  return {
+    platilloPrincipal: comparableFoodItem(slot.platilloPrincipal),
+    guarnicion1: comparableFoodItem(slot.guarnicion1),
+    guarnicion2: comparableFoodItem(slot.guarnicion2),
+    contenedor: slot.contenedor ?? "",
+    adicionales: slot.adicionales.map((item) => comparableFoodItem(item))
+  }
+}
+
+function comparableMenuInput(input: WeeklyMenuInput) {
+  return {
+    name: input.name.trim(),
+    startDate: toComparableDate(input.startDate),
+    endDate: toComparableDate(input.endDate),
+    days: input.days.map((day) => ({
+      dayOfWeek: day.dayOfWeek,
+      desayuno: comparableSlot(day.desayuno),
+      comida: comparableSlot(day.comida),
+      cena: comparableSlot(day.cena),
+      snack1: comparableSlot(day.snack1),
+      snack2: comparableSlot(day.snack2)
+    }))
+  }
+}
+
+const canSubmitByValidation = computed(() => weeklyMenuInputSchema.safeParse(state).success)
+const isDirty = computed(() => {
+  if (mode.value !== "edit") {
+    return true
+  }
+
+  const original = comparableMenuInput(createStateFromMenu(menu.value))
+  const current = comparableMenuInput(state)
+  const activeChanged = markAsActive.value !== Boolean(menu.value?.isActive)
+
+  return JSON.stringify(original) !== JSON.stringify(current) || activeChanged
+})
+const canSubmit = computed(() => canSubmitByValidation.value && isDirty.value && !loading.value)
+
 watch(
   () => menu.value,
   (menu) => {
@@ -401,20 +457,22 @@ async function onSubmit() {
 
               <div class="flex items-center gap-3">
                 <UButton
+                  type="submit"
+                  :loading="loading"
+                  :disabled="!canSubmit"
+                  :color="canSubmit ? 'primary' : 'neutral'"
+                  icon="i-lucide-save"
+                >
+                  {{ actionLabel }}
+                </UButton>
+
+                <UButton
                   :variant="markAsActive || menu?.isActive ? 'soft' : 'outline'"
                   :color="markAsActive || menu?.isActive ? 'success' : 'primary'"
                   icon="i-lucide-badge-check"
                   @click="markAsActive = true"
                 >
                   {{ activeActionLabel }}
-                </UButton>
-
-                <UButton
-                  type="submit"
-                  :loading="loading"
-                  icon="i-lucide-save"
-                >
-                  {{ actionLabel }}
                 </UButton>
               </div>
             </div>

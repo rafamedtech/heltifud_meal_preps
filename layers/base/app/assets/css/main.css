@@ -119,6 +119,14 @@ body {
   box-shadow: var(--app-shadow-xs), var(--app-ring-soft);
 }
 
+.app-control-surface-error {
+  border-color: color-mix(in srgb, var(--ui-error) 52%, transparent) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ui-error) 22%, transparent),
+    var(--app-shadow-xs),
+    var(--app-ring-soft) !important;
+}
+
 .app-chip-surface {
   border-radius: var(--app-control-radius) !important;
   border: 1px solid var(--app-border-color);

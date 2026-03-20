@@ -55,10 +55,37 @@ const typeOptions = [
 
 const state = reactive<FoodCatalogItemInput>(emptyState());
 const saving = ref(false);
+const invalidFields = reactive<Record<keyof FoodCatalogItemInput, boolean>>({
+  nombre: false,
+  descripcion: false,
+  calorias: false,
+  imagen: false,
+  tipo: false,
+});
 
 const actionLabel = computed(() => (mode.value === 'edit' ? 'Guardar cambios' : 'Crear platillo'));
 
 const { createFoodCatalogItem, updateFoodCatalogItem } = useFoodCatalog();
+
+function clearValidationHighlights() {
+  invalidFields.nombre = false;
+  invalidFields.descripcion = false;
+  invalidFields.calorias = false;
+  invalidFields.imagen = false;
+  invalidFields.tipo = false;
+}
+
+function applyValidationHighlights(issues: { path: (string | number)[] }[]) {
+  clearValidationHighlights();
+
+  for (const issue of issues) {
+    const [field] = issue.path;
+
+    if (typeof field === 'string' && field in invalidFields) {
+      invalidFields[field as keyof FoodCatalogItemInput] = true;
+    }
+  }
+}
 
 watch(
   [() => item.value, () => prefilledName.value, () => prefilledType.value],
@@ -70,14 +97,37 @@ watch(
       imagen: item.imagen,
       tipo: item.tipo,
     } : emptyState(mode.value === 'create' ? nombre : '', mode.value === 'create' ? tipo : ''));
+
+    clearValidationHighlights();
   },
   { immediate: true }
 );
+
+watch(() => state.nombre, () => {
+  invalidFields.nombre = false;
+});
+
+watch(() => state.descripcion, () => {
+  invalidFields.descripcion = false;
+});
+
+watch(() => state.calorias, () => {
+  invalidFields.calorias = false;
+});
+
+watch(() => state.imagen, () => {
+  invalidFields.imagen = false;
+});
+
+watch(() => state.tipo, () => {
+  invalidFields.tipo = false;
+});
 
 async function onSubmit() {
   const parsed = foodCatalogItemInputSchema.safeParse(state);
 
   if (!parsed.success) {
+    applyValidationHighlights(parsed.error.issues);
     toast.add({
       title: 'Error de validación',
       description: parsed.error.issues[0]?.message ?? 'Revisa la información del platillo.',
@@ -94,6 +144,7 @@ async function onSubmit() {
         ? await updateFoodCatalogItem(item.value.id, parsed.data)
         : await createFoodCatalogItem(parsed.data);
 
+    clearValidationHighlights();
     toast.add({
       title: mode.value === 'edit' ? 'Platillo actualizado' : 'Platillo creado',
       color: 'success',
@@ -113,7 +164,7 @@ async function onSubmit() {
   <main class="space-y-4">
     <UCard class="app-surface">
       <UForm :state="state" class="space-y-4" @submit="onSubmit">
-        <section class="app-control-surface px-4 py-3">
+        <section :class="['app-control-surface px-4 py-3', invalidFields.nombre ? 'app-control-surface-error' : '']">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Nombre</p>
           <UInput
             v-model="state.nombre"
@@ -124,7 +175,7 @@ async function onSubmit() {
           />
         </section>
 
-        <section class="app-control-surface px-4 py-3">
+        <section :class="['app-control-surface px-4 py-3', invalidFields.descripcion ? 'app-control-surface-error' : '']">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Descripción</p>
           <UInput
             v-model="state.descripcion"
@@ -135,7 +186,7 @@ async function onSubmit() {
           />
         </section>
 
-        <section class="app-control-surface px-4 py-3">
+        <section :class="['app-control-surface px-4 py-3', invalidFields.calorias ? 'app-control-surface-error' : '']">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Calorías</p>
           <UInput
             v-model.number="state.calorias"
@@ -147,7 +198,7 @@ async function onSubmit() {
           />
         </section>
 
-        <section class="app-control-surface px-4 py-3">
+        <section :class="['app-control-surface px-4 py-3', invalidFields.tipo ? 'app-control-surface-error' : '']">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Tipo</p>
           <USelect
             v-model="state.tipo"
@@ -160,7 +211,7 @@ async function onSubmit() {
           />
         </section>
 
-        <section class="app-control-surface px-4 py-3">
+        <section :class="['app-control-surface px-4 py-3', invalidFields.imagen ? 'app-control-surface-error' : '']">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Imagen (URL)</p>
           <UInput
             v-model="state.imagen"
