@@ -1,10 +1,12 @@
 <script setup lang="ts">
 interface Props {
   compact?: boolean
+  hideLabel?: boolean
 }
 
 const props = defineProps<Props>()
 const compact = computed(() => props.compact ?? false)
+const hideLabel = computed(() => props.hideLabel ?? false)
 const colorMode = useColorMode()
 const sharedIconClass = 'm-0 size-5 shrink-0'
 
@@ -27,13 +29,13 @@ const isDark = computed({
       :variant="'ghost'"
       :size="compact ? 'sm' : 'lg'"
       :square="compact"
-      :class="compact ? 'app-nav-item border-0 bg-transparent text-muted shadow-none hover:bg-default/90 hover:text-highlighted flex size-11 items-center justify-center p-0' : 'app-nav-item justify-start border-0 bg-transparent px-3 py-2.5 text-sm font-medium text-muted shadow-none hover:bg-default/90 hover:text-highlighted'"
+      :class="compact ? 'app-nav-item app-sidebar-link border-0 bg-transparent text-muted shadow-none flex size-11 items-center justify-center p-0' : 'app-nav-item app-sidebar-link justify-start border-0 bg-transparent px-3 py-2.5 text-sm font-medium text-muted shadow-none'"
       :ui="compact
         ? { leadingIcon: sharedIconClass, trailingIcon: sharedIconClass }
         : { base: 'justify-start', leadingIcon: sharedIconClass, trailingIcon: sharedIconClass }"
       @click="isDark = !isDark"
     >
-      <span v-if="!compact">{{ isDark ? 'Dark mode' : 'Light mode' }}</span>
+      <span v-if="!compact && !hideLabel">{{ isDark ? 'Dark mode' : 'Light mode' }}</span>
     </UButton>
 
     <template #fallback>
@@ -42,7 +44,7 @@ const isDark = computed({
         :variant="'ghost'"
         color="neutral"
         :square="compact"
-        :class="compact ? 'app-nav-item border-0 bg-transparent text-muted shadow-none size-11' : 'app-nav-item justify-start border-0 bg-transparent px-3 py-2.5 text-sm font-medium text-muted shadow-none'"
+        :class="compact ? 'app-nav-item app-sidebar-link border-0 bg-transparent text-muted shadow-none size-11' : 'app-nav-item app-sidebar-link justify-start border-0 bg-transparent px-3 py-2.5 text-sm font-medium text-muted shadow-none'"
         :aria-label="'Loading color mode'"
       />
     </template>

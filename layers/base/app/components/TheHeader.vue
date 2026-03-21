@@ -41,7 +41,7 @@ function handleHeaderToggle(toggle: () => void, event: MouseEvent) {
 
     <template #right>
       <section class="flex gap-2">
-        <ColorMode />
+        <ColorMode hide-label />
 
         <BaseButton
           icon="i-lucide-rocket"

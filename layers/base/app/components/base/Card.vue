@@ -23,8 +23,8 @@ const {
   titleStyle = 'left',
   description = '',
   image,
-  imageWidth,
-  imageHeight,
+  imageWidth = undefined,
+  imageHeight = undefined,
   imageAlt = '',
   button = {
     label: '',

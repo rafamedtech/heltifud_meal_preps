@@ -3,10 +3,13 @@ const { data: activeMenu, status } = useLazyFetch<WeeklyMenu>(`/api/menu`, {
   default: () => ({}) as WeeklyMenu,
 })
 
+const session = useSupabaseSession()
 const startDate = computed(() => formatDate(activeMenu.value?.startDate))
 const endDate = computed(() => formatDate(activeMenu.value?.endDate))
 const skeletonDays = Array.from({ length: 3 }, (_, index) => index)
 const isLoading = computed(() => status.value === 'idle' || status.value === 'pending')
+const canEditMenu = computed(() => Boolean(session.value && activeMenu.value?.id))
+const editMenuLink = computed(() => activeMenu.value?.id ? `/admin/menu/${activeMenu.value.id}` : '/admin/menu')
 const publicDays = computed(() =>
   (activeMenu.value?.days ?? []).filter((day) => !['SABADO', 'DOMINGO'].includes(day.dayOfWeek))
 )
@@ -25,12 +28,24 @@ useSeoMeta({
   <section>
     <BaseSection title="Menú de la semana">
       <template #description>
-        <MenuDate
-          v-if="status === 'success'"
-          :start-date="startDate"
-          :end-date="endDate"
-        />
-        <USkeleton v-else class="h-6 w-[220px]" />
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <MenuDate
+            v-if="status === 'success'"
+            :start-date="startDate"
+            :end-date="endDate"
+          />
+          <USkeleton v-else class="h-6 w-[220px]" />
+
+          <UButton
+            v-if="canEditMenu"
+            label="Editar este menú"
+            icon="i-lucide-square-pen"
+            color="neutral"
+            variant="outline"
+            :to="editMenuLink"
+            size="sm"
+          />
+        </div>
       </template>
 
       <section>

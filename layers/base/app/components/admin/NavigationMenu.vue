@@ -12,8 +12,8 @@ const route = useRoute()
 
 const collapsedItemIconClass = 'size-7 shrink-0'
 const collapsedItemLabelClass = 'text-[11px] font-medium leading-tight'
-const expandedItemIconClass = 'size-5 shrink-0'
-const expandedItemLabelClass = 'text-sm font-medium'
+const expandedItemIconClass = 'size-[18px] shrink-0'
+const expandedItemLabelClass = 'text-[15px] font-medium'
 
 type AdminLinkItem = NavigationMenuItem & {
   label?: string
@@ -63,17 +63,17 @@ function isCurrent(item: AdminLinkItem) {
   <nav class="flex h-full flex-col">
     <section
       v-if="collapsed"
-      class="flex flex-1 flex-col items-center gap-3 py-1"
+      class="flex flex-1 flex-col items-center gap-2 py-1"
     >
       <NuxtLink
         v-for="item in flatItems"
         :key="`${item.label}-${item.to}`"
         :to="item.to"
-        class="app-nav-item group relative flex w-full max-w-[3.9rem] flex-col items-center justify-center gap-1.5 border px-1 py-2.5 text-center transition-all duration-200"
+        class="app-nav-item app-sidebar-link group relative flex w-full max-w-[3.75rem] flex-col items-center justify-center gap-1.5 px-1 py-2.5 text-center transition-all duration-200"
         :class="
           isCurrent(item)
-            ? 'border-primary/20 bg-primary/10 text-primary shadow-sm ring-1 ring-primary/10'
-            : 'border-default/70 bg-default/90 text-muted shadow-sm hover:-translate-y-0.5 hover:border-primary/15 hover:bg-default hover:text-highlighted'
+            ? 'app-sidebar-link-active text-primary'
+            : 'text-muted hover:text-highlighted'
         "
       >
         <UIcon
@@ -88,12 +88,12 @@ function isCurrent(item: AdminLinkItem) {
 
     <section
       v-else
-      class="flex flex-1 flex-col gap-6 py-2"
+      class="flex flex-1 flex-col gap-2.5 py-0.5"
     >
       <section
         v-for="(group, groupIndex) in sections"
         :key="groupIndex"
-        class="space-y-2"
+        class="space-y-1"
       >
         <template
           v-for="item in group"
@@ -102,11 +102,11 @@ function isCurrent(item: AdminLinkItem) {
           <NuxtLink
             v-if="!item.children?.length && item.to"
             :to="item.to"
-            class="app-nav-item group flex items-center gap-3 border border-transparent px-3 py-2.5 text-sm font-medium transition-all duration-200"
+            class="app-nav-item app-sidebar-link group flex items-center gap-3 px-3 py-1.5 text-sm font-medium transition-all duration-200"
             :class="
               isCurrent(item)
-                ? 'border-primary/15 bg-primary/10 text-primary shadow-sm'
-                : 'text-muted hover:border-default/70 hover:bg-default/90 hover:text-highlighted'
+                ? 'app-sidebar-link-active text-primary'
+                : 'text-muted hover:text-highlighted'
             "
           >
             <UIcon
@@ -118,10 +118,10 @@ function isCurrent(item: AdminLinkItem) {
 
           <section
             v-else
-            class="space-y-2"
+            class="space-y-0.5"
           >
             <div
-              class="flex items-center gap-2.5 px-3 py-1.5 text-sm font-medium uppercase tracking-[0.18em] text-muted"
+              class="flex items-center gap-2.5 px-3 py-0.5 text-[14px] font-medium text-muted"
             >
               <UIcon
                 :name="item.icon || 'i-heroicons-chevron-right'"
@@ -130,16 +130,16 @@ function isCurrent(item: AdminLinkItem) {
               <span>{{ item.label }}</span>
             </div>
 
-            <div class="ml-2 space-y-1.5 border-l border-default/60 pl-4">
+            <div class="app-sidebar-subtree ml-2 space-y-0 pl-4">
               <NuxtLink
                 v-for="child in item.children"
                 :key="`${child.label}-${child.to}`"
                 :to="child.to"
-                class="app-nav-item flex items-center gap-2.5 border border-transparent px-3 py-2 text-sm transition-all duration-200"
+                class="app-nav-item app-sidebar-link flex items-center gap-2.5 px-3 py-1 text-[14px] transition-all duration-200"
                 :class="
                   isCurrent(child)
-                    ? 'border-primary/15 bg-primary/10 font-medium text-primary shadow-sm'
-                    : 'text-muted hover:border-default/70 hover:bg-default/90 hover:text-highlighted'
+                    ? 'app-sidebar-link-active font-medium text-primary'
+                    : 'text-muted hover:text-highlighted'
                 "
               >
                 <UIcon

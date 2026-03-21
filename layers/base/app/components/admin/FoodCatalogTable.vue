@@ -342,9 +342,9 @@ function actionItems(item: FoodCatalogItem) {
     >
       <table class="min-w-full table-fixed text-sm">
         <colgroup>
-          <col class="w-[72%] sm:w-[58%]" />
-          <col class="hidden sm:table-column sm:w-[18%]" />
-          <col class="w-[28%] sm:w-[24%]" />
+          <col class="w-[72%] sm:w-[58%]">
+          <col class="hidden sm:table-column sm:w-[18%]">
+          <col class="w-[28%] sm:w-[24%]">
         </colgroup>
 
         <thead class="bg-elevated/50">

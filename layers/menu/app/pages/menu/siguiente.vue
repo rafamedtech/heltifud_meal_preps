@@ -3,9 +3,12 @@ const { data: nextMenu, status } = await useLazyFetch<WeeklyMenu>(`/api/menu/nex
   default: () => ({} as WeeklyMenu),
 })
 
+const session = useSupabaseSession()
 const startDate = computed(() => formatDate(nextMenu.value?.startDate))
 const endDate = computed(() => formatDate(nextMenu.value?.endDate))
 const skeletonDays = Array.from({ length: 3 }, (_, index) => index)
+const canEditMenu = computed(() => Boolean(session.value && nextMenu.value?.id))
+const editMenuLink = computed(() => nextMenu.value?.id ? `/admin/menu/${nextMenu.value.id}` : '/admin/menu')
 const publicDays = computed(() =>
   (nextMenu.value?.days ?? []).filter((day) => !['SABADO', 'DOMINGO'].includes(day.dayOfWeek))
 )
@@ -24,14 +27,26 @@ useSeoMeta({
   <section>
     <BaseSection title="Menú de la siguiente semana">
       <template #description>
-        <section v-if="status === 'success'" class="flex items-center gap-2">
-          <Icon
-            name="lucide:calendar-days"
-            size="24"
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <section v-if="status === 'success'" class="flex items-center gap-2">
+            <Icon
+              name="lucide:calendar-days"
+              size="24"
+            />
+            <span>{{ startDate }}</span> - <span>{{ endDate }}</span>
+          </section>
+          <USkeleton v-else class="h-6 w-[220px]" />
+
+          <UButton
+            v-if="canEditMenu"
+            label="Editar este menú"
+            icon="i-lucide-square-pen"
+            color="neutral"
+            variant="outline"
+            :to="editMenuLink"
+            size="sm"
           />
-          <span>{{ startDate }}</span> - <span>{{ endDate }}</span>
-        </section>
-        <USkeleton v-else class="h-6 w-[220px]" />
+        </div>
       </template>
 
       <section>
