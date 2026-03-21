@@ -21,7 +21,7 @@ export default defineNuxtConfig({
       devSourcemap: false
     },
     optimizeDeps: {
-      include: ["zod"]
+      include: ["zod", "@vue/devtools-core", "@vue/devtools-kit"]
     }
   },
 
