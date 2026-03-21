@@ -1,6 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 const cloudinaryBaseURL =
   process.env.NUXT_PUBLIC_CLOUDINARY_BASE_URL || "https://res.cloudinary.com/rafamed-dev/image/upload"
+const supabaseUrl = process.env.NUXT_PUBLIC_SUPABASE_URL || ""
+const supabaseKey = process.env.NUXT_PUBLIC_SUPABASE_KEY || ""
 const corsAllowedOrigins =
   process.env.NUXT_CORS_ALLOWED_ORIGINS ||
   "https://heltifud.com,https://www.heltifud.com,http://localhost:3000,http://127.0.0.1:3000"
@@ -46,6 +48,8 @@ export default defineNuxtConfig({
   },
 
   supabase: {
+    url: supabaseUrl,
+    key: supabaseKey,
     redirect: false,
     types: "~/types/database.types.ts"
   }
