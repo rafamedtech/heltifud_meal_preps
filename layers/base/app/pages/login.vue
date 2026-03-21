@@ -1,60 +1,59 @@
 <script setup lang="ts">
-import * as z from 'zod'
-import type { FormSubmitEvent } from '@nuxt/ui'
+import * as z from "zod"
+import type { FormSubmitEvent } from "@nuxt/ui"
 
 const schema = z.object({
-  email: z.email('Ingresa un correo electrónico válido.'),
-  password: z
-    .string('La contraseña es obligatoria.')
-    .min(8, 'La contraseña debe tener al menos 8 caracteres.')
+  email: z.email("Ingresa un correo electrónico válido."),
+  password: z.string("La contraseña es obligatoria.").min(8, "La contraseña debe tener al menos 8 caracteres.")
 })
 
 type Schema = z.output<typeof schema>
 
-const supabase = useSupabaseClient()
-const toast = useToast()
-const route = useRoute()
-const currentSession = useSupabaseSession()
+// const supabase = useSupabaseClient()
+// const toast = useToast()
+// const route = useRoute()
+// const currentSession = useSupabaseSession()
 const state = reactive<Partial<Schema>>({
-  email: '',
-  password: ''
+  email: "",
+  password: ""
 })
 const isSubmitting = ref(false)
-const authError = ref('')
+const authError = ref("")
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  authError.value = ''
-  isSubmitting.value = true
+  alert(event)
+  //   authError.value = ''
+  //   isSubmitting.value = true
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: event.data.email,
-    password: event.data.password
-  })
+  //   const { data, error } = await supabase.auth.signInWithPassword({
+  //     email: event.data.email,
+  //     password: event.data.password
+  //   })
 
-  isSubmitting.value = false
+  //   isSubmitting.value = false
 
-  if (error) {
-    authError.value = error.message || 'No fue posible iniciar sesión.'
-    toast.add({
-      title: 'Error al iniciar sesión',
-      description: authError.value,
-      color: 'error'
-    })
-    return
-  }
+  //   if (error) {
+  //     authError.value = error.message || 'No fue posible iniciar sesión.'
+  //     toast.add({
+  //       title: 'Error al iniciar sesión',
+  //       description: authError.value,
+  //       color: 'error'
+  //     })
+  //     return
+  //   }
 
-  toast.add({
-    title: 'Sesión iniciada',
-    description: 'Redirigiendo al panel administrativo.',
-    color: 'success'
-  })
+  //   toast.add({
+  //     title: 'Sesión iniciada',
+  //     description: 'Redirigiendo al panel administrativo.',
+  //     color: 'success'
+  //   })
 
-  currentSession.value = data.session ?? null
+  //   currentSession.value = data.session ?? null
 
-  const redirectTo = typeof route.query.redirect === 'string' ? route.query.redirect : '/admin'
+  //   const redirectTo = typeof route.query.redirect === 'string' ? route.query.redirect : '/admin'
 
-  await nextTick()
-  await navigateTo(redirectTo, { replace: true })
+  //   await nextTick()
+  //   await navigateTo(redirectTo, { replace: true })
 }
 
 definePageMeta({
@@ -75,9 +74,7 @@ useSeoMeta({
     <USeparator />
 
     <main
-      class="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-8 md:px-6
-      bg-[linear-gradient(180deg,rgb(248_249_245)_0%,rgb(241_244_239)_100%)]
-      dark:bg-[linear-gradient(180deg,rgb(8_10_14)_0%,rgb(5_7_11)_100%)]"
+      class="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-8 md:px-6 bg-[linear-gradient(180deg,rgb(248_249_245)_0%,rgb(241_244_239)_100%)] dark:bg-[linear-gradient(180deg,rgb(8_10_14)_0%,rgb(5_7_11)_100%)]"
     >
       <div
         aria-hidden="true"
@@ -99,7 +96,9 @@ useSeoMeta({
           <div class="space-y-6 px-6 py-6 sm:px-7 sm:py-7">
             <div class="space-y-3">
               <div class="flex items-center gap-3">
-                <div class="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/10 dark:bg-primary/12 dark:ring-primary/15">
+                <div
+                  class="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/10 dark:bg-primary/12 dark:ring-primary/15"
+                >
                   <UIcon
                     name="i-lucide-lock-keyhole"
                     class="size-5"
