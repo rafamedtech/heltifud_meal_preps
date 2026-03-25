@@ -44,3 +44,4 @@ _sfc_main.setup = (props, ctx) => {
 const __nuxt_component_3 = Object.assign(_sfc_main, { __name: "BaseSection" });
 
 export { __nuxt_component_3 as _ };
+//# sourceMappingURL=Section-DrncyQpB.mjs.map

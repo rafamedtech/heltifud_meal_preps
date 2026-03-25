@@ -23,3 +23,4 @@ const index_delete = defineEventHandler(async (event) => {
 });
 
 export { index_delete as default };
+//# sourceMappingURL=index.delete.mjs.map

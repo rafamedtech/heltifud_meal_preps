@@ -388,164 +388,6 @@ function stringifyParsedURL(parsed) {
   return proto + auth + host + pathname + search + hash;
 }
 
-const fieldContentRegExp = /^[\u0009\u0020-\u007E\u0080-\u00FF]+$/;
-function serialize$2(name, value, options) {
-  const opt = options || {};
-  const enc = opt.encode || encodeURIComponent;
-  if (typeof enc !== "function") {
-    throw new TypeError("option encode is invalid");
-  }
-  if (!fieldContentRegExp.test(name)) {
-    throw new TypeError("argument name is invalid");
-  }
-  const encodedValue = enc(value);
-  if (encodedValue && !fieldContentRegExp.test(encodedValue)) {
-    throw new TypeError("argument val is invalid");
-  }
-  let str = name + "=" + encodedValue;
-  if (void 0 !== opt.maxAge && opt.maxAge !== null) {
-    const maxAge = opt.maxAge - 0;
-    if (Number.isNaN(maxAge) || !Number.isFinite(maxAge)) {
-      throw new TypeError("option maxAge is invalid");
-    }
-    str += "; Max-Age=" + Math.floor(maxAge);
-  }
-  if (opt.domain) {
-    if (!fieldContentRegExp.test(opt.domain)) {
-      throw new TypeError("option domain is invalid");
-    }
-    str += "; Domain=" + opt.domain;
-  }
-  if (opt.path) {
-    if (!fieldContentRegExp.test(opt.path)) {
-      throw new TypeError("option path is invalid");
-    }
-    str += "; Path=" + opt.path;
-  }
-  if (opt.expires) {
-    if (!isDate(opt.expires) || Number.isNaN(opt.expires.valueOf())) {
-      throw new TypeError("option expires is invalid");
-    }
-    str += "; Expires=" + opt.expires.toUTCString();
-  }
-  if (opt.httpOnly) {
-    str += "; HttpOnly";
-  }
-  if (opt.secure) {
-    str += "; Secure";
-  }
-  if (opt.priority) {
-    const priority = typeof opt.priority === "string" ? opt.priority.toLowerCase() : opt.priority;
-    switch (priority) {
-      case "low": {
-        str += "; Priority=Low";
-        break;
-      }
-      case "medium": {
-        str += "; Priority=Medium";
-        break;
-      }
-      case "high": {
-        str += "; Priority=High";
-        break;
-      }
-      default: {
-        throw new TypeError("option priority is invalid");
-      }
-    }
-  }
-  if (opt.sameSite) {
-    const sameSite = typeof opt.sameSite === "string" ? opt.sameSite.toLowerCase() : opt.sameSite;
-    switch (sameSite) {
-      case true: {
-        str += "; SameSite=Strict";
-        break;
-      }
-      case "lax": {
-        str += "; SameSite=Lax";
-        break;
-      }
-      case "strict": {
-        str += "; SameSite=Strict";
-        break;
-      }
-      case "none": {
-        str += "; SameSite=None";
-        break;
-      }
-      default: {
-        throw new TypeError("option sameSite is invalid");
-      }
-    }
-  }
-  if (opt.partitioned) {
-    str += "; Partitioned";
-  }
-  return str;
-}
-function isDate(val) {
-  return Object.prototype.toString.call(val) === "[object Date]" || val instanceof Date;
-}
-
-function parseSetCookie(setCookieValue, options) {
-  const parts = (setCookieValue || "").split(";").filter((str) => typeof str === "string" && !!str.trim());
-  const nameValuePairStr = parts.shift() || "";
-  const parsed = _parseNameValuePair(nameValuePairStr);
-  const name = parsed.name;
-  let value = parsed.value;
-  try {
-    value = options?.decode === false ? value : (options?.decode || decodeURIComponent)(value);
-  } catch {
-  }
-  const cookie = {
-    name,
-    value
-  };
-  for (const part of parts) {
-    const sides = part.split("=");
-    const partKey = (sides.shift() || "").trimStart().toLowerCase();
-    const partValue = sides.join("=");
-    switch (partKey) {
-      case "expires": {
-        cookie.expires = new Date(partValue);
-        break;
-      }
-      case "max-age": {
-        cookie.maxAge = Number.parseInt(partValue, 10);
-        break;
-      }
-      case "secure": {
-        cookie.secure = true;
-        break;
-      }
-      case "httponly": {
-        cookie.httpOnly = true;
-        break;
-      }
-      case "samesite": {
-        cookie.sameSite = partValue;
-        break;
-      }
-      default: {
-        cookie[partKey] = partValue;
-      }
-    }
-  }
-  return cookie;
-}
-function _parseNameValuePair(nameValuePairStr) {
-  let name = "";
-  let value = "";
-  const nameValueArr = nameValuePairStr.split("=");
-  if (nameValueArr.length > 1) {
-    name = nameValueArr.shift();
-    value = nameValueArr.join("=");
-  } else {
-    value = nameValuePairStr;
-  }
-  return { name, value };
-}
-
 const NODE_TYPES = {
   NORMAL: 0,
   WILDCARD: 1,
@@ -1003,7 +845,6 @@ function getRequestHeader(event, name) {
   const value = headers[name.toLowerCase()];
   return value;
 }
-const getHeader = getRequestHeader;
 function getRequestHost(event, opts = {}) {
   if (opts.xForwardedHost) {
     const _header = event.node.req.headers["x-forwarded-host"];
@@ -1238,34 +1079,6 @@ function sanitizeStatusCode(statusCode, defaultStatusCode = 200) {
   }
   return statusCode;
 }
-
-function getDistinctCookieKey(name, opts) {
-  return [name, opts.domain || "", opts.path || "/"].join(";");
-}
-function setCookie(event, name, value, serializeOptions = {}) {
-  if (!serializeOptions.path) {
-    serializeOptions = { path: "/", ...serializeOptions };
-  }
-  const newCookie = serialize$2(name, value, serializeOptions);
-  const currentCookies = splitCookiesString(
-    event.node.res.getHeader("set-cookie")
-  );
-  if (currentCookies.length === 0) {
-    event.node.res.setHeader("set-cookie", newCookie);
-    return;
-  }
-  const newCookieKey = getDistinctCookieKey(name, serializeOptions);
-  event.node.res.removeHeader("set-cookie");
-  for (const cookie of currentCookies) {
-    const parsed = parseSetCookie(cookie);
-    const key = getDistinctCookieKey(parsed.name, parsed);
-    if (key === newCookieKey) {
-      continue;
-    }
-    event.node.res.appendHeader("set-cookie", cookie);
-  }
-  event.node.res.appendHeader("set-cookie", newCookie);
-}
 function splitCookiesString(cookiesString) {
   if (Array.isArray(cookiesString)) {
     return cookiesString.flatMap((c) => splitCookiesString(c));
@@ -1397,7 +1210,6 @@ const setHeaders = setResponseHeaders;
 function setResponseHeader(event, name, value) {
   event.node.res.setHeader(name, value);
 }
-const setHeader = setResponseHeader;
 function appendResponseHeader(event, name, value) {
   let current = event.node.res.getHeader(name);
   if (!current) {
@@ -4601,7 +4413,7 @@ function _expandFromEnv(value) {
 const _inlineRuntimeConfig = {
   "app": {
     "baseURL": "/",
-    "buildId": "7fd3f4bb-d905-48f4-85eb-b3e1e8f3c61f",
+    "buildId": "4c5e88ea-fa85-4a6c-ad88-42d8309720c2",
     "buildAssetsDir": "/_nuxt/",
     "cdnURL": ""
   },
@@ -4634,36 +4446,11 @@ const _inlineRuntimeConfig = {
     }
   },
   "public": {
-    "cloudinaryBaseURL": "https://res.cloudinary.com/rafamed-dev/image/upload",
-    "supabase": {
-      "url": "https://qmpslziktjtgenlmrslm.supabase.co",
-      "key": "sb_publishable_1il2H7nbL9TAM65iqbCkFw_2HElvVkz",
-      "redirect": false,
-      "redirectOptions": {
-        "login": "/login",
-        "callback": "/confirm",
-        "exclude": [],
-        "cookieRedirect": false,
-        "saveRedirectToCookie": false
-      },
-      "cookieName": "sb",
-      "cookiePrefix": "sb-qmpslziktjtgenlmrslm-auth-token",
-      "useSsrCookies": true,
-      "cookieOptions": {
-        "maxAge": 28800,
-        "sameSite": "lax",
-        "secure": true
-      },
-      "clientOptions": {}
-    }
+    "cloudinaryBaseURL": "https://res.cloudinary.com/rafamed-dev/image/upload"
   },
   "corsAllowedOrigins": "https://heltifud.com,https://www.heltifud.com,http://localhost:3000,http://127.0.0.1:3000",
   "icon": {
     "serverKnownCssClasses": []
-  },
-  "supabase": {
-    "serviceKey": "",
-    "secretKey": ""
   }
 };
 const envOptions = {
@@ -5094,46 +4881,6 @@ const plugins = [
   _7F8uKjHaKb2SxyDhKzcmyNmbhDDoUKgjSuSxf8FBQhs
 ];
 
-const DEFAULT_ALLOWED_HEADERS = [
-  "Authorization",
-  "Content-Type",
-  "Accept",
-  "Origin",
-  "X-Requested-With"
-];
-const DEFAULT_ALLOWED_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
-function parseAllowedOrigins(raw) {
-  return (raw != null ? raw : "").split(",").map((origin) => origin.trim()).filter(Boolean);
-}
-const _ddQkDL = defineEventHandler((event) => {
-  const path = getRequestURL(event).pathname;
-  if (!path.startsWith("/api/")) {
-    return;
-  }
-  const config = useRuntimeConfig(event);
-  const allowedOrigins = parseAllowedOrigins(config.corsAllowedOrigins);
-  const origin = getRequestHeader(event, "origin");
-  setHeader(event, "Vary", "Origin");
-  setHeader(event, "Access-Control-Allow-Methods", DEFAULT_ALLOWED_METHODS.join(", "));
-  setHeader(event, "Access-Control-Allow-Headers", DEFAULT_ALLOWED_HEADERS.join(", "));
-  setHeader(event, "Access-Control-Max-Age", "86400");
-  if (!origin) {
-    return;
-  }
-  if (!allowedOrigins.includes(origin)) {
-    if (event.method === "OPTIONS") {
-      setResponseStatus(event, 403, "CORS origin not allowed");
-      return "CORS origin not allowed";
-    }
-    return;
-  }
-  setHeader(event, "Access-Control-Allow-Origin", origin);
-  if (event.method === "OPTIONS") {
-    setResponseStatus(event, 204);
-    return "";
-  }
-});
-
 const _SxA8c9 = defineEventHandler(() => {});
 
 const _DRIVE_LETTER_START_RE = /^[A-Za-z]:\//;
@@ -5344,8 +5091,8 @@ const foodCatalogItemInputSchema = foodItemSchema;
 
 const config = {
   "previewFeatures": [],
-  "clientVersion": "7.4.2",
-  "engineVersion": "94a226be1cf2967af2541cca5529f0f7ba866919",
+  "clientVersion": "7.5.0",
+  "engineVersion": "280c870be64f457428992c43c1f6d557fab6e29e",
   "activeProvider": "postgresql",
   "inlineSchema": 'generator client {\n  provider = "prisma-client"\n  output   = "../layers/menu/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n}\n\nmodel WeeklyMenu {\n  id        String    @id @default(uuid())\n  name      String\n  isActive  Boolean   @default(false)\n  startDate DateTime\n  endDate   DateTime\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  days      MenuDay[]\n\n  @@index([isActive])\n  @@index([startDate])\n  @@index([endDate])\n}\n\nmodel MenuDay {\n  id           String     @id @default(uuid())\n  weeklyMenuId String\n  dayOfWeek    DayOfWeek\n  order        Int\n  weeklyMenu   WeeklyMenu @relation(fields: [weeklyMenuId], references: [id], onDelete: Cascade)\n  slots        DaySlot[]\n\n  @@unique([weeklyMenuId, dayOfWeek])\n  @@unique([weeklyMenuId, order])\n}\n\nmodel DaySlot {\n  id         String          @id @default(uuid())\n  menuDayId  String\n  slotType   SlotType\n  contenedor String?\n  menuDay    MenuDay         @relation(fields: [menuDayId], references: [id], onDelete: Cascade)\n  components FoodComponent[]\n\n  @@unique([menuDayId, slotType])\n}\n\nmodel FoodComponent {\n  id            String           @id @default(uuid())\n  daySlotId     String\n  catalogItemId String?\n  componentRole ComponentRole\n  nombre        String\n  descripcion   String\n  calorias      Int\n  imagen        String\n  tipo          String\n  daySlot       DaySlot          @relation(fields: [daySlotId], references: [id], onDelete: Cascade)\n  catalogItem   FoodCatalogItem? @relation(fields: [catalogItemId], references: [id], onDelete: SetNull)\n\n  @@index([catalogItemId])\n  @@index([daySlotId, componentRole])\n}\n\nmodel FoodCatalogItem {\n  id          String          @id @default(uuid())\n  nombre      String\n  descripcion String\n  calorias    Int\n  imagen      String\n  tipo        String\n  createdAt   DateTime        @default(now())\n  updatedAt   DateTime        @updatedAt\n  components  FoodComponent[]\n\n  @@index([nombre])\n  @@index([tipo])\n}\n\nenum DayOfWeek {\n  LUNES\n  MARTES\n  MIERCOLES\n  JUEVES\n  VIERNES\n  SABADO\n  DOMINGO\n}\n\nenum SlotType {\n  DESAYUNO\n  COMIDA\n  CENA\n  SNACK1\n  SNACK2\n}\n\nenum ComponentRole {\n  PLATILLO_PRINCIPAL\n  GUARNICION_1\n  GUARNICION_2\n  ADICIONAL\n}\n',
   "runtimeDataModel": {
@@ -5590,6 +5337,15 @@ function createEmptyFoodItem() {
     tipo: ""
   };
 }
+function createEmptySlot() {
+  return {
+    platilloPrincipal: createEmptyFoodItem(),
+    guarnicion1: null,
+    guarnicion2: null,
+    contenedor: "",
+    adicionales: []
+  };
+}
 function normalizeOptionalFoodItem(item) {
   var _a, _b;
   if (!item) {
@@ -5720,16 +5476,17 @@ function mapMenu(record) {
     createdAt: record.createdAt.toISOString(),
     updatedAt: record.updatedAt.toISOString(),
     days: record.days.map((day) => {
+      var _a, _b, _c, _d, _e;
       const byType = Object.fromEntries(
         day.slots.map((slot) => [ENUM_TO_SLOT[slot.slotType], mapSlot(slot)])
       );
       return {
         dayOfWeek: day.dayOfWeek,
-        desayuno: byType.desayuno,
-        comida: byType.comida,
-        cena: byType.cena,
-        snack1: byType.snack1,
-        snack2: byType.snack2
+        desayuno: (_a = byType.desayuno) != null ? _a : createEmptySlot(),
+        comida: (_b = byType.comida) != null ? _b : createEmptySlot(),
+        cena: (_c = byType.cena) != null ? _c : createEmptySlot(),
+        snack1: (_d = byType.snack1) != null ? _d : createEmptySlot(),
+        snack2: (_e = byType.snack2) != null ? _e : createEmptySlot()
       };
     })
   };
@@ -5999,7 +5756,6 @@ const _lazy_67k2D0 = () => import('../routes/api/menu/next.get.mjs');
 const _lazy_XnKZv5 = () => import('../routes/renderer.mjs').then(function (n) { return n.r; });
 
 const handlers = [
-  { route: '', handler: _ddQkDL, lazy: false, middleware: true, method: undefined },
   { route: '/api/food-components/:id', handler: _lazy_0_6gog, lazy: true, middleware: false, method: "delete" },
   { route: '/api/food-components/:id', handler: _lazy_9AEJlq, lazy: true, middleware: false, method: "get" },
   { route: '/api/food-components/:id', handler: _lazy_PuWZ8V, lazy: true, middleware: false, method: "put" },
@@ -6206,4 +5962,5 @@ function getCacheHeaders(url) {
   return {};
 }
 
-export { $fetch$1 as $, joinURL as A, useNitroApp as B, serialize$1 as C, defu as D, klona as E, hasProtocol as F, isScriptProtocol as G, parseQuery as H, defuFn as I, withQuery as J, sanitizeStatusCode as K, parseURL as L, encodePath as M, decodePath as N, isEqual as O, getContext as P, withTrailingSlash as Q, withoutTrailingSlash as R, withLeadingSlash as S, baseURL as T, executeAsync as U, getHeader as V, setCookie as W, hash$1 as X, handler as Y, deleteFoodCatalogItem as a, getFoodCatalogItemById as b, createError$1 as c, defineEventHandler as d, getFoodCatalogItems as e, createFoodCatalogItem as f, getRouterParam as g, deleteWeeklyMenu as h, getMenuById as i, updateWeeklyMenu as j, getAllMenus as k, getActiveMenu as l, createWeeklyMenu as m, getNextMenu as n, buildAssetsURL as o, useRuntimeConfig as p, getResponseStatusText as q, readBody as r, setActiveMenu as s, getResponseStatus as t, updateFoodCatalogItem as u, defineRenderHandler as v, publicAssetsURL as w, getQuery as x, destr as y, getRouteRules as z };
+export { $fetch$1 as $, joinURL as A, useNitroApp as B, serialize$1 as C, hasProtocol as D, isScriptProtocol as E, defu as F, klona as G, parseQuery as H, withQuery as I, sanitizeStatusCode as J, parseURL as K, encodePath as L, decodePath as M, isEqual as N, defuFn as O, getContext as P, withTrailingSlash as Q, withoutTrailingSlash as R, withLeadingSlash as S, baseURL as T, executeAsync as U, hash$1 as V, handler as W, deleteFoodCatalogItem as a, getFoodCatalogItemById as b, createError$1 as c, defineEventHandler as d, getFoodCatalogItems as e, createFoodCatalogItem as f, getRouterParam as g, deleteWeeklyMenu as h, getMenuById as i, updateWeeklyMenu as j, getAllMenus as k, getActiveMenu as l, createWeeklyMenu as m, getNextMenu as n, buildAssetsURL as o, useRuntimeConfig as p, getResponseStatusText as q, readBody as r, setActiveMenu as s, getResponseStatus as t, updateFoodCatalogItem as u, defineRenderHandler as v, publicAssetsURL as w, getQuery as x, destr as y, getRouteRules as z };
+//# sourceMappingURL=nitro.mjs.map

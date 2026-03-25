@@ -1,4 +1,4 @@
-import { d as defineEventHandler, l as getActiveMenu, c as createError } from '../../nitro/nitro.mjs';
+import { d as defineEventHandler, l as getActiveMenu } from '../../nitro/nitro.mjs';
 import 'zod';
 import '@prisma/adapter-pg';
 import 'pg';
@@ -15,11 +15,8 @@ import '@iconify/utils';
 import 'consola';
 
 const index_get = defineEventHandler(async () => {
-  const activeMenu = await getActiveMenu();
-  if (!activeMenu) {
-    throw createError({ statusCode: 404, statusMessage: "No hay un men\xFA activo seleccionado." });
-  }
-  return activeMenu;
+  return await getActiveMenu();
 });
 
 export { index_get as default };
+//# sourceMappingURL=index.get2.mjs.map

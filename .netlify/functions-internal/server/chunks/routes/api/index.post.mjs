@@ -20,3 +20,4 @@ const index_post = defineEventHandler(async (event) => {
 });
 
 export { index_post as default };
+//# sourceMappingURL=index.post.mjs.map

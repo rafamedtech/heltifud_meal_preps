@@ -24,3 +24,4 @@ const index_put = defineEventHandler(async (event) => {
 });
 
 export { index_put as default };
+//# sourceMappingURL=index.put.mjs.map

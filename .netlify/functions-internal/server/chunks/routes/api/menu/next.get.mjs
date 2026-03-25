@@ -1,4 +1,4 @@
-import { d as defineEventHandler, n as getNextMenu, c as createError } from '../../../nitro/nitro.mjs';
+import { d as defineEventHandler, n as getNextMenu } from '../../../nitro/nitro.mjs';
 import 'zod';
 import '@prisma/adapter-pg';
 import 'pg';
@@ -15,11 +15,8 @@ import '@iconify/utils';
 import 'consola';
 
 const next_get = defineEventHandler(async () => {
-  const nextMenu = await getNextMenu();
-  if (!nextMenu) {
-    throw createError({ statusCode: 404, statusMessage: "No hay un men\xFA pr\xF3ximo disponible." });
-  }
-  return nextMenu;
+  return await getNextMenu();
 });
 
 export { next_get as default };
+//# sourceMappingURL=next.get.mjs.map

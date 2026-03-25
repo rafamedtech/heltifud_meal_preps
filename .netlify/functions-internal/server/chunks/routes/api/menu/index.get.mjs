@@ -27,3 +27,4 @@ const index_get = defineEventHandler(async (event) => {
 });
 
 export { index_get as default };
+//# sourceMappingURL=index.get.mjs.map

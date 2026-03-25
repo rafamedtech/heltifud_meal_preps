@@ -23,3 +23,4 @@ const activate_post = defineEventHandler(async (event) => {
 });
 
 export { activate_post as default };
+//# sourceMappingURL=activate.post.mjs.map

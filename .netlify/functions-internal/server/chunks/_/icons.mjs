@@ -5936,3 +5936,4 @@ const icons_default = {
 };
 
 export { aliases, icons_default as default, height, icons, lastModified, prefix, width };
+//# sourceMappingURL=icons.mjs.map
