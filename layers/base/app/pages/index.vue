@@ -1,11 +1,12 @@
 <script setup lang="ts">
 useSeoMeta({
-  title: 'Heltifud Meal Preps | Comidas saludables a domicilio',
-  description: 'Comidas caseras, balanceadas y listas para disfrutar. Descubre planes semanales, menú de la semana y promociones de Heltifud Meal Preps.',
-  ogTitle: 'Heltifud Meal Preps | Comidas saludables a domicilio',
-  ogDescription: 'Descubre planes semanales, menú actualizado y comidas saludables directas a tu puerta.',
-  twitterTitle: 'Heltifud Meal Preps | Comidas saludables a domicilio',
-  twitterDescription: 'Planes semanales y menú saludable listo para disfrutar en casa.',
+  title: "Heltifud Meal Preps | Comidas saludables a domicilio",
+  description:
+    "Comidas caseras, balanceadas y listas para disfrutar. Descubre planes semanales, menú de la semana y promociones de Heltifud Meal Preps.",
+  ogTitle: "Heltifud Meal Preps | Comidas saludables a domicilio",
+  ogDescription: "Descubre planes semanales, menú actualizado y comidas saludables directas a tu puerta.",
+  twitterTitle: "Heltifud Meal Preps | Comidas saludables a domicilio",
+  twitterDescription: "Planes semanales y menú saludable listo para disfrutar en casa."
 })
 </script>
 
@@ -35,7 +36,7 @@ useSeoMeta({
           />
         </section>
       </div>
-      <figure class="aspect-[8/11] w-full max-w-[400px] overflow-hidden border border-primary-500 shadow-2xl md:ml-14">
+      <figure class="aspect-8/11 w-full max-w-100 overflow-hidden border border-primary-500 shadow-2xl md:ml-14">
         <NuxtImg
           src="v1746204406/heltifud/hero-new_mkqivn.jpg"
           alt="Hero"
@@ -60,7 +61,7 @@ useSeoMeta({
         listo para disfrutar, sin cocinar ni preocuparte por planear tus comidas.
       </template>
 
-      <figure class="flex w-full max-w-[440px] items-center justify-center overflow-hidden">
+      <figure class="flex w-full max-w-110 items-center justify-center overflow-hidden">
         <NuxtImg
           src="v1746204408/heltifud/hero_or5twy.png"
           alt="Meal prep saludable"
@@ -167,7 +168,7 @@ useSeoMeta({
         />
       </template>
 
-      <figure class="flex aspect-[8/11] w-full max-w-[400px] items-center justify-center overflow-hidden">
+      <figure class="flex aspect-8/11 w-full max-w-100 items-center justify-center overflow-hidden">
         <NuxtImg
           src="v1746204411/heltifud/promo_hbku0g.png"
           width="400"

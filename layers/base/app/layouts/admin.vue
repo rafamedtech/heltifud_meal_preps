@@ -1,7 +1,7 @@
 <script setup lang="ts">
-const isSidebarCollapsed = useState('admin-sidebar-collapsed', () => false);
+const isSidebarCollapsed = useState("admin-sidebar-collapsed", () => false)
 
-const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl:w-24' : 'md:w-24 xl:w-64'));
+const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "md:w-24 xl:w-24" : "md:w-24 xl:w-64"))
 </script>
 
 <template>
@@ -12,24 +12,38 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
         :class="sidebarWidthClass"
       >
         <div class="app-sidebar-header relative flex min-h-20 items-center px-4 py-3">
-
           <div class="relative flex w-full flex-col items-center gap-3 xl:hidden">
-            <NuxtLink to="/admin" class="flex items-center justify-center rounded-xl">
+            <NuxtLink
+              to="/admin"
+              class="flex items-center justify-center rounded-xl"
+            >
               <div class="flex size-9 items-center justify-center rounded-xl bg-primary/8 text-primary">
-                <UIcon name="i-heroicons-squares-2x2" class="size-6" />
+                <UIcon
+                  name="i-heroicons-squares-2x2"
+                  class="size-6"
+                />
               </div>
             </NuxtLink>
           </div>
 
-          <Transition name="sidebar-swap" mode="out-in">
+          <Transition
+            name="sidebar-swap"
+            mode="out-in"
+          >
             <div
               v-if="isSidebarCollapsed"
               key="sidebar-header-collapsed"
               class="relative hidden w-full flex-col items-center gap-3 xl:flex"
             >
-              <NuxtLink to="/admin" class="flex items-center justify-center rounded-xl">
+              <NuxtLink
+                to="/admin"
+                class="flex items-center justify-center rounded-xl"
+              >
                 <div class="flex size-9 items-center justify-center rounded-xl bg-primary/8 text-primary">
-                  <UIcon name="i-heroicons-squares-2x2" class="size-6" />
+                  <UIcon
+                    name="i-heroicons-squares-2x2"
+                    class="size-6"
+                  />
                 </div>
               </NuxtLink>
             </div>
@@ -64,7 +78,10 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
         </div>
 
         <div class="hidden min-h-0 flex-1 xl:block">
-          <Transition name="sidebar-swap" mode="out-in">
+          <Transition
+            name="sidebar-swap"
+            mode="out-in"
+          >
             <div
               v-if="isSidebarCollapsed"
               key="sidebar-nav-collapsed"
@@ -90,7 +107,10 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
         </div>
 
         <div class="app-sidebar-footer hidden py-4 px-4 xl:block">
-          <Transition name="sidebar-swap" mode="out-in">
+          <Transition
+            name="sidebar-swap"
+            mode="out-in"
+          >
             <div
               v-if="isSidebarCollapsed"
               key="sidebar-footer-collapsed"
@@ -139,15 +159,17 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
 
       <main class="flex min-w-0 flex-1 flex-col overflow-hidden">
         <div class="h-24 border-b border-default/70 bg-default/70 px-4 backdrop-blur-xl md:px-8">
-          <div class="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-3">
+          <div class="mx-auto flex w-full max-w-400 items-center justify-between gap-3">
             <section class="min-w-0 flex-1">
               <AdminHeader :collapsed="isSidebarCollapsed" />
             </section>
           </div>
         </div>
 
-        <section class="admin-scrollbar min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable] px-4 py-6 pb-24 md:px-8 md:pb-8">
-          <div class="mx-auto w-full max-w-[1600px]">
+        <section
+          class="admin-scrollbar min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable] px-4 py-6 pb-24 md:px-8 md:pb-8"
+        >
+          <div class="mx-auto w-full max-w-400">
             <slot />
           </div>
         </section>
@@ -155,7 +177,10 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
     </div>
 
     <section class="fixed inset-x-0 bottom-4 z-50 px-4 md:hidden">
-      <UCard class="w-full border-default/70 shadow-lg" :ui="{ body: 'p-0 sm:p-0 px-2' }">
+      <UCard
+        class="w-full border-default/70 shadow-lg"
+        :ui="{ body: 'p-0 sm:p-0 px-2' }"
+      >
         <MobileNav />
       </UCard>
     </section>
@@ -165,7 +190,9 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? 'md:w-24 xl
 <style scoped>
 .sidebar-swap-enter-active,
 .sidebar-swap-leave-active {
-  transition: opacity 180ms ease, transform 180ms ease;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
 }
 
 .sidebar-swap-enter-from,
