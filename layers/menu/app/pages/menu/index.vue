@@ -1,7 +1,5 @@
 <script setup lang="ts">
-const { data: activeMenu, status } = useLazyFetch<WeeklyMenu | null>(`/api/menu`, {
-  default: () => null
-})
+const { data: activeMenu, status } = useLazyFetch<WeeklyMenu | null>(`/api/menu`)
 
 const startDate = computed(() => (activeMenu.value?.startDate ? formatDate(activeMenu.value.startDate) : ""))
 const endDate = computed(() => (activeMenu.value?.endDate ? formatDate(activeMenu.value.endDate) : ""))
