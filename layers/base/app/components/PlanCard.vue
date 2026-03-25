@@ -3,9 +3,9 @@ import { AppModal } from "#components";
 import type { WeeklyPlan } from '~~/layers/menu/shared/types/types';
 
 const props = defineProps<WeeklyPlan>();
-const overlay = useOverlay();
 
 function openPlanModal() {
+  const overlay = useOverlay();
   const modal = overlay.create(AppModal, {
     props: {
       title: `Opciones del ${props.title.toLowerCase()}`,

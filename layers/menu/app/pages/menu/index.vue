@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { formatShortDate } from "~~/layers/base/app/utils/dateFormatting"
+
 const { data: activeMenu, status } = useLazyFetch<WeeklyMenu | null>(`/api/menu`, {
   default: () => null,
   server: false,
 })
 
-const startDate = computed(() => (activeMenu.value?.startDate ? formatDate(activeMenu.value.startDate) : ""))
-const endDate = computed(() => (activeMenu.value?.endDate ? formatDate(activeMenu.value.endDate) : ""))
+const startDate = computed(() => (activeMenu.value?.startDate ? formatShortDate(activeMenu.value.startDate) : ""))
+const endDate = computed(() => (activeMenu.value?.endDate ? formatShortDate(activeMenu.value.endDate) : ""))
 const skeletonDays = Array.from({ length: 3 }, (_, index) => index)
 const isLoading = computed(() => status.value === "idle" || status.value === "pending")
 const hasMenu = computed(() => Boolean(activeMenu.value))

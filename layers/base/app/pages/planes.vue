@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { weeklyPlans } from "../utils/weeklyPlans"
+
 useSeoMeta({
   title: 'Planes semanales | Heltifud Meal Preps',
   description: 'Explora los planes semanales de Heltifud y elige la opción que mejor se adapte a tus objetivos y estilo de vida.',
