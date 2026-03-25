@@ -1,26 +1,27 @@
 <script setup lang="ts">
 const { data: activeMenu, status } = useLazyFetch<WeeklyMenu>(`/api/menu`, {
-  default: () => ({}) as WeeklyMenu,
+  default: () => ({}) as WeeklyMenu
 })
 
-const session = useSupabaseSession()
+// const session = useSupabaseSession()
 const startDate = computed(() => formatDate(activeMenu.value?.startDate))
 const endDate = computed(() => formatDate(activeMenu.value?.endDate))
 const skeletonDays = Array.from({ length: 3 }, (_, index) => index)
-const isLoading = computed(() => status.value === 'idle' || status.value === 'pending')
-const canEditMenu = computed(() => Boolean(session.value && activeMenu.value?.id))
-const editMenuLink = computed(() => activeMenu.value?.id ? `/admin/menu/${activeMenu.value.id}` : '/admin/menu')
+const isLoading = computed(() => status.value === "idle" || status.value === "pending")
+// const canEditMenu = computed(() => Boolean(session.value && activeMenu.value?.id))
+const editMenuLink = computed(() => (activeMenu.value?.id ? `/admin/menu/${activeMenu.value.id}` : "/admin/menu"))
 const publicDays = computed(() =>
-  (activeMenu.value?.days ?? []).filter((day) => !['SABADO', 'DOMINGO'].includes(day.dayOfWeek))
+  (activeMenu.value?.days ?? []).filter((day) => !["SABADO", "DOMINGO"].includes(day.dayOfWeek))
 )
 
 useSeoMeta({
-  title: 'Menú de la semana | Heltifud Meal Preps',
-  description: 'Consulta el menú semanal vigente de Heltifud Meal Preps con desayuno, comida y cena de lunes a viernes.',
-  ogTitle: 'Menú de la semana | Heltifud Meal Preps',
-  ogDescription: 'Consulta el menú semanal vigente de Heltifud Meal Preps.',
-  twitterTitle: 'Menú de la semana | Heltifud Meal Preps',
-  twitterDescription: 'Descubre el menú semanal vigente de Heltifud.',
+  title: "Menú de la semana | Heltifud Meal Preps",
+  description:
+    "Consulta el menú semanal vigente de Heltifud Meal Preps con desayuno, comida y cena de lunes a viernes.",
+  ogTitle: "Menú de la semana | Heltifud Meal Preps",
+  ogDescription: "Consulta el menú semanal vigente de Heltifud Meal Preps.",
+  twitterTitle: "Menú de la semana | Heltifud Meal Preps",
+  twitterDescription: "Descubre el menú semanal vigente de Heltifud."
 })
 </script>
 
@@ -34,10 +35,12 @@ useSeoMeta({
             :start-date="startDate"
             :end-date="endDate"
           />
-          <USkeleton v-else class="h-6 w-[220px]" />
+          <USkeleton
+            v-else
+            class="h-6 w-55"
+          />
 
           <UButton
-            v-if="canEditMenu"
             label="Editar este menú"
             icon="i-lucide-square-pen"
             color="neutral"
@@ -50,8 +53,14 @@ useSeoMeta({
 
       <section>
         <section class="mb-8 md:hidden">
-          <section v-if="isLoading" class="w-full max-w-xs mx-auto pt-6">
-            <UCard variant="subtle" :ui="{ body: 'sm:p-4 p-4' }">
+          <section
+            v-if="isLoading"
+            class="w-full max-w-xs mx-auto pt-6"
+          >
+            <UCard
+              variant="subtle"
+              :ui="{ body: 'sm:p-4 p-4' }"
+            >
               <template #header>
                 <USkeleton class="h-7 w-28" />
               </template>
