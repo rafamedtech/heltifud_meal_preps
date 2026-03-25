@@ -23,6 +23,6 @@ useSeoMeta({
       </section>
     </BaseSection>
 
-    <USeparator />
+    <BaseSeparator />
   </section>
 </template>

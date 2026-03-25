@@ -71,7 +71,7 @@ useSeoMeta({
   <section class="login-page bg-green-50/50 text-highlighted dark:bg-neutral-950">
     <TheHeader />
 
-    <USeparator />
+    <BaseSeparator />
 
     <main
       class="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-8 md:px-6 bg-[linear-gradient(180deg,rgb(248_249_245)_0%,rgb(241_244_239)_100%)] dark:bg-[linear-gradient(180deg,rgb(8_10_14)_0%,rgb(5_7_11)_100%)]"
@@ -192,7 +192,7 @@ useSeoMeta({
       </section>
     </main>
 
-    <USeparator />
+    <BaseSeparator />
 
     <TheFooter />
   </section>

@@ -1,18 +1,15 @@
 <template>
   <section class="bg-green-50/50 dark:bg-neutral-900/50">
-    <!-- Header -->
     <TheHeader />
 
-    <USeparator />
+    <BaseSeparator />
 
-    <!-- Contenido principal -->
     <UContainer class="relative py-4">
       <slot />
     </UContainer>
 
-    <USeparator />
+    <BaseSeparator />
 
-    <!-- Footer -->
     <TheFooter />
   </section>
 </template>

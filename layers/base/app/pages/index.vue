@@ -50,7 +50,7 @@ useSeoMeta({
       </figure>
     </section>
 
-    <USeparator />
+    <BaseSeparator />
 
     <BaseSection
       title="¿Qué es Heltifud Meal Preps?"
@@ -71,7 +71,7 @@ useSeoMeta({
       </figure>
     </BaseSection>
 
-    <USeparator />
+    <BaseSeparator />
 
     <!-- Como funciona el servicio -->
     <BaseSection title="¿Cómo funciona el servicio?">
@@ -98,7 +98,7 @@ useSeoMeta({
       </div>
     </BaseSection>
 
-    <USeparator />
+    <BaseSeparator />
 
     <BaseSection title="Menú de la semana">
       <template #description>
@@ -147,7 +147,7 @@ useSeoMeta({
       </section>
     </section> -->
 
-    <USeparator />
+    <BaseSeparator />
 
     <!-- Sección de promoción -->
     <BaseSection
@@ -180,7 +180,7 @@ useSeoMeta({
       </figure>
     </BaseSection>
 
-    <USeparator />
+    <BaseSeparator />
 
     <!-- Sección de beneficios -->
     <BaseSection title="¿Por qué elegirnos?">
@@ -208,7 +208,7 @@ useSeoMeta({
       </section>
     </BaseSection>
 
-    <USeparator />
+    <BaseSeparator />
 
     <BaseSection title="Preguntas frecuentes">
       <template #description>
