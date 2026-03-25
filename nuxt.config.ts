@@ -9,17 +9,8 @@ const corsAllowedOrigins =
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
-  sourcemap: {
-    client: false,
-    server: false
-  },
+
   vite: {
-    build: {
-      sourcemap: false
-    },
-    css: {
-      devSourcemap: false
-    },
     optimizeDeps: {
       include: ["zod", "@vue/devtools-core", "@vue/devtools-kit"]
     }
