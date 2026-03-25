@@ -1210,6 +1210,11 @@ export type DaySlotFindManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Skip the first `n` DaySlots.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of DaySlots.
+   */
   distinct?: Prisma.DaySlotScalarFieldEnum | Prisma.DaySlotScalarFieldEnum[]
 }
 

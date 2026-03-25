@@ -35,10 +35,10 @@ export default defineNuxtConfig({
     cloudinary: {
       baseURL: cloudinaryBaseURL
     }
-  },
-
-  supabase: {
-    redirect: false,
-    types: "~/types/database.types.ts"
   }
+
+  // supabase: {
+  //   redirect: false,
+  //   types: "~/types/database.types.ts"
+  // }
 })
