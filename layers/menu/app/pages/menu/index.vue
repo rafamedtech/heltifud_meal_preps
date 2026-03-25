@@ -1,12 +1,13 @@
 <script setup lang="ts">
-const { data: activeMenu, status } = useLazyFetch<WeeklyMenu>(`/api/menu`, {
-  default: () => ({}) as WeeklyMenu
+const { data: activeMenu, status } = useLazyFetch<WeeklyMenu | null>(`/api/menu`, {
+  default: () => null
 })
 
-const startDate = computed(() => formatDate(activeMenu.value?.startDate))
-const endDate = computed(() => formatDate(activeMenu.value?.endDate))
+const startDate = computed(() => (activeMenu.value?.startDate ? formatDate(activeMenu.value.startDate) : ""))
+const endDate = computed(() => (activeMenu.value?.endDate ? formatDate(activeMenu.value.endDate) : ""))
 const skeletonDays = Array.from({ length: 3 }, (_, index) => index)
 const isLoading = computed(() => status.value === "idle" || status.value === "pending")
+const hasMenu = computed(() => Boolean(activeMenu.value))
 
 const publicDays = computed(() =>
   (activeMenu.value?.days ?? []).filter((day) => !["SABADO", "DOMINGO"].includes(day.dayOfWeek))
@@ -29,18 +30,40 @@ useSeoMeta({
       <template #description>
         <div class="flex flex-wrap items-center justify-between gap-3">
           <MenuDate
-            v-if="status === 'success'"
+            v-if="status === 'success' && hasMenu"
             :start-date="startDate"
             :end-date="endDate"
           />
           <USkeleton
-            v-else
+            v-else-if="isLoading"
             class="h-6 w-55"
           />
         </div>
       </template>
 
       <section>
+        <UCard
+          v-if="status === 'success' && !hasMenu"
+          variant="subtle"
+          class="mx-auto mt-6 max-w-2xl"
+          :ui="{ body: 'px-6 py-8 sm:px-8 sm:py-10' }"
+        >
+          <div class="flex flex-col items-center justify-center gap-3 text-center">
+            <div class="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <UIcon
+                name="i-lucide-calendar-x2"
+                class="size-6"
+              />
+            </div>
+            <div class="space-y-1">
+              <p class="text-lg font-semibold text-highlighted">No hay menú activo por el momento</p>
+              <p class="max-w-xl text-sm text-muted">
+                Estamos preparando el próximo menú semanal. Vuelve en unos momentos para consultarlo.
+              </p>
+            </div>
+          </div>
+        </UCard>
+
         <section class="mb-8 md:hidden">
           <section
             v-if="isLoading"

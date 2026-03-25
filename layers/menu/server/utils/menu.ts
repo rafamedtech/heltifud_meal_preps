@@ -107,6 +107,16 @@ function createEmptyFoodItem(): FoodItemDetail {
   }
 }
 
+function createEmptySlot(): MenuSlot {
+  return {
+    platilloPrincipal: createEmptyFoodItem(),
+    guarnicion1: null,
+    guarnicion2: null,
+    contenedor: "",
+    adicionales: []
+  }
+}
+
 function normalizeOptionalFoodItem(item: OptionalFoodItemInput): FoodItemDetail | null {
   if (!item) {
     return null
@@ -277,11 +287,11 @@ function mapMenu(record: WeeklyMenuRecord): WeeklyMenu {
 
       return {
         dayOfWeek: day.dayOfWeek,
-        desayuno: byType.desayuno,
-        comida: byType.comida,
-        cena: byType.cena,
-        snack1: byType.snack1,
-        snack2: byType.snack2
+        desayuno: byType.desayuno ?? createEmptySlot(),
+        comida: byType.comida ?? createEmptySlot(),
+        cena: byType.cena ?? createEmptySlot(),
+        snack1: byType.snack1 ?? createEmptySlot(),
+        snack2: byType.snack2 ?? createEmptySlot()
       }
     })
   }
