@@ -131,23 +131,6 @@ function openInfoModal(title: string, description: string) {
   modal.open()
 }
 
-function openPlanModal(title: string, variants: { title: string; price: string }[]) {
-  const overlay = useOverlay()
-  const modal = overlay.create(AppModal, {
-    props: {
-      title,
-      variants,
-      button: {
-        icon: "i-heroicons-rocket-launch",
-        label: "Ordenar",
-        click: () => navigateTo("https://wa.me/c/5216648161284", { external: true, open: { target: "_blank" } })
-      }
-    }
-  })
-
-  modal.open()
-}
-
 export const steps = [
   {
     id: 1,
@@ -328,24 +311,23 @@ export const weeklyPlans: WeeklyPlan[] = [
     price: 1200,
     description: "Desayunos saludables a domicilio para empezar tu día con energía.",
     image: "v1746204413/heltifud/desayunos_xoypat.png",
+    variants: [
+      {
+        title: "3 días",
+        price: "400"
+      },
+      {
+        title: "4 días",
+        price: "500"
+      },
+      {
+        title: "5 días",
+        price: "600"
+      }
+    ],
     button: {
       label: "Ver opciones",
-      icon: "i-heroicons-numbered-list",
-      click: () =>
-        openPlanModal("Opciones del plan desayunos", [
-          {
-            title: "3 días",
-            price: "400"
-          },
-          {
-            title: "4 días",
-            price: "500"
-          },
-          {
-            title: "5 días",
-            price: "600"
-          }
-        ])
+      icon: "i-heroicons-numbered-list"
     }
   },
   {
@@ -354,24 +336,23 @@ export const weeklyPlans: WeeklyPlan[] = [
     price: 2400,
     description: "Comidas caseras y balanceadas listas para tu semana sin cocinar.",
     image: "v1746204412/heltifud/comidas_zjbuum.png",
+    variants: [
+      {
+        title: "3 días",
+        price: "500"
+      },
+      {
+        title: "4 días",
+        price: "600"
+      },
+      {
+        title: "5 días",
+        price: "700"
+      }
+    ],
     button: {
       label: "Ver opciones",
-      icon: "i-heroicons-numbered-list",
-      click: () =>
-        openPlanModal("Opciones del plan comidas", [
-          {
-            title: "3 días",
-            price: "500"
-          },
-          {
-            title: "4 días",
-            price: "600"
-          },
-          {
-            title: "5 días",
-            price: "700"
-          }
-        ])
+      icon: "i-heroicons-numbered-list"
     }
   },
   {
@@ -380,24 +361,23 @@ export const weeklyPlans: WeeklyPlan[] = [
     price: 4800,
     description: "Cenas ligeras y deliciosas, entregadas listas para servir.",
     image: "v1746204411/heltifud/cenas_wfp48j.png",
+    variants: [
+      {
+        title: "3 días",
+        price: "450"
+      },
+      {
+        title: "4 días",
+        price: "550"
+      },
+      {
+        title: "5 días",
+        price: "650"
+      }
+    ],
     button: {
       label: "Ver opciones",
-      icon: "i-heroicons-numbered-list",
-      click: () =>
-        openPlanModal("Opciones del plan cenas", [
-          {
-            title: "3 días",
-            price: "450"
-          },
-          {
-            title: "4 días",
-            price: "550"
-          },
-          {
-            title: "5 días",
-            price: "650"
-          }
-        ])
+      icon: "i-heroicons-numbered-list"
     }
   },
   {
@@ -406,20 +386,19 @@ export const weeklyPlans: WeeklyPlan[] = [
     price: 1900,
     description: "Meal prep completo semanal con desayuno, comida y cena.",
     image: "v1746204413/heltifud/todas_pdzwgw.png",
+    variants: [
+      {
+        title: "3 días",
+        price: "1300"
+      },
+      {
+        title: "5 días",
+        price: "1900"
+      }
+    ],
     button: {
       label: "Ver opciones",
-      icon: "i-heroicons-numbered-list",
-      click: () =>
-        openPlanModal("Opciones del plan Toda la semana", [
-          {
-            title: "3 días",
-            price: "1300"
-          },
-          {
-            title: "5 días",
-            price: "1900"
-          }
-        ])
+      icon: "i-heroicons-numbered-list"
     }
   }
 ]

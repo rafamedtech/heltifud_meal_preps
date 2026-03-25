@@ -151,7 +151,8 @@ useSeoMeta({
           <UButton
             label="Quiero hacer un pedido"
             icon="i-mdi-whatsapp"
-            prefetch
+            to="https://wa.me/c/5216648161284"
+            target="_blank"
             size="lg"
           />
         </section>

@@ -19,10 +19,13 @@ export interface WeeklyPlan {
   price: number;
   description: string;
   image: string;
+  variants: {
+    title: string;
+    price: string;
+  }[];
   button: {
     label: string;
     icon: string;
-    click: () => void;
   };
 }
 
