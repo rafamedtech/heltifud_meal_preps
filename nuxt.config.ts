@@ -16,7 +16,7 @@ export default defineNuxtConfig({
     }
   },
 
-  modules: ["@nuxt/eslint", "@nuxt/image"],
+  modules: ["@nuxt/eslint", "@nuxt/image", "@netlify/nuxt"],
 
   app: {
     pageTransition: { name: "page", mode: "out-in" },
