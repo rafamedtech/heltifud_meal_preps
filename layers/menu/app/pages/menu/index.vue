@@ -9,7 +9,7 @@ const endDate = computed(() => formatDate(activeMenu.value?.endDate))
 const skeletonDays = Array.from({ length: 3 }, (_, index) => index)
 const isLoading = computed(() => status.value === "idle" || status.value === "pending")
 // const canEditMenu = computed(() => Boolean(session.value && activeMenu.value?.id))
-const editMenuLink = computed(() => (activeMenu.value?.id ? `/admin/menu/${activeMenu.value.id}` : "/admin/menu"))
+// const editMenuLink = computed(() => (activeMenu.value?.id ? `/admin/menu/${activeMenu.value.id}` : "/admin/menu"))
 const publicDays = computed(() =>
   (activeMenu.value?.days ?? []).filter((day) => !["SABADO", "DOMINGO"].includes(day.dayOfWeek))
 )
@@ -45,7 +45,6 @@ useSeoMeta({
             icon="i-lucide-square-pen"
             color="neutral"
             variant="outline"
-            :to="editMenuLink"
             size="sm"
           />
         </div>
