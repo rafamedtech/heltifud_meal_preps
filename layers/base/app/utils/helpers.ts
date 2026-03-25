@@ -378,7 +378,7 @@ export const weeklyPlans: WeeklyPlan[] = [
     id: 3,
     title: "Plan cenas",
     price: 4800,
-    description: "Cenas ligeras, nutritivas y deliciosas, entregadas listas para servir.",
+    description: "Cenas ligeras y deliciosas, entregadas listas para servir.",
     image: "v1746204411/heltifud/cenas_wfp48j.png",
     button: {
       label: "Ver opciones",
@@ -404,7 +404,7 @@ export const weeklyPlans: WeeklyPlan[] = [
     id: 4,
     title: "Plan toda la semana",
     price: 1900,
-    description: "Meal prep completo semanal con desayuno, comida y cena saludable.",
+    description: "Meal prep completo semanal con desayuno, comida y cena.",
     image: "v1746204413/heltifud/todas_pdzwgw.png",
     button: {
       label: "Ver opciones",

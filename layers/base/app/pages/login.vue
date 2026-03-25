@@ -152,20 +152,12 @@ useSeoMeta({
                 class="space-y-2"
                 :ui="{ label: 'text-sm font-medium text-highlighted' }"
               >
-                <div class="flex items-center justify-between gap-3">
-                  <label
-                    for="login-password"
-                    class="text-sm font-medium text-highlighted"
-                  >
-                    Contraseña
-                  </label>
-                  <button
-                    type="button"
-                    class="text-xs font-medium text-primary transition-colors hover:text-primary/80"
-                  >
-                    ¿Olvidaste tu contraseña?
-                  </button>
-                </div>
+                <label
+                  for="login-password"
+                  class="text-sm font-medium text-highlighted"
+                >
+                  Contraseña
+                </label>
 
                 <UInput
                   id="login-password"
@@ -192,7 +184,7 @@ useSeoMeta({
                 :loading="isSubmitting"
                 :disabled="isSubmitting"
               >
-                Entrar al admin
+                Entrar
               </UButton>
             </UForm>
           </div>
