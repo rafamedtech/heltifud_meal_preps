@@ -16,7 +16,7 @@ export default defineNuxtConfig({
     }
   },
 
-  modules: ["@nuxt/eslint", "@nuxt/image", "@netlify/nuxt"],
+  modules: ["@nuxt/eslint", "@nuxt/image", "@nuxtjs/supabase", "@netlify/nuxt"],
 
   app: {
     pageTransition: { name: "page", mode: "out-in" },
@@ -35,10 +35,24 @@ export default defineNuxtConfig({
     cloudinary: {
       baseURL: cloudinaryBaseURL
     }
-  }
+  },
 
-  // supabase: {
-  //   redirect: false,
-  //   types: "~/types/database.types.ts"
-  // }
+  supabase: {
+    url: process.env.NUXT_PUBLIC_SUPABASE_URL,
+    key: process.env.NUXT_PUBLIC_SUPABASE_KEY,
+    redirect: true,
+    redirectOptions: {
+      login: "/login",
+      callback: "/confirm",
+      include: ["/admin*"],
+      exclude: [],
+      saveRedirectToCookie: true
+    },
+    cookieOptions: {
+      maxAge: 60 * 60 * 8,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production"
+    },
+    types: "~/types/database.types.ts"
+  }
 })

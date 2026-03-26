@@ -19,6 +19,7 @@
     "@nuxt/eslint": "1.15.2",
     "@nuxt/image": "2.0.0",
     "@nuxt/ui": "4.5.1",
+    "@nuxtjs/supabase": "2.0.4",
     "@prisma/adapter-pg": "^7.0.0",
     "@prisma/client": "^7.5.0",
     "date-fns": "^4.1.0",
@@ -48,6 +49,13 @@
       "@vue/runtime-dom": "3.5.30",
       "@vue/server-renderer": "3.5.30",
       "@vue/shared": "3.5.30"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma",
+      "vue-demi"
+    ]
   }
 }

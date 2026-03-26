@@ -5,6 +5,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
+const supabase = useSupabaseClient()
 const toast = useToast()
 const isConfirmOpen = ref(false)
 const isLoggingOut = ref(false)
@@ -13,18 +14,21 @@ const collapsed = computed(() => props.collapsed ?? false)
 async function logout() {
   isLoggingOut.value = true
 
-  isLoggingOut.value = false
+  const { error } = await supabase.auth.signOut()
 
-  // if (error) {
-  //   toast.add({
-  //     title: 'No fue posible cerrar sesión',
-  //     description: error.message || 'Inténtalo de nuevo.',
-  //     color: 'error'
-  //   })
-  //   return
-  // }
+  if (error) {
+    isLoggingOut.value = false
+
+    toast.add({
+      title: "No fue posible cerrar sesión",
+      description: error.message || "Inténtalo de nuevo.",
+      color: "error"
+    })
+    return
+  }
 
   isConfirmOpen.value = false
+  isLoggingOut.value = false
 
   toast.add({
     title: "Sesión cerrada",
@@ -32,7 +36,7 @@ async function logout() {
     color: "success"
   })
 
-  await navigateTo("/login")
+  await navigateTo("/login", { replace: true })
 }
 </script>
 

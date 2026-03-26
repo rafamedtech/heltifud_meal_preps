@@ -9,10 +9,11 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>
 
-// const supabase = useSupabaseClient()
-// const toast = useToast()
-// const route = useRoute()
-// const currentSession = useSupabaseSession()
+const supabase = useSupabaseClient()
+const toast = useToast()
+const route = useRoute()
+const currentSession = useSupabaseSession()
+const redirectInfo = useSupabaseCookieRedirect()
 const state = reactive<Partial<Schema>>({
   email: "",
   password: ""
@@ -21,43 +22,45 @@ const isSubmitting = ref(false)
 const authError = ref("")
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  alert(event)
-  //   authError.value = ''
-  //   isSubmitting.value = true
+  authError.value = ""
+  isSubmitting.value = true
 
-  //   const { data, error } = await supabase.auth.signInWithPassword({
-  //     email: event.data.email,
-  //     password: event.data.password
-  //   })
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: event.data.email,
+    password: event.data.password
+  })
 
-  //   isSubmitting.value = false
+  isSubmitting.value = false
 
-  //   if (error) {
-  //     authError.value = error.message || 'No fue posible iniciar sesión.'
-  //     toast.add({
-  //       title: 'Error al iniciar sesión',
-  //       description: authError.value,
-  //       color: 'error'
-  //     })
-  //     return
-  //   }
+  if (error) {
+    authError.value = error.message || "No fue posible iniciar sesión."
+    toast.add({
+      title: "Error al iniciar sesión",
+      description: authError.value,
+      color: "error"
+    })
+    return
+  }
 
-  //   toast.add({
-  //     title: 'Sesión iniciada',
-  //     description: 'Redirigiendo al panel administrativo.',
-  //     color: 'success'
-  //   })
+  toast.add({
+    title: "Sesión iniciada",
+    description: "Redirigiendo al panel administrativo.",
+    color: "success"
+  })
 
-  //   currentSession.value = data.session ?? null
+  currentSession.value = data.session ?? null
 
-  //   const redirectTo = typeof route.query.redirect === 'string' ? route.query.redirect : '/admin'
+  const redirectTo =
+    redirectInfo.pluck() ||
+    (typeof route.query.redirect === "string" ? route.query.redirect : "/admin")
 
-  //   await nextTick()
-  //   await navigateTo(redirectTo, { replace: true })
+  await nextTick()
+  await navigateTo(redirectTo, { replace: true })
 }
 
 definePageMeta({
-  layout: false
+  layout: false,
+  middleware: ["supabase-guest"]
 })
 
 useSeoMeta({
