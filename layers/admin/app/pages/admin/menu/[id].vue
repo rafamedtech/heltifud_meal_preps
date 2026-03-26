@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { WeeklyMenu } from '~~/layers/menu/shared/types/types';
+import type { FoodCatalogItem, WeeklyMenu } from '~~/layers/menu/shared/types/types';
 
 definePageMeta({
   layout: 'admin',
@@ -11,7 +11,17 @@ const { data: menu, status, refresh, error } = useLazyFetch<WeeklyMenu>(`/api/me
   key: `admin-menu-${route.params.id}`,
 });
 
-const isLoading = computed(() => status.value === 'idle' || status.value === 'pending');
+const { data: catalogItems, status: catalogStatus } = useLazyFetch<FoodCatalogItem[]>('/api/food-components', {
+  key: 'menu-form-catalog-items',
+  default: () => [],
+});
+
+const isLoading = computed(() =>
+  status.value === 'idle' ||
+  status.value === 'pending' ||
+  catalogStatus.value === 'idle' ||
+  catalogStatus.value === 'pending'
+);
 
 useSeoMeta({
   title: 'Gestión de menús semanales | Editar menú | Heltifud Meal Preps',
@@ -43,6 +53,6 @@ async function onSaved() {
       icon="i-lucide-circle-alert"
     />
 
-    <AdminMenuForm v-else-if="menu" :menu="menu" mode="edit" @saved="onSaved" />
+    <AdminMenuForm v-else-if="menu" :menu="menu" :catalog-items="catalogItems" mode="edit" @saved="onSaved" />
   </main>
 </template>

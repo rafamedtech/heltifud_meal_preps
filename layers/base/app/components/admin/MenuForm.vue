@@ -16,11 +16,13 @@ import type { ZodIssue } from "zod"
 interface Props {
   menu?: WeeklyMenu | null
   mode?: "create" | "edit"
+  catalogItems?: FoodCatalogItem[]
 }
 
 const props = defineProps<Props>()
 const menu = computed(() => props.menu ?? null)
 const mode = computed(() => props.mode ?? "create")
+const catalogItems = computed(() => props.catalogItems ?? [])
 
 const emit = defineEmits<{
   saved: [menuId: string]
@@ -170,9 +172,6 @@ const cardSurfaceUi = {
 
 const toast = useToast()
 const { createMenuOnDB, updateMenuOnDB, setActiveMenuOnDB } = useMenu()
-const { data: catalogItems } = await useFetch<FoodCatalogItem[]>("/api/food-components", {
-  default: () => []
-})
 const resolvedCatalogItems = computed<FoodCatalogItem[]>(() => catalogItems.value ?? [])
 const invalidFields = reactive({
   name: false,
