@@ -33,16 +33,7 @@ async function onSaved() {
 
 <template>
   <main class="space-y-6">
-    <section v-if="isLoading" class="space-y-6">
-      <section class="space-y-2">
-        <USkeleton class="h-10 w-72 rounded-lg" />
-        <USkeleton class="h-5 w-full max-w-2xl rounded-lg" />
-      </section>
-
-      <div class="mx-auto w-full max-w-5xl">
-        <USkeleton class="h-[640px] w-full rounded-xl" />
-      </div>
-    </section>
+    <AdminFoodCatalogFormSkeleton v-if="isLoading" />
 
     <UAlert
       v-else-if="error"

@@ -221,6 +221,10 @@ function hasValue(item?: FoodItemDetail | null) {
   return Boolean(item?.nombre?.trim())
 }
 
+function hasExtrasValue() {
+  return Boolean(model.value.adicionales.length || model.value.contenedor?.trim())
+}
+
 function clearFoodItem(target: FoodItemDetail) {
   target.catalogItemId = null
   target.nombre = ""
@@ -306,6 +310,18 @@ const cardUi = computed(() => ({
 
 const selectFieldClass =
   "app-control-surface relative flex min-h-[96px] items-center justify-between px-3 py-2.5 text-left transition-colors hover:bg-[var(--app-surface-soft)]"
+
+function summaryTextClass(isFilled: boolean) {
+  return isFilled
+    ? "text-highlighted"
+    : "text-muted italic font-normal tracking-[0.01em]"
+}
+
+function caloriesTextClass(isFilled: boolean) {
+  return isFilled
+    ? "text-primary"
+    : "text-muted/80 font-normal"
+}
 
 function beforeEnter(el: Element) {
   const element = el as HTMLElement
@@ -439,8 +455,8 @@ function selectCatalogItemFromModal(itemId: string) {
           >
             <span class="min-w-0">
               <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Platillo principal</span>
-              <span class="mt-1.5 block line-clamp-2 text-sm font-medium text-highlighted">{{ itemSummary(model.platilloPrincipal) }}</span>
-              <span class="mt-1 block text-xs font-semibold text-primary">{{ caloriesSummary(model.platilloPrincipal) }}</span>
+              <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.platilloPrincipal))]">{{ itemSummary(model.platilloPrincipal) }}</span>
+              <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.platilloPrincipal))]">{{ caloriesSummary(model.platilloPrincipal) }}</span>
             </span>
             <span class="relative z-10 flex shrink-0 self-start">
               <UDropdownMenu :items="actionItems(model.platilloPrincipal)">
@@ -468,8 +484,8 @@ function selectCatalogItemFromModal(itemId: string) {
             >
               <span class="min-w-0">
                 <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Guarnición 1</span>
-                <span class="mt-1.5 block line-clamp-2 text-sm font-medium text-highlighted">{{ itemSummary(model.guarnicion1) }}</span>
-                <span class="mt-1 block text-xs font-semibold text-primary">{{ caloriesSummary(model.guarnicion1) }}</span>
+                <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.guarnicion1))]">{{ itemSummary(model.guarnicion1) }}</span>
+                <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.guarnicion1))]">{{ caloriesSummary(model.guarnicion1) }}</span>
               </span>
               <span class="relative z-10 flex shrink-0 self-start">
                 <UDropdownMenu :items="actionItems(guarnicion1Model)">
@@ -496,8 +512,8 @@ function selectCatalogItemFromModal(itemId: string) {
             >
               <span class="min-w-0">
                 <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Guarnición 2</span>
-                <span class="mt-1.5 block line-clamp-2 text-sm font-medium text-highlighted">{{ itemSummary(model.guarnicion2) }}</span>
-                <span class="mt-1 block text-xs font-semibold text-primary">{{ caloriesSummary(model.guarnicion2) }}</span>
+                <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.guarnicion2))]">{{ itemSummary(model.guarnicion2) }}</span>
+                <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.guarnicion2))]">{{ caloriesSummary(model.guarnicion2) }}</span>
               </span>
               <span class="relative z-10 flex shrink-0 self-start">
                 <UDropdownMenu :items="actionItems(guarnicion2Model)">
@@ -530,8 +546,8 @@ function selectCatalogItemFromModal(itemId: string) {
           >
             <span class="min-w-0">
               <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Principal</span>
-              <span class="mt-1.5 block line-clamp-2 text-sm font-medium text-highlighted">{{ itemSummary(model.platilloPrincipal) }}</span>
-              <span class="mt-1 block text-xs font-semibold text-primary">{{ caloriesSummary(model.platilloPrincipal) }}</span>
+              <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.platilloPrincipal))]">{{ itemSummary(model.platilloPrincipal) }}</span>
+              <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.platilloPrincipal))]">{{ caloriesSummary(model.platilloPrincipal) }}</span>
             </span>
             <span class="relative z-10 flex shrink-0 self-start">
               <UDropdownMenu :items="actionItems(model.platilloPrincipal)">
@@ -560,7 +576,7 @@ function selectCatalogItemFromModal(itemId: string) {
           >
             <span class="min-w-0">
               <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Adicionales y contenedor</span>
-              <span class="mt-1.5 block line-clamp-2 text-sm font-medium text-highlighted">
+              <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasExtrasValue())]">
                 {{ extrasSummary }}
               </span>
             </span>

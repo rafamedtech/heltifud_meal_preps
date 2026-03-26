@@ -57,16 +57,15 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "md:w-24 xl
                 to="/admin"
                 class="flex min-w-0 items-center gap-2.5 rounded-xl px-1 py-0.5"
               >
-                <div class="flex size-7 items-center justify-center rounded-lg bg-primary/8 text-primary">
+                <!-- <div class="flex size-7 items-center justify-center rounded-lg bg-primary/8 text-primary">
                   <UIcon
                     name="i-heroicons-squares-2x2"
                     class="size-4"
                   />
-                </div>
+                </div>  -->
 
                 <div class="min-w-0">
-                  <p class="truncate text-sm font-semibold text-highlighted">Heltifud Admin</p>
-                  <p class="truncate text-[11px] text-muted">Operación interna</p>
+                  <AppLogo />
                 </div>
               </NuxtLink>
             </div>

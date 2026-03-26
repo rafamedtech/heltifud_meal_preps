@@ -272,16 +272,10 @@ function actionItems(item: FoodCatalogItem) {
       </div>
     </section>
 
-    <section
+    <AdminFoodCatalogTableSkeleton
       v-if="loading"
-      class="space-y-3 px-5 py-5 sm:px-6"
-    >
-      <USkeleton
-        v-for="index in 8"
-        :key="index"
-        class="h-12 w-full rounded-xl"
-      />
-    </section>
+      :mode="mode"
+    />
 
     <section
       v-else-if="!items.length"

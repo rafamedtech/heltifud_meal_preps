@@ -1,15 +1,8 @@
 <script setup lang="ts">
-interface Props {
-  collapsed?: boolean
-}
-
-const props = defineProps<Props>()
-
 const supabase = useSupabaseClient()
 const toast = useToast()
 const isConfirmOpen = ref(false)
 const isLoggingOut = ref(false)
-const collapsed = computed(() => props.collapsed ?? false)
 
 async function logout() {
   isLoggingOut.value = true
@@ -45,9 +38,7 @@ async function logout() {
     <div class="min-w-0">
       <div class="min-w-0">
         <h1 class="truncate text-xl font-semibold text-highlighted">Panel de gestión</h1>
-        <p class="mt-1 text-sm text-muted">
-          {{ collapsed ? "Navegación compacta activa." : "Controla menús, platillos y rotación semanal." }}
-        </p>
+        <p class="mt-1 text-sm text-muted">Controla menús, platillos y rotación semanal.</p>
       </div>
     </div>
 

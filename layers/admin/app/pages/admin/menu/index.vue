@@ -101,7 +101,12 @@ useSeoMeta({
     </section>
 
     <section class="space-y-4">
-      <section class="grid gap-3 lg:grid-cols-3">
+      <AdminMenuIndexSkeleton v-if="isLoading" />
+
+      <section
+        v-else
+        class="grid gap-3 lg:grid-cols-3"
+      >
         <div class="app-surface-soft relative px-4 py-4">
           <p class="pr-20 text-xs uppercase tracking-[0.18em] text-muted">Menú activo</p>
           <UButton
@@ -115,14 +120,7 @@ useSeoMeta({
           >
             Abrir
           </UButton>
-          <USkeleton
-            v-if="isLoading"
-            class="mt-3 h-6 w-40 rounded-lg"
-          />
-          <div
-            v-else
-            class="mt-3 space-y-1"
-          >
+          <div class="mt-3 space-y-1">
             <p class="line-clamp-1 text-base font-semibold text-highlighted">
               {{ activeMenu?.name ?? "Sin menú activo" }}
             </p>
@@ -138,14 +136,7 @@ useSeoMeta({
 
         <div class="app-surface-soft px-4 py-4">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Último agregado</p>
-          <USkeleton
-            v-if="isLoading"
-            class="mt-3 h-6 w-40 rounded-lg"
-          />
-          <div
-            v-else
-            class="mt-3 space-y-1"
-          >
+          <div class="mt-3 space-y-1">
             <p class="line-clamp-1 text-base font-semibold text-highlighted">
               {{ latestCreatedMenu?.name ?? "Sin registros" }}
             </p>
@@ -161,14 +152,7 @@ useSeoMeta({
 
         <div class="app-surface-soft px-4 py-4">
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Menús creados</p>
-          <USkeleton
-            v-if="isLoading"
-            class="mt-3 h-8 w-14 rounded-lg"
-          />
-          <div
-            v-else
-            class="mt-3 space-y-1"
-          >
+          <div class="mt-3 space-y-1">
             <p class="text-2xl font-bold text-highlighted">
               {{ menus.length }}
             </p>
@@ -177,19 +161,8 @@ useSeoMeta({
         </div>
       </section>
 
-      <section
-        v-if="isLoading"
-        class="grid grid-cols-1 xl:grid-cols-2 gap-4"
-      >
-        <USkeleton
-          v-for="index in 4"
-          :key="index"
-          class="h-48 w-full"
-        />
-      </section>
-
       <UAlert
-        v-else-if="!menus.length"
+        v-if="!isLoading && !menus.length"
         title="Aún no hay menús"
         description="Empieza creando el primer menú semanal desde el botón de arriba."
         color="neutral"
@@ -198,7 +171,7 @@ useSeoMeta({
       />
 
       <section
-        v-else
+        v-else-if="!isLoading"
         class="grid grid-cols-1 xl:grid-cols-2 gap-4"
       >
         <UCard
