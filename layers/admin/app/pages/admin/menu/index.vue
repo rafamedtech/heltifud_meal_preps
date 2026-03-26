@@ -5,11 +5,11 @@ const {
   data: menus,
   refresh,
   status
-} = useLazyFetch<WeeklyMenu[]>("/api/menu/all", {
+} = await useFetch<WeeklyMenu[]>("/api/menu/all", {
   default: () => []
 })
 
-const isLoading = computed(() => status.value === "idle" || status.value === "pending")
+const isLoading = computed(() => status.value === "pending")
 const activeMenu = computed(() => menus.value.find((menu) => menu.isActive) ?? null)
 const latestCreatedMenu = computed(() => menus.value[0] ?? null)
 

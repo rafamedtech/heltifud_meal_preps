@@ -1,6 +1,7 @@
 const shortDateOptions: Intl.DateTimeFormatOptions = {
   month: "short",
-  day: "numeric"
+  day: "numeric",
+  timeZone: "America/Tijuana"
 }
 
 export function formatShortDate(date: string | Date): string {

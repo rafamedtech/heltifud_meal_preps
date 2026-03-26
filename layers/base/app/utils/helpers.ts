@@ -64,11 +64,13 @@ export const adminLinks: NavigationMenuItem[][] = [
 export const dateOptions: Intl.DateTimeFormatOptions = {
   year: "numeric",
   month: "short",
-  day: "numeric"
+  day: "numeric",
+  timeZone: "America/Tijuana"
 }
 export const shortDateOptions: Intl.DateTimeFormatOptions = {
   month: "short",
-  day: "numeric"
+  day: "numeric",
+  timeZone: "America/Tijuana"
 }
 
 export const expenseOptions = ["Todas", "Gasto", "Ingreso"]
