@@ -5,7 +5,7 @@ const {
   data: menus,
   refresh,
   status
-} = await useFetch<WeeklyMenu[]>("/api/menu/all", {
+} = await useLazyFetch<WeeklyMenu[]>("/api/menu/all", {
   default: () => []
 })
 
@@ -100,73 +100,81 @@ useSeoMeta({
       </div>
     </section>
 
-      <section class="space-y-4">
+    <section class="space-y-4">
       <section class="grid gap-3 lg:grid-cols-3">
-            <div class="app-surface-soft relative px-4 py-4">
-              <p class="pr-20 text-xs uppercase tracking-[0.18em] text-muted">Menú activo</p>
-              <UButton
-                v-if="activeMenu"
-                :to="`/admin/menu/${activeMenu.id}`"
-                size="sm"
-                variant="outline"
-                color="neutral"
-                icon="i-lucide-square-arrow-out-up-right"
-                class="absolute right-4 top-4"
-              >
-                Abrir
-              </UButton>
-              <USkeleton
-                v-if="isLoading"
-                class="mt-3 h-6 w-40 rounded-lg"
-              />
-              <div
-                v-else
-                class="mt-3 space-y-1"
-              >
-                <p class="line-clamp-1 text-base font-semibold text-highlighted">
-                  {{ activeMenu?.name ?? "Sin menú activo" }}
-                </p>
-                <p class="text-sm text-muted">
-                  {{ activeMenu ? `${formatDate(activeMenu.startDate)} - ${formatDate(activeMenu.endDate)}` : "Activa uno desde la lista inferior." }}
-                </p>
-              </div>
-            </div>
+        <div class="app-surface-soft relative px-4 py-4">
+          <p class="pr-20 text-xs uppercase tracking-[0.18em] text-muted">Menú activo</p>
+          <UButton
+            v-if="activeMenu"
+            :to="`/admin/menu/${activeMenu.id}`"
+            size="sm"
+            variant="outline"
+            color="neutral"
+            icon="i-lucide-square-arrow-out-up-right"
+            class="absolute right-4 top-4"
+          >
+            Abrir
+          </UButton>
+          <USkeleton
+            v-if="isLoading"
+            class="mt-3 h-6 w-40 rounded-lg"
+          />
+          <div
+            v-else
+            class="mt-3 space-y-1"
+          >
+            <p class="line-clamp-1 text-base font-semibold text-highlighted">
+              {{ activeMenu?.name ?? "Sin menú activo" }}
+            </p>
+            <p class="text-sm text-muted">
+              {{
+                activeMenu
+                  ? `${formatDate(activeMenu.startDate)} - ${formatDate(activeMenu.endDate)}`
+                  : "Activa uno desde la lista inferior."
+              }}
+            </p>
+          </div>
+        </div>
 
-            <div class="app-surface-soft px-4 py-4">
-              <p class="text-xs uppercase tracking-[0.18em] text-muted">Último agregado</p>
-              <USkeleton
-                v-if="isLoading"
-                class="mt-3 h-6 w-40 rounded-lg"
-              />
-              <div
-                v-else
-                class="mt-3 space-y-1"
-              >
-                <p class="line-clamp-1 text-base font-semibold text-highlighted">
-                  {{ latestCreatedMenu?.name ?? "Sin registros" }}
-                </p>
-                <p class="text-sm text-muted">
-                  {{ latestCreatedMenu ? `Creado el ${formatDate(latestCreatedMenu.createdAt)}` : "Crea tu primer menú semanal." }}
-                </p>
-              </div>
-            </div>
+        <div class="app-surface-soft px-4 py-4">
+          <p class="text-xs uppercase tracking-[0.18em] text-muted">Último agregado</p>
+          <USkeleton
+            v-if="isLoading"
+            class="mt-3 h-6 w-40 rounded-lg"
+          />
+          <div
+            v-else
+            class="mt-3 space-y-1"
+          >
+            <p class="line-clamp-1 text-base font-semibold text-highlighted">
+              {{ latestCreatedMenu?.name ?? "Sin registros" }}
+            </p>
+            <p class="text-sm text-muted">
+              {{
+                latestCreatedMenu
+                  ? `Creado el ${formatDate(latestCreatedMenu.createdAt)}`
+                  : "Crea tu primer menú semanal."
+              }}
+            </p>
+          </div>
+        </div>
 
-            <div class="app-surface-soft px-4 py-4">
-              <p class="text-xs uppercase tracking-[0.18em] text-muted">Menús creados</p>
-              <USkeleton
-                v-if="isLoading"
-                class="mt-3 h-8 w-14 rounded-lg"
-              />
-              <div
-                v-else
-                class="mt-3 space-y-1"
-              >
-                <p class="text-2xl font-bold text-highlighted">
-                  {{ menus.length }}
-                </p>
-                <p class="text-sm text-muted">Total de menús semanales registrados.</p>
-              </div>
-            </div>
+        <div class="app-surface-soft px-4 py-4">
+          <p class="text-xs uppercase tracking-[0.18em] text-muted">Menús creados</p>
+          <USkeleton
+            v-if="isLoading"
+            class="mt-3 h-8 w-14 rounded-lg"
+          />
+          <div
+            v-else
+            class="mt-3 space-y-1"
+          >
+            <p class="text-2xl font-bold text-highlighted">
+              {{ menus.length }}
+            </p>
+            <p class="text-sm text-muted">Total de menús semanales registrados.</p>
+          </div>
+        </div>
       </section>
 
       <section
