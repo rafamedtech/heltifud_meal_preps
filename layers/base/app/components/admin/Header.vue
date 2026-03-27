@@ -3,6 +3,18 @@ const supabase = useSupabaseClient()
 const toast = useToast()
 const isConfirmOpen = ref(false)
 const isLoggingOut = ref(false)
+const mobileMenuOpen = ref(false)
+
+function openMobileMenu(event?: MouseEvent) {
+  ;(event?.currentTarget as HTMLButtonElement | null)?.blur()
+  requestAnimationFrame(() => {
+    mobileMenuOpen.value = true
+  })
+}
+
+function closeMobileMenu() {
+  mobileMenuOpen.value = false
+}
 
 async function logout() {
   isLoggingOut.value = true
@@ -42,6 +54,19 @@ async function logout() {
       </div>
     </div>
 
+    <div class="flex items-center gap-2 lg:hidden">
+      <ColorMode compact />
+
+      <UButton
+        icon="i-lucide-menu"
+        color="neutral"
+        variant="ghost"
+        square
+        aria-label="Abrir navegación del admin"
+        @click="openMobileMenu($event)"
+      />
+    </div>
+
     <div class="hidden items-center gap-3 lg:flex">
       <UButton
         color="neutral"
@@ -53,6 +78,46 @@ async function logout() {
         Logout
       </UButton>
     </div>
+
+    <UDrawer
+      v-model:open="mobileMenuOpen"
+      title="Panel admin"
+      description="Navega por las secciones administrativas."
+      inset
+      :ui="{ content: 'max-w-xl bg-default/95 backdrop-blur-xl' }"
+    >
+      <template #body>
+        <section class="space-y-4 px-1 pb-2">
+          <div class="rounded-2xl border border-default/70 bg-elevated/50 px-4 py-3">
+            <p class="text-sm font-semibold text-highlighted">Accesos rápidos</p>
+            <p class="mt-1 text-xs text-muted">Gestiona menús, planes y platillos desde aquí.</p>
+          </div>
+
+          <AdminNavigationMenu :collapsed="false" />
+        </section>
+      </template>
+
+      <template #footer>
+        <div class="space-y-2 px-1 pb-1">
+          <UButton
+            color="error"
+            variant="soft"
+            block
+            icon="i-lucide-log-out"
+            label="Cerrar sesión"
+            @click="closeMobileMenu(); isConfirmOpen = true"
+          />
+
+          <UButton
+            color="neutral"
+            variant="ghost"
+            block
+            label="Cerrar"
+            @click="closeMobileMenu"
+          />
+        </div>
+      </template>
+    </UDrawer>
 
     <UModal
       v-model:open="isConfirmOpen"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { formatShortDate } from "~~/layers/base/app/utils/dateFormatting"
 
+const user = useSupabaseUser()
 const { data: activeMenu, status } = useLazyFetch<WeeklyMenu | null>(`/api/menu`, {
   default: () => null,
   server: false,
@@ -11,6 +12,7 @@ const endDate = computed(() => (activeMenu.value?.endDate ? formatShortDate(acti
 const skeletonDays = Array.from({ length: 3 }, (_, index) => index)
 const isLoading = computed(() => status.value === "idle" || status.value === "pending")
 const hasMenu = computed(() => Boolean(activeMenu.value))
+const canEditMenu = computed(() => Boolean(user.value && activeMenu.value?.id))
 
 const publicDays = computed(() =>
   (activeMenu.value?.days ?? []).filter((day) => !["SABADO", "DOMINGO"].includes(day.dayOfWeek))
@@ -41,6 +43,17 @@ useSeoMeta({
             v-else-if="isLoading"
             class="h-6 w-55"
           />
+
+          <ClientOnly>
+            <UButton
+              v-if="canEditMenu"
+              label="Editar menú"
+              icon="i-lucide-square-pen"
+              color="neutral"
+              variant="outline"
+              :to="`/admin/menu/${activeMenu?.id}`"
+            />
+          </ClientOnly>
         </div>
       </template>
 

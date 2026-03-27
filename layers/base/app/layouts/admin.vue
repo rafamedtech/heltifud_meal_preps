@@ -174,15 +174,6 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "md:w-24 xl
         </section>
       </main>
     </div>
-
-    <section class="fixed inset-x-0 bottom-4 z-50 px-4 md:hidden">
-      <UCard
-        class="w-full border-default/70 shadow-lg"
-        :ui="{ body: 'p-0 sm:p-0 px-2' }"
-      >
-        <MobileNav />
-      </UCard>
-    </section>
   </div>
 </template>
 

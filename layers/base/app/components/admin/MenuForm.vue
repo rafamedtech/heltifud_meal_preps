@@ -444,8 +444,8 @@ async function onSubmit() {
     >
         <UCard :ui="cardSurfaceUi">
           <template #header>
-            <div class="flex items-start justify-between gap-4">
-              <div>
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div class="max-w-2xl">
                 <h2 class="text-base font-semibold text-highlighted">
                   Información general
                 </h2>
@@ -454,13 +454,15 @@ async function onSubmit() {
                 </p>
               </div>
 
-              <div class="flex items-center gap-3">
+              <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:flex lg:items-center lg:justify-end lg:gap-3">
                 <UButton
                   type="submit"
                   :loading="loading"
                   :disabled="!canSubmit"
                   :color="canSubmit ? 'primary' : 'neutral'"
                   icon="i-lucide-save"
+                  block
+                  class="justify-center"
                 >
                   {{ actionLabel }}
                 </UButton>
@@ -469,6 +471,8 @@ async function onSubmit() {
                   :variant="markAsActive || menu?.isActive ? 'soft' : 'outline'"
                   :color="markAsActive || menu?.isActive ? 'success' : 'primary'"
                   icon="i-lucide-badge-check"
+                  block
+                  class="justify-center"
                   @click="markAsActive = true"
                 >
                   {{ activeActionLabel }}
@@ -477,8 +481,11 @@ async function onSubmit() {
             </div>
           </template>
 
-          <div class="grid gap-6 px-6 py-6 lg:grid-cols-3">
-            <UFormField name="name">
+          <div class="grid gap-4 px-4 py-5 sm:px-6 sm:py-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+            <UFormField
+              name="name"
+              class="md:col-span-2 lg:col-span-1"
+            >
               <AdminMetaField
                 label="Nombre del menú"
                 :invalid="invalidFields.name"
