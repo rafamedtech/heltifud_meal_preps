@@ -40,10 +40,22 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "md:w-24 xl
                 class="flex items-center justify-center rounded-xl"
               >
                 <div class="flex size-9 items-center justify-center rounded-xl bg-primary/8 text-primary">
-                  <UIcon
-                    name="i-heroicons-squares-2x2"
-                    class="size-6"
-                  />
+                  <figure class="">
+                    <NuxtImg
+                      src="v1774637949/heltifud/heltifud-logo-vertical-black-v2_kwuarg.png"
+                      alt=""
+                      width="144"
+                      height="56"
+                      class="max-w-full dark:hidden"
+                    />
+                    <NuxtImg
+                      src="v1774637152/heltifud/heltifud-logo-vertical-v2_rxswcq.png"
+                      alt=""
+                      width="144"
+                      height="56"
+                      class="max-w-full hidden dark:block"
+                    />
+                  </figure>
                 </div>
               </NuxtLink>
             </div>
