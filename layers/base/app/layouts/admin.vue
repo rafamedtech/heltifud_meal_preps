@@ -11,18 +11,29 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "md:w-24 xl
         class="app-sidebar hidden h-full shrink-0 transition-[width] duration-200 md:flex md:flex-col"
         :class="sidebarWidthClass"
       >
-        <div class="app-sidebar-header relative flex min-h-20 items-center px-4 py-3">
-          <div class="relative flex w-full flex-col items-center gap-3 xl:hidden">
+        <div class="app-sidebar-header relative flex h-24 items-center px-4">
+          <div class="relative flex h-14 w-full flex-col items-center justify-center gap-3 xl:hidden">
             <NuxtLink
               to="/admin"
-              class="flex items-center justify-center rounded-xl"
+              class="flex h-full w-full items-center justify-center rounded-2xl"
+              aria-label="Ir al panel principal"
             >
-              <div class="flex size-9 items-center justify-center rounded-xl bg-primary/8 text-primary">
-                <UIcon
-                  name="i-heroicons-squares-2x2"
-                  class="size-6"
+              <figure class="flex w-14 items-center justify-center">
+                <NuxtImg
+                  src="/brand/heltifud-logo-vertical-black-v2.png"
+                  alt=""
+                  width="513"
+                  height="625"
+                  class="block h-auto w-14 dark:hidden"
                 />
-              </div>
+                <NuxtImg
+                  src="/brand/heltifud-logo-vertical-v2.png"
+                  alt=""
+                  width="513"
+                  height="625"
+                  class="hidden h-auto w-14 dark:block"
+                />
+              </figure>
             </NuxtLink>
           </div>
 
@@ -33,41 +44,40 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "md:w-24 xl
             <div
               v-if="isSidebarCollapsed"
               key="sidebar-header-collapsed"
-              class="relative hidden w-full flex-col items-center gap-3 xl:flex"
+              class="relative hidden h-14 w-full flex-col items-center justify-center gap-3 xl:flex"
             >
               <NuxtLink
                 to="/admin"
-                class="flex items-center justify-center rounded-xl"
+                class="flex h-full w-full items-center justify-center rounded-2xl"
+                aria-label="Ir al panel principal"
               >
-                <div class="flex size-9 items-center justify-center rounded-xl bg-primary/8 text-primary">
-                  <figure class="">
-                    <NuxtImg
-                      src="v1774637949/heltifud/heltifud-logo-vertical-black-v2_kwuarg.png"
-                      alt=""
-                      width="144"
-                      height="56"
-                      class="max-w-full dark:hidden"
-                    />
-                    <NuxtImg
-                      src="v1774637152/heltifud/heltifud-logo-vertical-v2_rxswcq.png"
-                      alt=""
-                      width="144"
-                      height="56"
-                      class="max-w-full hidden dark:block"
-                    />
-                  </figure>
-                </div>
+                <figure class="flex w-14 items-center justify-center">
+                  <NuxtImg
+                    src="v1774637949/heltifud/heltifud-logo-vertical-black-v2_kwuarg.png"
+                    alt=""
+                    width="513"
+                    height="625"
+                    class="block h-auto w-14 dark:hidden"
+                  />
+                  <NuxtImg
+                    src="v1774637152/heltifud/heltifud-logo-vertical-v2_rxswcq.png"
+                    alt=""
+                    width="513"
+                    height="625"
+                    class="hidden h-auto w-14 dark:block"
+                  />
+                </figure>
               </NuxtLink>
             </div>
 
             <div
               v-else
               key="sidebar-header-expanded"
-              class="relative hidden w-full items-center xl:flex"
+              class="relative hidden h-14 w-full items-center xl:flex"
             >
               <NuxtLink
                 to="/admin"
-                class="flex min-w-0 items-center gap-2.5 rounded-xl px-1 py-0.5"
+                class="flex h-full min-w-0 items-center gap-2.5 rounded-xl px-1 py-0.5"
               >
                 <!-- <div class="flex size-7 items-center justify-center rounded-lg bg-primary/8 text-primary">
                   <UIcon
