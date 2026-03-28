@@ -1,18 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2024-11-01',
+  compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
-  // future: {
-  //   compatibilityVersion: 4,
-  // },
-  css: ['./layers/base/app/assets/css/main.css'],
-  modules: ['@nuxt/ui'],
+
+  css: ["./layers/base/app/assets/css/main.css"],
+  modules: ["@nuxt/ui"],
   fonts: {
     families: [
       {
-        name: 'Montserrat',
-        provider: 'none',
-      },
-    ],
-  },
+        name: "Montserrat",
+        provider: "none"
+      }
+    ]
+  }
 })

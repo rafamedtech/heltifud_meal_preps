@@ -42,6 +42,16 @@ body {
     );
 }
 
+button,
+[role='button'] {
+  cursor: pointer;
+}
+
+button:disabled,
+[role='button'][aria-disabled='true'] {
+  cursor: default;
+}
+
 .page-enter-from {
   opacity: 0;
   transform: translateX(15px);

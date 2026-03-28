@@ -20,14 +20,14 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "md:w-24 xl
             >
               <figure class="flex w-14 items-center justify-center">
                 <NuxtImg
-                  src="/brand/heltifud-logo-vertical-black-v2.png"
+                  src="v1774637949/heltifud/heltifud-logo-vertical-black-v2_kwuarg.png"
                   alt=""
                   width="513"
                   height="625"
                   class="block h-auto w-14 dark:hidden"
                 />
                 <NuxtImg
-                  src="/brand/heltifud-logo-vertical-v2.png"
+                  src="v1774637152/heltifud/heltifud-logo-vertical-v2_rxswcq.png"
                   alt=""
                   width="513"
                   height="625"
@@ -79,13 +79,6 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "md:w-24 xl
                 to="/admin"
                 class="flex h-full min-w-0 items-center gap-2.5 rounded-xl px-1 py-0.5"
               >
-                <!-- <div class="flex size-7 items-center justify-center rounded-lg bg-primary/8 text-primary">
-                  <UIcon
-                    name="i-heroicons-squares-2x2"
-                    class="size-4"
-                  />
-                </div>  -->
-
                 <div class="min-w-0">
                   <AppLogo />
                 </div>
@@ -188,6 +181,7 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "md:w-24 xl
         </div>
 
         <section
+          data-route-scroll-container
           class="admin-scrollbar min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable] px-4 py-6 pb-24 md:px-8 md:pb-8"
         >
           <div class="mx-auto w-full max-w-400">

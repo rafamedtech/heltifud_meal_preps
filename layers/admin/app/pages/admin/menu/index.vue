@@ -90,10 +90,12 @@ useSeoMeta({
         </div>
       </div>
 
-      <div class="flex items-center gap-3 lg:justify-end">
+      <div class="flex w-full items-center gap-3 lg:w-auto lg:justify-end">
         <UButton
           to="/admin/menu/crear-nuevo"
           icon="i-lucide-plus"
+          class="w-full justify-center lg:w-auto"
+          size="lg"
         >
           Nuevo menú
         </UButton>

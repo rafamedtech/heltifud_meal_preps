@@ -10,10 +10,10 @@ const collapsed = computed(() => props.collapsed ?? false)
 
 const route = useRoute()
 
-const collapsedItemIconClass = 'size-7 shrink-0'
-const collapsedItemLabelClass = 'text-[11px] font-medium leading-tight'
-const expandedItemIconClass = 'size-[18px] shrink-0'
-const expandedItemLabelClass = 'text-[15px] font-medium'
+const collapsedItemIconClass = "size-7 shrink-0"
+const collapsedItemLabelClass = "text-[11px] font-medium leading-tight"
+const expandedItemIconClass = "size-[18px] shrink-0"
+const expandedItemLabelClass = "text-[15px] font-medium"
 
 type AdminLinkItem = NavigationMenuItem & {
   label?: string
@@ -41,12 +41,7 @@ function isCurrent(item: AdminLinkItem) {
     return false
   }
 
-  const normalizeAdminPath = (path: string) =>
-    path
-      .replace(/\/$/, "")
-      .split("/")
-      .filter(Boolean)
-      .slice(1)
+  const normalizeAdminPath = (path: string) => path.replace(/\/$/, "").split("/").filter(Boolean).slice(1)
 
   const currentSegments = normalizeAdminPath(route.path)
   const itemSegments = normalizeAdminPath(item.to)
@@ -69,12 +64,8 @@ function isCurrent(item: AdminLinkItem) {
         v-for="item in flatItems"
         :key="`${item.label}-${item.to}`"
         :to="item.to"
-        class="app-nav-item app-sidebar-link group relative flex w-full max-w-[3.75rem] flex-col items-center justify-center gap-1.5 px-1 py-2.5 text-center transition-all duration-200"
-        :class="
-          isCurrent(item)
-            ? 'app-sidebar-link-active text-primary'
-            : 'text-muted hover:text-highlighted'
-        "
+        class="app-nav-item app-sidebar-link group relative flex w-full max-w-15 flex-col items-center justify-center gap-1.5 px-1 py-2.5 text-center transition-all duration-200"
+        :class="isCurrent(item) ? 'app-sidebar-link-active text-primary' : 'text-muted hover:text-highlighted'"
       >
         <UIcon
           :name="item.icon || 'i-heroicons-chevron-right'"
@@ -103,11 +94,7 @@ function isCurrent(item: AdminLinkItem) {
             v-if="!item.children?.length && item.to"
             :to="item.to"
             class="app-nav-item app-sidebar-link group flex items-center gap-3 px-3 py-1.5 text-sm font-medium transition-all duration-200"
-            :class="
-              isCurrent(item)
-                ? 'app-sidebar-link-active text-primary'
-                : 'text-muted hover:text-highlighted'
-            "
+            :class="isCurrent(item) ? 'app-sidebar-link-active text-primary' : 'text-muted hover:text-highlighted'"
           >
             <UIcon
               :name="item.icon || 'i-heroicons-chevron-right'"
@@ -120,9 +107,7 @@ function isCurrent(item: AdminLinkItem) {
             v-else
             class="space-y-0.5"
           >
-            <div
-              class="flex items-center gap-2.5 px-3 py-0.5 text-[14px] font-medium text-muted"
-            >
+            <div class="flex items-center gap-2.5 px-3 py-0.5 text-[14px] font-medium text-muted">
               <UIcon
                 :name="item.icon || 'i-heroicons-chevron-right'"
                 :class="expandedItemIconClass"

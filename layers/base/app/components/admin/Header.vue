@@ -1,9 +1,43 @@
 <script setup lang="ts">
+const route = useRoute()
 const supabase = useSupabaseClient()
 const toast = useToast()
 const isConfirmOpen = ref(false)
 const isLoggingOut = ref(false)
 const mobileMenuOpen = ref(false)
+
+const mobileNavItems = [
+  {
+    to: "/admin",
+    label: "Inicio",
+    icon: "i-lucide-house"
+  },
+  {
+    to: "/admin/planes",
+    label: "Planes",
+    icon: "i-lucide-clipboard-list"
+  },
+  {
+    to: "/admin/menu",
+    label: "Menú",
+    icon: "i-lucide-calendar-range"
+  },
+  {
+    to: "/admin/platillos",
+    label: "Platillos",
+    icon: "i-lucide-utensils-crossed"
+  }
+] as const
+
+function isActive(path: string) {
+  return route.path === path
+}
+
+function mobileLinkClass(path: string) {
+  return isActive(path)
+    ? "border-primary/30 bg-primary/10 text-primary shadow-[0_0_0_1px_rgb(var(--ui-primary)/0.08)]"
+    : "border-default/70 bg-default/40 text-toned hover:border-primary/20 hover:bg-elevated/80 hover:text-highlighted"
+}
 
 function openMobileMenu(event?: MouseEvent) {
   ;(event?.currentTarget as HTMLButtonElement | null)?.blur()
@@ -82,18 +116,58 @@ async function logout() {
     <UDrawer
       v-model:open="mobileMenuOpen"
       title="Panel admin"
-      description="Navega por las secciones administrativas."
+      description="Gestiona Heltifud."
       inset
       :ui="{ content: 'max-w-xl bg-default/95 backdrop-blur-xl' }"
     >
       <template #body>
-        <section class="space-y-4 px-1 pb-2">
-          <div class="rounded-2xl border border-default/70 bg-elevated/50 px-4 py-3">
-            <p class="text-sm font-semibold text-highlighted">Accesos rápidos</p>
-            <p class="mt-1 text-xs text-muted">Gestiona menús, planes y platillos desde aquí.</p>
+        <section class="space-y-3 px-1 pb-2">
+          <div class="flex items-center gap-3 rounded-2xl border border-default/70 bg-elevated/50 px-4 py-3">
+            <div
+              class="flex size-11 items-center justify-center rounded-2xl bg-primary/12 text-primary ring-1 ring-primary/20"
+            >
+              <UIcon
+                name="i-lucide-panel-left"
+                class="size-5"
+              />
+            </div>
+
+            <div class="min-w-0">
+              <p class="text-sm font-semibold text-highlighted">
+                {{ mobileNavItems.find(item => isActive(item.to))?.label ?? "Panel admin" }}
+              </p>
+              <p class="text-xs text-muted">
+                Accesos rápidos del panel.
+              </p>
+            </div>
           </div>
 
-          <AdminNavigationMenu :collapsed="false" />
+          <NuxtLink
+            v-for="item in mobileNavItems"
+            :key="item.to"
+            :to="item.to"
+            :class="[
+              'flex items-center gap-3 rounded-2xl border px-4 py-4 transition-all active:scale-[0.99]',
+              mobileLinkClass(item.to)
+            ]"
+            @click="closeMobileMenu"
+          >
+            <div
+              class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-default/90 ring-1 ring-default/80"
+            >
+              <UIcon
+                :name="item.icon"
+                class="size-5"
+              />
+            </div>
+
+            <span class="min-w-0 flex-1 text-base font-semibold">{{ item.label }}</span>
+
+            <UIcon
+              name="i-lucide-chevron-right"
+              class="size-4 shrink-0 opacity-55"
+            />
+          </NuxtLink>
         </section>
       </template>
 
@@ -102,19 +176,21 @@ async function logout() {
           <UButton
             color="error"
             variant="soft"
-            block
             icon="i-lucide-log-out"
-            label="Cerrar sesión"
+            class="w-full justify-center py-3"
             @click="closeMobileMenu(); isConfirmOpen = true"
-          />
+          >
+            Cerrar sesión
+          </UButton>
 
           <UButton
             color="neutral"
             variant="ghost"
-            block
-            label="Cerrar"
+            class="w-full py-3"
             @click="closeMobileMenu"
-          />
+          >
+            Cerrar
+          </UButton>
         </div>
       </template>
     </UDrawer>

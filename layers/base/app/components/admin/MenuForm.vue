@@ -139,10 +139,13 @@ const loading = ref(false)
 const hiddenDays = new Set<DayOfWeek>(["SABADO", "DOMINGO"])
 const markAsActive = ref(Boolean(menu.value?.isActive))
 const snacksExpanded = reactive<Record<DayOfWeek, boolean>>(
-  DAY_OF_WEEK_VALUES.reduce((acc, day) => {
-    acc[day] = false
-    return acc
-  }, {} as Record<DayOfWeek, boolean>)
+  DAY_OF_WEEK_VALUES.reduce(
+    (acc, day) => {
+      acc[day] = false
+      return acc
+    },
+    {} as Record<DayOfWeek, boolean>
+  )
 )
 
 const title = computed(() => {
@@ -152,13 +155,13 @@ const title = computed(() => {
 
   return "Nuevo menú semanal"
 })
-const actionLabel = computed(() => (mode.value === "edit" ? "Guardar cambios" : "Crear menú"))
+const actionLabel = computed(() => (mode.value === "edit" ? "Guardar" : "Crear menú"))
 const activeActionLabel = computed(() => {
   if (menu.value?.isActive || markAsActive.value) {
-    return "Menú activo"
+    return "Activo"
   }
 
-  return "Hacer menú activo"
+  return "Activar"
 })
 const visibleDayEntries = computed(() =>
   state.days.map((day) => ({ day })).filter(({ day }) => !hiddenDays.has(day.dayOfWeek))
@@ -180,10 +183,13 @@ const invalidFields = reactive({
 })
 const invalidDays = ref<Set<DayOfWeek>>(new Set())
 const invalidSlots = ref<Record<DayOfWeek, Set<SlotKey>>>(
-  DAY_OF_WEEK_VALUES.reduce((acc, day) => {
-    acc[day] = new Set<SlotKey>()
-    return acc
-  }, {} as Record<DayOfWeek, Set<SlotKey>>)
+  DAY_OF_WEEK_VALUES.reduce(
+    (acc, day) => {
+      acc[day] = new Set<SlotKey>()
+      return acc
+    },
+    {} as Record<DayOfWeek, Set<SlotKey>>
+  )
 )
 
 function toComparableDate(value: Date | string) {
@@ -263,10 +269,13 @@ function clearValidationHighlights() {
   invalidFields.startDate = false
   invalidFields.endDate = false
   invalidDays.value = new Set()
-  invalidSlots.value = DAY_OF_WEEK_VALUES.reduce((acc, day) => {
-    acc[day] = new Set<SlotKey>()
-    return acc
-  }, {} as Record<DayOfWeek, Set<SlotKey>>)
+  invalidSlots.value = DAY_OF_WEEK_VALUES.reduce(
+    (acc, day) => {
+      acc[day] = new Set<SlotKey>()
+      return acc
+    },
+    {} as Record<DayOfWeek, Set<SlotKey>>
+  )
 }
 
 function applyValidationHighlights(issues: ZodIssue[]) {
@@ -290,11 +299,7 @@ function applyValidationHighlights(issues: ZodIssue[]) {
       continue
     }
 
-    if (
-      root === "days" &&
-      typeof dayIndex === "number" &&
-      typeof slotKey === "string"
-    ) {
+    if (root === "days" && typeof dayIndex === "number" && typeof slotKey === "string") {
       const day = state.days[dayIndex]
       const normalizedSlotKey = slotKey as SlotKey
 
@@ -335,12 +340,7 @@ function formatValidationIssue(issue?: ZodIssue) {
     return "El nombre del menú es obligatorio."
   }
 
-  if (
-    root === "days" &&
-    typeof dayIndex === "number" &&
-    typeof slotKey === "string" &&
-    typeof fieldKey === "string"
-  ) {
+  if (root === "days" && typeof dayIndex === "number" && typeof slotKey === "string" && typeof fieldKey === "string") {
     const day = state.days[dayIndex]
     const dayLabel = day ? DAY_LABELS[day.dayOfWeek] : "el día seleccionado"
     const slotLabel = SLOT_LABELS[slotKey as keyof typeof SLOT_LABELS] ?? "este tiempo"
@@ -442,185 +442,190 @@ async function onSubmit() {
       class="space-y-6"
       @submit="onSubmit"
     >
-        <UCard :ui="cardSurfaceUi">
+      <UCard :ui="cardSurfaceUi">
+        <template #header>
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div class="max-w-2xl">
+              <h2 class="text-base font-semibold text-highlighted">Información general</h2>
+              <p class="mt-1 text-sm text-muted">
+                Define el nombre del menú y el rango de fechas en el que estará disponible.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:flex lg:items-center lg:justify-end lg:gap-3">
+              <UButton
+                type="submit"
+                :loading="loading"
+                :disabled="!canSubmit"
+                :color="canSubmit ? 'primary' : 'neutral'"
+                icon="i-lucide-save"
+                block
+                class="justify-center"
+                size="lg"
+              >
+                {{ actionLabel }}
+              </UButton>
+
+              <UButton
+                :variant="markAsActive || menu?.isActive ? 'soft' : 'outline'"
+                :color="markAsActive || menu?.isActive ? 'success' : 'primary'"
+                icon="i-lucide-badge-check"
+                block
+                class="justify-center"
+                @click="markAsActive = true"
+                size="lg"
+              >
+                {{ activeActionLabel }}
+              </UButton>
+            </div>
+          </div>
+        </template>
+
+        <div class="grid gap-4 px-4 py-5 sm:px-6 sm:py-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          <UFormField
+            name="name"
+            class="md:col-span-2 lg:col-span-1"
+          >
+            <AdminMetaField
+              label="Nombre del menú"
+              :invalid="invalidFields.name"
+            >
+              <UInput
+                v-model="state.name"
+                placeholder="Ej. Menú Semana 12"
+                icon="i-lucide-notebook-pen"
+                variant="ghost"
+                class="w-full"
+                :ui="{
+                  base: 'h-5 min-h-5 max-h-5 border-0 bg-transparent px-0 py-0 text-sm font-medium leading-5 text-highlighted shadow-none hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent',
+                  leading: 'ps-0',
+                  leadingIcon: 'size-4 text-muted'
+                }"
+              />
+            </AdminMetaField>
+          </UFormField>
+
+          <UFormField name="startDate">
+            <AdminMetaField
+              label="Fecha de inicio"
+              :invalid="invalidFields.startDate"
+            >
+              <DatePicker v-model="state.startDate" />
+            </AdminMetaField>
+          </UFormField>
+
+          <UFormField name="endDate">
+            <AdminMetaField
+              label="Fecha final"
+              :invalid="invalidFields.endDate"
+            >
+              <DatePicker v-model="state.endDate" />
+            </AdminMetaField>
+          </UFormField>
+        </div>
+      </UCard>
+
+      <section class="space-y-5">
+        <UCard
+          v-for="entry in visibleDayEntries"
+          :key="entry.day.dayOfWeek"
+          variant="subtle"
+          :class="[
+            'app-surface-soft overflow-hidden',
+            isDayInvalid(entry.day.dayOfWeek) ? 'ring-1 ring-error/35 border-error/50' : ''
+          ]"
+          :ui="{ root: 'app-surface-soft overflow-hidden', header: 'px-5 py-4 sm:px-5', body: 'p-0 sm:p-0' }"
+        >
           <template #header>
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-              <div class="max-w-2xl">
-                <h2 class="text-base font-semibold text-highlighted">
-                  Información general
-                </h2>
-                <p class="mt-1 text-sm text-muted">
-                  Define el nombre del menú y el rango de fechas en el que estará disponible.
-                </p>
-              </div>
-
-              <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:flex lg:items-center lg:justify-end lg:gap-3">
-                <UButton
-                  type="submit"
-                  :loading="loading"
-                  :disabled="!canSubmit"
-                  :color="canSubmit ? 'primary' : 'neutral'"
-                  icon="i-lucide-save"
-                  block
-                  class="justify-center"
-                >
-                  {{ actionLabel }}
-                </UButton>
-
-                <UButton
-                  :variant="markAsActive || menu?.isActive ? 'soft' : 'outline'"
-                  :color="markAsActive || menu?.isActive ? 'success' : 'primary'"
-                  icon="i-lucide-badge-check"
-                  block
-                  class="justify-center"
-                  @click="markAsActive = true"
-                >
-                  {{ activeActionLabel }}
-                </UButton>
-              </div>
+            <div class="flex items-center justify-between gap-4">
+              <h3 class="text-base font-semibold text-primary">
+                {{ DAY_LABELS[entry.day.dayOfWeek] }}
+              </h3>
             </div>
           </template>
 
-          <div class="grid gap-4 px-4 py-5 sm:px-6 sm:py-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-            <UFormField
-              name="name"
-              class="md:col-span-2 lg:col-span-1"
+          <section class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-3">
+            <AdminMenuSlotEditor
+              v-model="entry.day.desayuno"
+              title="Desayuno"
+              :show-toggle="false"
+              :catalog-items="resolvedCatalogItems"
+              :class="[
+                'lg:border-r lg:border-default/70',
+                isSlotInvalid(entry.day.dayOfWeek, 'desayuno') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
+              ]"
+            />
+            <AdminMenuSlotEditor
+              v-model="entry.day.comida"
+              title="Comida"
+              :show-toggle="false"
+              :catalog-items="resolvedCatalogItems"
+              :class="[
+                'lg:border-r lg:border-default/70',
+                isSlotInvalid(entry.day.dayOfWeek, 'comida') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
+              ]"
+            />
+            <AdminMenuSlotEditor
+              v-model="entry.day.cena"
+              title="Cena"
+              :show-toggle="false"
+              :catalog-items="resolvedCatalogItems"
+              :class="isSlotInvalid(entry.day.dayOfWeek, 'cena') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''"
+            />
+          </section>
+
+          <section class="border-t border-default/70">
+            <button
+              type="button"
+              class="flex w-full items-center justify-between px-5 py-3 text-left transition-colors hover:bg-elevated/20"
+              @click="toggleSnacks(entry.day.dayOfWeek)"
             >
-              <AdminMetaField
-                label="Nombre del menú"
-                :invalid="invalidFields.name"
-              >
-                <UInput
-                  v-model="state.name"
-                  placeholder="Ej. Menú Semana 12"
-                  icon="i-lucide-notebook-pen"
-                  variant="ghost"
-                  class="w-full"
-                  :ui="{
-                    base: 'h-5 min-h-5 max-h-5 border-0 bg-transparent px-0 py-0 text-sm font-medium leading-5 text-highlighted shadow-none hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent',
-                    leading: 'ps-0',
-                    leadingIcon: 'size-4 text-muted'
-                  }"
-                />
-              </AdminMetaField>
-            </UFormField>
-
-            <UFormField name="startDate">
-              <AdminMetaField
-                label="Fecha de inicio"
-                :invalid="invalidFields.startDate"
-              >
-                <DatePicker v-model="state.startDate" />
-              </AdminMetaField>
-            </UFormField>
-
-            <UFormField name="endDate">
-              <AdminMetaField
-                label="Fecha final"
-                :invalid="invalidFields.endDate"
-              >
-                <DatePicker v-model="state.endDate" />
-              </AdminMetaField>
-            </UFormField>
-          </div>
-
-        </UCard>
-
-        <section class="space-y-5">
-          <UCard
-            v-for="entry in visibleDayEntries"
-            :key="entry.day.dayOfWeek"
-            variant="subtle"
-            :class="[
-              'app-surface-soft overflow-hidden',
-              isDayInvalid(entry.day.dayOfWeek) ? 'ring-1 ring-error/35 border-error/50' : ''
-            ]"
-            :ui="{ root: 'app-surface-soft overflow-hidden', header: 'px-5 py-4 sm:px-5', body: 'p-0 sm:p-0' }"
-          >
-            <template #header>
-              <div class="flex items-center justify-between gap-4">
-                <h3 class="text-base font-semibold text-primary">
-                  {{ DAY_LABELS[entry.day.dayOfWeek] }}
-                </h3>
-              </div>
-            </template>
-
-            <section class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-3">
-              <AdminMenuSlotEditor
-                v-model="entry.day.desayuno"
-                title="Desayuno"
-                :show-toggle="false"
-                :catalog-items="resolvedCatalogItems"
-                :class="[
-                  'lg:border-r lg:border-default/70',
-                  isSlotInvalid(entry.day.dayOfWeek, 'desayuno') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
-                ]"
-              />
-              <AdminMenuSlotEditor
-                v-model="entry.day.comida"
-                title="Comida"
-                :show-toggle="false"
-                :catalog-items="resolvedCatalogItems"
-                :class="[
-                  'lg:border-r lg:border-default/70',
-                  isSlotInvalid(entry.day.dayOfWeek, 'comida') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
-                ]"
-              />
-              <AdminMenuSlotEditor
-                v-model="entry.day.cena"
-                title="Cena"
-                :show-toggle="false"
-                :catalog-items="resolvedCatalogItems"
-                :class="isSlotInvalid(entry.day.dayOfWeek, 'cena') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''"
-              />
-            </section>
-
-            <section class="border-t border-default/70">
-              <button
-                type="button"
-                class="flex w-full items-center justify-between px-5 py-3 text-left transition-colors hover:bg-elevated/20"
-                @click="toggleSnacks(entry.day.dayOfWeek)"
-              >
-                <span>
-                  <span class="block text-sm font-semibold text-primary">Snacks</span>
-                  <span class="mt-1 block text-xs text-muted">
-                    {{ snacksExpanded[entry.day.dayOfWeek] ? 'Oculta colaciones y snacks de este día.' : 'Muestra Snack 1 y Snack 2 de este día.' }}
-                  </span>
+              <span>
+                <span class="block text-sm font-semibold text-primary">Snacks</span>
+                <span class="mt-1 block text-xs text-muted">
+                  {{
+                    snacksExpanded[entry.day.dayOfWeek]
+                      ? "Oculta colaciones y snacks de este día."
+                      : "Muestra Snack 1 y Snack 2 de este día."
+                  }}
                 </span>
+              </span>
 
-                <UIcon
-                  :name="snacksExpanded[entry.day.dayOfWeek] ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-                  class="size-4 text-muted"
-                />
-              </button>
+              <UIcon
+                :name="snacksExpanded[entry.day.dayOfWeek] ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+                class="size-4 text-muted"
+              />
+            </button>
 
-              <section
-                v-if="snacksExpanded[entry.day.dayOfWeek]"
-                class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-2"
-              >
-                <AdminMenuSlotEditor
-                  v-model="entry.day.snack1"
-                  title="Snack 1"
-                  :show-sides="false"
-                  :show-toggle="false"
-                  :catalog-items="resolvedCatalogItems"
-                  :class="[
-                    'lg:border-r lg:border-default/70',
-                    isSlotInvalid(entry.day.dayOfWeek, 'snack1') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
-                  ]"
-                />
-                <AdminMenuSlotEditor
-                  v-model="entry.day.snack2"
-                  title="Snack 2"
-                  :show-sides="false"
-                  :show-toggle="false"
-                  :catalog-items="resolvedCatalogItems"
-                  :class="isSlotInvalid(entry.day.dayOfWeek, 'snack2') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''"
-                />
-              </section>
+            <section
+              v-if="snacksExpanded[entry.day.dayOfWeek]"
+              class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-2"
+            >
+              <AdminMenuSlotEditor
+                v-model="entry.day.snack1"
+                title="Snack 1"
+                :show-sides="false"
+                :show-toggle="false"
+                :catalog-items="resolvedCatalogItems"
+                :class="[
+                  'lg:border-r lg:border-default/70',
+                  isSlotInvalid(entry.day.dayOfWeek, 'snack1') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
+                ]"
+              />
+              <AdminMenuSlotEditor
+                v-model="entry.day.snack2"
+                title="Snack 2"
+                :show-sides="false"
+                :show-toggle="false"
+                :catalog-items="resolvedCatalogItems"
+                :class="
+                  isSlotInvalid(entry.day.dayOfWeek, 'snack2') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
+                "
+              />
             </section>
-          </UCard>
-        </section>
+          </section>
+        </UCard>
+      </section>
     </UForm>
   </section>
 </template>
