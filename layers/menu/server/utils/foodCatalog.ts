@@ -128,11 +128,54 @@ export async function updateFoodCatalogItem(id: string, input: FoodCatalogItemIn
 export async function deleteFoodCatalogItem(id: string) {
   const existing = await prisma.foodCatalogItem.findUnique({
     where: { id },
-    select: { id: true },
+    select: { id: true, nombre: true },
   });
 
   if (!existing) {
     throw createError({ statusCode: 404, statusMessage: 'FoodComponent no encontrado.' });
+  }
+
+  const linkedComponents = await prisma.foodComponent.findMany({
+    where: { catalogItemId: id },
+    select: {
+      daySlot: {
+        select: {
+          menuDay: {
+            select: {
+              weeklyMenu: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (linkedComponents.length > 0) {
+    const linkedMenus = Array.from(
+      new Map(
+        linkedComponents
+          .map((component) => component.daySlot.menuDay.weeklyMenu)
+          .map((menu) => [menu.id, menu])
+      ).values()
+    );
+
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Este platillo no se puede borrar todavía porque aparece en uno o más menús.',
+      data: {
+        code: 'FOOD_CATALOG_ITEM_IN_USE',
+        itemName: existing.nombre,
+        linkedMenus: linkedMenus.map((menu) => ({
+          id: menu.id,
+          name: menu.name,
+        })),
+      },
+    });
   }
 
   await prisma.foodCatalogItem.delete({

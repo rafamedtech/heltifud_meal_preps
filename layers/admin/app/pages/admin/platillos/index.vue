@@ -1,6 +1,23 @@
 <script setup lang="ts">
 import type { FoodCatalogItem } from "~~/layers/menu/shared/types/types"
 
+interface DeleteBlockedModalState {
+  itemName: string
+  linkedMenus: {
+    id: string
+    name: string
+  }[]
+}
+
+type DeleteError = Error & {
+  statusCode?: number
+  data?: {
+    code?: string
+    itemName?: string
+    linkedMenus?: unknown
+  }
+}
+
 definePageMeta({
   layout: "admin"
 })
@@ -15,6 +32,7 @@ const route = useRoute()
 const toast = useToast()
 const deletingId = ref<string | null>(null)
 const pendingDeleteItem = ref<FoodCatalogItem | null>(null)
+const deleteBlockedState = ref<DeleteBlockedModalState | null>(null)
 
 const {
   data: items,
@@ -38,6 +56,19 @@ const isDeleteModalOpen = computed({
     }
   }
 })
+const isDeleteBlockedModalOpen = computed({
+  get: () => Boolean(deleteBlockedState.value),
+  set: (value) => {
+    if (!value) {
+      deleteBlockedState.value = null
+    }
+  }
+})
+const deleteBlockedDescription = computed(() =>
+  deleteBlockedState.value
+    ? `"${deleteBlockedState.value.itemName}" todavía aparece en uno o más menús.`
+    : undefined
+)
 
 const { deleteFoodCatalogItem } = useFoodCatalog()
 
@@ -53,10 +84,33 @@ async function onDelete(item: FoodCatalogItem) {
   try {
     await deleteFoodCatalogItem(item.id)
     await refresh()
-    toast.add({ title: "Platillo eliminado", color: "success" })
+    toast.add({ title: "Platillo eliminado", color: "success", icon: "i-lucide-check-circle" })
   } catch (error) {
-    const message = error instanceof Error ? error.message : "No se pudo eliminar el platillo"
-    toast.add({ title: "Error", description: message, color: "error" })
+    const deleteError = error as DeleteError
+    const statusCode = deleteError.statusCode
+    const data = deleteError.data
+
+    if (
+      statusCode === 409 &&
+      data &&
+      data.code === "FOOD_CATALOG_ITEM_IN_USE"
+    ) {
+      deleteBlockedState.value = {
+        itemName: typeof data.itemName === "string" ? data.itemName : item.nombre,
+        linkedMenus: Array.isArray(data.linkedMenus)
+          ? data.linkedMenus.filter((menu): menu is { id: string; name: string } =>
+            typeof menu === "object" &&
+              menu !== null &&
+              "id" in menu &&
+              "name" in menu &&
+              typeof menu.id === "string" &&
+              typeof menu.name === "string")
+          : []
+      }
+    } else {
+      const message = error instanceof Error ? error.message : "No se pudo eliminar el platillo."
+      toast.add({ title: "Error", description: message, color: "error", icon: "i-lucide-circle-alert" })
+    }
   } finally {
     deletingId.value = null
     pendingDeleteItem.value = null
@@ -145,6 +199,54 @@ function editTo(item: FoodCatalogItem) {
             @click="pendingDeleteItem && onDelete(pendingDeleteItem)"
           >
             Eliminar platillo
+          </UButton>
+        </div>
+      </template>
+    </UModal>
+
+    <UModal
+      v-model:open="isDeleteBlockedModalOpen"
+      title="Este platillo no se puede borrar todavía"
+      :description="deleteBlockedDescription"
+      :ui="{ content: 'max-w-md' }"
+    >
+      <template #body>
+        <div class="space-y-4">
+          <UAlert
+            color="warning"
+            variant="soft"
+            icon="i-lucide-circle-alert"
+            title="Primero quítalo de esos menús"
+            description="Después de retirarlo de los menús donde aparece, ya lo podrás borrar sin problema."
+          />
+
+          <div
+            v-if="deleteBlockedState?.linkedMenus?.length"
+            class="space-y-2"
+          >
+            <p class="text-sm font-medium text-highlighted">Aparece en estos menús:</p>
+
+            <ul class="space-y-2">
+              <li
+                v-for="menu in deleteBlockedState.linkedMenus"
+                :key="menu.id"
+                class="rounded-xl border border-default/70 bg-elevated/30 px-3 py-2 text-sm text-toned"
+              >
+                {{ menu.name }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </template>
+
+      <template #footer>
+        <div class="flex w-full justify-end gap-3">
+          <UButton
+            color="neutral"
+            variant="ghost"
+            @click="deleteBlockedState = null"
+          >
+            Entendido
           </UButton>
         </div>
       </template>

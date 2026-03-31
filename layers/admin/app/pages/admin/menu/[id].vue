@@ -11,7 +11,7 @@ const { data: menu, status, refresh, error } = useLazyFetch<WeeklyMenu>(`/api/me
   key: `admin-menu-${route.params.id}`,
 });
 
-const { data: catalogItems, status: catalogStatus } = useLazyFetch<FoodCatalogItem[]>('/api/food-components', {
+const { data: catalogItems, status: catalogStatus, refresh: refreshCatalog } = useLazyFetch<FoodCatalogItem[]>('/api/food-components', {
   key: 'menu-form-catalog-items',
   default: () => [],
 });
@@ -33,6 +33,12 @@ async function onSaved() {
   await refresh();
   await navigateTo('/admin/menu');
 }
+
+onMounted(async () => {
+  if (route.query.restoreMenuDraft === '1') {
+    await refreshCatalog()
+  }
+})
 </script>
 
 <template>

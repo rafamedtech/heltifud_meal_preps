@@ -44,8 +44,8 @@ const isSelectMode = computed(() => mode.value === "select")
 type SortKey = "createdAt" | "nombre" | "calorias"
 type SortDirection = "asc" | "desc"
 
-const search = ref("")
-const selectedType = ref<"todos" | string | { value?: string; label?: string }>("todos")
+const search = defineModel<string>("search", { default: "" })
+const selectedType = defineModel<string>("selectedType", { default: "todos" })
 const sortKey = ref<SortKey>(mode.value === "manage" ? "createdAt" : "nombre")
 const sortDirection = ref<SortDirection>(mode.value === "manage" ? "desc" : "asc")
 const preferredTypeOptions = [
@@ -58,6 +58,19 @@ const preferredTypeOptions = [
 ] as const
 
 const preferredTypeOrder = preferredTypeOptions.map((option) => option.value)
+
+function getFilterTypeAppearance(tipo: string) {
+  if (tipo === "todos") {
+    return {
+      color: "neutral" as const,
+      className: "bg-zinc-500/10 text-zinc-700 ring-zinc-500/20 dark:bg-zinc-400/10 dark:text-zinc-300 dark:ring-zinc-400/20",
+      icon: "i-lucide-layout-grid",
+      label: "Todos"
+    }
+  }
+
+  return getFoodTypeAppearance(tipo)
+}
 
 const typeOptions = computed(() => {
   const dynamicTypes = Array.from(new Set(items.value.map((item) => item.tipo).filter(Boolean)))
@@ -80,17 +93,13 @@ function normalizeTypeValue(value: unknown) {
     return value
   }
 
-  if (value && typeof value === "object" && "value" in value && typeof value.value === "string") {
-    return value.value
-  }
-
   return "todos"
 }
 
 const normalizedSelectedType = computed(() => normalizeTypeValue(selectedType.value))
 const selectedTypeLabel = computed(() => {
   if (normalizedSelectedType.value === "todos") {
-    return ""
+    return "Todos"
   }
 
   return getFoodTypeAppearance(normalizedSelectedType.value).label
@@ -267,7 +276,45 @@ function actionItems(item: FoodCatalogItem) {
             size="lg"
             :content="{ position: 'popper', side: 'bottom', align: 'end', sideOffset: 8 }"
             class="w-full"
-          />
+            :ui="{
+              value: 'min-w-0',
+              base: 'w-full',
+              content: 'max-h-[28rem]',
+              viewport: 'overflow-y-visible'
+            }"
+          >
+            <template #default="{ modelValue }">
+              <span class="inline-flex min-w-0 items-center gap-2">
+                <UIcon
+                  :name="getFilterTypeAppearance(normalizeTypeValue(modelValue)).icon"
+                  :class="[
+                    'size-4 shrink-0',
+                    normalizeTypeValue(modelValue) === 'todos' ? 'text-dimmed' : 'text-muted'
+                  ]"
+                />
+                <span class="truncate text-sm text-highlighted">
+                  {{ getFilterTypeAppearance(normalizeTypeValue(modelValue)).label }}
+                </span>
+              </span>
+            </template>
+
+            <template #item-label="{ item }">
+              <UBadge
+                :color="getFilterTypeAppearance(item.value).color"
+                variant="soft"
+                :class="[
+                  'inline-flex max-w-fit rounded-xl px-2.5 py-1 ring-1 ring-inset',
+                  getFilterTypeAppearance(item.value).className
+                ]"
+              >
+                <UIcon
+                  :name="getFilterTypeAppearance(item.value).icon"
+                  class="size-3.5 shrink-0"
+                />
+                {{ getFilterTypeAppearance(item.value).label }}
+              </UBadge>
+            </template>
+          </USelect>
         </div>
       </div>
     </section>
@@ -346,7 +393,7 @@ function actionItems(item: FoodCatalogItem) {
             <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] text-muted sm:px-6">
               <button
                 type="button"
-                class="inline-flex items-center gap-2"
+                class="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-muted"
                 @click="toggleSort('nombre')"
               >
                 <span>Platillo</span>
@@ -356,7 +403,7 @@ function actionItems(item: FoodCatalogItem) {
             <th class="hidden px-5 py-3 text-center text-xs font-medium uppercase tracking-[0.18em] text-muted sm:table-cell sm:px-6">
               <button
                 type="button"
-                class="inline-flex items-center justify-center gap-2"
+                class="inline-flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-muted"
                 @click="toggleSort('calorias')"
               >
                 <span>Calorías</span>

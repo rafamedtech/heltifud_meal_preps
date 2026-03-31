@@ -42,10 +42,10 @@ async function onDelete(id: string) {
   try {
     await deleteMenuOnDB(id)
     await refresh()
-    toast.add({ title: "Menú eliminado", color: "success" })
+    toast.add({ title: "Menú eliminado", color: "success", icon: "i-lucide-check-circle" })
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo eliminar"
-    toast.add({ title: "Error", description: message, color: "error" })
+    toast.add({ title: "Error", description: message, color: "error", icon: "i-lucide-circle-alert" })
   } finally {
     deletingId.value = null
     pendingDeleteMenu.value = null
@@ -58,10 +58,10 @@ async function onSetActive(id: string) {
   try {
     await setActiveMenuOnDB(id)
     await refresh()
-    toast.add({ title: "Menú activo actualizado", color: "success" })
+    toast.add({ title: "Menú activo actualizado", color: "success", icon: "i-lucide-check-circle" })
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo actualizar el menú activo"
-    toast.add({ title: "Error", description: message, color: "error" })
+    toast.add({ title: "Error", description: message, color: "error", icon: "i-lucide-circle-alert" })
   } finally {
     activatingId.value = null
   }

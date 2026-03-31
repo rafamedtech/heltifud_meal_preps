@@ -5,7 +5,9 @@ definePageMeta({
   layout: 'admin',
 });
 
-const { data: catalogItems, status } = useLazyFetch<FoodCatalogItem[]>('/api/food-components', {
+const route = useRoute();
+
+const { data: catalogItems, status, refresh } = useLazyFetch<FoodCatalogItem[]>('/api/food-components', {
   key: 'menu-form-catalog-items',
   default: () => [],
 });
@@ -21,6 +23,12 @@ useSeoMeta({
 function onSaved() {
   navigateTo('/admin/menu');
 }
+
+onMounted(async () => {
+  if (route.query.restoreMenuDraft === '1') {
+    await refresh()
+  }
+})
 </script>
 
 <template>

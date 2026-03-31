@@ -12,23 +12,47 @@ type DetailModalView =
   | "extras"
   | null
 
+type SelectionModalView = Exclude<DetailModalView, "extras" | null>
+
 interface Props {
   title: string
   showSides?: boolean
   catalogItems?: FoodCatalogItem[]
   showToggle?: boolean
+  restoreSelectionView?: SelectionModalView | null
+  restoreSearch?: string
+  restoreSelectedType?: string
+}
+
+interface CreateCatalogItemPayload {
+  tipo?: string
+  view?: SelectionModalView
+  search?: string
+  selectedType?: string
+}
+
+interface EditCatalogItemPayload {
+  id: string
+  view: SelectionModalView
 }
 
 const {
   title,
   showSides = true,
   catalogItems = [],
-  showToggle = true
+  showToggle = true,
+  restoreSelectionView = null,
+  restoreSearch = "",
+  restoreSelectedType = "todos"
 } = defineProps<Props>()
 
-const attrs = useAttrs()
+const emit = defineEmits<{
+  createCatalogItem: [payload: CreateCatalogItemPayload]
+  editCatalogItem: [payload: EditCatalogItemPayload]
+  restoreSelectionApplied: []
+}>()
 
-const route = useRoute()
+const attrs = useAttrs()
 
 const contenedorOptions = [
   { label: "Charola", value: "Charola" },
@@ -66,6 +90,8 @@ const adicionalItems = computed(() =>
 const model = defineModel<MenuSlot>({ required: true })
 const isOpen = defineModel<boolean>("open", { default: true })
 const modalView = ref<DetailModalView>(null)
+const selectionSearch = ref("")
+const selectionSelectedType = ref("todos")
 
 function createEmptyFoodItem(): FoodItemDetail {
   return {
@@ -234,26 +260,24 @@ function clearFoodItem(target: FoodItemDetail) {
   target.tipo = ""
 }
 
-function editCatalogItem(target?: FoodItemDetail | null) {
+function editCatalogItem(target?: FoodItemDetail | null, view: SelectionModalView = "select-platillo-principal") {
   if (!target?.catalogItemId) {
     return
   }
 
-  navigateTo({
-    path: `/admin/platillos/${target.catalogItemId}`,
-    query: {
-      returnTo: route.fullPath
-    }
+  emit("editCatalogItem", {
+    id: target.catalogItemId,
+    view
   })
 }
 
-function actionItems(target: FoodItemDetail) {
+function actionItems(target: FoodItemDetail, view: SelectionModalView = "select-platillo-principal") {
   return [[
     {
       label: "Editar platillo",
       icon: "i-lucide-square-pen",
       disabled: !target.catalogItemId,
-      onSelect: () => editCatalogItem(target)
+      onSelect: () => editCatalogItem(target, view)
     },
     {
       label: "Limpiar campo",
@@ -386,6 +410,18 @@ const selectionOptions = computed(() => {
   }
 })
 
+const createCatalogItemType = computed(() => {
+  switch (modalView.value) {
+    case "select-platillo-principal":
+      return showSides ? "comida" : "snack"
+    case "select-guarnicion-1":
+    case "select-guarnicion-2":
+      return "guarnicion"
+    default:
+      return undefined
+  }
+})
+
 function selectCatalogItemFromModal(itemId: string) {
   switch (modalView.value) {
     case "select-platillo-principal":
@@ -401,6 +437,50 @@ function selectCatalogItemFromModal(itemId: string) {
 
   modalView.value = null
 }
+
+function requestCreateCatalogItem() {
+  emit("createCatalogItem", {
+    tipo: createCatalogItemType.value,
+    view: (modalView.value ?? undefined) as SelectionModalView | undefined,
+    search: selectionSearch.value.trim() || undefined,
+    selectedType: selectionSelectedType.value !== "todos" ? selectionSelectedType.value : undefined
+  })
+
+  modalView.value = null
+}
+
+watch(
+  () => restoreSelectionView,
+  (view) => {
+    if (!view || modalView.value === view) {
+      return
+    }
+
+    modalView.value = view
+    emit("restoreSelectionApplied")
+  },
+  { immediate: true }
+)
+
+watch(
+  () => restoreSearch,
+  (value) => {
+    if (typeof value === "string" && value.length > 0) {
+      selectionSearch.value = value
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  () => restoreSelectedType,
+  (value) => {
+    if (typeof value === "string" && value.length > 0) {
+      selectionSelectedType.value = value
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
@@ -459,7 +539,7 @@ function selectCatalogItemFromModal(itemId: string) {
               <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.platilloPrincipal))]">{{ caloriesSummary(model.platilloPrincipal) }}</span>
             </span>
             <span class="relative z-10 flex shrink-0 self-start">
-              <UDropdownMenu :items="actionItems(model.platilloPrincipal)">
+              <UDropdownMenu :items="actionItems(model.platilloPrincipal, 'select-platillo-principal')">
                 <UButton
                   type="button"
                   size="xs"
@@ -488,7 +568,7 @@ function selectCatalogItemFromModal(itemId: string) {
                 <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.guarnicion1))]">{{ caloriesSummary(model.guarnicion1) }}</span>
               </span>
               <span class="relative z-10 flex shrink-0 self-start">
-                <UDropdownMenu :items="actionItems(guarnicion1Model)">
+                <UDropdownMenu :items="actionItems(guarnicion1Model, 'select-guarnicion-1')">
                   <UButton
                     type="button"
                     size="xs"
@@ -516,7 +596,7 @@ function selectCatalogItemFromModal(itemId: string) {
                 <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.guarnicion2))]">{{ caloriesSummary(model.guarnicion2) }}</span>
               </span>
               <span class="relative z-10 flex shrink-0 self-start">
-                <UDropdownMenu :items="actionItems(guarnicion2Model)">
+                <UDropdownMenu :items="actionItems(guarnicion2Model, 'select-guarnicion-2')">
                   <UButton
                     type="button"
                     size="xs"
@@ -550,7 +630,7 @@ function selectCatalogItemFromModal(itemId: string) {
               <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.platilloPrincipal))]">{{ caloriesSummary(model.platilloPrincipal) }}</span>
             </span>
             <span class="relative z-10 flex shrink-0 self-start">
-              <UDropdownMenu :items="actionItems(model.platilloPrincipal)">
+              <UDropdownMenu :items="actionItems(model.platilloPrincipal, 'select-platillo-principal')">
                 <UButton
                   type="button"
                   size="xs"
@@ -599,7 +679,23 @@ function selectCatalogItemFromModal(itemId: string) {
         v-if="modalView === 'select-platillo-principal' || modalView === 'select-guarnicion-1' || modalView === 'select-guarnicion-2'"
         class="-mx-6 -my-5"
       >
+        <div class="flex items-center justify-between gap-3 border-b border-default/70 bg-elevated/40 px-6 py-4">
+          <p class="text-sm text-muted">
+            Si no aparece en la lista, créalo y vuelve al menú.
+          </p>
+
+          <UButton
+            size="sm"
+            icon="i-lucide-plus"
+            @click="requestCreateCatalogItem"
+          >
+            Agregar platillo
+          </UButton>
+        </div>
+
         <AdminFoodCatalogTable
+          v-model:search="selectionSearch"
+          v-model:selected-type="selectionSelectedType"
           :items="selectionOptions"
           mode="select"
           :selected-id="null"

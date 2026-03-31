@@ -61,7 +61,8 @@ async function logout() {
     toast.add({
       title: "No fue posible cerrar sesión",
       description: error.message || "Inténtalo de nuevo.",
-      color: "error"
+      color: "error",
+      icon: "i-lucide-circle-alert"
     })
     return
   }
@@ -72,7 +73,8 @@ async function logout() {
   toast.add({
     title: "Sesión cerrada",
     description: "Redirigiendo al login.",
-    color: "success"
+    color: "success",
+    icon: "i-lucide-check-circle"
   })
 
   await navigateTo("/login", { replace: true })
@@ -115,33 +117,17 @@ async function logout() {
 
     <UDrawer
       v-model:open="mobileMenuOpen"
-      title="Panel admin"
-      description="Gestiona Heltifud."
+      title="Navegación del panel"
+      description="Accesos del panel administrativo."
       inset
-      :ui="{ content: 'max-w-xl bg-default/95 backdrop-blur-xl' }"
+      :ui="{
+        content: 'max-w-xl bg-default/95 backdrop-blur-xl',
+        title: 'sr-only',
+        description: 'sr-only'
+      }"
     >
       <template #body>
         <section class="space-y-3 px-1 pb-2">
-          <div class="flex items-center gap-3 rounded-2xl border border-default/70 bg-elevated/50 px-4 py-3">
-            <div
-              class="flex size-11 items-center justify-center rounded-2xl bg-primary/12 text-primary ring-1 ring-primary/20"
-            >
-              <UIcon
-                name="i-lucide-panel-left"
-                class="size-5"
-              />
-            </div>
-
-            <div class="min-w-0">
-              <p class="text-sm font-semibold text-highlighted">
-                {{ mobileNavItems.find(item => isActive(item.to))?.label ?? "Panel admin" }}
-              </p>
-              <p class="text-xs text-muted">
-                Accesos rápidos del panel.
-              </p>
-            </div>
-          </div>
-
           <NuxtLink
             v-for="item in mobileNavItems"
             :key="item.to"
@@ -172,7 +158,7 @@ async function logout() {
       </template>
 
       <template #footer>
-        <div class="space-y-2 px-1 pb-1">
+        <div class="px-1 pb-1">
           <UButton
             color="error"
             variant="soft"
@@ -181,15 +167,6 @@ async function logout() {
             @click="closeMobileMenu(); isConfirmOpen = true"
           >
             Cerrar sesión
-          </UButton>
-
-          <UButton
-            color="neutral"
-            variant="ghost"
-            class="w-full py-3"
-            @click="closeMobileMenu"
-          >
-            Cerrar
           </UButton>
         </div>
       </template>

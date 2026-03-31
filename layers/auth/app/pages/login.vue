@@ -37,7 +37,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     toast.add({
       title: "Error al iniciar sesión",
       description: authError.value,
-      color: "error"
+      color: "error",
+      icon: "i-lucide-circle-alert"
     })
     return
   }
@@ -45,7 +46,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   toast.add({
     title: "Sesión iniciada",
     description: "Redirigiendo al panel administrativo.",
-    color: "success"
+    color: "success",
+    icon: "i-lucide-check-circle"
   })
 
   currentSession.value = data.session ?? null

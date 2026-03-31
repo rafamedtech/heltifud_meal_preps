@@ -28,6 +28,9 @@ const emit = defineEmits<{
   saved: [menuId: string]
 }>()
 
+const route = useRoute()
+const router = useRouter()
+
 const DAY_LABELS: Record<(typeof DAY_OF_WEEK_VALUES)[number], string> = {
   LUNES: "Lunes",
   MARTES: "Martes",
@@ -155,7 +158,7 @@ const title = computed(() => {
 
   return "Nuevo menú semanal"
 })
-const actionLabel = computed(() => (mode.value === "edit" ? "Guardar" : "Crear menú"))
+const actionLabel = computed(() => (mode.value === "edit" ? "Guardar" : "Crear"))
 const activeActionLabel = computed(() => {
   if (menu.value?.isActive || markAsActive.value) {
     return "Activo"
@@ -247,6 +250,25 @@ const isDirty = computed(() => {
   return JSON.stringify(original) !== JSON.stringify(current) || activeChanged
 })
 const canSubmit = computed(() => canSubmitByValidation.value && isDirty.value && !loading.value)
+const draftStorageKey = computed(() => `admin-menu-draft:${mode.value}:${menu.value?.id ?? "create"}`)
+
+interface MenuFormDraftPayload {
+  state: WeeklyMenuInput
+  markAsActive: boolean
+  snacksExpanded: Record<DayOfWeek, boolean>
+}
+
+type RestoreSelectionView = "select-platillo-principal" | "select-guarnicion-1" | "select-guarnicion-2"
+
+interface RestoreSelectionTarget {
+  dayOfWeek: DayOfWeek
+  slotKey: SlotKey
+  view: RestoreSelectionView
+  search?: string
+  selectedType?: string
+}
+
+const restoreSelectionTarget = ref<RestoreSelectionTarget | null>(null)
 
 watch(
   () => menu.value,
@@ -259,6 +281,221 @@ watch(
     }
   }
 )
+
+function snapshotDraftState(): WeeklyMenuInput {
+  return {
+    name: state.name,
+    startDate: toComparableDate(state.startDate),
+    endDate: toComparableDate(state.endDate),
+    days: state.days.map((day) => ({
+      dayOfWeek: day.dayOfWeek,
+      desayuno: cloneSlot(day.desayuno),
+      comida: cloneSlot(day.comida),
+      cena: cloneSlot(day.cena),
+      snack1: cloneSlot(day.snack1),
+      snack2: cloneSlot(day.snack2)
+    }))
+  }
+}
+
+function snapshotSnacksExpanded(): Record<DayOfWeek, boolean> {
+  return DAY_OF_WEEK_VALUES.reduce(
+    (acc, day) => {
+      acc[day] = snacksExpanded[day]
+      return acc
+    },
+    {} as Record<DayOfWeek, boolean>
+  )
+}
+
+function persistDraft() {
+  if (!import.meta.client) {
+    return
+  }
+
+  const payload: MenuFormDraftPayload = {
+    state: snapshotDraftState(),
+    markAsActive: markAsActive.value,
+    snacksExpanded: snapshotSnacksExpanded()
+  }
+
+  sessionStorage.setItem(draftStorageKey.value, JSON.stringify(payload))
+}
+
+function clearPersistedDraft() {
+  if (!import.meta.client) {
+    return
+  }
+
+  sessionStorage.removeItem(draftStorageKey.value)
+}
+
+function restorePersistedDraft() {
+  if (!import.meta.client || route.query.restoreMenuDraft !== "1") {
+    return
+  }
+
+  const raw = sessionStorage.getItem(draftStorageKey.value)
+
+  if (!raw) {
+    return
+  }
+
+  try {
+    const payload = JSON.parse(raw) as MenuFormDraftPayload
+
+    Object.assign(state, {
+      name: payload.state.name,
+      startDate: new Date(payload.state.startDate),
+      endDate: new Date(payload.state.endDate),
+      days: payload.state.days.map((day) => ({
+        dayOfWeek: day.dayOfWeek,
+        desayuno: cloneSlot(day.desayuno),
+        comida: cloneSlot(day.comida),
+        cena: cloneSlot(day.cena),
+        snack1: cloneSlot(day.snack1),
+        snack2: cloneSlot(day.snack2)
+      }))
+    })
+
+    markAsActive.value = payload.markAsActive
+
+    for (const day of DAY_OF_WEEK_VALUES) {
+      snacksExpanded[day] = Boolean(payload.snacksExpanded?.[day])
+    }
+
+    clearValidationHighlights()
+    sessionStorage.removeItem(draftStorageKey.value)
+
+    toast.add({
+      title: "Menú restaurado",
+      description: "Volviste al menú con los cambios que llevabas.",
+      color: "success",
+      icon: "i-lucide-check-circle"
+    })
+  } catch {
+    sessionStorage.removeItem(draftStorageKey.value)
+  }
+}
+
+function cleanedReturnQuery() {
+  const nextQuery = { ...route.query }
+  delete nextQuery.restoreMenuDraft
+  delete nextQuery.restoreDay
+  delete nextQuery.restoreSlot
+  delete nextQuery.restoreSelectionView
+  delete nextQuery.restoreSearch
+  delete nextQuery.restoreSelectedType
+  return nextQuery
+}
+
+async function clearRestoreQueryIfNeeded() {
+  if (route.query.restoreMenuDraft !== "1") {
+    return
+  }
+
+  await navigateTo(
+    {
+      path: route.path,
+      query: cleanedReturnQuery()
+    },
+    { replace: true }
+  )
+}
+
+function buildReturnToPath() {
+  const restoreQuery = restoreSelectionTarget.value
+    ? {
+        restoreDay: restoreSelectionTarget.value.dayOfWeek,
+        restoreSlot: restoreSelectionTarget.value.slotKey,
+        restoreSelectionView: restoreSelectionTarget.value.view,
+        ...(restoreSelectionTarget.value.search ? { restoreSearch: restoreSelectionTarget.value.search } : {}),
+        ...(restoreSelectionTarget.value.selectedType ? { restoreSelectedType: restoreSelectionTarget.value.selectedType } : {})
+      }
+    : {}
+
+  return router.resolve({
+    path: route.path,
+    query: {
+      ...cleanedReturnQuery(),
+      restoreMenuDraft: "1",
+      ...restoreQuery
+    }
+  }).fullPath
+}
+
+function clearRestoreSelectionTarget() {
+  restoreSelectionTarget.value = null
+}
+
+function restoreSelectionTargetFromQuery() {
+  const day = route.query.restoreDay
+  const slot = route.query.restoreSlot
+  const view = route.query.restoreSelectionView
+  const search = route.query.restoreSearch
+  const selectedType = route.query.restoreSelectedType
+
+  if (
+    typeof day === "string" &&
+    DAY_OF_WEEK_VALUES.includes(day as DayOfWeek) &&
+    typeof slot === "string" &&
+    ["desayuno", "comida", "cena", "snack1", "snack2"].includes(slot) &&
+    typeof view === "string" &&
+    ["select-platillo-principal", "select-guarnicion-1", "select-guarnicion-2"].includes(view)
+  ) {
+    restoreSelectionTarget.value = {
+      dayOfWeek: day as DayOfWeek,
+      slotKey: slot as SlotKey,
+      view: view as RestoreSelectionView,
+      search: typeof search === "string" ? search : undefined,
+      selectedType: typeof selectedType === "string" ? selectedType : undefined
+    }
+
+    if (slot === "snack1" || slot === "snack2") {
+      snacksExpanded[day as DayOfWeek] = true
+    }
+  }
+}
+
+async function openCreateCatalogItem(payload: { tipo?: string, view?: RestoreSelectionView, search?: string, selectedType?: string }, target?: Omit<RestoreSelectionTarget, "view"> | null) {
+  restoreSelectionTarget.value = target && payload.view
+    ? {
+        ...target,
+        view: payload.view,
+        search: payload.search,
+        selectedType: payload.selectedType
+      }
+    : null
+  persistDraft()
+
+  await navigateTo({
+    path: "/admin/platillos/crear-nuevo",
+    query: {
+      ...(payload.tipo ? { tipo: payload.tipo } : {}),
+      returnTo: buildReturnToPath()
+    }
+  })
+}
+
+async function openEditCatalogItem(payload: { id: string, view: RestoreSelectionView }, target?: Omit<RestoreSelectionTarget, "view"> | null) {
+  restoreSelectionTarget.value = target
+    ? { ...target, view: payload.view }
+    : null
+  persistDraft()
+
+  await navigateTo({
+    path: `/admin/platillos/${payload.id}`,
+    query: {
+      returnTo: buildReturnToPath()
+    }
+  })
+}
+
+onMounted(async () => {
+  restorePersistedDraft()
+  restoreSelectionTargetFromQuery()
+  await clearRestoreQueryIfNeeded()
+})
 
 function toggleSnacks(dayOfWeek: DayOfWeek) {
   snacksExpanded[dayOfWeek] = !snacksExpanded[dayOfWeek]
@@ -380,7 +617,8 @@ async function onSubmit() {
     toast.add({
       title: "Error de validación",
       description: formatValidationIssue(firstIssue),
-      color: "error"
+      color: "error",
+      icon: "i-lucide-circle-alert"
     })
     return
   }
@@ -398,18 +636,21 @@ async function onSubmit() {
       await setActiveMenuOnDB(savedMenu.id)
     }
 
+    clearPersistedDraft()
+
     toast.add({
       title: mode.value === "edit" ? "Menú actualizado" : "Menú creado",
       description: markAsActive.value
         ? "La información se guardó y este menú quedó como activo."
         : "La información se guardó correctamente.",
-      color: "success"
+      color: "success",
+      icon: "i-lucide-check-circle"
     })
 
     emit("saved", savedMenu.id)
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo guardar el menú"
-    toast.add({ title: "Error", description: message, color: "error" })
+    toast.add({ title: "Error", description: message, color: "error", icon: "i-lucide-circle-alert" })
   } finally {
     loading.value = false
   }
@@ -471,9 +712,9 @@ async function onSubmit() {
                 :color="markAsActive || menu?.isActive ? 'success' : 'primary'"
                 icon="i-lucide-badge-check"
                 block
+                size="lg"
                 class="justify-center"
                 @click="markAsActive = true"
-                size="lg"
               >
                 {{ activeActionLabel }}
               </UButton>
@@ -550,27 +791,81 @@ async function onSubmit() {
               title="Desayuno"
               :show-toggle="false"
               :catalog-items="resolvedCatalogItems"
+              :restore-selection-view="
+                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'desayuno'
+                  ? restoreSelectionTarget.view
+                  : null
+              "
+              :restore-search="
+                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'desayuno'
+                  ? restoreSelectionTarget.search ?? ''
+                  : ''
+              "
+              :restore-selected-type="
+                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'desayuno'
+                  ? restoreSelectionTarget.selectedType ?? 'todos'
+                  : 'todos'
+              "
               :class="[
                 'lg:border-r lg:border-default/70',
                 isSlotInvalid(entry.day.dayOfWeek, 'desayuno') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
               ]"
+              @restore-selection-applied="clearRestoreSelectionTarget"
+              @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'desayuno' })"
+              @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'desayuno' })"
             />
             <AdminMenuSlotEditor
               v-model="entry.day.comida"
               title="Comida"
               :show-toggle="false"
               :catalog-items="resolvedCatalogItems"
+              :restore-selection-view="
+                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'comida'
+                  ? restoreSelectionTarget.view
+                  : null
+              "
+              :restore-search="
+                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'comida'
+                  ? restoreSelectionTarget.search ?? ''
+                  : ''
+              "
+              :restore-selected-type="
+                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'comida'
+                  ? restoreSelectionTarget.selectedType ?? 'todos'
+                  : 'todos'
+              "
               :class="[
                 'lg:border-r lg:border-default/70',
                 isSlotInvalid(entry.day.dayOfWeek, 'comida') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
               ]"
+              @restore-selection-applied="clearRestoreSelectionTarget"
+              @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'comida' })"
+              @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'comida' })"
             />
             <AdminMenuSlotEditor
               v-model="entry.day.cena"
               title="Cena"
               :show-toggle="false"
               :catalog-items="resolvedCatalogItems"
+              :restore-selection-view="
+                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'cena'
+                  ? restoreSelectionTarget.view
+                  : null
+              "
+              :restore-search="
+                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'cena'
+                  ? restoreSelectionTarget.search ?? ''
+                  : ''
+              "
+              :restore-selected-type="
+                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'cena'
+                  ? restoreSelectionTarget.selectedType ?? 'todos'
+                  : 'todos'
+              "
               :class="isSlotInvalid(entry.day.dayOfWeek, 'cena') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''"
+              @restore-selection-applied="clearRestoreSelectionTarget"
+              @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'cena' })"
+              @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'cena' })"
             />
           </section>
 
@@ -607,10 +902,28 @@ async function onSubmit() {
                 :show-sides="false"
                 :show-toggle="false"
                 :catalog-items="resolvedCatalogItems"
+                :restore-selection-view="
+                  restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack1'
+                    ? restoreSelectionTarget.view
+                    : null
+                "
+                :restore-search="
+                  restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack1'
+                    ? restoreSelectionTarget.search ?? ''
+                    : ''
+                "
+                :restore-selected-type="
+                  restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack1'
+                    ? restoreSelectionTarget.selectedType ?? 'todos'
+                    : 'todos'
+                "
                 :class="[
                   'lg:border-r lg:border-default/70',
                   isSlotInvalid(entry.day.dayOfWeek, 'snack1') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
                 ]"
+                @restore-selection-applied="clearRestoreSelectionTarget"
+                @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack1' })"
+                @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack1' })"
               />
               <AdminMenuSlotEditor
                 v-model="entry.day.snack2"
@@ -618,9 +931,27 @@ async function onSubmit() {
                 :show-sides="false"
                 :show-toggle="false"
                 :catalog-items="resolvedCatalogItems"
+                :restore-selection-view="
+                  restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack2'
+                    ? restoreSelectionTarget.view
+                    : null
+                "
+                :restore-search="
+                  restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack2'
+                    ? restoreSelectionTarget.search ?? ''
+                    : ''
+                "
+                :restore-selected-type="
+                  restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack2'
+                    ? restoreSelectionTarget.selectedType ?? 'todos'
+                    : 'todos'
+                "
                 :class="
                   isSlotInvalid(entry.day.dayOfWeek, 'snack2') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
                 "
+                @restore-selection-applied="clearRestoreSelectionTarget"
+                @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack2' })"
+                @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack2' })"
               />
             </section>
           </section>
