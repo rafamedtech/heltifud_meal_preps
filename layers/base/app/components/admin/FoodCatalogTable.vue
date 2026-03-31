@@ -25,6 +25,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<{
   delete: [item: FoodCatalogItem]
   select: [id: string]
+  createCatalogItem: [payload: { search?: string; selectedType?: string }]
 }>()
 
 const items = computed(() => props.items ?? [])
@@ -142,7 +143,7 @@ const sortedItems = computed(() => {
 })
 
 const normalizedSearch = computed(() => search.value.trim())
-const canCreateFromSearch = computed(() => mode.value === "manage" && normalizedSearch.value.length > 0)
+const canCreateFromSearch = computed(() => normalizedSearch.value.length > 0)
 const canCreateFromFilter = computed(() =>
   mode.value === "manage" &&
   normalizedSearch.value.length === 0 &&
@@ -192,6 +193,18 @@ function onDelete(item: FoodCatalogItem) {
 
 function onSelect(id: string) {
   emit("select", id)
+}
+
+function onCreateCatalogItem() {
+  if (isSelectMode.value) {
+    emit("createCatalogItem", {
+      search: normalizedSearch.value || undefined,
+      selectedType: normalizedSelectedType.value !== "todos" ? normalizedSelectedType.value : undefined
+    })
+    return
+  }
+
+  navigateTo(createFromSearchTo.value)
 }
 
 function toggleSort(nextKey: SortKey) {
@@ -257,7 +270,7 @@ function actionItems(item: FoodCatalogItem) {
 
         <div
           class="grid grid-cols-1 gap-3"
-          :class="isSelectMode ? 'sm:grid-cols-[minmax(0,1fr)_220px]' : 'md:grid-cols-[360px_220px] md:justify-end'"
+          :class="isSelectMode ? '' : 'md:grid-cols-[360px_220px] md:justify-end'"
         >
           <UInput
             v-model="search"
@@ -269,6 +282,7 @@ function actionItems(item: FoodCatalogItem) {
           />
 
           <USelect
+            v-if="!isSelectMode"
             v-model="selectedType"
             :items="typeOptions"
             value-key="value"
@@ -369,8 +383,8 @@ function actionItems(item: FoodCatalogItem) {
         </div>
         <UButton
           v-if="canCreateFromSearch || canCreateFromFilter"
-          :to="createFromSearchTo"
           icon="i-lucide-plus"
+          @click="onCreateCatalogItem"
         >
           {{ createButtonLabel }}
         </UButton>

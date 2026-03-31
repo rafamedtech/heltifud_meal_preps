@@ -458,6 +458,9 @@ function restoreSelectionTargetFromQuery() {
 }
 
 async function openCreateCatalogItem(payload: { tipo?: string, view?: RestoreSelectionView, search?: string, selectedType?: string }, target?: Omit<RestoreSelectionTarget, "view"> | null) {
+  const prefilledName = payload.search?.trim()
+  const prefilledType = payload.tipo ?? payload.selectedType
+
   restoreSelectionTarget.value = target && payload.view
     ? {
         ...target,
@@ -471,7 +474,8 @@ async function openCreateCatalogItem(payload: { tipo?: string, view?: RestoreSel
   await navigateTo({
     path: "/admin/platillos/crear-nuevo",
     query: {
-      ...(payload.tipo ? { tipo: payload.tipo } : {}),
+      ...(prefilledName ? { nombre: prefilledName } : {}),
+      ...(prefilledType ? { tipo: prefilledType } : {}),
       returnTo: buildReturnToPath()
     }
   })
@@ -789,6 +793,7 @@ async function onSubmit() {
             <AdminMenuSlotEditor
               v-model="entry.day.desayuno"
               title="Desayuno"
+              :day-label="DAY_LABELS[entry.day.dayOfWeek]"
               :show-toggle="false"
               :catalog-items="resolvedCatalogItems"
               :restore-selection-view="
@@ -817,6 +822,7 @@ async function onSubmit() {
             <AdminMenuSlotEditor
               v-model="entry.day.comida"
               title="Comida"
+              :day-label="DAY_LABELS[entry.day.dayOfWeek]"
               :show-toggle="false"
               :catalog-items="resolvedCatalogItems"
               :restore-selection-view="
@@ -845,6 +851,7 @@ async function onSubmit() {
             <AdminMenuSlotEditor
               v-model="entry.day.cena"
               title="Cena"
+              :day-label="DAY_LABELS[entry.day.dayOfWeek]"
               :show-toggle="false"
               :catalog-items="resolvedCatalogItems"
               :restore-selection-view="
@@ -899,6 +906,7 @@ async function onSubmit() {
               <AdminMenuSlotEditor
                 v-model="entry.day.snack1"
                 title="Snack 1"
+                :day-label="DAY_LABELS[entry.day.dayOfWeek]"
                 :show-sides="false"
                 :show-toggle="false"
                 :catalog-items="resolvedCatalogItems"
@@ -928,6 +936,7 @@ async function onSubmit() {
               <AdminMenuSlotEditor
                 v-model="entry.day.snack2"
                 title="Snack 2"
+                :day-label="DAY_LABELS[entry.day.dayOfWeek]"
                 :show-sides="false"
                 :show-toggle="false"
                 :catalog-items="resolvedCatalogItems"

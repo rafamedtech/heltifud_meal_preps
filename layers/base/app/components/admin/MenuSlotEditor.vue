@@ -16,6 +16,7 @@ type SelectionModalView = Exclude<DetailModalView, "extras" | null>
 
 interface Props {
   title: string
+  dayLabel?: string
   showSides?: boolean
   catalogItems?: FoodCatalogItem[]
   showToggle?: boolean
@@ -38,6 +39,7 @@ interface EditCatalogItemPayload {
 
 const {
   title,
+  dayLabel = "",
   showSides = true,
   catalogItems = [],
   showToggle = true,
@@ -165,14 +167,8 @@ function setAdicional(index: number, value: FoodItemDetail) {
   model.value.adicionales[index] = value
 }
 
-const isModalOpen = computed({
-  get: () => modalView.value !== null,
-  set: (value: boolean) => {
-    if (!value) {
-      modalView.value = null
-    }
-  }
-})
+const isModalOpen = ref(false)
+let clearModalViewTimer: ReturnType<typeof setTimeout> | null = null
 
 const detailModalTitle = computed(() => {
   switch (modalView.value) {
@@ -189,8 +185,17 @@ const detailModalTitle = computed(() => {
   }
 })
 
+const detailModalDescription = computed(() => {
+  if (!dayLabel) {
+    return title
+  }
+
+  return `${title} - ${dayLabel}`
+})
+
 function openSelectionModal(view: Extract<DetailModalView, "select-platillo-principal" | "select-guarnicion-1" | "select-guarnicion-2">) {
   modalView.value = view
+  isModalOpen.value = true
 }
 
 function openSelectionModalFromKeyboard(
@@ -207,7 +212,26 @@ function openExtrasFromKeyboard(event: KeyboardEvent) {
   if (event.key === "Enter" || event.key === " ") {
     event.preventDefault()
     modalView.value = "extras"
+    isModalOpen.value = true
   }
+}
+
+function openExtrasModal() {
+  modalView.value = "extras"
+  isModalOpen.value = true
+}
+
+function scheduleModalViewCleanup() {
+  if (clearModalViewTimer) {
+    clearTimeout(clearModalViewTimer)
+  }
+
+  clearModalViewTimer = setTimeout(() => {
+    if (!isModalOpen.value) {
+      modalView.value = null
+    }
+    clearModalViewTimer = null
+  }, 220)
 }
 
 const contenedorModel = computed<string | undefined>({
@@ -410,10 +434,28 @@ const selectionOptions = computed(() => {
   }
 })
 
+function inferMainCourseType() {
+  const normalizedTitle = title.trim().toLowerCase()
+
+  if (normalizedTitle === "desayuno") {
+    return "desayuno"
+  }
+
+  if (normalizedTitle === "cena") {
+    return "cena"
+  }
+
+  if (normalizedTitle.startsWith("snack")) {
+    return "snack"
+  }
+
+  return "comida"
+}
+
 const createCatalogItemType = computed(() => {
   switch (modalView.value) {
     case "select-platillo-principal":
-      return showSides ? "comida" : "snack"
+      return showSides ? inferMainCourseType() : "snack"
     case "select-guarnicion-1":
     case "select-guarnicion-2":
       return "guarnicion"
@@ -435,19 +477,36 @@ function selectCatalogItemFromModal(itemId: string) {
       break
   }
 
-  modalView.value = null
+  isModalOpen.value = false
 }
 
-function requestCreateCatalogItem() {
+function requestCreateCatalogItem(payload?: { search?: string; selectedType?: string }) {
+  const fallbackSearch = selectionSearch.value.trim() || undefined
+  const fallbackSelectedType = selectionSelectedType.value !== "todos" ? selectionSelectedType.value : undefined
+
   emit("createCatalogItem", {
     tipo: createCatalogItemType.value,
     view: (modalView.value ?? undefined) as SelectionModalView | undefined,
-    search: selectionSearch.value.trim() || undefined,
-    selectedType: selectionSelectedType.value !== "todos" ? selectionSelectedType.value : undefined
+    search: payload?.search ?? fallbackSearch,
+    selectedType: payload?.selectedType ?? fallbackSelectedType
   })
 
-  modalView.value = null
+  isModalOpen.value = false
 }
+
+watch(isModalOpen, (open) => {
+  if (open) {
+    if (clearModalViewTimer) {
+      clearTimeout(clearModalViewTimer)
+      clearModalViewTimer = null
+    }
+    return
+  }
+
+  if (modalView.value !== null) {
+    scheduleModalViewCleanup()
+  }
+})
 
 watch(
   () => restoreSelectionView,
@@ -651,7 +710,7 @@ watch(
             role="button"
             tabindex="0"
             :class="`${selectFieldClass} w-full`"
-            @click="modalView = 'extras'"
+            @click="openExtrasModal"
             @keydown="openExtrasFromKeyboard"
           >
             <span class="min-w-0">
@@ -671,7 +730,7 @@ watch(
   <UModal
     v-model:open="isModalOpen"
     :title="detailModalTitle"
-    :description="title"
+    :description="detailModalDescription"
     :ui="{ content: 'max-w-3xl' }"
   >
     <template #body>
@@ -679,20 +738,6 @@ watch(
         v-if="modalView === 'select-platillo-principal' || modalView === 'select-guarnicion-1' || modalView === 'select-guarnicion-2'"
         class="-mx-6 -my-5"
       >
-        <div class="flex items-center justify-between gap-3 border-b border-default/70 bg-elevated/40 px-6 py-4">
-          <p class="text-sm text-muted">
-            Si no aparece en la lista, créalo y vuelve al menú.
-          </p>
-
-          <UButton
-            size="sm"
-            icon="i-lucide-plus"
-            @click="requestCreateCatalogItem"
-          >
-            Agregar platillo
-          </UButton>
-        </div>
-
         <AdminFoodCatalogTable
           v-model:search="selectionSearch"
           v-model:selected-type="selectionSelectedType"
@@ -706,6 +751,7 @@ watch(
           no-results-title="Sin resultados"
           no-results-description="Prueba con otro término o cambia el tipo de platillo."
           select-label="Usar"
+          @create-catalog-item="requestCreateCatalogItem"
           @select="selectCatalogItemFromModal"
         />
       </section>
