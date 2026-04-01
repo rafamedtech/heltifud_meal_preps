@@ -389,7 +389,7 @@ function onCancel() {
                     :alt="state.nombre || 'Vista previa del platillo'"
                     class="absolute inset-0 h-full w-full object-cover"
                     @error="imageLoadFailed = true"
-                  />
+                  >
 
                   <div
                     v-else
