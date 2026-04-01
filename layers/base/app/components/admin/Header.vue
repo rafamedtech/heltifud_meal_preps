@@ -50,6 +50,11 @@ function closeMobileMenu() {
   mobileMenuOpen.value = false
 }
 
+function openLogoutConfirmFromMobile() {
+  closeMobileMenu()
+  isConfirmOpen.value = true
+}
+
 async function logout() {
   isLoggingOut.value = true
 
@@ -111,7 +116,7 @@ async function logout() {
         class="app-chip-surface"
         @click="isConfirmOpen = true"
       >
-        Logout
+        Salir
       </UButton>
     </div>
 
@@ -164,7 +169,7 @@ async function logout() {
             variant="soft"
             icon="i-lucide-log-out"
             class="w-full justify-center py-3"
-            @click="closeMobileMenu(); isConfirmOpen = true"
+            @click="openLogoutConfirmFromMobile"
           >
             Cerrar sesión
           </UButton>

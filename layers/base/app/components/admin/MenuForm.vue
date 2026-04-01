@@ -150,6 +150,15 @@ const snacksExpanded = reactive<Record<DayOfWeek, boolean>>(
     {} as Record<DayOfWeek, boolean>
   )
 )
+const daySectionsExpanded = reactive<Record<DayOfWeek, boolean>>(
+  DAY_OF_WEEK_VALUES.reduce(
+    (acc, day) => {
+      acc[day] = true
+      return acc
+    },
+    {} as Record<DayOfWeek, boolean>
+  )
+)
 
 const title = computed(() => {
   if (mode.value === "edit") {
@@ -256,6 +265,7 @@ interface MenuFormDraftPayload {
   state: WeeklyMenuInput
   markAsActive: boolean
   snacksExpanded: Record<DayOfWeek, boolean>
+  daySectionsExpanded: Record<DayOfWeek, boolean>
 }
 
 type RestoreSelectionView = "select-platillo-principal" | "select-guarnicion-1" | "select-guarnicion-2"
@@ -277,6 +287,7 @@ watch(
     markAsActive.value = Boolean(menu?.isActive)
     clearValidationHighlights()
     for (const day of DAY_OF_WEEK_VALUES) {
+      daySectionsExpanded[day] = true
       snacksExpanded[day] = false
     }
   }
@@ -308,6 +319,16 @@ function snapshotSnacksExpanded(): Record<DayOfWeek, boolean> {
   )
 }
 
+function snapshotDaySectionsExpanded(): Record<DayOfWeek, boolean> {
+  return DAY_OF_WEEK_VALUES.reduce(
+    (acc, day) => {
+      acc[day] = daySectionsExpanded[day]
+      return acc
+    },
+    {} as Record<DayOfWeek, boolean>
+  )
+}
+
 function persistDraft() {
   if (!import.meta.client) {
     return
@@ -316,7 +337,8 @@ function persistDraft() {
   const payload: MenuFormDraftPayload = {
     state: snapshotDraftState(),
     markAsActive: markAsActive.value,
-    snacksExpanded: snapshotSnacksExpanded()
+    snacksExpanded: snapshotSnacksExpanded(),
+    daySectionsExpanded: snapshotDaySectionsExpanded()
   }
 
   sessionStorage.setItem(draftStorageKey.value, JSON.stringify(payload))
@@ -361,6 +383,7 @@ function restorePersistedDraft() {
     markAsActive.value = payload.markAsActive
 
     for (const day of DAY_OF_WEEK_VALUES) {
+      daySectionsExpanded[day] = payload.daySectionsExpanded?.[day] ?? true
       snacksExpanded[day] = Boolean(payload.snacksExpanded?.[day])
     }
 
@@ -503,6 +526,10 @@ onMounted(async () => {
 
 function toggleSnacks(dayOfWeek: DayOfWeek) {
   snacksExpanded[dayOfWeek] = !snacksExpanded[dayOfWeek]
+}
+
+function toggleDaySection(dayOfWeek: DayOfWeek) {
+  daySectionsExpanded[dayOfWeek] = !daySectionsExpanded[dayOfWeek]
 }
 
 function clearValidationHighlights() {
@@ -783,187 +810,209 @@ async function onSubmit() {
         >
           <template #header>
             <div class="flex items-center justify-between gap-4">
-              <h3 class="text-base font-semibold text-primary">
-                {{ DAY_LABELS[entry.day.dayOfWeek] }}
-              </h3>
+              <div class="space-y-1">
+                <h3 class="text-base font-semibold text-primary">
+                  {{ DAY_LABELS[entry.day.dayOfWeek] }}
+                </h3>
+                <p
+                  v-if="!daySectionsExpanded[entry.day.dayOfWeek]"
+                  class="text-xs text-muted"
+                >
+                  {{ snacksExpanded[entry.day.dayOfWeek] ? "Secciones del día ocultas con snacks expandidos." : "Secciones del día ocultas." }}
+                </p>
+              </div>
+
+              <UButton
+                size="sm"
+                variant="ghost"
+                color="neutral"
+                :icon="daySectionsExpanded[entry.day.dayOfWeek] ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+                @click="toggleDaySection(entry.day.dayOfWeek)"
+              >
+                {{ daySectionsExpanded[entry.day.dayOfWeek] ? "Ocultar" : "Mostrar" }}
+              </UButton>
             </div>
           </template>
 
-          <section class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-3">
-            <AdminMenuSlotEditor
-              v-model="entry.day.desayuno"
-              title="Desayuno"
-              :day-label="DAY_LABELS[entry.day.dayOfWeek]"
-              :show-toggle="false"
-              :catalog-items="resolvedCatalogItems"
-              :restore-selection-view="
-                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'desayuno'
-                  ? restoreSelectionTarget.view
-                  : null
-              "
-              :restore-search="
-                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'desayuno'
-                  ? restoreSelectionTarget.search ?? ''
-                  : ''
-              "
-              :restore-selected-type="
-                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'desayuno'
-                  ? restoreSelectionTarget.selectedType ?? 'todos'
-                  : 'todos'
-              "
-              :class="[
-                'lg:border-r lg:border-default/70',
-                isSlotInvalid(entry.day.dayOfWeek, 'desayuno') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
-              ]"
-              @restore-selection-applied="clearRestoreSelectionTarget"
-              @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'desayuno' })"
-              @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'desayuno' })"
-            />
-            <AdminMenuSlotEditor
-              v-model="entry.day.comida"
-              title="Comida"
-              :day-label="DAY_LABELS[entry.day.dayOfWeek]"
-              :show-toggle="false"
-              :catalog-items="resolvedCatalogItems"
-              :restore-selection-view="
-                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'comida'
-                  ? restoreSelectionTarget.view
-                  : null
-              "
-              :restore-search="
-                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'comida'
-                  ? restoreSelectionTarget.search ?? ''
-                  : ''
-              "
-              :restore-selected-type="
-                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'comida'
-                  ? restoreSelectionTarget.selectedType ?? 'todos'
-                  : 'todos'
-              "
-              :class="[
-                'lg:border-r lg:border-default/70',
-                isSlotInvalid(entry.day.dayOfWeek, 'comida') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
-              ]"
-              @restore-selection-applied="clearRestoreSelectionTarget"
-              @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'comida' })"
-              @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'comida' })"
-            />
-            <AdminMenuSlotEditor
-              v-model="entry.day.cena"
-              title="Cena"
-              :day-label="DAY_LABELS[entry.day.dayOfWeek]"
-              :show-toggle="false"
-              :catalog-items="resolvedCatalogItems"
-              :restore-selection-view="
-                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'cena'
-                  ? restoreSelectionTarget.view
-                  : null
-              "
-              :restore-search="
-                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'cena'
-                  ? restoreSelectionTarget.search ?? ''
-                  : ''
-              "
-              :restore-selected-type="
-                restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'cena'
-                  ? restoreSelectionTarget.selectedType ?? 'todos'
-                  : 'todos'
-              "
-              :class="isSlotInvalid(entry.day.dayOfWeek, 'cena') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''"
-              @restore-selection-applied="clearRestoreSelectionTarget"
-              @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'cena' })"
-              @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'cena' })"
-            />
-          </section>
+          <UCollapsible v-model:open="daySectionsExpanded[entry.day.dayOfWeek]">
+            <template #content>
+              <section class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-3">
+                <AdminMenuSlotEditor
+                  v-model="entry.day.desayuno"
+                  title="Desayuno"
+                  :day-label="DAY_LABELS[entry.day.dayOfWeek]"
+                  :show-toggle="false"
+                  :catalog-items="resolvedCatalogItems"
+                  :restore-selection-view="
+                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'desayuno'
+                      ? restoreSelectionTarget.view
+                      : null
+                  "
+                  :restore-search="
+                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'desayuno'
+                      ? restoreSelectionTarget.search ?? ''
+                      : ''
+                  "
+                  :restore-selected-type="
+                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'desayuno'
+                      ? restoreSelectionTarget.selectedType ?? 'todos'
+                      : 'todos'
+                  "
+                  :class="[
+                    'lg:border-r lg:border-default/70',
+                    isSlotInvalid(entry.day.dayOfWeek, 'desayuno') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
+                  ]"
+                  @restore-selection-applied="clearRestoreSelectionTarget"
+                  @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'desayuno' })"
+                  @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'desayuno' })"
+                />
+                <AdminMenuSlotEditor
+                  v-model="entry.day.comida"
+                  title="Comida"
+                  :day-label="DAY_LABELS[entry.day.dayOfWeek]"
+                  :show-toggle="false"
+                  :catalog-items="resolvedCatalogItems"
+                  :restore-selection-view="
+                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'comida'
+                      ? restoreSelectionTarget.view
+                      : null
+                  "
+                  :restore-search="
+                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'comida'
+                      ? restoreSelectionTarget.search ?? ''
+                      : ''
+                  "
+                  :restore-selected-type="
+                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'comida'
+                      ? restoreSelectionTarget.selectedType ?? 'todos'
+                      : 'todos'
+                  "
+                  :class="[
+                    'lg:border-r lg:border-default/70',
+                    isSlotInvalid(entry.day.dayOfWeek, 'comida') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
+                  ]"
+                  @restore-selection-applied="clearRestoreSelectionTarget"
+                  @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'comida' })"
+                  @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'comida' })"
+                />
+                <AdminMenuSlotEditor
+                  v-model="entry.day.cena"
+                  title="Cena"
+                  :day-label="DAY_LABELS[entry.day.dayOfWeek]"
+                  :show-toggle="false"
+                  :catalog-items="resolvedCatalogItems"
+                  :restore-selection-view="
+                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'cena'
+                      ? restoreSelectionTarget.view
+                      : null
+                  "
+                  :restore-search="
+                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'cena'
+                      ? restoreSelectionTarget.search ?? ''
+                      : ''
+                  "
+                  :restore-selected-type="
+                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'cena'
+                      ? restoreSelectionTarget.selectedType ?? 'todos'
+                      : 'todos'
+                  "
+                  :class="isSlotInvalid(entry.day.dayOfWeek, 'cena') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''"
+                  @restore-selection-applied="clearRestoreSelectionTarget"
+                  @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'cena' })"
+                  @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'cena' })"
+                />
+              </section>
 
-          <section class="border-t border-default/70">
-            <button
-              type="button"
-              class="flex w-full items-center justify-between px-5 py-3 text-left transition-colors hover:bg-elevated/20"
-              @click="toggleSnacks(entry.day.dayOfWeek)"
-            >
-              <span>
-                <span class="block text-sm font-semibold text-primary">Snacks</span>
-                <span class="mt-1 block text-xs text-muted">
-                  {{
-                    snacksExpanded[entry.day.dayOfWeek]
-                      ? "Oculta colaciones y snacks de este día."
-                      : "Muestra Snack 1 y Snack 2 de este día."
-                  }}
-                </span>
-              </span>
+              <section class="border-t border-default/70">
+                <button
+                  type="button"
+                  class="flex w-full items-center justify-between px-5 py-3 text-left transition-colors hover:bg-elevated/20"
+                  @click="toggleSnacks(entry.day.dayOfWeek)"
+                >
+                  <span>
+                    <span class="block text-sm font-semibold text-primary">Snacks</span>
+                    <span class="mt-1 block text-xs text-muted">
+                      {{
+                        snacksExpanded[entry.day.dayOfWeek]
+                          ? "Oculta colaciones y snacks de este día."
+                          : "Muestra Snack 1 y Snack 2 de este día."
+                      }}
+                    </span>
+                  </span>
 
-              <UIcon
-                :name="snacksExpanded[entry.day.dayOfWeek] ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-                class="size-4 text-muted"
-              />
-            </button>
+                  <UIcon
+                    :name="snacksExpanded[entry.day.dayOfWeek] ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+                    class="size-4 text-muted"
+                  />
+                </button>
 
-            <section
-              v-if="snacksExpanded[entry.day.dayOfWeek]"
-              class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-2"
-            >
-              <AdminMenuSlotEditor
-                v-model="entry.day.snack1"
-                title="Snack 1"
-                :day-label="DAY_LABELS[entry.day.dayOfWeek]"
-                :show-sides="false"
-                :show-toggle="false"
-                :catalog-items="resolvedCatalogItems"
-                :restore-selection-view="
-                  restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack1'
-                    ? restoreSelectionTarget.view
-                    : null
-                "
-                :restore-search="
-                  restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack1'
-                    ? restoreSelectionTarget.search ?? ''
-                    : ''
-                "
-                :restore-selected-type="
-                  restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack1'
-                    ? restoreSelectionTarget.selectedType ?? 'todos'
-                    : 'todos'
-                "
-                :class="[
-                  'lg:border-r lg:border-default/70',
-                  isSlotInvalid(entry.day.dayOfWeek, 'snack1') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
-                ]"
-                @restore-selection-applied="clearRestoreSelectionTarget"
-                @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack1' })"
-                @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack1' })"
-              />
-              <AdminMenuSlotEditor
-                v-model="entry.day.snack2"
-                title="Snack 2"
-                :day-label="DAY_LABELS[entry.day.dayOfWeek]"
-                :show-sides="false"
-                :show-toggle="false"
-                :catalog-items="resolvedCatalogItems"
-                :restore-selection-view="
-                  restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack2'
-                    ? restoreSelectionTarget.view
-                    : null
-                "
-                :restore-search="
-                  restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack2'
-                    ? restoreSelectionTarget.search ?? ''
-                    : ''
-                "
-                :restore-selected-type="
-                  restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack2'
-                    ? restoreSelectionTarget.selectedType ?? 'todos'
-                    : 'todos'
-                "
-                :class="
-                  isSlotInvalid(entry.day.dayOfWeek, 'snack2') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
-                "
-                @restore-selection-applied="clearRestoreSelectionTarget"
-                @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack2' })"
-                @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack2' })"
-              />
-            </section>
-          </section>
+                <section
+                  v-if="snacksExpanded[entry.day.dayOfWeek]"
+                  class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-2"
+                >
+                  <AdminMenuSlotEditor
+                    v-model="entry.day.snack1"
+                    title="Snack 1"
+                    :day-label="DAY_LABELS[entry.day.dayOfWeek]"
+                    :show-sides="false"
+                    :show-toggle="false"
+                    :catalog-items="resolvedCatalogItems"
+                    :restore-selection-view="
+                      restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack1'
+                        ? restoreSelectionTarget.view
+                        : null
+                    "
+                    :restore-search="
+                      restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack1'
+                        ? restoreSelectionTarget.search ?? ''
+                        : ''
+                    "
+                    :restore-selected-type="
+                      restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack1'
+                        ? restoreSelectionTarget.selectedType ?? 'todos'
+                        : 'todos'
+                    "
+                    :class="[
+                      'lg:border-r lg:border-default/70',
+                      isSlotInvalid(entry.day.dayOfWeek, 'snack1') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
+                    ]"
+                    @restore-selection-applied="clearRestoreSelectionTarget"
+                    @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack1' })"
+                    @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack1' })"
+                  />
+                  <AdminMenuSlotEditor
+                    v-model="entry.day.snack2"
+                    title="Snack 2"
+                    :day-label="DAY_LABELS[entry.day.dayOfWeek]"
+                    :show-sides="false"
+                    :show-toggle="false"
+                    :catalog-items="resolvedCatalogItems"
+                    :restore-selection-view="
+                      restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack2'
+                        ? restoreSelectionTarget.view
+                        : null
+                    "
+                    :restore-search="
+                      restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack2'
+                        ? restoreSelectionTarget.search ?? ''
+                        : ''
+                    "
+                    :restore-selected-type="
+                      restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack2'
+                        ? restoreSelectionTarget.selectedType ?? 'todos'
+                        : 'todos'
+                    "
+                    :class="
+                      isSlotInvalid(entry.day.dayOfWeek, 'snack2') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
+                    "
+                    @restore-selection-applied="clearRestoreSelectionTarget"
+                    @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack2' })"
+                    @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack2' })"
+                  />
+                </section>
+              </section>
+            </template>
+          </UCollapsible>
         </UCard>
       </section>
     </UForm>
