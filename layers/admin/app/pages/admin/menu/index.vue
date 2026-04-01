@@ -174,7 +174,7 @@ useSeoMeta({
 
       <section
         v-else-if="!isLoading"
-        class="grid grid-cols-1 xl:grid-cols-2 gap-4"
+        class="grid grid-cols-1 gap-4 lg:grid-cols-2"
       >
         <UCard
           v-for="menu in menus"

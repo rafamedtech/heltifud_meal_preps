@@ -17,13 +17,13 @@
       </div>
     </section>
 
-    <section class="grid grid-cols-1 gap-4 xl:grid-cols-2">
+    <section class="grid grid-cols-1 gap-4 lg:grid-cols-2">
       <UCard
         v-for="index in 4"
         :key="index"
         :class="[
           'app-surface',
-          index > 2 ? 'hidden xl:block' : ''
+          index > 2 ? 'hidden lg:block' : ''
         ]"
         :ui="{
           header: 'bg-default px-5 py-4 sm:px-6',
