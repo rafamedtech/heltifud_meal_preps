@@ -1,4 +1,15 @@
 <script setup lang="ts">
+const heroMenuGalleryRows = [
+  {
+    direction: "forward" as const,
+    items: menuItems.slice(0, 4)
+  },
+  {
+    direction: "backward" as const,
+    items: menuItems.slice(4).reverse()
+  }
+]
+
 useSeoMeta({
   title: "Heltifud Meal Preps | Comidas saludables a domicilio",
   description:
@@ -33,10 +44,46 @@ useSeoMeta({
             to="/menu"
             label="Ver Menú"
             icon="i-heroicons-newspaper"
+            color="neutral"
           />
         </section>
       </div>
-      <figure class="aspect-8/11 w-full max-w-100 overflow-hidden rounded-(--app-radius) shadow-2xl md:ml-14">
+      <section
+        class="w-full space-y-3 overflow-hidden md:hidden"
+        aria-label="Galería de platillos"
+      >
+        <UCarousel
+          v-for="(row, rowIndex) in heroMenuGalleryRows"
+          v-slot="{ item, index }"
+          :key="row.direction"
+          loop
+          :auto-scroll="{
+            direction: row.direction,
+            speed: 0.7,
+            startDelay: 0,
+            stopOnInteraction: false,
+            stopOnMouseEnter: false
+          }"
+          :items="row.items"
+          :ui="{ container: 'overflow-visible -ms-3', item: 'basis-[42%] ps-3' }"
+          class="-mx-4 px-4"
+        >
+          <figure class="aspect-4/5 overflow-hidden rounded-(--app-radius) border border-default/70 bg-elevated shadow-lg">
+            <NuxtImg
+              :src="item.image"
+              :alt="item.title || 'Platillo Heltifud'"
+              width="180"
+              height="225"
+              placeholder
+              :loading="rowIndex === 0 && index === 0 ? 'eager' : 'lazy'"
+              :fetchpriority="rowIndex === 0 && index === 0 ? 'high' : 'auto'"
+              class="h-full w-full object-cover"
+            />
+          </figure>
+        </UCarousel>
+      </section>
+
+      <figure class="hidden aspect-8/11 w-full max-w-100 overflow-hidden rounded-(--app-radius) shadow-2xl md:ml-14 md:block">
         <NuxtImg
           src="v1746204406/heltifud/hero-new_mkqivn.jpg"
           alt="Hero"

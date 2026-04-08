@@ -38,6 +38,28 @@ yarn dev
 bun run dev
 ```
 
+## Testing
+
+Run the unit and component tests with Vitest:
+
+```bash
+pnpm test:unit
+```
+
+Run browser end-to-end checks with Playwright:
+
+```bash
+pnpm test:e2e
+```
+
+Run the complete local/CI safety net:
+
+```bash
+pnpm test:ci
+```
+
+Vitest is configured through `@nuxt/test-utils` so component tests run with Nuxt auto-imports, aliases, plugins and a `happy-dom` DOM. Playwright starts the Nuxt dev server on `http://127.0.0.1:3101` unless `PLAYWRIGHT_BASE_URL` is provided, and runs the smoke suite on desktop and mobile Chromium.
+
 ## Production
 
 Build the application for production:

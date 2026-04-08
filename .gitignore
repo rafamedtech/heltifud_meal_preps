@@ -2,10 +2,15 @@
 .output
 .data
 .nuxt
+.nuxtrc
 .nitro
 .cache
 dist
 .netlify
+
+# Test outputs
+test-results
+playwright-report
 
 # Node dependencies
 node_modules

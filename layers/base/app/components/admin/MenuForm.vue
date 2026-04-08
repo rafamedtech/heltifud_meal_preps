@@ -828,12 +828,12 @@ async function onSubmit() {
                 </h3>
                 <div
                   v-if="!daySectionsExpanded[entry.day.dayOfWeek]"
-                  class="grid max-w-4xl grid-cols-1 gap-2 sm:grid-cols-3"
+                  class="flex max-w-4xl flex-wrap items-center gap-2"
                 >
                   <span
                     v-for="slotKey in COLLAPSED_DAY_SUMMARY_SLOTS"
                     :key="slotKey"
-                    class="inline-flex min-w-0 items-center gap-1.5"
+                    class="inline-flex min-w-0 max-w-full items-center gap-1.5"
                   >
                     <UBadge
                       :color="getFoodTypeAppearance(slotKey).color"

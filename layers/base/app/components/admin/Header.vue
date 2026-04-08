@@ -39,13 +39,6 @@ function mobileLinkClass(path: string) {
     : "border-default/70 bg-default/40 text-toned hover:border-primary/20 hover:bg-elevated/80 hover:text-highlighted"
 }
 
-function openMobileMenu(event?: MouseEvent) {
-  ;(event?.currentTarget as HTMLButtonElement | null)?.blur()
-  requestAnimationFrame(() => {
-    mobileMenuOpen.value = true
-  })
-}
-
 function closeMobileMenu() {
   mobileMenuOpen.value = false
 }
@@ -98,14 +91,75 @@ async function logout() {
     <div class="flex items-center gap-2 lg:hidden">
       <ColorMode compact />
 
-      <UButton
-        icon="i-lucide-menu"
-        color="neutral"
-        variant="ghost"
-        square
+      <button
+        type="button"
+        class="inline-flex items-center justify-center rounded-md p-1.5 text-sm font-medium text-default transition-colors hover:bg-elevated active:bg-elevated focus:outline-none focus-visible:bg-elevated"
         aria-label="Abrir navegación del admin"
-        @click="openMobileMenu($event)"
-      />
+        @click="mobileMenuOpen = true"
+      >
+        <UIcon
+          name="i-lucide-menu"
+          class="size-5"
+        />
+      </button>
+
+      <USlideover
+        v-model:open="mobileMenuOpen"
+        title="Navegación del panel"
+        description="Accesos del panel administrativo."
+        inset
+        side="bottom"
+        :ui="{
+          content: 'max-w-xl bg-default/95 backdrop-blur-xl',
+          title: 'sr-only',
+          description: 'sr-only'
+        }"
+      >
+        <template #body>
+          <section class="space-y-3 px-1 pb-2">
+            <NuxtLink
+              v-for="item in mobileNavItems"
+              :key="item.to"
+              :to="item.to"
+              :class="[
+                'flex items-center gap-3 rounded-2xl border px-4 py-4 transition-all active:scale-[0.99]',
+                mobileLinkClass(item.to)
+              ]"
+              @click="closeMobileMenu"
+            >
+              <div
+                class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-default/90 ring-1 ring-default/80"
+              >
+                <UIcon
+                  :name="item.icon"
+                  class="size-5"
+                />
+              </div>
+
+              <span class="min-w-0 flex-1 text-base font-semibold">{{ item.label }}</span>
+
+              <UIcon
+                name="i-lucide-chevron-right"
+                class="size-4 shrink-0 opacity-55"
+              />
+            </NuxtLink>
+          </section>
+        </template>
+
+        <template #footer>
+          <div class="px-1 pb-1">
+            <UButton
+              color="error"
+              variant="soft"
+              icon="i-lucide-log-out"
+              class="w-full justify-center py-3"
+              @click="openLogoutConfirmFromMobile"
+            >
+              Cerrar sesión
+            </UButton>
+          </div>
+        </template>
+      </USlideover>
     </div>
 
     <div class="hidden items-center gap-3 lg:flex">
@@ -119,63 +173,6 @@ async function logout() {
         Salir
       </UButton>
     </div>
-
-    <UDrawer
-      v-model:open="mobileMenuOpen"
-      title="Navegación del panel"
-      description="Accesos del panel administrativo."
-      inset
-      :ui="{
-        content: 'max-w-xl bg-default/95 backdrop-blur-xl',
-        title: 'sr-only',
-        description: 'sr-only'
-      }"
-    >
-      <template #body>
-        <section class="space-y-3 px-1 pb-2">
-          <NuxtLink
-            v-for="item in mobileNavItems"
-            :key="item.to"
-            :to="item.to"
-            :class="[
-              'flex items-center gap-3 rounded-2xl border px-4 py-4 transition-all active:scale-[0.99]',
-              mobileLinkClass(item.to)
-            ]"
-            @click="closeMobileMenu"
-          >
-            <div
-              class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-default/90 ring-1 ring-default/80"
-            >
-              <UIcon
-                :name="item.icon"
-                class="size-5"
-              />
-            </div>
-
-            <span class="min-w-0 flex-1 text-base font-semibold">{{ item.label }}</span>
-
-            <UIcon
-              name="i-lucide-chevron-right"
-              class="size-4 shrink-0 opacity-55"
-            />
-          </NuxtLink>
-        </section>
-      </template>
-
-      <template #footer>
-        <div class="px-1 pb-1">
-          <UButton
-            color="error"
-            variant="soft"
-            icon="i-lucide-log-out"
-            class="w-full justify-center py-3"
-            @click="openLogoutConfirmFromMobile"
-          >
-            Cerrar sesión
-          </UButton>
-        </div>
-      </template>
-    </UDrawer>
 
     <UModal
       v-model:open="isConfirmOpen"
