@@ -40,13 +40,13 @@ const {
       <h3 class="text-xl font-bold">{{ title }}</h3>
     </template>
 
-    <figure class="mx-auto mb-4 overflow-hidden">
+    <figure class="mx-auto mb-4 overflow-hidden rounded-(--app-radius)">
       <NuxtImg
         :src="image"
         :alt="imageAlt"
         :width="imageWidth"
         :height="imageHeight"
-        class="block h-auto w-full"
+        class="block h-auto w-full rounded-(--app-radius)"
         placeholder
       />
     </figure>

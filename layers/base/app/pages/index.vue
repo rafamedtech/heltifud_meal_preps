@@ -13,13 +13,13 @@ useSeoMeta({
 <template>
   <div>
     <section
-      class="container mx-auto flex w-full flex-col-reverse items-center justify-center gap-8 py-8 md:flex-row md:gap-12 md:py-20"
+      class="container mx-auto flex w-full flex-col-reverse items-center justify-center lg:justify-between gap-8 py-8 md:flex-row md:gap-12 md:py-20"
     >
       <div class="md:w-1/2">
-        <h1 class="mb-4 text-4xl leading-snug font-bold md:text-5xl">Comidas saludables, directo a tu puerta</h1>
-        <p class="mb-8 text-xl">
-          Transforma tu alimentación con comidas caseras, equilibradas y deliciosas, sin complicaciones.
-        </p>
+        <h1 class="mb-4 text-4xl font-bold md:text-6xl">
+          Comida lista para gente ocupada que quiere <span class="text-primary">rendir mejor</span>
+        </h1>
+        <p class="mb-8 text-xl">La forma más fácil de comer bien toda la semana sin perder tiempo.</p>
         <section class="flex gap-4">
           <BaseButton
             to="/planes"
@@ -36,7 +36,7 @@ useSeoMeta({
           />
         </section>
       </div>
-      <figure class="aspect-8/11 w-full max-w-100 overflow-hidden border border-primary-500 shadow-2xl md:ml-14">
+      <figure class="aspect-8/11 w-full max-w-100 overflow-hidden rounded-(--app-radius) shadow-2xl md:ml-14">
         <NuxtImg
           src="v1746204406/heltifud/hero-new_mkqivn.jpg"
           alt="Hero"
@@ -45,7 +45,7 @@ useSeoMeta({
           placeholder
           loading="eager"
           fetchpriority="high"
-          class="h-full w-full object-cover"
+          class="h-full w-full rounded-(--app-radius) object-cover"
         />
       </figure>
     </section>
@@ -61,12 +61,12 @@ useSeoMeta({
         listo para disfrutar, sin cocinar ni preocuparte por planear tus comidas.
       </template>
 
-      <figure class="flex w-full max-w-110 items-center justify-center overflow-hidden">
+      <figure class="flex w-full max-w-110 items-center justify-center overflow-hidden rounded-(--app-radius) md:p-12">
         <NuxtImg
           src="v1746204408/heltifud/hero_or5twy.png"
           alt="Meal prep saludable"
           placeholder
-          class="h-auto w-full object-contain shadow-2xl md:m-12"
+          class="h-auto w-full rounded-(--app-radius) object-contain shadow-2xl"
         />
       </figure>
     </BaseSection>
@@ -123,30 +123,6 @@ useSeoMeta({
       </template>
     </BaseSection>
 
-    <!-- <section class="py-8">
-      <article>
-        <h2 class="text-primary-500 mb-4 text-3xl font-bold">
-          Menú de la semana
-        </h2>
-        <p class="pt-2 text-lg lg:w-1/2">
-          Descubre nuestro menú semanal, lleno de opciones deliciosas y
-          saludables. Cada semana, ofrecemos una variedad de platos para que
-          disfrutes.
-        </p>
-      </article>
-
-      <section class="pt-4 pb-8">
-        <BaseGallery :items="menuItems" :autoplay="3000" />
-      </section>
-
-      <section class="flex flex-col items-center justify-center gap-4 pt-8">
-        <p class="text-center text-lg md:text-left">
-          Consulta lo que prepararemos para la próxima semana
-        </p>
-        <BaseButton to="/menu" label="Ver Menú" icon="i-heroicons-newspaper" />
-      </section>
-    </section> -->
-
     <BaseSeparator />
 
     <!-- Sección de promoción -->
@@ -168,14 +144,16 @@ useSeoMeta({
         />
       </template>
 
-      <figure class="flex aspect-8/11 w-full max-w-100 items-center justify-center overflow-hidden">
+      <figure
+        class="flex aspect-8/11 w-full max-w-100 items-center justify-center overflow-hidden rounded-(--app-radius) md:p-12"
+      >
         <NuxtImg
           src="v1746204411/heltifud/promo_hbku0g.png"
           width="400"
           height="550"
           alt="Promocion de primer pedido"
           placeholder
-          class="h-full w-full object-cover shadow-2xl md:m-12"
+          class="h-full w-full rounded-(--app-radius) object-cover shadow-2xl"
         />
       </figure>
     </BaseSection>

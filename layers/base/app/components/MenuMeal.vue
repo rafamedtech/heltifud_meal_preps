@@ -33,14 +33,18 @@ const guarnicion2Name = computed(() => meal.guarnicion2?.nombre?.trim());
 </script>
 
 <template>
-  <section class="h-full px-4 py-4">
-    <h3 class="font-bold text-lg flex items-center gap-2">
-      <Icon :name="icon" /><span>{{ title }}</span>
+  <section class="h-full min-w-0 px-4 py-4">
+    <h3 class="flex min-w-0 items-center gap-2 text-lg font-bold">
+      <Icon
+        :name="icon"
+        class="shrink-0"
+      />
+      <span class="min-w-0">{{ title }}</span>
     </h3>
 
-    <section class="flex items-start justify-between gap-2 mt-2 text-sm">
-      <article class="flex flex-col gap-2 basis-3/4">
-        <span class="min-h-[1.25rem]">- {{ meal.platilloPrincipal.nombre }}</span>
+    <section class="mt-2 grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-3 text-sm">
+      <article class="flex min-w-0 flex-col gap-2">
+        <span class="min-h-[1.25rem] break-words">- {{ meal.platilloPrincipal.nombre }}</span>
         <span class="min-h-[1.25rem]">
           <template v-if="guarnicion1Name">- {{ guarnicion1Name }}</template>
           <template v-else>&nbsp;</template>
@@ -49,11 +53,17 @@ const guarnicion2Name = computed(() => meal.guarnicion2?.nombre?.trim());
           <template v-if="guarnicion2Name">- {{ guarnicion2Name }}</template>
           <template v-else>&nbsp;</template>
         </span>
-        <span v-for="(adicional, index) in meal.adicionales" :key="`${adicional.nombre}-${index}`">- {{ adicional.nombre }}</span>
+        <span
+          v-for="(adicional, index) in meal.adicionales"
+          :key="`${adicional.nombre}-${index}`"
+          class="break-words"
+        >
+          - {{ adicional.nombre }}
+        </span>
       </article>
 
-      <article class="basis-1/4 w-full flex items-start justify-end">
-        <span class="font-semibold text-primary-500">{{ totalCalories }} Cal</span>
+      <article class="flex shrink-0 items-start justify-end">
+        <span class="whitespace-nowrap font-semibold text-primary-500">{{ totalCalories }} Cal</span>
       </article>
     </section>
   </section>

@@ -30,7 +30,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <section>
+  <section class="overflow-x-clip">
     <BaseSection title="Menú de la semana">
       <template #description>
         <div class="flex flex-wrap items-center justify-between gap-3">
@@ -80,10 +80,10 @@ useSeoMeta({
           </div>
         </UCard>
 
-        <section class="mb-8 md:hidden">
+        <section class="mb-8 min-w-0 overflow-x-clip px-4 md:hidden">
           <section
             v-if="isLoading"
-            class="w-full max-w-xs mx-auto pt-6"
+            class="w-full min-w-0 pt-6"
           >
             <UCard
               variant="subtle"
@@ -111,55 +111,54 @@ useSeoMeta({
             </UCard>
           </section>
 
-          <UCarousel
+          <MenuMobileCarousel
             v-else-if="status === 'success'"
-            ref="carousel"
-            v-slot="{ item }"
-            :items="publicDays"
-            class="w-full max-w-xs mx-auto pt-6"
-            wheel-gestures
-            dots
-          >
-            <MenuCard :day="item" />
-          </UCarousel>
+            :days="publicDays"
+          />
         </section>
 
         <section class="hidden md:flex md:flex-col md:gap-8">
           <template v-if="isLoading">
-            <UCard
+            <section
               v-for="day in 5"
               :key="`desktop-skeleton-${day}`"
-              variant="subtle"
-              :ui="{ body: 'sm:p-4 p-4' }"
+              class="p-0.5"
             >
-              <template #header>
-                <USkeleton class="h-7 w-32" />
-              </template>
+              <UCard
+                variant="subtle"
+                :ui="{ body: 'sm:p-4 p-4' }"
+              >
+                <template #header>
+                  <USkeleton class="h-7 w-32" />
+                </template>
 
-              <section class="grid grid-cols-3 gap-3">
-                <USkeleton
-                  v-for="meal in 3"
-                  :key="`desktop-main-${day}-${meal}`"
-                  class="h-36 w-full rounded-xl"
-                />
-              </section>
+                <section class="grid grid-cols-3 gap-3">
+                  <USkeleton
+                    v-for="meal in 3"
+                    :key="`desktop-main-${day}-${meal}`"
+                    class="h-36 w-full rounded-xl"
+                  />
+                </section>
 
-              <section class="grid grid-cols-2 gap-3 mt-3">
-                <USkeleton
-                  v-for="snack in 2"
-                  :key="`desktop-snack-${day}-${snack}`"
-                  class="h-28 w-full rounded-xl"
-                />
-              </section>
-            </UCard>
+                <section class="grid grid-cols-2 gap-3 mt-3">
+                  <USkeleton
+                    v-for="snack in 2"
+                    :key="`desktop-snack-${day}-${snack}`"
+                    class="h-28 w-full rounded-xl"
+                  />
+                </section>
+              </UCard>
+            </section>
           </template>
 
-          <MenuCard
+          <section
             v-for="item in publicDays"
             v-else
             :key="item.dayOfWeek"
-            :day="item"
-          />
+            class="p-0.5"
+          >
+            <MenuCard :day="item" />
+          </section>
         </section>
 
         <section class="pt-8 flex justify-center items-center">

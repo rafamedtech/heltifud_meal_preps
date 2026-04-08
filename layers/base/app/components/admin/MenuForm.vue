@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getFoodTypeAppearance } from "~~/layers/base/app/utils/foodTypeAppearance"
 import { weeklyMenuInputSchema } from "~~/layers/menu/shared/types/menuSchema"
 import {
   DAY_OF_WEEK_VALUES,
@@ -48,6 +49,12 @@ const SLOT_LABELS: Record<keyof Omit<DayMenu, "dayOfWeek">, string> = {
   snack1: "Snack 1",
   snack2: "Snack 2"
 }
+
+const COLLAPSED_DAY_SUMMARY_SLOTS = [
+  "desayuno",
+  "comida",
+  "cena"
+] as const
 
 function createEmptyFoodItem(): FoodItemDetail {
   return {
@@ -106,6 +113,10 @@ function cloneSlot(slot?: MenuSlot | null): MenuSlot {
   }
 }
 
+function getCollapsedSlotSummary(slot: MenuSlot) {
+  return slot.platilloPrincipal.nombre.trim() || "Pendiente"
+}
+
 function createStateFromMenu(menu?: WeeklyMenu | null): WeeklyMenuInput {
   if (!menu) {
     return {
@@ -153,7 +164,7 @@ const snacksExpanded = reactive<Record<DayOfWeek, boolean>>(
 const daySectionsExpanded = reactive<Record<DayOfWeek, boolean>>(
   DAY_OF_WEEK_VALUES.reduce(
     (acc, day) => {
-      acc[day] = true
+      acc[day] = false
       return acc
     },
     {} as Record<DayOfWeek, boolean>
@@ -287,7 +298,7 @@ watch(
     markAsActive.value = Boolean(menu?.isActive)
     clearValidationHighlights()
     for (const day of DAY_OF_WEEK_VALUES) {
-      daySectionsExpanded[day] = true
+      daySectionsExpanded[day] = false
       snacksExpanded[day] = false
     }
   }
@@ -383,7 +394,7 @@ function restorePersistedDraft() {
     markAsActive.value = payload.markAsActive
 
     for (const day of DAY_OF_WEEK_VALUES) {
-      daySectionsExpanded[day] = payload.daySectionsExpanded?.[day] ?? true
+      daySectionsExpanded[day] = payload.daySectionsExpanded?.[day] ?? false
       snacksExpanded[day] = Boolean(payload.snacksExpanded?.[day])
     }
 
@@ -581,6 +592,7 @@ function applyValidationHighlights(issues: ZodIssue[]) {
 
       invalidDays.value.add(day.dayOfWeek)
       invalidSlots.value[day.dayOfWeek].add(normalizedSlotKey)
+      daySectionsExpanded[day.dayOfWeek] = true
 
       if (normalizedSlotKey === "snack1" || normalizedSlotKey === "snack2") {
         snacksExpanded[day.dayOfWeek] = true
@@ -810,16 +822,42 @@ async function onSubmit() {
         >
           <template #header>
             <div class="flex items-center justify-between gap-4">
-              <div class="space-y-1">
+              <div class="min-w-0 flex-1 space-y-2">
                 <h3 class="text-base font-semibold text-primary">
                   {{ DAY_LABELS[entry.day.dayOfWeek] }}
                 </h3>
-                <p
+                <div
                   v-if="!daySectionsExpanded[entry.day.dayOfWeek]"
-                  class="text-xs text-muted"
+                  class="grid max-w-4xl grid-cols-1 gap-2 sm:grid-cols-3"
                 >
-                  {{ snacksExpanded[entry.day.dayOfWeek] ? "Secciones del día ocultas con snacks expandidos." : "Secciones del día ocultas." }}
-                </p>
+                  <span
+                    v-for="slotKey in COLLAPSED_DAY_SUMMARY_SLOTS"
+                    :key="slotKey"
+                    class="inline-flex min-w-0 items-center gap-1.5"
+                  >
+                    <UBadge
+                      :color="getFoodTypeAppearance(slotKey).color"
+                      variant="soft"
+                      :class="[
+                        'inline-flex shrink-0 rounded-xl px-2.5 py-1 ring-1 ring-inset',
+                        getFoodTypeAppearance(slotKey).className
+                      ]"
+                    >
+                      <UIcon
+                        :name="getFoodTypeAppearance(slotKey).icon"
+                        class="size-3.5 shrink-0"
+                      />
+                      {{ getFoodTypeAppearance(slotKey).label }}
+                    </UBadge>
+
+                    <span
+                      class="min-w-0 truncate rounded-xl border border-default/70 bg-default/40 px-2.5 py-1 text-xs font-semibold text-highlighted"
+                      :title="getCollapsedSlotSummary(entry.day[slotKey])"
+                    >
+                      {{ getCollapsedSlotSummary(entry.day[slotKey]) }}
+                    </span>
+                  </span>
+                </div>
               </div>
 
               <UButton

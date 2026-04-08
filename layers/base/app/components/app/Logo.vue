@@ -1,5 +1,5 @@
 <template>
-  <figure class="w-36 rounded-2xl p-2">
+  <figure class="w-36 rounded-2xl md:p-2">
     <NuxtImg
       src="v1774637949/heltifud/heltifud-logo-black-v2_j0aoxh.png"
       alt=""

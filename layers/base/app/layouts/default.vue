@@ -4,7 +4,7 @@
 
     <BaseSeparator />
 
-    <UContainer class="relative py-4">
+    <UContainer class="relative py-4 lg:px-0">
       <slot />
     </UContainer>
 

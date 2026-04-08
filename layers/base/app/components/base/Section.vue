@@ -9,16 +9,19 @@ const { layout = 'rows', titleSize = 'base' } = defineProps<SectionProps>()
 </script>
 
 <template>
-  <section class="py-8">
+  <section class="min-w-0 overflow-x-clip py-8">
     <section
-      class="flex"
+      class="flex min-w-0"
       :class="{
         'flex-col': layout === 'rows',
 
         'flex-col-reverse gap-4 md:flex-row-reverse md:items-center md:justify-between': layout === 'columns',
       }"
     >
-      <article :class="{ 'md:w-1/2': layout === 'columns' }">
+      <article
+        class="min-w-0"
+        :class="{ 'md:w-1/2': layout === 'columns' }"
+      >
         <h2
           class="text-primary-500 font-bold"
           :class="{
@@ -43,7 +46,10 @@ const { layout = 'rows', titleSize = 'base' } = defineProps<SectionProps>()
         </section>
       </article>
 
-      <article :class="{ 'md:w-1/2': layout === 'columns' }">
+      <article
+        class="min-w-0"
+        :class="{ 'md:w-1/2': layout === 'columns' }"
+      >
         <slot />
       </article>
     </section>
