@@ -6,8 +6,8 @@
         <USkeleton class="mt-3 h-5 w-32 rounded-lg sm:h-6 sm:w-40" />
       </div>
 
-      <div class="app-surface-soft px-4 py-4">
-        <p class="text-xs uppercase tracking-[0.18em] text-muted">Último agregado</p>
+      <div class="app-surface-soft relative px-4 py-4">
+        <p class="pr-20 text-xs uppercase tracking-[0.18em] text-muted">Siguiente menú</p>
         <USkeleton class="mt-3 h-5 w-32 rounded-lg sm:h-6 sm:w-40" />
       </div>
 

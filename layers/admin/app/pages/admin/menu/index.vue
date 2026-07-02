@@ -11,7 +11,16 @@ const {
 
 const isLoading = computed(() => status.value === "pending")
 const activeMenu = computed(() => menus.value.find((menu) => menu.isActive) ?? null)
-const latestCreatedMenu = computed(() => menus.value[0] ?? null)
+const nextMenu = computed(() => {
+  const now = Date.now()
+
+  return menus.value
+    .filter((menu) => new Date(menu.startDate).getTime() > now)
+    .toSorted(
+      (firstMenu, secondMenu) =>
+        new Date(firstMenu.startDate).getTime() - new Date(secondMenu.startDate).getTime()
+    )[0] ?? null
+})
 
 const { deleteMenuOnDB, setActiveMenuOnDB } = useMenu()
 const toast = useToast()
@@ -136,17 +145,28 @@ useSeoMeta({
           </div>
         </div>
 
-        <div class="app-surface-soft px-4 py-4">
-          <p class="text-xs uppercase tracking-[0.18em] text-muted">Último agregado</p>
+        <div class="app-surface-soft relative px-4 py-4">
+          <p class="pr-20 text-xs uppercase tracking-[0.18em] text-muted">Siguiente menú</p>
+          <UButton
+            v-if="nextMenu"
+            :to="`/admin/menu/${nextMenu.id}`"
+            size="sm"
+            variant="outline"
+            color="neutral"
+            icon="i-lucide-square-pen"
+            class="absolute right-4 top-4"
+          >
+            Editar
+          </UButton>
           <div class="mt-3 space-y-1">
             <p class="line-clamp-1 text-base font-semibold text-highlighted">
-              {{ latestCreatedMenu?.name ?? "Sin registros" }}
+              {{ nextMenu?.name ?? "Sin menú programado" }}
             </p>
             <p class="text-sm text-muted">
               {{
-                latestCreatedMenu
-                  ? `Creado el ${formatDate(latestCreatedMenu.createdAt)}`
-                  : "Crea tu primer menú semanal."
+                nextMenu
+                  ? `${formatDate(nextMenu.startDate)} - ${formatDate(nextMenu.endDate)}`
+                  : "Crea un menú con una fecha de inicio futura."
               }}
             </p>
           </div>
