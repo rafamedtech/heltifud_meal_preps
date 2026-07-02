@@ -865,9 +865,12 @@ async function onSubmit() {
                 variant="ghost"
                 color="neutral"
                 :icon="daySectionsExpanded[entry.day.dayOfWeek] ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+                :aria-label="daySectionsExpanded[entry.day.dayOfWeek] ? 'Ocultar día' : 'Mostrar día'"
                 @click="toggleDaySection(entry.day.dayOfWeek)"
               >
-                {{ daySectionsExpanded[entry.day.dayOfWeek] ? "Ocultar" : "Mostrar" }}
+                <span class="hidden sm:inline">
+                  {{ daySectionsExpanded[entry.day.dayOfWeek] ? "Ocultar" : "Mostrar" }}
+                </span>
               </UButton>
             </div>
           </template>

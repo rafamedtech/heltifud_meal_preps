@@ -118,30 +118,44 @@ useSeoMeta({
         v-else
         class="grid gap-3 lg:grid-cols-3"
       >
-        <div class="app-surface-soft relative px-4 py-4">
-          <p class="pr-20 text-xs uppercase tracking-[0.18em] text-muted">Menú activo</p>
-          <UButton
-            v-if="activeMenu"
-            :to="`/admin/menu/${activeMenu.id}`"
-            size="sm"
-            variant="outline"
-            color="neutral"
-            icon="i-lucide-square-arrow-out-up-right"
-            class="absolute right-4 top-4"
-          >
-            Abrir
-          </UButton>
-          <div class="mt-3 space-y-1">
-            <p class="line-clamp-1 text-base font-semibold text-highlighted">
-              {{ activeMenu?.name ?? "Sin menú activo" }}
-            </p>
-            <p class="text-sm text-muted">
-              {{
-                activeMenu
-                  ? `${formatDate(activeMenu.startDate)} - ${formatDate(activeMenu.endDate)}`
-                  : "Activa uno desde la lista inferior."
-              }}
-            </p>
+        <div class="app-surface-soft px-4 py-4">
+          <div class="flex items-start justify-between gap-4">
+            <div class="min-w-0">
+              <p class="text-xs uppercase tracking-[0.18em] text-muted">Menú activo</p>
+              <div class="mt-3 space-y-1">
+                <p class="line-clamp-1 text-base font-semibold text-highlighted">
+                  {{ activeMenu?.name ?? "Sin menú activo" }}
+                </p>
+                <p class="text-sm text-muted">
+                  {{
+                    activeMenu
+                      ? `${formatDate(activeMenu.startDate)} - ${formatDate(activeMenu.endDate)}`
+                      : "Activa uno desde la lista inferior."
+                  }}
+                </p>
+              </div>
+            </div>
+
+            <div v-if="activeMenu" class="flex shrink-0 flex-col gap-2">
+              <UButton
+                :to="`/admin/menu/${activeMenu.id}`"
+                size="sm"
+                variant="outline"
+                color="neutral"
+                icon="i-lucide-square-pen"
+              >
+                Editar
+              </UButton>
+              <UButton
+                to="/menu"
+                size="sm"
+                variant="outline"
+                color="neutral"
+                icon="i-lucide-eye"
+              >
+                Ver público
+              </UButton>
+            </div>
           </div>
         </div>
 
@@ -209,7 +223,7 @@ useSeoMeta({
           }"
         >
           <template #header>
-            <section class="flex items-start justify-between gap-3">
+            <section class="flex items-center justify-between gap-3">
               <div>
                 <h3
                   class="text-lg font-bold"
@@ -227,15 +241,6 @@ useSeoMeta({
 
               <section class="flex flex-wrap justify-end gap-2">
                 <UButton
-                  v-if="menu.isActive"
-                  :to="'/menu'"
-                  variant="ghost"
-                  icon="i-lucide-eye"
-                  class="text-slate-700 hover:text-slate-700 dark:text-slate-200 dark:hover:text-slate-200"
-                >
-                  Ver público
-                </UButton>
-                <UButton
                   :variant="menu.isActive ? 'solid' : 'soft'"
                   :color="menu.isActive ? 'success' : 'primary'"
                   icon="i-lucide-badge-check"
@@ -250,37 +255,35 @@ useSeoMeta({
             </section>
           </template>
 
-          <section class="space-y-3">
-            <section class="grid grid-cols-2 gap-2 text-sm">
-              <div class="rounded-xl bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
-                <span class="text-muted">Creado</span>
-                <p class="font-medium text-highlighted">{{ formatDate(menu.createdAt) }}</p>
-              </div>
-              <div class="rounded-xl bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
-                <span class="text-muted">Actualizado</span>
-                <p class="font-medium text-highlighted">{{ formatDate(menu.updatedAt) }}</p>
-              </div>
-            </section>
+          <section class="flex flex-wrap justify-center gap-2">
+            <UButton
+              :to="`/admin/menu/${menu.id}`"
+              variant="ghost"
+              color="neutral"
+              icon="i-lucide-square-pen"
+            >
+              Editar
+            </UButton>
+            <UButton
+              color="error"
+              variant="ghost"
+              icon="i-lucide-trash"
+              :loading="deletingId === menu.id"
+              @click="requestDelete(menu)"
+            >
+              Eliminar
+            </UButton>
           </section>
 
-          <template #footer>
-            <section class="flex flex-wrap justify-end gap-2">
+          <template v-if="menu.isActive" #footer>
+            <section class="flex justify-center">
               <UButton
-                :to="`/admin/menu/${menu.id}`"
+                to="/menu"
                 variant="ghost"
                 color="neutral"
-                icon="i-lucide-square-pen"
+                icon="i-lucide-eye"
               >
-                Editar
-              </UButton>
-              <UButton
-                color="error"
-                variant="ghost"
-                icon="i-lucide-trash"
-                :loading="deletingId === menu.id"
-                @click="requestDelete(menu)"
-              >
-                Eliminar
+                Ver público
               </UButton>
             </section>
           </template>

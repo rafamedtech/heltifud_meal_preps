@@ -1,9 +1,17 @@
 <template>
   <section class="space-y-4">
     <section class="grid gap-3 lg:grid-cols-3">
-      <div class="app-surface-soft relative px-4 py-4">
-        <p class="pr-20 text-xs uppercase tracking-[0.18em] text-muted">Menú activo</p>
-        <USkeleton class="mt-3 h-5 w-32 rounded-lg sm:h-6 sm:w-40" />
+      <div class="app-surface-soft px-4 py-4">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p class="text-xs uppercase tracking-[0.18em] text-muted">Menú activo</p>
+            <USkeleton class="mt-3 h-5 w-32 rounded-lg sm:h-6 sm:w-40" />
+          </div>
+          <div class="flex flex-col gap-2">
+            <USkeleton class="h-8 w-24 rounded-lg" />
+            <USkeleton class="h-8 w-24 rounded-lg" />
+          </div>
+        </div>
       </div>
 
       <div class="app-surface-soft relative px-4 py-4">
@@ -32,7 +40,7 @@
         }"
       >
         <template #header>
-          <section class="flex items-start justify-between gap-3">
+          <section class="flex items-center justify-between gap-3">
             <div class="space-y-2">
               <USkeleton class="h-6 w-44 rounded-lg" />
               <USkeleton class="h-4 w-52 rounded-lg" />
@@ -40,28 +48,18 @@
 
             <section class="flex flex-wrap justify-end gap-2">
               <USkeleton class="h-9 w-24 rounded-lg" />
-              <USkeleton class="h-9 w-24 rounded-lg" />
             </section>
           </section>
         </template>
 
-        <section class="space-y-3">
-          <section class="grid grid-cols-2 gap-2 text-sm">
-            <div class="rounded-xl bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
-              <USkeleton class="h-3 w-14 rounded-lg" />
-              <USkeleton class="mt-2 h-5 w-24 rounded-lg" />
-            </div>
-            <div class="rounded-xl bg-neutral-50 px-3 py-2 dark:bg-neutral-900">
-              <USkeleton class="h-3 w-20 rounded-lg" />
-              <USkeleton class="mt-2 h-5 w-24 rounded-lg" />
-            </div>
-          </section>
+        <section class="flex justify-center gap-2">
+          <USkeleton class="h-9 w-20 rounded-lg" />
+          <USkeleton class="h-9 w-24 rounded-lg" />
         </section>
 
-        <template #footer>
-          <section class="flex flex-wrap justify-end gap-2">
-            <USkeleton class="h-9 w-20 rounded-lg" />
-            <USkeleton class="h-9 w-24 rounded-lg" />
+        <template v-if="index === 1" #footer>
+          <section class="flex justify-center">
+            <USkeleton class="h-9 w-28 rounded-lg" />
           </section>
         </template>
       </UCard>
