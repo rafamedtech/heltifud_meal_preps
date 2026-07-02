@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { TableColumn } from "@nuxt/ui"
 import type { WeeklyMenu } from "~~/layers/menu/shared/types/types"
 
 const {
@@ -21,6 +22,36 @@ const nextMenu = computed(() => {
         new Date(firstMenu.startDate).getTime() - new Date(secondMenu.startDate).getTime()
     )[0] ?? null
 })
+const menuTableColumns: TableColumn<WeeklyMenu>[] = [
+  {
+    accessorKey: "name",
+    header: "Menú"
+  },
+  {
+    id: "dates",
+    header: "Vigencia"
+  },
+  {
+    id: "status",
+    header: "Estado",
+    meta: {
+      class: {
+        th: "text-center",
+        td: "text-center"
+      }
+    }
+  },
+  {
+    id: "actions",
+    header: "Acciones",
+    meta: {
+      class: {
+        th: "text-center",
+        td: "text-center"
+      }
+    }
+  }
+]
 
 const { deleteMenuOnDB, setActiveMenuOnDB } = useMenu()
 const toast = useToast()
@@ -208,7 +239,7 @@ useSeoMeta({
 
       <section
         v-else-if="!isLoading"
-        class="grid grid-cols-1 gap-4 lg:grid-cols-2"
+        class="grid grid-cols-1 gap-4 lg:hidden"
       >
         <UCard
           v-for="menu in menus"
@@ -288,6 +319,79 @@ useSeoMeta({
             </section>
           </template>
         </UCard>
+      </section>
+
+      <section
+        v-if="!isLoading && menus.length"
+        class="app-surface hidden overflow-hidden lg:block"
+      >
+        <UTable
+          :data="menus"
+          :columns="menuTableColumns"
+          :meta="{
+            class: {
+              tr: (row) => row.original.isActive ? 'bg-primary/10' : ''
+            }
+          }"
+          :ui="{
+            th: 'px-5 py-3.5',
+            td: 'px-5 py-4'
+          }"
+        >
+          <template #name-cell="{ row }">
+            <span
+              class="font-semibold"
+              :class="row.original.isActive ? 'text-primary' : 'text-highlighted'"
+            >
+              {{ row.original.name }}
+            </span>
+          </template>
+
+          <template #dates-cell="{ row }">
+            <span class="text-muted">
+              {{ formatDate(row.original.startDate) }} - {{ formatDate(row.original.endDate) }}
+            </span>
+          </template>
+
+          <template #status-cell="{ row }">
+            <UButton
+              size="sm"
+              :variant="row.original.isActive ? 'solid' : 'soft'"
+              :color="row.original.isActive ? 'success' : 'primary'"
+              icon="i-lucide-badge-check"
+              :loading="activatingId === row.original.id"
+              :disabled="row.original.isActive"
+              :class="row.original.isActive ? 'text-white dark:text-black' : ''"
+              @click="onSetActive(row.original.id)"
+            >
+              {{ row.original.isActive ? "Activo" : "Activar" }}
+            </UButton>
+          </template>
+
+          <template #actions-cell="{ row }">
+            <div class="flex items-center justify-center gap-1">
+              <UButton
+                :to="`/admin/menu/${row.original.id}`"
+                size="sm"
+                variant="ghost"
+                color="neutral"
+                icon="i-lucide-square-pen"
+              >
+                Editar
+              </UButton>
+              <UButton
+                size="sm"
+                color="error"
+                variant="ghost"
+                icon="i-lucide-trash"
+                :loading="deletingId === row.original.id"
+                @click="requestDelete(row.original)"
+              >
+                Eliminar
+              </UButton>
+            </div>
+          </template>
+        </UTable>
       </section>
     </section>
 
