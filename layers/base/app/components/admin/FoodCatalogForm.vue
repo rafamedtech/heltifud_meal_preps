@@ -40,6 +40,8 @@ const prefilledType = computed(() => getSingleQueryValue(route.query.tipo))
 const emptyState = (nombre = "", tipo = ""): FoodCatalogItemInput => ({
   nombre,
   descripcion: "",
+  preparacion: "",
+  ingredientes: [],
   calorias: 0,
   imagen: "",
   tipo
@@ -68,6 +70,8 @@ const imageLoadFailed = ref(false)
 const invalidFields = reactive<Record<keyof FoodCatalogItemInput, boolean>>({
   nombre: false,
   descripcion: false,
+  preparacion: false,
+  ingredientes: false,
   calorias: false,
   imagen: false,
   tipo: false
@@ -127,6 +131,8 @@ const isDirty = computed(() => stateSnapshot.value !== initialStateSnapshot.valu
 function clearValidationHighlights() {
   invalidFields.nombre = false
   invalidFields.descripcion = false
+  invalidFields.preparacion = false
+  invalidFields.ingredientes = false
   invalidFields.calorias = false
   invalidFields.imagen = false
   invalidFields.tipo = false
@@ -153,6 +159,12 @@ watch(
         ? {
             nombre: item.nombre,
             descripcion: item.descripcion,
+            preparacion: item.preparacion,
+            ingredientes: item.ingredientes.map((recipeIngredient) => ({
+              ingredientId: recipeIngredient.ingredientId,
+              cantidad: recipeIngredient.cantidad,
+              unidad: recipeIngredient.unidad
+            })),
             calorias: item.calorias,
             imagen: item.imagen,
             tipo: item.tipo
@@ -186,6 +198,21 @@ watch(
   () => {
     invalidFields.descripcion = false
   }
+)
+
+watch(
+  () => state.preparacion,
+  () => {
+    invalidFields.preparacion = false
+  }
+)
+
+watch(
+  () => state.ingredientes,
+  () => {
+    invalidFields.ingredientes = false
+  },
+  { deep: true }
 )
 
 watch(
@@ -415,6 +442,12 @@ function onCancel() {
             </section>
           </div>
         </div>
+
+        <AdminFoodRecipeFields
+          v-model:ingredientes="state.ingredientes"
+          v-model:preparacion="state.preparacion"
+          :invalid="invalidFields.ingredientes || invalidFields.preparacion"
+        />
 
         <section class="border-t border-default/70 pt-5">
           <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">

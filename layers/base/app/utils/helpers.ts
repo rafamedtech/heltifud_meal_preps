@@ -45,6 +45,11 @@ export const adminLinks: NavigationMenuItem[][] = [
       to: "/admin/planes"
     },
     {
+      label: "Clientes",
+      icon: "i-lucide-users-round",
+      to: "/admin/clientes"
+    },
+    {
       label: "Menús",
       icon: "i-lucide-notebook-tabs",
       type: "trigger",

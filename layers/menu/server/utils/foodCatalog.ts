@@ -13,16 +13,46 @@ function mapCatalogItem(item: {
   id: string;
   nombre: string;
   descripcion: string;
+  preparacion: string;
   calorias: number;
   imagen: string;
   tipo: string;
   createdAt: Date;
   updatedAt: Date;
+  recipeIngredients: Array<{
+    id: string;
+    ingredientId: string;
+    cantidad: unknown;
+    unidad: string;
+    orden: number;
+    ingredient: {
+      id: string;
+      nombre: string;
+      categoria: string;
+      createdAt: Date;
+      updatedAt: Date;
+    };
+  }>;
 }): FoodCatalogItem {
   return {
     id: item.id,
     nombre: item.nombre,
     descripcion: item.descripcion,
+    preparacion: item.preparacion,
+    ingredientes: item.recipeIngredients.map((recipeIngredient) => ({
+      id: recipeIngredient.id,
+      ingredientId: recipeIngredient.ingredientId,
+      cantidad: Number(recipeIngredient.cantidad),
+      unidad: recipeIngredient.unidad,
+      orden: recipeIngredient.orden,
+      ingredient: {
+        id: recipeIngredient.ingredient.id,
+        nombre: recipeIngredient.ingredient.nombre,
+        categoria: recipeIngredient.ingredient.categoria,
+        createdAt: recipeIngredient.ingredient.createdAt.toISOString(),
+        updatedAt: recipeIngredient.ingredient.updatedAt.toISOString(),
+      },
+    })),
     calorias: item.calorias,
     imagen: item.imagen,
     tipo: item.tipo,
@@ -43,17 +73,49 @@ function validateInput(input: FoodCatalogItemInput) {
   }
 
   return {
-    nombre: trimString(parsed.data.nombre),
-    descripcion: trimString(parsed.data.descripcion),
-    calorias: parsed.data.calorias,
-    imagen: trimString(parsed.data.imagen),
-    tipo: trimString(parsed.data.tipo),
+    catalogData: {
+      nombre: trimString(parsed.data.nombre),
+      descripcion: trimString(parsed.data.descripcion),
+      preparacion: trimString(parsed.data.preparacion),
+      calorias: parsed.data.calorias,
+      imagen: trimString(parsed.data.imagen),
+      tipo: trimString(parsed.data.tipo),
+    },
+    recipeIngredients: parsed.data.ingredientes.map((item, orden) => ({
+      ingredientId: item.ingredientId,
+      cantidad: item.cantidad,
+      unidad: trimString(item.unidad),
+      orden,
+    })),
   };
+}
+
+const recipeIngredientsQuery = {
+  include: { ingredient: true },
+  orderBy: { orden: 'asc' as const },
+};
+
+async function ensureIngredientsExist(ingredientIds: string[]) {
+  if (ingredientIds.length === 0) {
+    return;
+  }
+
+  const foundIngredients = await prisma.ingredient.count({
+    where: { id: { in: ingredientIds } },
+  });
+
+  if (foundIngredients !== ingredientIds.length) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Uno o más ingredientes seleccionados ya no existen.',
+    });
+  }
 }
 
 export async function getFoodCatalogItems() {
   const items = await prisma.foodCatalogItem.findMany({
     orderBy: [{ tipo: 'asc' }, { nombre: 'asc' }],
+    include: { recipeIngredients: recipeIngredientsQuery },
   });
 
   return items.map(mapCatalogItem);
@@ -62,16 +124,23 @@ export async function getFoodCatalogItems() {
 export async function getFoodCatalogItemById(id: string) {
   const item = await prisma.foodCatalogItem.findUnique({
     where: { id },
+    include: { recipeIngredients: recipeIngredientsQuery },
   });
 
   return item ? mapCatalogItem(item) : null;
 }
 
 export async function createFoodCatalogItem(input: FoodCatalogItemInput) {
-  const data = validateInput(input);
+  const { catalogData, recipeIngredients } = validateInput(input);
+
+  await ensureIngredientsExist(recipeIngredients.map((item) => item.ingredientId));
 
   const created = await prisma.foodCatalogItem.create({
-    data,
+    data: {
+      ...catalogData,
+      recipeIngredients: { create: recipeIngredients },
+    },
+    include: { recipeIngredients: recipeIngredientsQuery },
   });
 
   return mapCatalogItem(created);
@@ -94,12 +163,28 @@ export async function updateFoodCatalogItem(id: string, input: FoodCatalogItemIn
     throw createError({ statusCode: 404, statusMessage: 'FoodComponent no encontrado.' });
   }
 
-  const data = validateInput(input);
+  const { catalogData, recipeIngredients } = validateInput(input);
+  await ensureIngredientsExist(recipeIngredients.map((item) => item.ingredientId));
+
+  const componentData = {
+    nombre: catalogData.nombre,
+    descripcion: catalogData.descripcion,
+    calorias: catalogData.calorias,
+    imagen: catalogData.imagen,
+    tipo: catalogData.tipo,
+  };
 
   const [updated] = await prisma.$transaction([
     prisma.foodCatalogItem.update({
       where: { id },
-      data,
+      data: {
+        ...catalogData,
+        recipeIngredients: {
+          deleteMany: {},
+          create: recipeIngredients,
+        },
+      },
+      include: { recipeIngredients: recipeIngredientsQuery },
     }),
     prisma.foodComponent.updateMany({
       where: {
@@ -116,7 +201,7 @@ export async function updateFoodCatalogItem(id: string, input: FoodCatalogItemIn
         ],
       },
       data: {
-        ...data,
+        ...componentData,
         catalogItemId: id,
       },
     }),

@@ -42,3 +42,18 @@ export type FoodComponent = Prisma.FoodComponentModel
  * 
  */
 export type FoodCatalogItem = Prisma.FoodCatalogItemModel
+/**
+ * Model Ingredient
+ * 
+ */
+export type Ingredient = Prisma.IngredientModel
+/**
+ * Model RecipeIngredient
+ * 
+ */
+export type RecipeIngredient = Prisma.RecipeIngredientModel
+/**
+ * Model Customer
+ * 
+ */
+export type Customer = Prisma.CustomerModel

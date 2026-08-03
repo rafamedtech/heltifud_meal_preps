@@ -55,7 +55,10 @@ export const ModelName = {
   MenuDay: 'MenuDay',
   DaySlot: 'DaySlot',
   FoodComponent: 'FoodComponent',
-  FoodCatalogItem: 'FoodCatalogItem'
+  FoodCatalogItem: 'FoodCatalogItem',
+  Ingredient: 'Ingredient',
+  RecipeIngredient: 'RecipeIngredient',
+  Customer: 'Customer'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -126,6 +129,7 @@ export const FoodCatalogItemScalarFieldEnum = {
   id: 'id',
   nombre: 'nombre',
   descripcion: 'descripcion',
+  preparacion: 'preparacion',
   calorias: 'calorias',
   imagen: 'imagen',
   tipo: 'tipo',
@@ -134,6 +138,47 @@ export const FoodCatalogItemScalarFieldEnum = {
 } as const
 
 export type FoodCatalogItemScalarFieldEnum = (typeof FoodCatalogItemScalarFieldEnum)[keyof typeof FoodCatalogItemScalarFieldEnum]
+
+
+export const IngredientScalarFieldEnum = {
+  id: 'id',
+  nombre: 'nombre',
+  nombreNormalizado: 'nombreNormalizado',
+  categoria: 'categoria',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IngredientScalarFieldEnum = (typeof IngredientScalarFieldEnum)[keyof typeof IngredientScalarFieldEnum]
+
+
+export const RecipeIngredientScalarFieldEnum = {
+  id: 'id',
+  foodCatalogItemId: 'foodCatalogItemId',
+  ingredientId: 'ingredientId',
+  cantidad: 'cantidad',
+  unidad: 'unidad',
+  orden: 'orden'
+} as const
+
+export type RecipeIngredientScalarFieldEnum = (typeof RecipeIngredientScalarFieldEnum)[keyof typeof RecipeIngredientScalarFieldEnum]
+
+
+export const CustomerScalarFieldEnum = {
+  id: 'id',
+  nombre: 'nombre',
+  telefono: 'telefono',
+  ubicacion1: 'ubicacion1',
+  ubicacion2: 'ubicacion2',
+  correoElectronico: 'correoElectronico',
+  source: 'source',
+  status: 'status',
+  tipoCliente: 'tipoCliente',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
 
 
 export const SortOrder = {

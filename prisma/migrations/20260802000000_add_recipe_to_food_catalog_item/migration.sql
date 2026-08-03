@@ -1,0 +1,2 @@
+ALTER TABLE "FoodCatalogItem"
+ADD COLUMN "receta" TEXT NOT NULL DEFAULT '';

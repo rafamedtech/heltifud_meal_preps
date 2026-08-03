@@ -18,6 +18,11 @@ const mobileNavItems = [
     icon: "i-lucide-clipboard-list"
   },
   {
+    to: "/admin/clientes",
+    label: "Clientes",
+    icon: "i-lucide-users-round"
+  },
+  {
     to: "/admin/menu",
     label: "Menú",
     icon: "i-lucide-calendar-range"

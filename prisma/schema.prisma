@@ -1,103 +1,151 @@
 generator client {
-    provider = "prisma-client"
-    output   = "../layers/menu/generated/prisma"
+  provider = "prisma-client"
+  output   = "../layers/menu/generated/prisma"
 }
 
 datasource db {
-    provider = "postgresql"
+  provider = "postgresql"
 }
 
 model WeeklyMenu {
-    id        String    @id @default(uuid())
-    name      String
-    isActive  Boolean   @default(false)
-    startDate DateTime
-    endDate   DateTime
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    days      MenuDay[]
+  id        String    @id @default(uuid())
+  name      String
+  isActive  Boolean   @default(false)
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  days      MenuDay[]
 
-    @@index([isActive])
-    @@index([startDate])
-    @@index([endDate])
+  @@index([isActive])
+  @@index([startDate])
+  @@index([endDate])
 }
 
 model MenuDay {
-    id           String     @id @default(uuid())
-    weeklyMenuId String
-    dayOfWeek    DayOfWeek
-    order        Int
-    weeklyMenu   WeeklyMenu @relation(fields: [weeklyMenuId], references: [id], onDelete: Cascade)
-    slots        DaySlot[]
+  id           String     @id @default(uuid())
+  weeklyMenuId String
+  dayOfWeek    DayOfWeek
+  order        Int
+  weeklyMenu   WeeklyMenu @relation(fields: [weeklyMenuId], references: [id], onDelete: Cascade)
+  slots        DaySlot[]
 
-    @@unique([weeklyMenuId, dayOfWeek])
-    @@unique([weeklyMenuId, order])
+  @@unique([weeklyMenuId, dayOfWeek])
+  @@unique([weeklyMenuId, order])
 }
 
 model DaySlot {
-    id         String          @id @default(uuid())
-    menuDayId  String
-    slotType   SlotType
-    contenedor String?
-    menuDay    MenuDay         @relation(fields: [menuDayId], references: [id], onDelete: Cascade)
-    components FoodComponent[]
+  id         String          @id @default(uuid())
+  menuDayId  String
+  slotType   SlotType
+  contenedor String?
+  menuDay    MenuDay         @relation(fields: [menuDayId], references: [id], onDelete: Cascade)
+  components FoodComponent[]
 
-    @@unique([menuDayId, slotType])
+  @@unique([menuDayId, slotType])
 }
 
 model FoodComponent {
-    id            String        @id @default(uuid())
-    daySlotId     String
-    catalogItemId String?
-    componentRole ComponentRole
-    nombre        String
-    descripcion   String
-    calorias      Int
-    imagen        String
-    tipo          String
-    daySlot       DaySlot       @relation(fields: [daySlotId], references: [id], onDelete: Cascade)
-    catalogItem   FoodCatalogItem? @relation(fields: [catalogItemId], references: [id], onDelete: SetNull)
+  id            String           @id @default(uuid())
+  daySlotId     String
+  catalogItemId String?
+  componentRole ComponentRole
+  nombre        String
+  descripcion   String
+  calorias      Int
+  imagen        String
+  tipo          String
+  daySlot       DaySlot          @relation(fields: [daySlotId], references: [id], onDelete: Cascade)
+  catalogItem   FoodCatalogItem? @relation(fields: [catalogItemId], references: [id], onDelete: SetNull)
 
-    @@index([catalogItemId])
-    @@index([daySlotId, componentRole])
+  @@index([catalogItemId])
+  @@index([daySlotId, componentRole])
 }
 
 model FoodCatalogItem {
-    id          String   @id @default(uuid())
-    nombre      String
-    descripcion String
-    calorias    Int
-    imagen      String
-    tipo        String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    components  FoodComponent[]
+  id                String             @id @default(uuid())
+  nombre            String
+  descripcion       String
+  preparacion       String             @default("")
+  calorias          Int
+  imagen            String
+  tipo              String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  components        FoodComponent[]
+  recipeIngredients RecipeIngredient[]
 
-    @@index([nombre])
-    @@index([tipo])
+  @@index([nombre])
+  @@index([tipo])
+}
+
+model Ingredient {
+  id                String             @id @default(uuid())
+  nombre            String
+  nombreNormalizado String             @unique
+  categoria         String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  recipeIngredients RecipeIngredient[]
+
+  @@index([categoria])
+  @@index([nombre])
+}
+
+model RecipeIngredient {
+  id                String          @id @default(uuid())
+  foodCatalogItemId String
+  ingredientId      String
+  cantidad          Decimal         @db.Decimal(10, 3)
+  unidad            String
+  orden             Int
+  foodCatalogItem   FoodCatalogItem @relation(fields: [foodCatalogItemId], references: [id], onDelete: Cascade)
+  ingredient        Ingredient      @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+
+  @@unique([foodCatalogItemId, ingredientId])
+  @@unique([foodCatalogItemId, orden])
+  @@index([ingredientId])
+}
+
+model Customer {
+  id                String   @id @default(uuid()) @db.Uuid
+  nombre            String
+  telefono          String
+  ubicacion1        String
+  ubicacion2        String?
+  correoElectronico String?  @map("correo_electronico")
+  source            String   @default("whatsapp")
+  status            String   @default("prospecto")
+  tipoCliente       String   @default("menu") @map("tipo_cliente")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([status, tipoCliente, nombre, id], map: "customers_status_tipo_nombre_idx")
+  @@index([source], map: "customers_source_idx")
+  @@map("customers")
 }
 
 enum DayOfWeek {
-    LUNES
-    MARTES
-    MIERCOLES
-    JUEVES
-    VIERNES
-    SABADO
-    DOMINGO
+  LUNES
+  MARTES
+  MIERCOLES
+  JUEVES
+  VIERNES
+  SABADO
+  DOMINGO
 }
 
 enum SlotType {
-    DESAYUNO
-    COMIDA
-    CENA
-    SNACK1
-    SNACK2
+  DESAYUNO
+  COMIDA
+  CENA
+  SNACK1
+  SNACK2
 }
 
 enum ComponentRole {
-    PLATILLO_PRINCIPAL
-    GUARNICION_1
-    GUARNICION_2
-    ADICIONAL
+  PLATILLO_PRINCIPAL
+  GUARNICION_1
+  GUARNICION_2
+  ADICIONAL
 }

@@ -38,6 +38,7 @@ export type FoodCatalogItemMinAggregateOutputType = {
   id: string | null
   nombre: string | null
   descripcion: string | null
+  preparacion: string | null
   calorias: number | null
   imagen: string | null
   tipo: string | null
@@ -49,6 +50,7 @@ export type FoodCatalogItemMaxAggregateOutputType = {
   id: string | null
   nombre: string | null
   descripcion: string | null
+  preparacion: string | null
   calorias: number | null
   imagen: string | null
   tipo: string | null
@@ -60,6 +62,7 @@ export type FoodCatalogItemCountAggregateOutputType = {
   id: number
   nombre: number
   descripcion: number
+  preparacion: number
   calorias: number
   imagen: number
   tipo: number
@@ -81,6 +84,7 @@ export type FoodCatalogItemMinAggregateInputType = {
   id?: true
   nombre?: true
   descripcion?: true
+  preparacion?: true
   calorias?: true
   imagen?: true
   tipo?: true
@@ -92,6 +96,7 @@ export type FoodCatalogItemMaxAggregateInputType = {
   id?: true
   nombre?: true
   descripcion?: true
+  preparacion?: true
   calorias?: true
   imagen?: true
   tipo?: true
@@ -103,6 +108,7 @@ export type FoodCatalogItemCountAggregateInputType = {
   id?: true
   nombre?: true
   descripcion?: true
+  preparacion?: true
   calorias?: true
   imagen?: true
   tipo?: true
@@ -201,6 +207,7 @@ export type FoodCatalogItemGroupByOutputType = {
   id: string
   nombre: string
   descripcion: string
+  preparacion: string
   calorias: number
   imagen: string
   tipo: string
@@ -235,24 +242,28 @@ export type FoodCatalogItemWhereInput = {
   id?: Prisma.StringFilter<"FoodCatalogItem"> | string
   nombre?: Prisma.StringFilter<"FoodCatalogItem"> | string
   descripcion?: Prisma.StringFilter<"FoodCatalogItem"> | string
+  preparacion?: Prisma.StringFilter<"FoodCatalogItem"> | string
   calorias?: Prisma.IntFilter<"FoodCatalogItem"> | number
   imagen?: Prisma.StringFilter<"FoodCatalogItem"> | string
   tipo?: Prisma.StringFilter<"FoodCatalogItem"> | string
   createdAt?: Prisma.DateTimeFilter<"FoodCatalogItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FoodCatalogItem"> | Date | string
   components?: Prisma.FoodComponentListRelationFilter
+  recipeIngredients?: Prisma.RecipeIngredientListRelationFilter
 }
 
 export type FoodCatalogItemOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  preparacion?: Prisma.SortOrder
   calorias?: Prisma.SortOrder
   imagen?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   components?: Prisma.FoodComponentOrderByRelationAggregateInput
+  recipeIngredients?: Prisma.RecipeIngredientOrderByRelationAggregateInput
 }
 
 export type FoodCatalogItemWhereUniqueInput = Prisma.AtLeast<{
@@ -262,18 +273,21 @@ export type FoodCatalogItemWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.FoodCatalogItemWhereInput | Prisma.FoodCatalogItemWhereInput[]
   nombre?: Prisma.StringFilter<"FoodCatalogItem"> | string
   descripcion?: Prisma.StringFilter<"FoodCatalogItem"> | string
+  preparacion?: Prisma.StringFilter<"FoodCatalogItem"> | string
   calorias?: Prisma.IntFilter<"FoodCatalogItem"> | number
   imagen?: Prisma.StringFilter<"FoodCatalogItem"> | string
   tipo?: Prisma.StringFilter<"FoodCatalogItem"> | string
   createdAt?: Prisma.DateTimeFilter<"FoodCatalogItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FoodCatalogItem"> | Date | string
   components?: Prisma.FoodComponentListRelationFilter
+  recipeIngredients?: Prisma.RecipeIngredientListRelationFilter
 }, "id">
 
 export type FoodCatalogItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  preparacion?: Prisma.SortOrder
   calorias?: Prisma.SortOrder
   imagen?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
@@ -293,6 +307,7 @@ export type FoodCatalogItemScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"FoodCatalogItem"> | string
   nombre?: Prisma.StringWithAggregatesFilter<"FoodCatalogItem"> | string
   descripcion?: Prisma.StringWithAggregatesFilter<"FoodCatalogItem"> | string
+  preparacion?: Prisma.StringWithAggregatesFilter<"FoodCatalogItem"> | string
   calorias?: Prisma.IntWithAggregatesFilter<"FoodCatalogItem"> | number
   imagen?: Prisma.StringWithAggregatesFilter<"FoodCatalogItem"> | string
   tipo?: Prisma.StringWithAggregatesFilter<"FoodCatalogItem"> | string
@@ -304,54 +319,63 @@ export type FoodCatalogItemCreateInput = {
   id?: string
   nombre: string
   descripcion: string
+  preparacion?: string
   calorias: number
   imagen: string
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
   components?: Prisma.FoodComponentCreateNestedManyWithoutCatalogItemInput
+  recipeIngredients?: Prisma.RecipeIngredientCreateNestedManyWithoutFoodCatalogItemInput
 }
 
 export type FoodCatalogItemUncheckedCreateInput = {
   id?: string
   nombre: string
   descripcion: string
+  preparacion?: string
   calorias: number
   imagen: string
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
   components?: Prisma.FoodComponentUncheckedCreateNestedManyWithoutCatalogItemInput
+  recipeIngredients?: Prisma.RecipeIngredientUncheckedCreateNestedManyWithoutFoodCatalogItemInput
 }
 
 export type FoodCatalogItemUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  preparacion?: Prisma.StringFieldUpdateOperationsInput | string
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   components?: Prisma.FoodComponentUpdateManyWithoutCatalogItemNestedInput
+  recipeIngredients?: Prisma.RecipeIngredientUpdateManyWithoutFoodCatalogItemNestedInput
 }
 
 export type FoodCatalogItemUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  preparacion?: Prisma.StringFieldUpdateOperationsInput | string
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   components?: Prisma.FoodComponentUncheckedUpdateManyWithoutCatalogItemNestedInput
+  recipeIngredients?: Prisma.RecipeIngredientUncheckedUpdateManyWithoutFoodCatalogItemNestedInput
 }
 
 export type FoodCatalogItemCreateManyInput = {
   id?: string
   nombre: string
   descripcion: string
+  preparacion?: string
   calorias: number
   imagen: string
   tipo: string
@@ -363,6 +387,7 @@ export type FoodCatalogItemUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  preparacion?: Prisma.StringFieldUpdateOperationsInput | string
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
@@ -374,6 +399,7 @@ export type FoodCatalogItemUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  preparacion?: Prisma.StringFieldUpdateOperationsInput | string
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
@@ -390,6 +416,7 @@ export type FoodCatalogItemCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  preparacion?: Prisma.SortOrder
   calorias?: Prisma.SortOrder
   imagen?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
@@ -405,6 +432,7 @@ export type FoodCatalogItemMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  preparacion?: Prisma.SortOrder
   calorias?: Prisma.SortOrder
   imagen?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
@@ -416,6 +444,7 @@ export type FoodCatalogItemMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   descripcion?: Prisma.SortOrder
+  preparacion?: Prisma.SortOrder
   calorias?: Prisma.SortOrder
   imagen?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
@@ -425,6 +454,11 @@ export type FoodCatalogItemMinOrderByAggregateInput = {
 
 export type FoodCatalogItemSumOrderByAggregateInput = {
   calorias?: Prisma.SortOrder
+}
+
+export type FoodCatalogItemScalarRelationFilter = {
+  is?: Prisma.FoodCatalogItemWhereInput
+  isNot?: Prisma.FoodCatalogItemWhereInput
 }
 
 export type FoodCatalogItemCreateNestedOneWithoutComponentsInput = {
@@ -443,26 +477,44 @@ export type FoodCatalogItemUpdateOneWithoutComponentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.FoodCatalogItemUpdateToOneWithWhereWithoutComponentsInput, Prisma.FoodCatalogItemUpdateWithoutComponentsInput>, Prisma.FoodCatalogItemUncheckedUpdateWithoutComponentsInput>
 }
 
+export type FoodCatalogItemCreateNestedOneWithoutRecipeIngredientsInput = {
+  create?: Prisma.XOR<Prisma.FoodCatalogItemCreateWithoutRecipeIngredientsInput, Prisma.FoodCatalogItemUncheckedCreateWithoutRecipeIngredientsInput>
+  connectOrCreate?: Prisma.FoodCatalogItemCreateOrConnectWithoutRecipeIngredientsInput
+  connect?: Prisma.FoodCatalogItemWhereUniqueInput
+}
+
+export type FoodCatalogItemUpdateOneRequiredWithoutRecipeIngredientsNestedInput = {
+  create?: Prisma.XOR<Prisma.FoodCatalogItemCreateWithoutRecipeIngredientsInput, Prisma.FoodCatalogItemUncheckedCreateWithoutRecipeIngredientsInput>
+  connectOrCreate?: Prisma.FoodCatalogItemCreateOrConnectWithoutRecipeIngredientsInput
+  upsert?: Prisma.FoodCatalogItemUpsertWithoutRecipeIngredientsInput
+  connect?: Prisma.FoodCatalogItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FoodCatalogItemUpdateToOneWithWhereWithoutRecipeIngredientsInput, Prisma.FoodCatalogItemUpdateWithoutRecipeIngredientsInput>, Prisma.FoodCatalogItemUncheckedUpdateWithoutRecipeIngredientsInput>
+}
+
 export type FoodCatalogItemCreateWithoutComponentsInput = {
   id?: string
   nombre: string
   descripcion: string
+  preparacion?: string
   calorias: number
   imagen: string
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  recipeIngredients?: Prisma.RecipeIngredientCreateNestedManyWithoutFoodCatalogItemInput
 }
 
 export type FoodCatalogItemUncheckedCreateWithoutComponentsInput = {
   id?: string
   nombre: string
   descripcion: string
+  preparacion?: string
   calorias: number
   imagen: string
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  recipeIngredients?: Prisma.RecipeIngredientUncheckedCreateNestedManyWithoutFoodCatalogItemInput
 }
 
 export type FoodCatalogItemCreateOrConnectWithoutComponentsInput = {
@@ -485,22 +537,94 @@ export type FoodCatalogItemUpdateWithoutComponentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  preparacion?: Prisma.StringFieldUpdateOperationsInput | string
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipeIngredients?: Prisma.RecipeIngredientUpdateManyWithoutFoodCatalogItemNestedInput
 }
 
 export type FoodCatalogItemUncheckedUpdateWithoutComponentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  preparacion?: Prisma.StringFieldUpdateOperationsInput | string
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipeIngredients?: Prisma.RecipeIngredientUncheckedUpdateManyWithoutFoodCatalogItemNestedInput
+}
+
+export type FoodCatalogItemCreateWithoutRecipeIngredientsInput = {
+  id?: string
+  nombre: string
+  descripcion: string
+  preparacion?: string
+  calorias: number
+  imagen: string
+  tipo: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  components?: Prisma.FoodComponentCreateNestedManyWithoutCatalogItemInput
+}
+
+export type FoodCatalogItemUncheckedCreateWithoutRecipeIngredientsInput = {
+  id?: string
+  nombre: string
+  descripcion: string
+  preparacion?: string
+  calorias: number
+  imagen: string
+  tipo: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  components?: Prisma.FoodComponentUncheckedCreateNestedManyWithoutCatalogItemInput
+}
+
+export type FoodCatalogItemCreateOrConnectWithoutRecipeIngredientsInput = {
+  where: Prisma.FoodCatalogItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.FoodCatalogItemCreateWithoutRecipeIngredientsInput, Prisma.FoodCatalogItemUncheckedCreateWithoutRecipeIngredientsInput>
+}
+
+export type FoodCatalogItemUpsertWithoutRecipeIngredientsInput = {
+  update: Prisma.XOR<Prisma.FoodCatalogItemUpdateWithoutRecipeIngredientsInput, Prisma.FoodCatalogItemUncheckedUpdateWithoutRecipeIngredientsInput>
+  create: Prisma.XOR<Prisma.FoodCatalogItemCreateWithoutRecipeIngredientsInput, Prisma.FoodCatalogItemUncheckedCreateWithoutRecipeIngredientsInput>
+  where?: Prisma.FoodCatalogItemWhereInput
+}
+
+export type FoodCatalogItemUpdateToOneWithWhereWithoutRecipeIngredientsInput = {
+  where?: Prisma.FoodCatalogItemWhereInput
+  data: Prisma.XOR<Prisma.FoodCatalogItemUpdateWithoutRecipeIngredientsInput, Prisma.FoodCatalogItemUncheckedUpdateWithoutRecipeIngredientsInput>
+}
+
+export type FoodCatalogItemUpdateWithoutRecipeIngredientsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  preparacion?: Prisma.StringFieldUpdateOperationsInput | string
+  calorias?: Prisma.IntFieldUpdateOperationsInput | number
+  imagen?: Prisma.StringFieldUpdateOperationsInput | string
+  tipo?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  components?: Prisma.FoodComponentUpdateManyWithoutCatalogItemNestedInput
+}
+
+export type FoodCatalogItemUncheckedUpdateWithoutRecipeIngredientsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  descripcion?: Prisma.StringFieldUpdateOperationsInput | string
+  preparacion?: Prisma.StringFieldUpdateOperationsInput | string
+  calorias?: Prisma.IntFieldUpdateOperationsInput | number
+  imagen?: Prisma.StringFieldUpdateOperationsInput | string
+  tipo?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  components?: Prisma.FoodComponentUncheckedUpdateManyWithoutCatalogItemNestedInput
 }
 
 
@@ -510,10 +634,12 @@ export type FoodCatalogItemUncheckedUpdateWithoutComponentsInput = {
 
 export type FoodCatalogItemCountOutputType = {
   components: number
+  recipeIngredients: number
 }
 
 export type FoodCatalogItemCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   components?: boolean | FoodCatalogItemCountOutputTypeCountComponentsArgs
+  recipeIngredients?: boolean | FoodCatalogItemCountOutputTypeCountRecipeIngredientsArgs
 }
 
 /**
@@ -533,17 +659,26 @@ export type FoodCatalogItemCountOutputTypeCountComponentsArgs<ExtArgs extends ru
   where?: Prisma.FoodComponentWhereInput
 }
 
+/**
+ * FoodCatalogItemCountOutputType without action
+ */
+export type FoodCatalogItemCountOutputTypeCountRecipeIngredientsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecipeIngredientWhereInput
+}
+
 
 export type FoodCatalogItemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   nombre?: boolean
   descripcion?: boolean
+  preparacion?: boolean
   calorias?: boolean
   imagen?: boolean
   tipo?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   components?: boolean | Prisma.FoodCatalogItem$componentsArgs<ExtArgs>
+  recipeIngredients?: boolean | Prisma.FoodCatalogItem$recipeIngredientsArgs<ExtArgs>
   _count?: boolean | Prisma.FoodCatalogItemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["foodCatalogItem"]>
 
@@ -551,6 +686,7 @@ export type FoodCatalogItemSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   id?: boolean
   nombre?: boolean
   descripcion?: boolean
+  preparacion?: boolean
   calorias?: boolean
   imagen?: boolean
   tipo?: boolean
@@ -562,6 +698,7 @@ export type FoodCatalogItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   id?: boolean
   nombre?: boolean
   descripcion?: boolean
+  preparacion?: boolean
   calorias?: boolean
   imagen?: boolean
   tipo?: boolean
@@ -573,6 +710,7 @@ export type FoodCatalogItemSelectScalar = {
   id?: boolean
   nombre?: boolean
   descripcion?: boolean
+  preparacion?: boolean
   calorias?: boolean
   imagen?: boolean
   tipo?: boolean
@@ -580,9 +718,10 @@ export type FoodCatalogItemSelectScalar = {
   updatedAt?: boolean
 }
 
-export type FoodCatalogItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nombre" | "descripcion" | "calorias" | "imagen" | "tipo" | "createdAt" | "updatedAt", ExtArgs["result"]["foodCatalogItem"]>
+export type FoodCatalogItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nombre" | "descripcion" | "preparacion" | "calorias" | "imagen" | "tipo" | "createdAt" | "updatedAt", ExtArgs["result"]["foodCatalogItem"]>
 export type FoodCatalogItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   components?: boolean | Prisma.FoodCatalogItem$componentsArgs<ExtArgs>
+  recipeIngredients?: boolean | Prisma.FoodCatalogItem$recipeIngredientsArgs<ExtArgs>
   _count?: boolean | Prisma.FoodCatalogItemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type FoodCatalogItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -592,11 +731,13 @@ export type $FoodCatalogItemPayload<ExtArgs extends runtime.Types.Extensions.Int
   name: "FoodCatalogItem"
   objects: {
     components: Prisma.$FoodComponentPayload<ExtArgs>[]
+    recipeIngredients: Prisma.$RecipeIngredientPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     nombre: string
     descripcion: string
+    preparacion: string
     calorias: number
     imagen: string
     tipo: string
@@ -997,6 +1138,7 @@ readonly fields: FoodCatalogItemFieldRefs;
 export interface Prisma__FoodCatalogItemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   components<T extends Prisma.FoodCatalogItem$componentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FoodCatalogItem$componentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FoodComponentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recipeIngredients<T extends Prisma.FoodCatalogItem$recipeIngredientsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FoodCatalogItem$recipeIngredientsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecipeIngredientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1029,6 +1171,7 @@ export interface FoodCatalogItemFieldRefs {
   readonly id: Prisma.FieldRef<"FoodCatalogItem", 'String'>
   readonly nombre: Prisma.FieldRef<"FoodCatalogItem", 'String'>
   readonly descripcion: Prisma.FieldRef<"FoodCatalogItem", 'String'>
+  readonly preparacion: Prisma.FieldRef<"FoodCatalogItem", 'String'>
   readonly calorias: Prisma.FieldRef<"FoodCatalogItem", 'Int'>
   readonly imagen: Prisma.FieldRef<"FoodCatalogItem", 'String'>
   readonly tipo: Prisma.FieldRef<"FoodCatalogItem", 'String'>
@@ -1448,6 +1591,30 @@ export type FoodCatalogItem$componentsArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.FoodComponentScalarFieldEnum | Prisma.FoodComponentScalarFieldEnum[]
+}
+
+/**
+ * FoodCatalogItem.recipeIngredients
+ */
+export type FoodCatalogItem$recipeIngredientsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecipeIngredient
+   */
+  select?: Prisma.RecipeIngredientSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecipeIngredient
+   */
+  omit?: Prisma.RecipeIngredientOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecipeIngredientInclude<ExtArgs> | null
+  where?: Prisma.RecipeIngredientWhereInput
+  orderBy?: Prisma.RecipeIngredientOrderByWithRelationInput | Prisma.RecipeIngredientOrderByWithRelationInput[]
+  cursor?: Prisma.RecipeIngredientWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecipeIngredientScalarFieldEnum | Prisma.RecipeIngredientScalarFieldEnum[]
 }
 
 /**

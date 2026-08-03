@@ -11,8 +11,9 @@ export default defineEventHandler(async (event) => {
   const isProtectedMenuRoute = path === "/api/menu/all" || path.startsWith("/api/menu/")
   const isProtectedMenuMutation = path === "/api/menu" && method !== "GET"
   const isProtectedFoodRoute = path.startsWith("/api/food-components")
+  const isProtectedCustomerRoute = path.startsWith("/api/customers")
 
-  if (isPublicMenuRoute || !(isProtectedMenuRoute || isProtectedMenuMutation || isProtectedFoodRoute)) {
+  if (isPublicMenuRoute || !(isProtectedMenuRoute || isProtectedMenuMutation || isProtectedFoodRoute || isProtectedCustomerRoute)) {
     return
   }
 

@@ -38,13 +38,81 @@ export interface FoodItemDetail {
   tipo: string;
 }
 
+export interface Ingredient {
+  id: string;
+  nombre: string;
+  categoria: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IngredientInput {
+  nombre: string;
+  categoria: string;
+}
+
+export interface RecipeIngredientInput {
+  ingredientId: string;
+  cantidad: number;
+  unidad: string;
+}
+
+export interface RecipeIngredient extends RecipeIngredientInput {
+  id: string;
+  orden: number;
+  ingredient: Ingredient;
+}
+
 export interface FoodCatalogItem extends Omit<FoodItemDetail, 'catalogItemId'> {
+  id: string;
+  preparacion: string;
+  ingredientes: RecipeIngredient[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type FoodCatalogItemInput = Omit<FoodItemDetail, 'catalogItemId'> & {
+  preparacion: string;
+  ingredientes: RecipeIngredientInput[];
+};
+
+export const CUSTOMER_SOURCE_VALUES = [
+  'whatsapp',
+  'instagram',
+  'facebook',
+  'sitio_web',
+  'recomendacion',
+  'otro',
+] as const;
+
+export const CUSTOMER_STATUS_VALUES = ['prospecto', 'activo', 'inactivo'] as const;
+export const CUSTOMER_TYPE_VALUES = ['menu', 'vegetariano', 'dieta'] as const;
+
+export type CustomerSource = (typeof CUSTOMER_SOURCE_VALUES)[number];
+export type CustomerStatus = (typeof CUSTOMER_STATUS_VALUES)[number];
+export type CustomerType = (typeof CUSTOMER_TYPE_VALUES)[number];
+
+export interface CustomerInput {
+  nombre: string;
+  telefono: string;
+  ubicacion1: string;
+  ubicacion2: string;
+  correoElectronico: string;
+  source: CustomerSource;
+  status: CustomerStatus;
+  tipoCliente: CustomerType;
+}
+
+export interface Customer extends CustomerInput {
   id: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export type FoodCatalogItemInput = Omit<FoodItemDetail, 'catalogItemId'>;
+export interface CustomerListResponse {
+  items: Customer[];
+  nextCursor: string | null;
+}
 
 export interface MenuSlot {
   platilloPrincipal: FoodItemDetail;

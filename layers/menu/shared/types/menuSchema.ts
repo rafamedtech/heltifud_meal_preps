@@ -1,6 +1,11 @@
 import { z } from 'zod';
 
-import { DAY_OF_WEEK_VALUES } from './types';
+import {
+  CUSTOMER_SOURCE_VALUES,
+  CUSTOMER_STATUS_VALUES,
+  CUSTOMER_TYPE_VALUES,
+  DAY_OF_WEEK_VALUES,
+} from './types';
 
 const REQUIRED_DAY_VALUES = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES'] as const;
 const SLOT_KEYS = ['desayuno', 'comida', 'cena', 'snack1', 'snack2'] as const;
@@ -145,5 +150,59 @@ export const weeklyMenuInputSchema = z
   });
 
 export type WeeklyMenuInputParsed = z.infer<typeof weeklyMenuInputSchema>;
-export const foodCatalogItemInputSchema = foodItemSchema;
+
+export const ingredientInputSchema = z.object({
+  nombre: z.string().trim().min(1, 'El nombre del ingrediente es obligatorio').max(120),
+  categoria: z.string().trim().min(1, 'La categoría es obligatoria').max(80),
+});
+
+export const recipeIngredientInputSchema = z.object({
+  ingredientId: z.string().uuid('Selecciona un ingrediente'),
+  cantidad: z.number().positive('La cantidad debe ser mayor que cero').max(999999),
+  unidad: z.string().trim().min(1, 'La unidad de medida es obligatoria').max(50),
+});
+
+export const foodCatalogItemInputSchema = foodItemSchema.extend({
+  preparacion: z.string().default(''),
+  ingredientes: z.array(recipeIngredientInputSchema).default([]),
+}).superRefine((value, ctx) => {
+  const ingredientIds = new Set<string>();
+
+  value.ingredientes.forEach((item, index) => {
+    if (ingredientIds.has(item.ingredientId)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['ingredientes', index, 'ingredientId'],
+        message: 'No puedes repetir el mismo ingrediente en una receta',
+      });
+    }
+
+    ingredientIds.add(item.ingredientId);
+  });
+});
 export type FoodCatalogItemInputParsed = z.infer<typeof foodCatalogItemInputSchema>;
+
+const optionalTrimmedString = (max: number) => z.string().trim().max(max).default('');
+
+export const customerInputSchema = z.object({
+  nombre: z.string().trim().min(2, 'El nombre debe tener al menos 2 caracteres').max(160),
+  telefono: z.string().trim().min(7, 'Ingresa un teléfono válido').max(30),
+  ubicacion1: z.string().trim().min(3, 'La ubicación principal es obligatoria').max(300),
+  ubicacion2: optionalTrimmedString(300),
+  correoElectronico: z.union([
+    z.literal(''),
+    z.string().trim().email('Ingresa un correo electrónico válido').max(254),
+  ]).default(''),
+  source: z.enum(CUSTOMER_SOURCE_VALUES),
+  status: z.enum(CUSTOMER_STATUS_VALUES),
+  tipoCliente: z.enum(CUSTOMER_TYPE_VALUES),
+});
+
+export const customerListQuerySchema = z.object({
+  q: optionalTrimmedString(100),
+  source: z.enum(CUSTOMER_SOURCE_VALUES).optional(),
+  status: z.enum(CUSTOMER_STATUS_VALUES).optional(),
+  tipoCliente: z.enum(CUSTOMER_TYPE_VALUES).optional(),
+  cursor: z.string().trim().max(1000).optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(30),
+});
