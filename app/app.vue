@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { es } from "@nuxt/ui/locale"
+
 const pageTransition = {
   onAfterLeave: () => {
     if (!import.meta.client) {
@@ -15,7 +17,7 @@ const pageTransition = {
 </script>
 
 <template>
-  <UApp>
+  <UApp :locale="es">
     <NuxtRouteAnnouncer />
     <NuxtLayout>
       <NuxtPage :transition="pageTransition" />

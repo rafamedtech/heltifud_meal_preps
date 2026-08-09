@@ -57,3 +57,8 @@ export type RecipeIngredient = Prisma.RecipeIngredientModel
  * 
  */
 export type Customer = Prisma.CustomerModel
+/**
+ * Model Expense
+ *
+ */
+export type Expense = Prisma.ExpenseModel

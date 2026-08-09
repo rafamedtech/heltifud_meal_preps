@@ -5,6 +5,8 @@ import {
   CUSTOMER_STATUS_VALUES,
   CUSTOMER_TYPE_VALUES,
   DAY_OF_WEEK_VALUES,
+  EXPENSE_CATEGORY_VALUES,
+  EXPENSE_PAYMENT_METHOD_VALUES,
 } from './types';
 
 const REQUIRED_DAY_VALUES = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES'] as const;
@@ -205,4 +207,35 @@ export const customerListQuerySchema = z.object({
   tipoCliente: z.enum(CUSTOMER_TYPE_VALUES).optional(),
   cursor: z.string().trim().max(1000).optional(),
   limit: z.coerce.number().int().min(1).max(100).default(30),
+});
+
+const isoDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Selecciona una fecha válida')
+  .refine((value) => {
+    const date = new Date(`${value}T00:00:00.000Z`);
+    return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+  }, 'Selecciona una fecha válida');
+
+export const expenseInputSchema = z.object({
+  description: z.string().trim().min(2, 'La descripción debe tener al menos 2 caracteres').max(160),
+  amount: z.number().positive('El monto debe ser mayor que cero').max(9999999999.99),
+  category: z.enum(EXPENSE_CATEGORY_VALUES),
+  paymentMethod: z.enum(EXPENSE_PAYMENT_METHOD_VALUES),
+  expenseDate: isoDateSchema,
+  vendor: optionalTrimmedString(120),
+  notes: optionalTrimmedString(500),
+});
+
+export const expenseListQuerySchema = z.object({
+  q: optionalTrimmedString(100),
+  category: z.enum(EXPENSE_CATEGORY_VALUES).optional(),
+  paymentMethod: z.enum(EXPENSE_PAYMENT_METHOD_VALUES).optional(),
+  from: isoDateSchema.optional(),
+  to: isoDateSchema.optional(),
+  cursor: z.string().trim().max(1000).optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(30),
+}).refine((value) => !value.from || !value.to || value.from <= value.to, {
+  message: 'La fecha inicial no puede ser posterior a la fecha final',
+  path: ['from'],
 });

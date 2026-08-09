@@ -23,6 +23,11 @@ const mobileNavItems = [
     icon: "i-lucide-users-round"
   },
   {
+    to: "/admin/gastos",
+    label: "Gastos",
+    icon: "i-lucide-wallet-cards"
+  },
+  {
     to: "/admin/menu",
     label: "Menú",
     icon: "i-lucide-calendar-range"

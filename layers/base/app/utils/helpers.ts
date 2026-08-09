@@ -50,6 +50,11 @@ export const adminLinks: NavigationMenuItem[][] = [
       to: "/admin/clientes"
     },
     {
+      label: "Gastos",
+      icon: "i-lucide-wallet-cards",
+      to: "/admin/gastos"
+    },
+    {
       label: "Menús",
       icon: "i-lucide-notebook-tabs",
       type: "trigger",

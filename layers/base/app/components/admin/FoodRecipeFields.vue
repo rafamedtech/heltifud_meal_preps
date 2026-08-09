@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { TableColumn } from "@nuxt/ui"
 import { ingredientInputSchema } from "~~/layers/menu/shared/types/menuSchema"
 import type { Ingredient, IngredientInput, RecipeIngredientInput } from "~~/layers/menu/shared/types/types"
 
@@ -44,6 +45,34 @@ const categoryOptions = [
   "Otro"
 ]
 
+const ingredientTableColumns: TableColumn<RecipeIngredientInput>[] = [
+  {
+    id: "ingredient",
+    header: "Ingrediente",
+    meta: { class: { th: "min-w-72", td: "min-w-72" } }
+  },
+  {
+    id: "quantity",
+    header: "Cantidad",
+    meta: { class: { th: "w-32", td: "w-32" } }
+  },
+  {
+    id: "unit",
+    header: "Unidad",
+    meta: { class: { th: "min-w-40", td: "min-w-40" } }
+  },
+  {
+    id: "category",
+    header: "Categoría",
+    meta: { class: { th: "min-w-36", td: "min-w-36" } }
+  },
+  {
+    id: "actions",
+    header: "",
+    meta: { class: { th: "w-12", td: "w-12 text-right" } }
+  }
+]
+
 const ingredientOptions = computed(() =>
   ingredientCatalog.value.map((ingredient) => ({
     label: ingredient.nombre,
@@ -70,9 +99,9 @@ function getIngredient(ingredientId: string) {
   return ingredientCatalog.value.find((ingredient) => ingredient.id === ingredientId)
 }
 
-function openCreateIngredient(index: number) {
+function openCreateIngredient(index: number | null, ingredientName: string) {
   createTargetIndex.value = index
-  newIngredient.nombre = ""
+  newIngredient.nombre = ingredientName.trim()
   newIngredient.categoria = ""
   newIngredientError.value = ""
   createIngredientOpen.value = true
@@ -139,7 +168,7 @@ async function saveNewIngredient() {
       <UButton
         type="button"
         color="neutral"
-        variant="soft"
+        variant="ghost"
         icon="i-lucide-plus"
         @click="addIngredientRow"
       >
@@ -148,94 +177,99 @@ async function saveNewIngredient() {
     </div>
 
     <div class="space-y-6 p-4 sm:p-5">
-      <div class="space-y-3">
-        <div class="flex items-center justify-between gap-4">
+      <div class="space-y-2">
+        <div class="flex items-center justify-between gap-4 border-b border-default/70 pb-2.5">
           <div>
             <h3 class="text-sm font-semibold text-highlighted">Lista de ingredientes</h3>
           </div>
-          <UBadge color="neutral" variant="soft" class="self-center leading-none translate-y-px">
+          <UBadge color="neutral" variant="outline" size="sm" class="self-center tabular-nums leading-none translate-y-px">
             {{ ingredientes.length }} {{ ingredientes.length === 1 ? "ingrediente" : "ingredientes" }}
           </UBadge>
         </div>
 
         <div
           v-if="ingredientes.length === 0"
-          class="flex min-h-32 flex-col items-center justify-center rounded-(--app-control-radius) border border-dashed border-default bg-elevated/30 px-6 text-center"
+          class="flex min-h-24 flex-col items-center justify-center border-b border-dashed border-default/70 px-6 text-center"
         >
-          <UIcon name="i-lucide-carrot" class="size-6 text-dimmed" />
-          <p class="mt-2 text-sm font-medium text-highlighted">Aún no hay ingredientes</p>
-          <p class="mt-1 text-xs text-muted">Agrega el primer ingrediente para comenzar la receta.</p>
+          <UIcon name="i-lucide-carrot" class="size-5 text-dimmed" />
+          <p class="mt-2 text-sm text-muted">Agrega el primer ingrediente para comenzar la receta.</p>
         </div>
 
-        <div v-else class="space-y-2">
-          <div
-            v-for="(row, index) in ingredientes"
-            :key="index"
-            class="grid gap-3 rounded-(--app-control-radius) border border-default bg-default p-3 shadow-xs lg:grid-cols-[minmax(220px,1.7fr)_120px_160px_150px_40px] lg:items-end"
-          >
-            <UFormField label="Ingrediente" required>
-              <div class="flex gap-2">
-                <USelectMenu
-                  v-model="row.ingredientId"
-                  :items="ingredientOptions"
-                  value-key="value"
-                  searchable
-                  :loading="ingredientStatus === 'pending'"
-                  placeholder="Buscar ingrediente"
-                  class="min-w-0 flex-1"
-                >
-                  <template #item-label="{ item: option }">
-                    <span class="flex min-w-0 items-center justify-between gap-3">
-                      <span class="truncate">{{ option.label }}</span>
-                      <span class="shrink-0 text-xs text-muted">{{ option.categoria }}</span>
-                    </span>
-                  </template>
-                </USelectMenu>
-                <UTooltip text="Crear ingrediente">
-                  <UButton
-                    type="button"
-                    color="neutral"
-                    variant="soft"
-                    icon="i-lucide-plus"
-                    aria-label="Crear ingrediente"
-                    @click="openCreateIngredient(index)"
-                  />
-                </UTooltip>
-              </div>
-            </UFormField>
+        <UTable
+          v-else
+          :data="ingredientes"
+          :columns="ingredientTableColumns"
+          :ui="{
+            root: 'border-b border-default/70',
+            base: 'min-w-[860px]',
+            thead: 'bg-elevated/35',
+            tr: 'hover:bg-elevated/20',
+            th: 'px-3 py-2 text-[11px] font-medium uppercase tracking-[0.08em] text-muted',
+            td: 'px-3 py-2.5 align-middle'
+          }"
+        >
+          <template #ingredient-cell="{ row }">
+            <USelectMenu
+              v-model="row.original.ingredientId"
+              :items="ingredientOptions"
+              value-key="value"
+              searchable
+              create-item
+              :loading="ingredientStatus === 'pending'"
+              placeholder="Buscar ingrediente"
+              aria-label="Ingrediente"
+              class="w-full"
+              @create="openCreateIngredient(row.index, $event)"
+            >
+              <template #item-label="{ item: option }">
+                <span class="flex min-w-0 items-center justify-between gap-3">
+                  <span class="truncate">{{ option.label }}</span>
+                  <span class="shrink-0 text-xs text-muted">{{ option.categoria }}</span>
+                </span>
+              </template>
+              <template #create-item-label="{ item }">
+                <span class="flex min-w-0 items-center gap-2">
+                  <UIcon name="i-lucide-plus" class="size-4 shrink-0" />
+                  <span class="truncate">Crear “{{ item }}”</span>
+                </span>
+              </template>
+            </USelectMenu>
+          </template>
 
-            <UFormField label="Cantidad" required>
-              <UInputNumber
-                v-model="row.cantidad"
-                :min="1"
-                :step="1"
-                class="w-full"
-              />
-            </UFormField>
+          <template #quantity-cell="{ row }">
+            <UInputNumber
+              v-model="row.original.cantidad"
+              :min="1"
+              :step="1"
+              aria-label="Cantidad"
+              class="w-full"
+            />
+          </template>
 
-            <UFormField label="Unidad" required>
-              <USelect
-                v-model="row.unidad"
-                :items="unitOptions"
-                value-key="value"
-                class="w-full"
-              />
-            </UFormField>
+          <template #unit-cell="{ row }">
+            <USelect
+              v-model="row.original.unidad"
+              :items="unitOptions"
+              value-key="value"
+              aria-label="Unidad"
+              class="w-full"
+            />
+          </template>
 
-            <UFormField label="Categoría">
-              <div class="flex min-h-8 items-center">
-                <UBadge
-                  v-if="getIngredient(row.ingredientId)"
-                  color="neutral"
-                  variant="soft"
-                  class="max-w-full"
-                >
-                  <span class="truncate">{{ getIngredient(row.ingredientId)?.categoria }}</span>
-                </UBadge>
-                <span v-else class="text-xs text-dimmed">Se completa al seleccionar</span>
-              </div>
-            </UFormField>
+          <template #category-cell="{ row }">
+            <div class="flex min-h-8 items-center">
+              <span
+                v-if="getIngredient(row.original.ingredientId)"
+                class="inline-flex min-w-0 items-center gap-2 text-xs text-muted"
+              >
+                <span class="size-1.5 shrink-0 rounded-full bg-primary/60" />
+                <span class="truncate">{{ getIngredient(row.original.ingredientId)?.categoria }}</span>
+              </span>
+              <span v-else class="text-xs text-dimmed">Pendiente</span>
+            </div>
+          </template>
 
+          <template #actions-cell="{ row }">
             <UTooltip text="Quitar ingrediente">
               <UButton
                 type="button"
@@ -243,11 +277,11 @@ async function saveNewIngredient() {
                 variant="ghost"
                 icon="i-lucide-trash-2"
                 aria-label="Quitar ingrediente"
-                @click="removeIngredientRow(index)"
+                @click="removeIngredientRow(row.index)"
               />
             </UTooltip>
-          </div>
-        </div>
+          </template>
+        </UTable>
       </div>
 
       <div class="border-t border-default pt-5">

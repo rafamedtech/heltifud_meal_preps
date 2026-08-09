@@ -114,6 +114,56 @@ export interface CustomerListResponse {
   nextCursor: string | null;
 }
 
+export const EXPENSE_CATEGORY_VALUES = [
+  'insumos',
+  'empaque',
+  'nomina',
+  'renta_servicios',
+  'transporte',
+  'marketing',
+  'equipo',
+  'otros',
+] as const;
+
+export const EXPENSE_PAYMENT_METHOD_VALUES = [
+  'efectivo',
+  'transferencia',
+  'tarjeta',
+  'otro',
+] as const;
+
+export type ExpenseCategory = (typeof EXPENSE_CATEGORY_VALUES)[number];
+export type ExpensePaymentMethod = (typeof EXPENSE_PAYMENT_METHOD_VALUES)[number];
+
+export interface ExpenseInput {
+  description: string;
+  amount: number;
+  category: ExpenseCategory;
+  paymentMethod: ExpensePaymentMethod;
+  expenseDate: string;
+  vendor: string;
+  notes: string;
+}
+
+export interface Expense extends ExpenseInput {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ExpenseSummary {
+  total: number;
+  count: number;
+  average: number;
+  currentMonthTotal: number;
+}
+
+export interface ExpenseListResponse {
+  items: Expense[];
+  nextCursor: string | null;
+  summary: ExpenseSummary;
+}
+
 export interface MenuSlot {
   platilloPrincipal: FoodItemDetail;
   guarnicion1?: FoodItemDetail | null;

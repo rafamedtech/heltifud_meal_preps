@@ -58,7 +58,8 @@ export const ModelName = {
   FoodCatalogItem: 'FoodCatalogItem',
   Ingredient: 'Ingredient',
   RecipeIngredient: 'RecipeIngredient',
-  Customer: 'Customer'
+  Customer: 'Customer',
+  Expense: 'Expense'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -179,6 +180,22 @@ export const CustomerScalarFieldEnum = {
 } as const
 
 export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
+
+
+export const ExpenseScalarFieldEnum = {
+  id: 'id',
+  description: 'description',
+  amount: 'amount',
+  category: 'category',
+  paymentMethod: 'paymentMethod',
+  expenseDate: 'expenseDate',
+  vendor: 'vendor',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeof ExpenseScalarFieldEnum]
 
 
 export const SortOrder = {
