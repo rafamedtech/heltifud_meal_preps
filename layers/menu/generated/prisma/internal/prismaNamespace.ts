@@ -1229,6 +1229,10 @@ export const ExpenseScalarFieldEnum = {
   paymentMethod: 'paymentMethod',
   expenseDate: 'expenseDate',
   vendor: 'vendor',
+  billingReference1: 'billingReference1',
+  billingReference2: 'billingReference2',
+  expenseType: 'expenseType',
+  isInvoiced: 'isInvoiced',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

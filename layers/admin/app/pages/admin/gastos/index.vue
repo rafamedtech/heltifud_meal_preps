@@ -8,6 +8,7 @@ import type {
   ExpenseInput,
   ExpensePaymentMethod,
   ExpenseSummary,
+  ExpenseType,
 } from '~~/layers/menu/shared/types/types';
 
 definePageMeta({ layout: 'admin' });
@@ -38,9 +39,23 @@ const paymentOptions = [
   { label: 'Otro', value: 'otro', icon: 'i-lucide-circle-dollar-sign' },
 ] as const;
 
+const expenseTypeOptions = [
+  { label: 'Todos los tipos', value: 'todos' },
+  { label: 'Fijo', value: 'fijo', icon: 'i-lucide-pin' },
+  { label: 'Variable', value: 'variable', icon: 'i-lucide-chart-spline' },
+] as const;
+
+const invoiceStatusOptions = [
+  { label: 'Toda facturación', value: 'todos' },
+  { label: 'Facturado', value: 'true', icon: 'i-lucide-file-check-2' },
+  { label: 'Pendiente', value: 'false', icon: 'i-lucide-file-clock' },
+] as const;
+
 const columns: TableColumn<Expense>[] = [
   { accessorKey: 'description', header: 'Gasto' },
   { accessorKey: 'category', header: 'Categoría' },
+  { id: 'billing', header: 'Facturación' },
+  { accessorKey: 'expenseType', header: 'Tipo' },
   { accessorKey: 'expenseDate', header: 'Fecha' },
   { accessorKey: 'paymentMethod', header: 'Pago' },
   {
@@ -52,8 +67,9 @@ const columns: TableColumn<Expense>[] = [
 ];
 
 const toast = useToast();
-const { createExpense, updateExpense, deleteExpense, getExpenses } = useExpenses();
+const { createExpense, updateExpense, deleteExpense, getExpenses, getExpenseVendors } = useExpenses();
 const expenses = ref<Expense[]>([]);
+const vendorOptions = ref<string[]>([]);
 const summary = ref<ExpenseSummary>({ total: 0, count: 0, average: 0, currentMonthTotal: 0 });
 const nextCursor = ref<string | null>(null);
 const loading = ref(true);
@@ -61,9 +77,12 @@ const loadingMore = ref(false);
 const loadError = ref('');
 const saving = ref(false);
 const deleting = ref(false);
+const loadingVendors = ref(false);
 const search = ref('');
 const selectedCategory = ref('todas');
 const selectedPayment = ref('todos');
+const selectedExpenseType = ref('todos');
+const selectedInvoiceStatus = ref('todos');
 const fromDate = ref('');
 const toDate = ref('');
 const isFormOpen = ref(false);
@@ -79,13 +98,19 @@ function localToday() {
 }
 
 function emptyExpense(): ExpenseInput {
+  const expenseDate = localToday();
+
   return {
-    description: '',
+    description: buildExpenseDescription('insumos', '', expenseDate),
     amount: 0,
     category: 'insumos',
     paymentMethod: 'transferencia',
-    expenseDate: localToday(),
+    expenseDate,
     vendor: '',
+    billingReference1: '',
+    billingReference2: '',
+    expenseType: 'variable',
+    isInvoiced: false,
     notes: '',
   };
 }
@@ -105,6 +130,8 @@ const isFiltering = computed(() => Boolean(
   search.value.trim()
   || selectedCategory.value !== 'todas'
   || selectedPayment.value !== 'todos'
+  || selectedExpenseType.value !== 'todos'
+  || selectedInvoiceStatus.value !== 'todos'
   || fromDate.value
   || toDate.value,
 ));
@@ -114,6 +141,8 @@ function currentQuery(cursor?: string | null) {
     q: search.value.trim() || undefined,
     category: selectedCategory.value !== 'todas' ? selectedCategory.value : undefined,
     paymentMethod: selectedPayment.value !== 'todos' ? selectedPayment.value : undefined,
+    expenseType: selectedExpenseType.value !== 'todos' ? selectedExpenseType.value : undefined,
+    invoiced: selectedInvoiceStatus.value !== 'todos' ? selectedInvoiceStatus.value : undefined,
     from: fromDate.value || undefined,
     to: toDate.value || undefined,
     cursor: cursor || undefined,
@@ -151,6 +180,31 @@ async function loadExpenses(append = false) {
   }
 }
 
+async function loadVendors() {
+  loadingVendors.value = true;
+
+  try {
+    vendorOptions.value = await getExpenseVendors();
+  } catch {
+    vendorOptions.value = [];
+  } finally {
+    loadingVendors.value = false;
+  }
+}
+
+function createVendor(value: string) {
+  const vendor = value.trim().slice(0, 120);
+  if (!vendor) return;
+
+  const existing = vendorOptions.value.find(option => option.localeCompare(vendor, 'es', { sensitivity: 'base' }) === 0);
+  formState.vendor = existing ?? vendor;
+
+  if (!existing) {
+    vendorOptions.value = [...vendorOptions.value, vendor]
+      .sort((first, second) => first.localeCompare(second, 'es'));
+  }
+}
+
 function openCreate() {
   editingExpense.value = null;
   Object.assign(formState, emptyExpense());
@@ -166,6 +220,10 @@ function openEdit(expense: Expense) {
     paymentMethod: expense.paymentMethod,
     expenseDate: expense.expenseDate,
     vendor: expense.vendor,
+    billingReference1: expense.billingReference1,
+    billingReference2: expense.billingReference2,
+    expenseType: expense.expenseType,
+    isInvoiced: expense.isInvoiced,
     notes: expense.notes,
   });
   isFormOpen.value = true;
@@ -186,7 +244,7 @@ async function saveExpense() {
       color: 'success',
       icon: 'i-lucide-check-circle',
     });
-    await loadExpenses();
+    await Promise.all([loadExpenses(), loadVendors()]);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'No se pudo guardar el gasto.';
     toast.add({ title: 'Error al guardar', description: message, color: 'error', icon: 'i-lucide-circle-alert' });
@@ -217,6 +275,8 @@ function resetFilters() {
   search.value = '';
   selectedCategory.value = 'todas';
   selectedPayment.value = 'todos';
+  selectedExpenseType.value = 'todos';
+  selectedInvoiceStatus.value = 'todos';
   fromDate.value = '';
   toDate.value = '';
 }
@@ -234,12 +294,35 @@ function optionLabel(options: readonly { label: string; value: string }[], value
   return options.find((option) => option.value === value)?.label ?? value;
 }
 
+function buildExpenseDescription(category: ExpenseCategory, vendor: string, expenseDate: string) {
+  const categoryLabel = optionLabel(categoryOptions, category);
+  const vendorLabel = vendor.trim() || 'Sin proveedor';
+  const parsedDate = new Date(`${expenseDate}T12:00:00.000Z`);
+  const weekday = Number.isNaN(parsedDate.getTime())
+    ? 'día pendiente'
+    : new Intl.DateTimeFormat('es-MX', { weekday: 'long', timeZone: 'UTC' }).format(parsedDate);
+
+  return `${categoryLabel} en ${vendorLabel} el ${weekday}`;
+}
+
+function updateExpenseDescription() {
+  formState.description = buildExpenseDescription(
+    formState.category,
+    formState.vendor,
+    formState.expenseDate,
+  );
+}
+
 function categoryIcon(category: ExpenseCategory) {
   return categoryOptions.find((option) => option.value === category)?.icon ?? 'i-lucide-receipt';
 }
 
 function paymentIcon(method: ExpensePaymentMethod) {
   return paymentOptions.find((option) => option.value === method)?.icon ?? 'i-lucide-wallet';
+}
+
+function expenseTypeIcon(type: ExpenseType) {
+  return type === 'fijo' ? 'i-lucide-pin' : 'i-lucide-chart-spline';
 }
 
 function actionItems(expense: Expense) {
@@ -249,13 +332,25 @@ function actionItems(expense: Expense) {
   ]];
 }
 
-watch([selectedCategory, selectedPayment, fromDate, toDate], () => loadExpenses());
+watch([
+  selectedCategory,
+  selectedPayment,
+  selectedExpenseType,
+  selectedInvoiceStatus,
+  fromDate,
+  toDate,
+], () => loadExpenses());
 watch(search, () => {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => loadExpenses(), 300);
 });
+watch(
+  [() => formState.category, () => formState.vendor, () => formState.expenseDate],
+  updateExpenseDescription,
+  { immediate: true },
+);
 
-onMounted(() => loadExpenses());
+onMounted(() => Promise.all([loadExpenses(), loadVendors()]));
 onBeforeUnmount(() => clearTimeout(searchTimer));
 </script>
 
@@ -300,10 +395,12 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
     </section>
 
     <UCard class="app-surface" :ui="{ body: 'p-5 sm:p-6' }">
-      <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(240px,1fr)_190px_190px_170px_170px]">
-        <UInput v-model="search" icon="i-lucide-search" size="lg" placeholder="Buscar gasto o proveedor" />
+      <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <UInput v-model="search" icon="i-lucide-search" size="lg" placeholder="Buscar gasto, proveedor o referencia" class="xl:col-span-2" />
         <USelect v-model="selectedCategory" :items="categoryOptions" value-key="value" size="lg" />
         <USelect v-model="selectedPayment" :items="paymentOptions" value-key="value" size="lg" />
+        <USelect v-model="selectedExpenseType" :items="expenseTypeOptions" value-key="value" size="lg" />
+        <USelect v-model="selectedInvoiceStatus" :items="invoiceStatusOptions" value-key="value" size="lg" />
         <CalendarInput v-model="fromDate" aria-label="Fecha inicial" />
         <CalendarInput v-model="toDate" aria-label="Fecha final" />
       </div>
@@ -340,6 +437,13 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
             <div class="min-w-0">
               <div class="flex items-center gap-2"><UIcon :name="categoryIcon(expense.category)" class="size-4 shrink-0 text-primary" /><h2 class="truncate font-semibold text-highlighted">{{ expense.description }}</h2></div>
               <p class="mt-1 text-sm text-muted">{{ expense.vendor || 'Sin proveedor' }}</p>
+              <div class="mt-3 flex flex-wrap gap-2">
+                <UBadge color="neutral" variant="soft"><UIcon :name="expenseTypeIcon(expense.expenseType)" class="size-3" />{{ optionLabel(expenseTypeOptions, expense.expenseType) }}</UBadge>
+                <UBadge :color="expense.isInvoiced ? 'success' : 'warning'" variant="soft"><UIcon :name="expense.isInvoiced ? 'i-lucide-file-check-2' : 'i-lucide-file-clock'" class="size-3" />{{ expense.isInvoiced ? 'Facturado' : 'Pendiente' }}</UBadge>
+              </div>
+              <p v-if="expense.billingReference1 || expense.billingReference2" class="mt-2 truncate text-xs text-muted">
+                Ref: {{ [expense.billingReference1, expense.billingReference2].filter(Boolean).join(' · ') }}
+              </p>
             </div>
             <UDropdownMenu :items="actionItems(expense)"><UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" aria-label="Acciones del gasto" /></UDropdownMenu>
           </div>
@@ -356,6 +460,14 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
             <div class="flex min-w-0 items-center gap-3"><div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"><UIcon :name="categoryIcon(row.original.category)" class="size-4" /></div><div class="min-w-0"><p class="truncate font-semibold text-highlighted">{{ row.original.description }}</p><p class="truncate text-xs text-muted">{{ row.original.vendor || 'Sin proveedor' }}</p></div></div>
           </template>
           <template #category-cell="{ row }"><UBadge color="neutral" variant="soft">{{ optionLabel(categoryOptions, row.original.category) }}</UBadge></template>
+          <template #billing-cell="{ row }">
+            <div class="space-y-1.5">
+              <UBadge :color="row.original.isInvoiced ? 'success' : 'warning'" variant="soft"><UIcon :name="row.original.isInvoiced ? 'i-lucide-file-check-2' : 'i-lucide-file-clock'" class="size-3" />{{ row.original.isInvoiced ? 'Facturado' : 'Pendiente' }}</UBadge>
+              <p v-if="row.original.billingReference1 || row.original.billingReference2" class="max-w-44 truncate text-xs text-muted">{{ [row.original.billingReference1, row.original.billingReference2].filter(Boolean).join(' · ') }}</p>
+              <p v-else class="text-xs text-dimmed">Sin referencias</p>
+            </div>
+          </template>
+          <template #expenseType-cell="{ row }"><UBadge color="neutral" variant="outline"><UIcon :name="expenseTypeIcon(row.original.expenseType)" class="size-3" />{{ optionLabel(expenseTypeOptions, row.original.expenseType) }}</UBadge></template>
           <template #expenseDate-cell="{ row }"><span class="text-toned">{{ displayDate(row.original.expenseDate) }}</span></template>
           <template #paymentMethod-cell="{ row }"><span class="flex items-center gap-2 text-toned"><UIcon :name="paymentIcon(row.original.paymentMethod)" class="size-4 text-muted" />{{ optionLabel(paymentOptions, row.original.paymentMethod) }}</span></template>
           <template #amount-cell="{ row }"><span class="font-semibold text-highlighted">{{ currency(row.original.amount) }}</span></template>
@@ -368,16 +480,45 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
       </div>
     </template>
 
-    <UModal v-model:open="isFormOpen" :title="formTitle" :description="formDescription" :ui="{ content: 'max-w-2xl' }">
+    <UModal v-model:open="isFormOpen" :title="formTitle" :description="formDescription" :ui="{ content: 'max-w-3xl' }">
       <template #body>
         <UForm :schema="expenseInputSchema" :state="formState" class="space-y-5" @submit="saveExpense">
           <div class="grid gap-5 sm:grid-cols-2">
-            <UFormField label="Descripción" name="description" required class="sm:col-span-2"><UInput v-model="formState.description" icon="i-lucide-receipt-text" placeholder="Ej. Compra de verduras" size="lg" class="w-full" autofocus /></UFormField>
+            <UFormField label="Descripción automática" name="description" hint="Se genera con la categoría, el proveedor y el día" class="sm:col-span-2">
+              <UInput :model-value="formState.description" icon="i-lucide-wand-sparkles" size="lg" readonly class="w-full" />
+            </UFormField>
             <UFormField label="Monto" name="amount" required><UInputNumber v-model="formState.amount" :min="0" :step="0.01" :format-options="{ style: 'currency', currency: 'MXN' }" size="lg" class="w-full" /></UFormField>
             <UFormField label="Fecha" name="expenseDate" required><CalendarInput v-model="formState.expenseDate" aria-label="Fecha del gasto" /></UFormField>
             <UFormField label="Categoría" name="category" required><USelect v-model="formState.category" :items="categoryOptions.slice(1)" value-key="value" size="lg" class="w-full" /></UFormField>
             <UFormField label="Método de pago" name="paymentMethod" required><USelect v-model="formState.paymentMethod" :items="paymentOptions.slice(1)" value-key="value" size="lg" class="w-full" /></UFormField>
-            <UFormField label="Proveedor" name="vendor" hint="Opcional" class="sm:col-span-2"><UInput v-model="formState.vendor" icon="i-lucide-store" placeholder="Nombre del proveedor" size="lg" class="w-full" /></UFormField>
+            <UFormField label="Tipo de gasto" name="expenseType" required><USelect v-model="formState.expenseType" :items="expenseTypeOptions.slice(1)" value-key="value" size="lg" class="w-full" /></UFormField>
+            <UFormField label="Proveedor" name="vendor" hint="Opcional" class="sm:col-span-2">
+              <USelectMenu
+                v-model="formState.vendor"
+                :items="vendorOptions"
+                searchable
+                create-item
+                :loading="loadingVendors"
+                icon="i-lucide-store"
+                placeholder="Buscar o crear proveedor"
+                size="lg"
+                class="w-full"
+                @create="createVendor"
+              >
+                <template #create-item-label="{ item }">
+                  <span class="flex min-w-0 items-center gap-2">
+                    <UIcon name="i-lucide-plus" class="size-4 shrink-0" />
+                    <span class="truncate">Crear “{{ item }}”</span>
+                  </span>
+                </template>
+              </USelectMenu>
+            </UFormField>
+            <USeparator label="Facturación" class="sm:col-span-2" />
+            <UFormField label="Referencia de facturación 1" name="billingReference1" hint="Opcional"><UInput v-model="formState.billingReference1" icon="i-lucide-hash" placeholder="Folio u orden de compra" size="lg" class="w-full" /></UFormField>
+            <UFormField label="Referencia de facturación 2" name="billingReference2" hint="Opcional"><UInput v-model="formState.billingReference2" icon="i-lucide-fingerprint" placeholder="UUID, ticket u otra referencia" size="lg" class="w-full" /></UFormField>
+            <UFormField label="Estado de facturación" name="isInvoiced" class="sm:col-span-2">
+              <USwitch v-model="formState.isInvoiced" label="Este gasto ya fue facturado" description="Actívalo cuando el comprobante fiscal esté disponible." />
+            </UFormField>
             <UFormField label="Notas" name="notes" hint="Opcional" class="sm:col-span-2"><UTextarea v-model="formState.notes" placeholder="Detalles, folio o contexto adicional" autoresize :rows="3" class="w-full" /></UFormField>
           </div>
           <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"><UButton type="button" color="neutral" variant="ghost" @click="isFormOpen = false">Cancelar</UButton><UButton type="submit" icon="i-lucide-save" :loading="saving">{{ editingExpense ? 'Guardar cambios' : 'Registrar gasto' }}</UButton></div>

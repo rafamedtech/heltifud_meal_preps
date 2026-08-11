@@ -42,6 +42,10 @@ export type ExpenseMinAggregateOutputType = {
   paymentMethod: string | null
   expenseDate: Date | null
   vendor: string | null
+  billingReference1: string | null
+  billingReference2: string | null
+  expenseType: string | null
+  isInvoiced: boolean | null
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -55,6 +59,10 @@ export type ExpenseMaxAggregateOutputType = {
   paymentMethod: string | null
   expenseDate: Date | null
   vendor: string | null
+  billingReference1: string | null
+  billingReference2: string | null
+  expenseType: string | null
+  isInvoiced: boolean | null
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -68,6 +76,10 @@ export type ExpenseCountAggregateOutputType = {
   paymentMethod: number
   expenseDate: number
   vendor: number
+  billingReference1: number
+  billingReference2: number
+  expenseType: number
+  isInvoiced: number
   notes: number
   createdAt: number
   updatedAt: number
@@ -91,6 +103,10 @@ export type ExpenseMinAggregateInputType = {
   paymentMethod?: true
   expenseDate?: true
   vendor?: true
+  billingReference1?: true
+  billingReference2?: true
+  expenseType?: true
+  isInvoiced?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -104,6 +120,10 @@ export type ExpenseMaxAggregateInputType = {
   paymentMethod?: true
   expenseDate?: true
   vendor?: true
+  billingReference1?: true
+  billingReference2?: true
+  expenseType?: true
+  isInvoiced?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -117,6 +137,10 @@ export type ExpenseCountAggregateInputType = {
   paymentMethod?: true
   expenseDate?: true
   vendor?: true
+  billingReference1?: true
+  billingReference2?: true
+  expenseType?: true
+  isInvoiced?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -217,6 +241,10 @@ export type ExpenseGroupByOutputType = {
   paymentMethod: string
   expenseDate: Date
   vendor: string | null
+  billingReference1: string | null
+  billingReference2: string | null
+  expenseType: string
+  isInvoiced: boolean
   notes: string | null
   createdAt: Date
   updatedAt: Date
@@ -253,6 +281,10 @@ export type ExpenseWhereInput = {
   paymentMethod?: Prisma.StringFilter<"Expense"> | string
   expenseDate?: Prisma.DateTimeFilter<"Expense"> | Date | string
   vendor?: Prisma.StringNullableFilter<"Expense"> | string | null
+  billingReference1?: Prisma.StringNullableFilter<"Expense"> | string | null
+  billingReference2?: Prisma.StringNullableFilter<"Expense"> | string | null
+  expenseType?: Prisma.StringFilter<"Expense"> | string
+  isInvoiced?: Prisma.BoolFilter<"Expense"> | boolean
   notes?: Prisma.StringNullableFilter<"Expense"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
@@ -266,6 +298,10 @@ export type ExpenseOrderByWithRelationInput = {
   paymentMethod?: Prisma.SortOrder
   expenseDate?: Prisma.SortOrder
   vendor?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingReference1?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingReference2?: Prisma.SortOrderInput | Prisma.SortOrder
+  expenseType?: Prisma.SortOrder
+  isInvoiced?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -282,6 +318,10 @@ export type ExpenseWhereUniqueInput = Prisma.AtLeast<{
   paymentMethod?: Prisma.StringFilter<"Expense"> | string
   expenseDate?: Prisma.DateTimeFilter<"Expense"> | Date | string
   vendor?: Prisma.StringNullableFilter<"Expense"> | string | null
+  billingReference1?: Prisma.StringNullableFilter<"Expense"> | string | null
+  billingReference2?: Prisma.StringNullableFilter<"Expense"> | string | null
+  expenseType?: Prisma.StringFilter<"Expense"> | string
+  isInvoiced?: Prisma.BoolFilter<"Expense"> | boolean
   notes?: Prisma.StringNullableFilter<"Expense"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Expense"> | Date | string
@@ -295,6 +335,10 @@ export type ExpenseOrderByWithAggregationInput = {
   paymentMethod?: Prisma.SortOrder
   expenseDate?: Prisma.SortOrder
   vendor?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingReference1?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingReference2?: Prisma.SortOrderInput | Prisma.SortOrder
+  expenseType?: Prisma.SortOrder
+  isInvoiced?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -316,6 +360,10 @@ export type ExpenseScalarWhereWithAggregatesInput = {
   paymentMethod?: Prisma.StringWithAggregatesFilter<"Expense"> | string
   expenseDate?: Prisma.DateTimeWithAggregatesFilter<"Expense"> | Date | string
   vendor?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
+  billingReference1?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
+  billingReference2?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
+  expenseType?: Prisma.StringWithAggregatesFilter<"Expense"> | string
+  isInvoiced?: Prisma.BoolWithAggregatesFilter<"Expense"> | boolean
   notes?: Prisma.StringNullableWithAggregatesFilter<"Expense"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Expense"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Expense"> | Date | string
@@ -329,6 +377,10 @@ export type ExpenseCreateInput = {
   paymentMethod: string
   expenseDate: Date | string
   vendor?: string | null
+  billingReference1?: string | null
+  billingReference2?: string | null
+  expenseType?: string
+  isInvoiced?: boolean
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -342,6 +394,10 @@ export type ExpenseUncheckedCreateInput = {
   paymentMethod: string
   expenseDate: Date | string
   vendor?: string | null
+  billingReference1?: string | null
+  billingReference2?: string | null
+  expenseType?: string
+  isInvoiced?: boolean
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -355,6 +411,10 @@ export type ExpenseUpdateInput = {
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
   expenseDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   vendor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingReference1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingReference2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expenseType?: Prisma.StringFieldUpdateOperationsInput | string
+  isInvoiced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -368,6 +428,10 @@ export type ExpenseUncheckedUpdateInput = {
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
   expenseDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   vendor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingReference1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingReference2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expenseType?: Prisma.StringFieldUpdateOperationsInput | string
+  isInvoiced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -381,6 +445,10 @@ export type ExpenseCreateManyInput = {
   paymentMethod: string
   expenseDate: Date | string
   vendor?: string | null
+  billingReference1?: string | null
+  billingReference2?: string | null
+  expenseType?: string
+  isInvoiced?: boolean
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -394,6 +462,10 @@ export type ExpenseUpdateManyMutationInput = {
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
   expenseDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   vendor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingReference1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingReference2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expenseType?: Prisma.StringFieldUpdateOperationsInput | string
+  isInvoiced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -407,6 +479,10 @@ export type ExpenseUncheckedUpdateManyInput = {
   paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
   expenseDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   vendor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingReference1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  billingReference2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expenseType?: Prisma.StringFieldUpdateOperationsInput | string
+  isInvoiced?: Prisma.BoolFieldUpdateOperationsInput | boolean
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -420,6 +496,10 @@ export type ExpenseCountOrderByAggregateInput = {
   paymentMethod?: Prisma.SortOrder
   expenseDate?: Prisma.SortOrder
   vendor?: Prisma.SortOrder
+  billingReference1?: Prisma.SortOrder
+  billingReference2?: Prisma.SortOrder
+  expenseType?: Prisma.SortOrder
+  isInvoiced?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -437,6 +517,10 @@ export type ExpenseMaxOrderByAggregateInput = {
   paymentMethod?: Prisma.SortOrder
   expenseDate?: Prisma.SortOrder
   vendor?: Prisma.SortOrder
+  billingReference1?: Prisma.SortOrder
+  billingReference2?: Prisma.SortOrder
+  expenseType?: Prisma.SortOrder
+  isInvoiced?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -450,6 +534,10 @@ export type ExpenseMinOrderByAggregateInput = {
   paymentMethod?: Prisma.SortOrder
   expenseDate?: Prisma.SortOrder
   vendor?: Prisma.SortOrder
+  billingReference1?: Prisma.SortOrder
+  billingReference2?: Prisma.SortOrder
+  expenseType?: Prisma.SortOrder
+  isInvoiced?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -469,6 +557,10 @@ export type ExpenseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   paymentMethod?: boolean
   expenseDate?: boolean
   vendor?: boolean
+  billingReference1?: boolean
+  billingReference2?: boolean
+  expenseType?: boolean
+  isInvoiced?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -482,6 +574,10 @@ export type ExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   paymentMethod?: boolean
   expenseDate?: boolean
   vendor?: boolean
+  billingReference1?: boolean
+  billingReference2?: boolean
+  expenseType?: boolean
+  isInvoiced?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -495,6 +591,10 @@ export type ExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   paymentMethod?: boolean
   expenseDate?: boolean
   vendor?: boolean
+  billingReference1?: boolean
+  billingReference2?: boolean
+  expenseType?: boolean
+  isInvoiced?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -508,12 +608,16 @@ export type ExpenseSelectScalar = {
   paymentMethod?: boolean
   expenseDate?: boolean
   vendor?: boolean
+  billingReference1?: boolean
+  billingReference2?: boolean
+  expenseType?: boolean
+  isInvoiced?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "description" | "amount" | "category" | "paymentMethod" | "expenseDate" | "vendor" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["expense"]>
+export type ExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "description" | "amount" | "category" | "paymentMethod" | "expenseDate" | "vendor" | "billingReference1" | "billingReference2" | "expenseType" | "isInvoiced" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["expense"]>
 
 export type $ExpensePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Expense"
@@ -526,6 +630,10 @@ export type $ExpensePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     paymentMethod: string
     expenseDate: Date
     vendor: string | null
+    billingReference1: string | null
+    billingReference2: string | null
+    expenseType: string
+    isInvoiced: boolean
     notes: string | null
     createdAt: Date
     updatedAt: Date
@@ -959,6 +1067,10 @@ export interface ExpenseFieldRefs {
   readonly paymentMethod: Prisma.FieldRef<"Expense", 'String'>
   readonly expenseDate: Prisma.FieldRef<"Expense", 'DateTime'>
   readonly vendor: Prisma.FieldRef<"Expense", 'String'>
+  readonly billingReference1: Prisma.FieldRef<"Expense", 'String'>
+  readonly billingReference2: Prisma.FieldRef<"Expense", 'String'>
+  readonly expenseType: Prisma.FieldRef<"Expense", 'String'>
+  readonly isInvoiced: Prisma.FieldRef<"Expense", 'Boolean'>
   readonly notes: Prisma.FieldRef<"Expense", 'String'>
   readonly createdAt: Prisma.FieldRef<"Expense", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Expense", 'DateTime'>

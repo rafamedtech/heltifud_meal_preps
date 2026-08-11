@@ -7,6 +7,7 @@ import {
   DAY_OF_WEEK_VALUES,
   EXPENSE_CATEGORY_VALUES,
   EXPENSE_PAYMENT_METHOD_VALUES,
+  EXPENSE_TYPE_VALUES,
 } from './types';
 
 const REQUIRED_DAY_VALUES = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES'] as const;
@@ -224,6 +225,10 @@ export const expenseInputSchema = z.object({
   paymentMethod: z.enum(EXPENSE_PAYMENT_METHOD_VALUES),
   expenseDate: isoDateSchema,
   vendor: optionalTrimmedString(120),
+  billingReference1: optionalTrimmedString(160),
+  billingReference2: optionalTrimmedString(160),
+  expenseType: z.enum(EXPENSE_TYPE_VALUES),
+  isInvoiced: z.boolean(),
   notes: optionalTrimmedString(500),
 });
 
@@ -231,6 +236,8 @@ export const expenseListQuerySchema = z.object({
   q: optionalTrimmedString(100),
   category: z.enum(EXPENSE_CATEGORY_VALUES).optional(),
   paymentMethod: z.enum(EXPENSE_PAYMENT_METHOD_VALUES).optional(),
+  expenseType: z.enum(EXPENSE_TYPE_VALUES).optional(),
+  invoiced: z.enum(['true', 'false']).transform((value) => value === 'true').optional(),
   from: isoDateSchema.optional(),
   to: isoDateSchema.optional(),
   cursor: z.string().trim().max(1000).optional(),

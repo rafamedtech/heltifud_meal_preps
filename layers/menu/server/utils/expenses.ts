@@ -19,6 +19,10 @@ function mapExpense(expense: {
   paymentMethod: string;
   expenseDate: Date;
   vendor: string | null;
+  billingReference1: string | null;
+  billingReference2: string | null;
+  expenseType: string;
+  isInvoiced: boolean;
   notes: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -31,6 +35,10 @@ function mapExpense(expense: {
     paymentMethod: expense.paymentMethod as Expense['paymentMethod'],
     expenseDate: expense.expenseDate.toISOString().slice(0, 10),
     vendor: expense.vendor ?? '',
+    billingReference1: expense.billingReference1 ?? '',
+    billingReference2: expense.billingReference2 ?? '',
+    expenseType: expense.expenseType as Expense['expenseType'],
+    isInvoiced: expense.isInvoiced,
     notes: expense.notes ?? '',
     createdAt: expense.createdAt.toISOString(),
     updatedAt: expense.updatedAt.toISOString(),
@@ -53,6 +61,8 @@ function validateInput(input: ExpenseInput) {
     amount: parsed.data.amount.toFixed(2),
     expenseDate: toDatabaseDate(parsed.data.expenseDate),
     vendor: parsed.data.vendor || null,
+    billingReference1: parsed.data.billingReference1 || null,
+    billingReference2: parsed.data.billingReference2 || null,
     notes: parsed.data.notes || null,
   };
 }
@@ -100,16 +110,20 @@ export async function getExpenses(query: unknown): Promise<ExpenseListResponse> 
     throw createError({ statusCode: 400, statusMessage: 'Los filtros no son válidos.' });
   }
 
-  const { q, category, paymentMethod, from, to, cursor, limit } = parsed.data;
+  const { q, category, paymentMethod, expenseType, invoiced, from, to, cursor, limit } = parsed.data;
   const after = cursor ? decodeCursor(cursor) : null;
   const baseWhere = {
     ...(category ? { category } : {}),
     ...(paymentMethod ? { paymentMethod } : {}),
+    ...(expenseType ? { expenseType } : {}),
+    ...(invoiced !== undefined ? { isInvoiced: invoiced } : {}),
     ...(q
       ? {
           OR: [
             { description: { contains: q, mode: 'insensitive' as const } },
             { vendor: { contains: q, mode: 'insensitive' as const } },
+            { billingReference1: { contains: q, mode: 'insensitive' as const } },
+            { billingReference2: { contains: q, mode: 'insensitive' as const } },
             { notes: { contains: q, mode: 'insensitive' as const } },
           ],
         }
@@ -168,6 +182,17 @@ export async function getExpenses(query: unknown): Promise<ExpenseListResponse> 
       currentMonthTotal: Number(currentMonthAggregate._sum.amount?.toString() ?? 0),
     },
   };
+}
+
+export async function getExpenseVendors(): Promise<string[]> {
+  const rows = await prisma.expense.findMany({
+    where: { vendor: { not: null } },
+    select: { vendor: true },
+    distinct: ['vendor'],
+    orderBy: { vendor: 'asc' },
+  });
+
+  return rows.flatMap(({ vendor }) => vendor ? [vendor] : []);
 }
 
 export async function createExpense(input: ExpenseInput) {

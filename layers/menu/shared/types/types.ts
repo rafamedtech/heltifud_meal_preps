@@ -132,8 +132,11 @@ export const EXPENSE_PAYMENT_METHOD_VALUES = [
   'otro',
 ] as const;
 
+export const EXPENSE_TYPE_VALUES = ['fijo', 'variable'] as const;
+
 export type ExpenseCategory = (typeof EXPENSE_CATEGORY_VALUES)[number];
 export type ExpensePaymentMethod = (typeof EXPENSE_PAYMENT_METHOD_VALUES)[number];
+export type ExpenseType = (typeof EXPENSE_TYPE_VALUES)[number];
 
 export interface ExpenseInput {
   description: string;
@@ -142,6 +145,10 @@ export interface ExpenseInput {
   paymentMethod: ExpensePaymentMethod;
   expenseDate: string;
   vendor: string;
+  billingReference1: string;
+  billingReference2: string;
+  expenseType: ExpenseType;
+  isInvoiced: boolean;
   notes: string;
 }
 

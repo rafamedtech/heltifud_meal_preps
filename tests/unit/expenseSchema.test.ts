@@ -9,6 +9,10 @@ const validExpense = {
   paymentMethod: 'transferencia',
   expenseDate: '2026-08-09',
   vendor: 'Mercado local',
+  billingReference1: 'OC-1042',
+  billingReference2: 'UUID pendiente',
+  expenseType: 'variable',
+  isInvoiced: false,
   notes: '',
 } as const;
 
@@ -36,6 +40,12 @@ describe('expenseInputSchema', () => {
 
     expect(result.success).toBe(false);
   });
+
+  it('rejects invalid expense types', () => {
+    const result = expenseInputSchema.safeParse({ ...validExpense, expenseType: 'ocasional' });
+
+    expect(result.success).toBe(false);
+  });
 });
 
 describe('expenseListQuerySchema', () => {
@@ -50,5 +60,10 @@ describe('expenseListQuerySchema', () => {
     const result = expenseListQuerySchema.safeParse({ from: '2026-09-01', to: '2026-08-01' });
 
     expect(result.success).toBe(false);
+  });
+
+  it('parses invoiced status without coercing false to true', () => {
+    expect(expenseListQuerySchema.parse({ invoiced: 'false' }).invoiced).toBe(false);
+    expect(expenseListQuerySchema.parse({ invoiced: 'true' }).invoiced).toBe(true);
   });
 });

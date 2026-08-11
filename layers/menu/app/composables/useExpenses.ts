@@ -13,5 +13,8 @@ export default function useExpenses() {
   const getExpenses = (query: Record<string, string | number | undefined>) =>
     $fetch<ExpenseListResponse>('/api/expenses', { query });
 
-  return { createExpense, updateExpense, deleteExpense, getExpenses };
+  const getExpenseVendors = () =>
+    $fetch<string[]>('/api/expenses/vendors');
+
+  return { createExpense, updateExpense, deleteExpense, getExpenses, getExpenseVendors };
 }
