@@ -396,11 +396,11 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
 
     <UCard class="app-surface" :ui="{ body: 'p-5 sm:p-6' }">
       <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        <UInput v-model="search" icon="i-lucide-search" size="lg" placeholder="Buscar gasto, proveedor o referencia" class="xl:col-span-2" />
-        <USelect v-model="selectedCategory" :items="categoryOptions" value-key="value" size="lg" />
-        <USelect v-model="selectedPayment" :items="paymentOptions" value-key="value" size="lg" />
-        <USelect v-model="selectedExpenseType" :items="expenseTypeOptions" value-key="value" size="lg" />
-        <USelect v-model="selectedInvoiceStatus" :items="invoiceStatusOptions" value-key="value" size="lg" />
+        <UInput v-model="search" icon="i-lucide-search" placeholder="Buscar gasto, proveedor o referencia" class="xl:col-span-2" />
+        <USelect v-model="selectedCategory" :items="categoryOptions" value-key="value" />
+        <USelect v-model="selectedPayment" :items="paymentOptions" value-key="value" />
+        <USelect v-model="selectedExpenseType" :items="expenseTypeOptions" value-key="value" />
+        <USelect v-model="selectedInvoiceStatus" :items="invoiceStatusOptions" value-key="value" />
         <CalendarInput v-model="fromDate" aria-label="Fecha inicial" />
         <CalendarInput v-model="toDate" aria-label="Fecha final" />
       </div>
@@ -484,15 +484,12 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
       <template #body>
         <UForm :schema="expenseInputSchema" :state="formState" class="space-y-5" @submit="saveExpense">
           <div class="grid gap-5 sm:grid-cols-2">
-            <UFormField label="Descripción automática" name="description" hint="Se genera con la categoría, el proveedor y el día" class="sm:col-span-2">
-              <UInput :model-value="formState.description" icon="i-lucide-wand-sparkles" size="lg" readonly class="w-full" />
-            </UFormField>
             <UFormField label="Monto" name="amount" required><UInputNumber v-model="formState.amount" :min="0" :step="0.01" :format-options="{ style: 'currency', currency: 'MXN' }" size="lg" class="w-full" /></UFormField>
             <UFormField label="Fecha" name="expenseDate" required><CalendarInput v-model="formState.expenseDate" aria-label="Fecha del gasto" /></UFormField>
-            <UFormField label="Categoría" name="category" required><USelect v-model="formState.category" :items="categoryOptions.slice(1)" value-key="value" size="lg" class="w-full" /></UFormField>
-            <UFormField label="Método de pago" name="paymentMethod" required><USelect v-model="formState.paymentMethod" :items="paymentOptions.slice(1)" value-key="value" size="lg" class="w-full" /></UFormField>
-            <UFormField label="Tipo de gasto" name="expenseType" required><USelect v-model="formState.expenseType" :items="expenseTypeOptions.slice(1)" value-key="value" size="lg" class="w-full" /></UFormField>
-            <UFormField label="Proveedor" name="vendor" hint="Opcional" class="sm:col-span-2">
+            <UFormField label="Categoría" name="category" required><USelect v-model="formState.category" :items="categoryOptions.slice(1)" value-key="value" class="w-full" /></UFormField>
+            <UFormField label="Método de pago" name="paymentMethod" required><USelect v-model="formState.paymentMethod" :items="paymentOptions.slice(1)" value-key="value" class="w-full" /></UFormField>
+            <UFormField label="Tipo de gasto" name="expenseType" required><USelect v-model="formState.expenseType" :items="expenseTypeOptions.slice(1)" value-key="value" class="w-full" /></UFormField>
+            <UFormField label="Proveedor" name="vendor" hint="Opcional">
               <USelectMenu
                 v-model="formState.vendor"
                 :items="vendorOptions"
@@ -514,8 +511,8 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
               </USelectMenu>
             </UFormField>
             <USeparator label="Facturación" class="sm:col-span-2" />
-            <UFormField label="Referencia de facturación 1" name="billingReference1" hint="Opcional"><UInput v-model="formState.billingReference1" icon="i-lucide-hash" placeholder="Folio u orden de compra" size="lg" class="w-full" /></UFormField>
-            <UFormField label="Referencia de facturación 2" name="billingReference2" hint="Opcional"><UInput v-model="formState.billingReference2" icon="i-lucide-fingerprint" placeholder="UUID, ticket u otra referencia" size="lg" class="w-full" /></UFormField>
+            <UFormField label="Referencia de facturación 1" name="billingReference1" hint="Opcional"><UInput v-model="formState.billingReference1" icon="i-lucide-hash" placeholder="Folio u orden de compra" class="w-full" /></UFormField>
+            <UFormField label="Referencia de facturación 2" name="billingReference2" hint="Opcional"><UInput v-model="formState.billingReference2" icon="i-lucide-fingerprint" placeholder="UUID, ticket u otra referencia" class="w-full" /></UFormField>
             <UFormField label="Estado de facturación" name="isInvoiced" class="sm:col-span-2">
               <USwitch v-model="formState.isInvoiced" label="Este gasto ya fue facturado" description="Actívalo cuando el comprobante fiscal esté disponible." />
             </UFormField>

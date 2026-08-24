@@ -13,6 +13,12 @@ export const SLOT_KEYS = ['desayuno', 'comida', 'cena', 'snack1', 'snack2'] as c
 export type DayOfWeek = (typeof DAY_OF_WEEK_VALUES)[number];
 export type SlotKey = (typeof SLOT_KEYS)[number];
 
+export const SLOT_TYPE_VALUES = ['DESAYUNO', 'COMIDA', 'CENA', 'SNACK1', 'SNACK2'] as const;
+export const COMPONENT_ROLE_VALUES = ['PLATILLO_PRINCIPAL', 'GUARNICION_1', 'GUARNICION_2', 'ADICIONAL'] as const;
+
+export type SlotTypeValue = (typeof SLOT_TYPE_VALUES)[number];
+export type ComponentRoleValue = (typeof COMPONENT_ROLE_VALUES)[number];
+
 export interface WeeklyPlan {
   id: number;
   title: string;
@@ -112,6 +118,135 @@ export interface Customer extends CustomerInput {
 export interface CustomerListResponse {
   items: Customer[];
   nextCursor: string | null;
+}
+
+export interface PlanVariantInput {
+  id?: string;
+  title: string;
+  daysCount: number;
+  price: number;
+  isActive: boolean;
+}
+
+export interface PlanInput {
+  title: string;
+  description: string;
+  image: string;
+  slotTypes: SlotTypeValue[];
+  isActive: boolean;
+  variants: PlanVariantInput[];
+}
+
+export interface PlanVariant extends Omit<PlanVariantInput, 'id'> {
+  id: string;
+}
+
+export interface Plan extends Omit<PlanInput, 'variants'> {
+  id: string;
+  variants: PlanVariant[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const ORDER_STATUS_VALUES = [
+  'DRAFT',
+  'CONFIRMED',
+  'PREPARING',
+  'PARTIALLY_DELIVERED',
+  'DELIVERED',
+  'CANCELLED',
+] as const;
+
+export type OrderStatusValue = (typeof ORDER_STATUS_VALUES)[number];
+export type CustomerLocationNumber = 1 | 2;
+
+export interface OrderCreateInput {
+  customerId: string;
+  planVariantId: string;
+  firstDeliveryDate: string;
+  firstDeliveryLocation: CustomerLocationNumber;
+  secondDeliveryDate: string;
+  secondDeliveryLocation: CustomerLocationNumber;
+  notes: string;
+}
+
+export interface OrderMenuComponentInput {
+  catalogItemId: string | null;
+  componentRole: ComponentRoleValue;
+  position: number;
+  nombre: string;
+  descripcion: string;
+  calorias: number;
+  imagen: string;
+  tipo: string;
+}
+
+export interface OrderMenuSlotInput {
+  dayOfWeek: DayOfWeek;
+  dayOrder: number;
+  slotType: SlotTypeValue;
+  contenedor: string;
+  components: OrderMenuComponentInput[];
+}
+
+export interface OrderUpdateInput {
+  status: OrderStatusValue;
+  firstDeliveryDate: string;
+  firstDeliveryLocation: CustomerLocationNumber;
+  secondDeliveryDate: string;
+  secondDeliveryLocation: CustomerLocationNumber;
+  notes: string;
+  menuSlots: OrderMenuSlotInput[];
+}
+
+export interface OrderMenuComponent extends OrderMenuComponentInput {
+  id: string;
+}
+
+export interface OrderMenuSlot extends Omit<OrderMenuSlotInput, 'components'> {
+  id: string;
+  components: OrderMenuComponent[];
+}
+
+export interface OrderListItem {
+  id: string;
+  status: OrderStatusValue;
+  customerId: string;
+  customerName: string;
+  customerPhone: string;
+  planTitle: string;
+  planVariantTitle: string;
+  price: number;
+  firstDeliveryDate: string;
+  firstDeliveryAddress: string;
+  secondDeliveryDate: string;
+  secondDeliveryAddress: string;
+  createdAt: string;
+}
+
+export interface Order extends OrderListItem {
+  planVariantId: string | null;
+  sourceWeeklyMenuId: string | null;
+  sourceWeeklyMenuName: string | null;
+  firstDeliveryLocation: CustomerLocationNumber;
+  secondDeliveryLocation: CustomerLocationNumber;
+  notes: string;
+  updatedAt: string;
+  customer: Customer;
+  menuSlots: OrderMenuSlot[];
+}
+
+export interface OrderSummary {
+  total: number;
+  draft: number;
+  confirmed: number;
+  inProgress: number;
+  delivered: number;
+}
+
+export interface OrderListResponse {
+  items: OrderListItem[];
+  summary: OrderSummary;
 }
 
 export const EXPENSE_CATEGORY_VALUES = [

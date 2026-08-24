@@ -58,7 +58,32 @@ export type RecipeIngredient = Prisma.RecipeIngredientModel
  */
 export type Customer = Prisma.CustomerModel
 /**
+ * Model Plan
+ * 
+ */
+export type Plan = Prisma.PlanModel
+/**
+ * Model PlanVariant
+ * 
+ */
+export type PlanVariant = Prisma.PlanVariantModel
+/**
+ * Model Order
+ * 
+ */
+export type Order = Prisma.OrderModel
+/**
+ * Model OrderMenuSlot
+ * 
+ */
+export type OrderMenuSlot = Prisma.OrderMenuSlotModel
+/**
+ * Model OrderMenuComponent
+ * 
+ */
+export type OrderMenuComponent = Prisma.OrderMenuComponentModel
+/**
  * Model Expense
- *
+ * 
  */
 export type Expense = Prisma.ExpenseModel

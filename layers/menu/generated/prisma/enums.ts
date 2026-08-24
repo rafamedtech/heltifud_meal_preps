@@ -41,3 +41,15 @@ export const ComponentRole = {
 } as const
 
 export type ComponentRole = (typeof ComponentRole)[keyof typeof ComponentRole]
+
+
+export const OrderStatus = {
+  DRAFT: 'DRAFT',
+  CONFIRMED: 'CONFIRMED',
+  PREPARING: 'PREPARING',
+  PARTIALLY_DELIVERED: 'PARTIALLY_DELIVERED',
+  DELIVERED: 'DELIVERED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]

@@ -38,6 +38,16 @@ yarn dev
 bun run dev
 ```
 
+### Google Maps location search
+
+Customer delivery locations use the Google Maps Place Autocomplete widget. In Google Cloud, enable **Maps JavaScript API** and **Places API (New)**, then add a browser-restricted key to `.env`:
+
+```bash
+NUXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_browser_key
+```
+
+Restrict the key to the HTTP referrers used by the app (for example `http://localhost:3000/*`, `https://heltifud.com/*` and `https://www.heltifud.com/*`) and restrict its API access to those two APIs.
+
 ## Testing
 
 Run the unit and component tests with Vitest:

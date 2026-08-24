@@ -45,6 +45,11 @@ export const adminLinks: NavigationMenuItem[][] = [
       to: "/admin/planes"
     },
     {
+      label: "Pedidos",
+      icon: "i-lucide-receipt-text",
+      to: "/admin/pedidos"
+    },
+    {
       label: "Clientes",
       icon: "i-lucide-users-round",
       to: "/admin/clientes"
@@ -55,23 +60,14 @@ export const adminLinks: NavigationMenuItem[][] = [
       to: "/admin/gastos"
     },
     {
-      label: "Menús",
-      icon: "i-lucide-notebook-tabs",
-      type: "trigger",
-      value: "menús",
-      defaultOpen: true,
-      children: [
-        {
-          label: "Menú",
-          icon: "i-lucide-calendar-range",
-          to: "/admin/menu"
-        },
-        {
-          label: "Platillos",
-          icon: "i-lucide-utensils-crossed",
-          to: "/admin/platillos"
-        }
-      ]
+      label: "Menú",
+      icon: "i-lucide-calendar-range",
+      to: "/admin/menu"
+    },
+    {
+      label: "Platillos",
+      icon: "i-lucide-utensils-crossed",
+      to: "/admin/platillos"
     }
   ]
 ]

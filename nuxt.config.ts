@@ -3,6 +3,7 @@ import type { Plugin } from "vite"
 
 const cloudinaryBaseURL =
   process.env.NUXT_PUBLIC_CLOUDINARY_BASE_URL || "https://res.cloudinary.com/rafamed-dev/image/upload"
+const googleMapsApiKey = process.env.NUXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""
 
 const corsAllowedOrigins =
   process.env.NUXT_CORS_ALLOWED_ORIGINS ||
@@ -38,7 +39,13 @@ export default defineNuxtConfig({
   vite: {
     plugins: [patchNuxtUiLinkBooleanDefaults()],
     optimizeDeps: {
-      include: ["zod", "@vue/devtools-core", "@vue/devtools-kit", "@internationalized/date"]
+      include: [
+        "zod",
+        "@vue/devtools-core",
+        "@vue/devtools-kit",
+        "@internationalized/date",
+        "@googlemaps/js-api-loader"
+      ]
     }
   },
 
@@ -52,7 +59,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     corsAllowedOrigins,
     public: {
-      cloudinaryBaseURL
+      cloudinaryBaseURL,
+      googleMapsApiKey
     }
   },
 

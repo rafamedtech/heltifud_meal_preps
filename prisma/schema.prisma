@@ -8,14 +8,15 @@ datasource db {
 }
 
 model WeeklyMenu {
-  id        String    @id @default(uuid())
-  name      String
-  isActive  Boolean   @default(false)
-  startDate DateTime
-  endDate   DateTime
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  days      MenuDay[]
+  id           String    @id @default(uuid())
+  name         String
+  isActive     Boolean   @default(false)
+  startDate    DateTime
+  endDate      DateTime
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  days         MenuDay[]
+  sourceOrders Order[]
 
   @@index([isActive])
   @@index([startDate])
@@ -63,16 +64,17 @@ model FoodComponent {
 }
 
 model FoodCatalogItem {
-  id                String             @id @default(uuid())
+  id                String               @id @default(uuid())
   nombre            String
   descripcion       String
-  preparacion       String             @default("")
+  preparacion       String               @default("")
   calorias          Int
   imagen            String
   tipo              String
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
   components        FoodComponent[]
+  orderComponents   OrderMenuComponent[]
   recipeIngredients RecipeIngredient[]
 
   @@index([nombre])
@@ -108,7 +110,7 @@ model RecipeIngredient {
 }
 
 model Customer {
-  id                String   @id @default(uuid()) @db.Uuid
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   nombre            String
   telefono          String
   ubicacion1        String
@@ -119,14 +121,113 @@ model Customer {
   tipoCliente       String   @default("menu") @map("tipo_cliente")
   createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  orders            Order[]
 
   @@index([status, tipoCliente, nombre, id], map: "customers_status_tipo_nombre_idx")
   @@index([source], map: "customers_source_idx")
   @@map("customers")
 }
 
+model Plan {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  description String
+  image       String
+  slotTypes   SlotType[]    @map("slot_types")
+  isActive    Boolean       @default(true) @map("is_active")
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamptz(3)
+  variants    PlanVariant[]
+
+  @@unique([title], map: "plans_title_key")
+  @@index([isActive, title], map: "plans_active_title_idx")
+  @@map("plans")
+}
+
+model PlanVariant {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  planId    String   @map("plan_id") @db.Uuid
+  title     String
+  daysCount Int      @map("days_count")
+  price     Decimal  @db.Decimal(10, 2)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  orders    Order[]
+
+  @@unique([planId, daysCount], map: "plan_variants_plan_days_key")
+  @@index([isActive, price], map: "plan_variants_active_price_idx")
+  @@map("plan_variants")
+}
+
+model Order {
+  id                       String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  customerId               String          @map("customer_id") @db.Uuid
+  planVariantId            String?         @map("plan_variant_id") @db.Uuid
+  sourceWeeklyMenuId       String?         @map("source_weekly_menu_id")
+  status                   OrderStatus     @default(DRAFT)
+  planTitleSnapshot        String          @map("plan_title_snapshot")
+  planVariantTitleSnapshot String          @map("plan_variant_title_snapshot")
+  priceSnapshot            Decimal         @map("price_snapshot") @db.Decimal(10, 2)
+  firstDeliveryDate        DateTime        @map("first_delivery_date") @db.Date
+  firstDeliveryLocation    Int             @map("first_delivery_location")
+  firstDeliveryAddress     String          @map("first_delivery_address")
+  secondDeliveryDate       DateTime        @map("second_delivery_date") @db.Date
+  secondDeliveryLocation   Int             @map("second_delivery_location")
+  secondDeliveryAddress    String          @map("second_delivery_address")
+  notes                    String?
+  createdAt                DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt                DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
+  customer                 Customer        @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  planVariant              PlanVariant?    @relation(fields: [planVariantId], references: [id], onDelete: SetNull)
+  sourceWeeklyMenu         WeeklyMenu?     @relation(fields: [sourceWeeklyMenuId], references: [id], onDelete: SetNull)
+  menuSlots                OrderMenuSlot[]
+
+  @@index([customerId, createdAt(sort: Desc)], map: "orders_customer_created_idx")
+  @@index([status, firstDeliveryDate], map: "orders_status_first_delivery_idx")
+  @@index([status, secondDeliveryDate], map: "orders_status_second_delivery_idx")
+  @@index([planVariantId], map: "orders_plan_variant_idx")
+  @@index([sourceWeeklyMenuId], map: "orders_source_menu_idx")
+  @@map("orders")
+}
+
+model OrderMenuSlot {
+  id         String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId    String               @map("order_id") @db.Uuid
+  dayOfWeek  DayOfWeek            @map("day_of_week")
+  dayOrder   Int                  @map("day_order")
+  slotType   SlotType             @map("slot_type")
+  contenedor String?
+  order      Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  components OrderMenuComponent[]
+
+  @@unique([orderId, dayOfWeek, slotType], map: "order_menu_slots_order_day_slot_key")
+  @@index([orderId, dayOrder, slotType], map: "order_menu_slots_order_sequence_idx")
+  @@map("order_menu_slots")
+}
+
+model OrderMenuComponent {
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderMenuSlotId String           @map("order_menu_slot_id") @db.Uuid
+  catalogItemId   String?          @map("catalog_item_id")
+  componentRole   ComponentRole    @map("component_role")
+  position        Int              @default(0)
+  nombre          String
+  descripcion     String
+  calorias        Int
+  imagen          String
+  tipo            String
+  orderMenuSlot   OrderMenuSlot    @relation(fields: [orderMenuSlotId], references: [id], onDelete: Cascade)
+  catalogItem     FoodCatalogItem? @relation(fields: [catalogItemId], references: [id], onDelete: SetNull)
+
+  @@unique([orderMenuSlotId, componentRole, position], map: "order_menu_components_slot_role_position_key")
+  @@index([catalogItemId], map: "order_menu_components_catalog_item_idx")
+  @@map("order_menu_components")
+}
+
 model Expense {
-  id                String   @id @default(uuid()) @db.Uuid
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   description       String
   amount            Decimal  @db.Decimal(12, 2)
   category          String
@@ -171,4 +272,13 @@ enum ComponentRole {
   GUARNICION_1
   GUARNICION_2
   ADICIONAL
+}
+
+enum OrderStatus {
+  DRAFT
+  CONFIRMED
+  PREPARING
+  PARTIALLY_DELIVERED
+  DELIVERED
+  CANCELLED
 }

@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { AppModal } from "#components";
-import type { WeeklyPlan } from '~~/layers/menu/shared/types/types';
+import type { Plan } from '~~/layers/menu/shared/types/types';
 
-const props = defineProps<WeeklyPlan>();
+const props = defineProps<Plan>();
 
 function openPlanModal() {
   const overlay = useOverlay();
   const modal = overlay.create(AppModal, {
     props: {
       title: `Opciones del ${props.title.toLowerCase()}`,
-      variants: props.variants,
+      variants: props.variants.map(variant => ({
+        title: variant.title,
+        price: new Intl.NumberFormat('es-MX').format(variant.price)
+      })),
       button: {
         icon: "i-heroicons-rocket-launch",
         label: "Ordenar",
@@ -27,7 +30,7 @@ function openPlanModal() {
     :title
     :description
     :image
-    :button="{ ...button, click: openPlanModal }"
+    :button="{ label: 'Ver opciones', icon: 'i-heroicons-numbered-list', click: openPlanModal }"
     card-style="complex"
     image-width="340"
     image-height="480"

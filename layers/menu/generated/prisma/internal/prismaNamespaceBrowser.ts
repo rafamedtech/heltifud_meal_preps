@@ -59,6 +59,11 @@ export const ModelName = {
   Ingredient: 'Ingredient',
   RecipeIngredient: 'RecipeIngredient',
   Customer: 'Customer',
+  Plan: 'Plan',
+  PlanVariant: 'PlanVariant',
+  Order: 'Order',
+  OrderMenuSlot: 'OrderMenuSlot',
+  OrderMenuComponent: 'OrderMenuComponent',
   Expense: 'Expense'
 } as const
 
@@ -180,6 +185,85 @@ export const CustomerScalarFieldEnum = {
 } as const
 
 export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
+
+
+export const PlanScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  image: 'image',
+  slotTypes: 'slotTypes',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
+
+
+export const PlanVariantScalarFieldEnum = {
+  id: 'id',
+  planId: 'planId',
+  title: 'title',
+  daysCount: 'daysCount',
+  price: 'price',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlanVariantScalarFieldEnum = (typeof PlanVariantScalarFieldEnum)[keyof typeof PlanVariantScalarFieldEnum]
+
+
+export const OrderScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  planVariantId: 'planVariantId',
+  sourceWeeklyMenuId: 'sourceWeeklyMenuId',
+  status: 'status',
+  planTitleSnapshot: 'planTitleSnapshot',
+  planVariantTitleSnapshot: 'planVariantTitleSnapshot',
+  priceSnapshot: 'priceSnapshot',
+  firstDeliveryDate: 'firstDeliveryDate',
+  firstDeliveryLocation: 'firstDeliveryLocation',
+  firstDeliveryAddress: 'firstDeliveryAddress',
+  secondDeliveryDate: 'secondDeliveryDate',
+  secondDeliveryLocation: 'secondDeliveryLocation',
+  secondDeliveryAddress: 'secondDeliveryAddress',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
+export const OrderMenuSlotScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  dayOfWeek: 'dayOfWeek',
+  dayOrder: 'dayOrder',
+  slotType: 'slotType',
+  contenedor: 'contenedor'
+} as const
+
+export type OrderMenuSlotScalarFieldEnum = (typeof OrderMenuSlotScalarFieldEnum)[keyof typeof OrderMenuSlotScalarFieldEnum]
+
+
+export const OrderMenuComponentScalarFieldEnum = {
+  id: 'id',
+  orderMenuSlotId: 'orderMenuSlotId',
+  catalogItemId: 'catalogItemId',
+  componentRole: 'componentRole',
+  position: 'position',
+  nombre: 'nombre',
+  descripcion: 'descripcion',
+  calorias: 'calorias',
+  imagen: 'imagen',
+  tipo: 'tipo'
+} as const
+
+export type OrderMenuComponentScalarFieldEnum = (typeof OrderMenuComponentScalarFieldEnum)[keyof typeof OrderMenuComponentScalarFieldEnum]
 
 
 export const ExpenseScalarFieldEnum = {

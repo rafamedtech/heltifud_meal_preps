@@ -257,24 +257,30 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
 
 <template>
   <main class="flex min-h-full flex-col space-y-6">
-    <section class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-      <div class="space-y-1">
-        <h1 class="text-3xl font-semibold tracking-tight text-primary">Clientes</h1>
-        <p class="max-w-2xl text-sm text-muted">Centraliza sus datos de contacto, origen y etapa de relación.</p>
+    <section class="space-y-4">
+      <div class="flex items-center justify-between gap-4">
+        <div class="min-w-0 space-y-1">
+          <h1 class="text-3xl font-semibold tracking-tight text-primary">Clientes</h1>
+          <p class="max-w-2xl text-sm text-muted">Centraliza sus datos de contacto, origen y etapa de relación.</p>
+        </div>
+
+        <UButton icon="i-lucide-user-plus" class="hidden shrink-0 justify-center md:inline-flex" @click="openCreate">
+          Nuevo cliente
+        </UButton>
       </div>
 
-      <UButton icon="i-lucide-user-plus" size="lg" @click="openCreate">
+      <UButton icon="i-lucide-user-plus" class="w-full justify-center md:hidden" @click="openCreate">
         Nuevo cliente
       </UButton>
     </section>
 
     <UCard class="app-surface overflow-hidden" :ui="{ body: 'p-0 sm:p-0' }">
       <section class="border-b border-default/70 px-5 py-5 sm:px-6">
-        <div class="grid gap-3 xl:grid-cols-[minmax(260px,1fr)_190px_190px_190px]">
-          <UInput v-model="search" icon="i-lucide-search" size="lg" placeholder="Buscar por nombre, teléfono o correo" />
-          <USelect v-model="selectedStatus" :items="statusOptions" value-key="value" size="lg" />
-          <USelect v-model="selectedType" :items="customerTypeOptions" value-key="value" size="lg" />
-          <USelect v-model="selectedSource" :items="sourceOptions" value-key="value" size="lg" />
+        <div class="grid gap-3 md:grid-cols-3 xl:grid-cols-[minmax(260px,1fr)_190px_190px_190px]">
+          <UInput v-model="search" icon="i-lucide-search" placeholder="Buscar por nombre, teléfono o correo" class="md:col-span-3 xl:col-span-1" />
+          <USelect v-model="selectedStatus" :items="statusOptions" value-key="value" />
+          <USelect v-model="selectedType" :items="customerTypeOptions" value-key="value" />
+          <USelect v-model="selectedSource" :items="sourceOptions" value-key="value" />
         </div>
 
         <UButton v-if="isFiltering" label="Limpiar filtros" icon="i-lucide-filter-x" variant="ghost" color="neutral" size="xs" class="mt-3 ml-auto flex" @click="resetFilters" />
@@ -309,8 +315,62 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
         </div>
       </section>
 
-      <div v-else class="overflow-x-auto">
-        <table class="min-w-[860px] w-full text-sm">
+      <div v-else>
+        <div class="divide-y divide-default/70 md:grid md:grid-cols-2 md:divide-y-0 lg:hidden">
+          <article
+            v-for="customer in customers"
+            :key="`mobile-${customer.id}`"
+            class="space-y-3 px-5 py-4 md:border-b md:border-default/70 md:odd:border-r"
+          >
+            <div class="flex items-start gap-3">
+              <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                {{ customer.nombre.slice(0, 2).toUpperCase() }}
+              </div>
+
+              <div class="min-w-0 flex-1">
+                <p class="truncate font-semibold text-highlighted">{{ customer.nombre }}</p>
+                <UBadge :color="statusAppearance(customer.status).color" variant="soft" size="sm" class="mt-1">
+                  <UIcon :name="statusAppearance(customer.status).icon" class="size-3" />
+                  {{ labelFor(statusOptions, customer.status) }}
+                </UBadge>
+              </div>
+
+              <UDropdownMenu :items="actionItems(customer)">
+                <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" aria-label="Acciones del cliente" />
+              </UDropdownMenu>
+            </div>
+
+            <div class="grid min-w-0 grid-cols-2 gap-x-4 gap-y-3 pl-13 text-xs">
+              <div class="min-w-0">
+                <p class="mb-1 font-medium uppercase tracking-wide text-dimmed">Contacto</p>
+                <a :href="`tel:${customer.telefono}`" class="flex min-w-0 items-center gap-1.5 text-toned hover:text-primary">
+                  <UIcon name="i-lucide-phone" class="size-3.5 shrink-0" />
+                  <span class="truncate">{{ customer.telefono }}</span>
+                </a>
+                <a v-if="customer.correoElectronico" :href="`mailto:${customer.correoElectronico}`" class="mt-1 flex min-w-0 items-center gap-1.5 text-muted hover:text-primary">
+                  <UIcon name="i-lucide-mail" class="size-3.5 shrink-0" />
+                  <span class="truncate">{{ customer.correoElectronico }}</span>
+                </a>
+                <span v-else class="mt-1 block text-dimmed">Sin correo</span>
+              </div>
+
+              <div class="min-w-0">
+                <p class="mb-1 font-medium uppercase tracking-wide text-dimmed">Perfil</p>
+                <p class="flex min-w-0 items-center gap-1.5 text-toned">
+                  <UIcon name="i-lucide-contact-round" class="size-3.5 shrink-0 text-muted" />
+                  <span class="truncate">{{ labelFor(customerTypeOptions, customer.tipoCliente as CustomerType) }}</span>
+                </p>
+                <p class="mt-1 flex min-w-0 items-center gap-1.5 text-muted">
+                  <UIcon :name="sourceIcon(customer.source)" class="size-3.5 shrink-0" />
+                  <span class="truncate">{{ labelFor(sourceOptions, customer.source) }}</span>
+                </p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="hidden overflow-x-auto lg:block">
+          <table class="min-w-[860px] w-full text-sm">
           <thead class="bg-elevated/50">
             <tr class="border-b border-default/70 text-left text-xs font-medium uppercase tracking-[0.16em] text-muted">
               <th class="px-5 py-3 sm:px-6">Cliente</th>
@@ -364,7 +424,8 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
               </td>
             </tr>
           </tbody>
-        </table>
+          </table>
+        </div>
       </div>
 
       <section v-if="nextCursor && !loading" class="border-t border-default/70 px-5 py-4 text-center sm:px-6">
@@ -379,28 +440,40 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
         <UForm :schema="customerInputSchema" :state="formState" class="space-y-5" @submit="saveCustomer">
           <div class="grid gap-5 md:grid-cols-2">
             <UFormField label="Nombre" name="nombre" required>
-              <UInput v-model="formState.nombre" icon="i-lucide-user-round" placeholder="Nombre completo" class="w-full" size="lg" autofocus />
+              <UInput v-model="formState.nombre" icon="i-lucide-user-round" placeholder="Nombre completo" class="w-full" autofocus />
             </UFormField>
             <UFormField label="Teléfono" name="telefono" required>
-              <UInput v-model="formState.telefono" icon="i-lucide-phone" type="tel" placeholder="664 000 0000" class="w-full" size="lg" />
+              <UInput v-model="formState.telefono" icon="i-lucide-phone" type="tel" placeholder="664 000 0000" class="w-full" />
             </UFormField>
             <UFormField label="Correo electrónico" name="correoElectronico">
-              <UInput v-model="formState.correoElectronico" icon="i-lucide-mail" type="email" placeholder="cliente@correo.com" class="w-full" size="lg" />
+              <UInput v-model="formState.correoElectronico" icon="i-lucide-mail" type="email" placeholder="cliente@correo.com" class="w-full" />
             </UFormField>
             <UFormField label="Origen" name="source" required>
-              <USelect v-model="formState.source" :items="sourceOptions.slice(1)" value-key="value" class="w-full" size="lg" />
+              <USelect v-model="formState.source" :items="sourceOptions.slice(1)" value-key="value" class="w-full" />
             </UFormField>
             <UFormField label="Ubicación principal" name="ubicacion1" required class="md:col-span-2">
-              <UTextarea v-model="formState.ubicacion1" icon="i-lucide-map-pin" placeholder="Dirección o zona principal de entrega" autoresize :rows="2" class="w-full" />
+              <GooglePlacesInput
+                v-model="formState.ubicacion1"
+                name="ubicacion1"
+                placeholder="Busca la dirección principal de entrega"
+                description="Ubicación principal de entrega del cliente"
+                :disabled="saving"
+              />
             </UFormField>
             <UFormField label="Ubicación secundaria" name="ubicacion2" hint="Opcional" class="md:col-span-2">
-              <UTextarea v-model="formState.ubicacion2" placeholder="Otra dirección o referencias" autoresize :rows="2" class="w-full" />
+              <GooglePlacesInput
+                v-model="formState.ubicacion2"
+                name="ubicacion2"
+                placeholder="Busca otra dirección de entrega"
+                description="Ubicación secundaria de entrega del cliente"
+                :disabled="saving"
+              />
             </UFormField>
             <UFormField label="Estado" name="status" required>
-              <USelect v-model="formState.status" :items="statusOptions.slice(1)" value-key="value" class="w-full" size="lg" />
+              <USelect v-model="formState.status" :items="statusOptions.slice(1)" value-key="value" class="w-full" />
             </UFormField>
             <UFormField label="Tipo de cliente" name="tipoCliente" required>
-              <USelect v-model="formState.tipoCliente" :items="customerTypeOptions.slice(1)" value-key="value" class="w-full" size="lg" />
+              <USelect v-model="formState.tipoCliente" :items="customerTypeOptions.slice(1)" value-key="value" class="w-full" />
             </UFormField>
           </div>
 

@@ -4,10 +4,13 @@ import {
   CUSTOMER_SOURCE_VALUES,
   CUSTOMER_STATUS_VALUES,
   CUSTOMER_TYPE_VALUES,
+  COMPONENT_ROLE_VALUES,
   DAY_OF_WEEK_VALUES,
   EXPENSE_CATEGORY_VALUES,
   EXPENSE_PAYMENT_METHOD_VALUES,
   EXPENSE_TYPE_VALUES,
+  ORDER_STATUS_VALUES,
+  SLOT_TYPE_VALUES,
 } from './types';
 
 const REQUIRED_DAY_VALUES = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES'] as const;
@@ -242,6 +245,118 @@ export const expenseListQuerySchema = z.object({
   to: isoDateSchema.optional(),
   cursor: z.string().trim().max(1000).optional(),
   limit: z.coerce.number().int().min(1).max(100).default(30),
+}).refine((value) => !value.from || !value.to || value.from <= value.to, {
+  message: 'La fecha inicial no puede ser posterior a la fecha final',
+  path: ['from'],
+});
+
+export const planVariantInputSchema = z.object({
+  id: z.string().uuid().optional(),
+  title: z.string().trim().min(1, 'El nombre de la variante es obligatorio').max(80),
+  daysCount: z.number().int().min(1).max(7),
+  price: z.number().positive('El precio debe ser mayor que cero').max(99999999.99),
+  isActive: z.boolean(),
+});
+
+export const planInputSchema = z.object({
+  title: z.string().trim().min(2, 'El nombre debe tener al menos 2 caracteres').max(120),
+  description: z.string().trim().min(2, 'La descripción es obligatoria').max(500),
+  image: z.string().trim().min(1, 'La imagen es obligatoria').max(500),
+  slotTypes: z.array(z.enum(SLOT_TYPE_VALUES)).min(1, 'Selecciona al menos un tiempo').max(5),
+  isActive: z.boolean(),
+  variants: z.array(planVariantInputSchema).min(1, 'Agrega al menos una variante').max(7),
+}).superRefine((value, ctx) => {
+  const days = new Set<number>();
+  value.variants.forEach((variant, index) => {
+    if (days.has(variant.daysCount)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['variants', index, 'daysCount'],
+        message: 'No puedes repetir la cantidad de días',
+      });
+    }
+    days.add(variant.daysCount);
+  });
+});
+
+export const orderCreateInputSchema = z.object({
+  customerId: z.string().uuid('Selecciona un cliente'),
+  planVariantId: z.string().uuid('Selecciona una variante de plan'),
+  firstDeliveryDate: isoDateSchema,
+  firstDeliveryLocation: z.union([z.literal(1), z.literal(2)]),
+  secondDeliveryDate: isoDateSchema,
+  secondDeliveryLocation: z.union([z.literal(1), z.literal(2)]),
+  notes: optionalTrimmedString(1000),
+}).refine((value) => value.secondDeliveryDate >= value.firstDeliveryDate, {
+  path: ['secondDeliveryDate'],
+  message: 'La segunda entrega no puede ser anterior a la primera',
+});
+
+export const orderMenuComponentInputSchema = z.object({
+  catalogItemId: z.string().uuid().nullable(),
+  componentRole: z.enum(COMPONENT_ROLE_VALUES),
+  position: z.number().int().min(0),
+  nombre: z.string().trim().min(1, 'El nombre del platillo es obligatorio').max(160),
+  descripcion: z.string().trim().max(1000),
+  calorias: z.number().int().min(0).max(10000),
+  imagen: z.string().trim().max(500),
+  tipo: z.string().trim().min(1, 'El tipo es obligatorio').max(80),
+});
+
+export const orderMenuSlotInputSchema = z.object({
+  dayOfWeek: z.enum(DAY_OF_WEEK_VALUES),
+  dayOrder: z.number().int().min(1).max(7),
+  slotType: z.enum(SLOT_TYPE_VALUES),
+  contenedor: optionalTrimmedString(160),
+  components: z.array(orderMenuComponentInputSchema).min(1, 'Cada tiempo debe conservar al menos un platillo').max(12),
+});
+
+export const orderUpdateInputSchema = z.object({
+  status: z.enum(ORDER_STATUS_VALUES),
+  firstDeliveryDate: isoDateSchema,
+  firstDeliveryLocation: z.union([z.literal(1), z.literal(2)]),
+  secondDeliveryDate: isoDateSchema,
+  secondDeliveryLocation: z.union([z.literal(1), z.literal(2)]),
+  notes: optionalTrimmedString(1000),
+  menuSlots: z.array(orderMenuSlotInputSchema).min(1).max(35),
+}).superRefine((value, ctx) => {
+  if (value.secondDeliveryDate < value.firstDeliveryDate) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['secondDeliveryDate'],
+      message: 'La segunda entrega no puede ser anterior a la primera',
+    });
+  }
+
+  const slots = new Set<string>();
+  value.menuSlots.forEach((slot, index) => {
+    const key = `${slot.dayOfWeek}:${slot.slotType}`;
+    if (slots.has(key)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['menuSlots', index], message: 'El tiempo está repetido' });
+    }
+    slots.add(key);
+
+    const components = new Set<string>();
+    slot.components.forEach((component, componentIndex) => {
+      const componentKey = `${component.componentRole}:${component.position}`;
+      if (components.has(componentKey)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['menuSlots', index, 'components', componentIndex],
+          message: 'El componente está repetido',
+        });
+      }
+      components.add(componentKey);
+    });
+  });
+});
+
+export const orderListQuerySchema = z.object({
+  q: optionalTrimmedString(100),
+  status: z.enum(ORDER_STATUS_VALUES).optional(),
+  from: isoDateSchema.optional(),
+  to: isoDateSchema.optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(100),
 }).refine((value) => !value.from || !value.to || value.from <= value.to, {
   message: 'La fecha inicial no puede ser posterior a la fecha final',
   path: ['from'],
