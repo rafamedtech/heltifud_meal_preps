@@ -42,8 +42,6 @@ function emptyPlan(): PlanInput {
 }
 
 const formState = reactive<PlanInput>(emptyPlan())
-const activePlans = computed(() => plans.value.filter(plan => plan.isActive).length)
-const activeVariants = computed(() => plans.value.flatMap(plan => plan.variants).filter(variant => variant.isActive).length)
 const formTitle = computed(() => editingPlan.value ? "Editar plan" : "Nuevo plan")
 const isDeleteOpen = computed({
   get: () => Boolean(pendingDelete.value),
@@ -144,20 +142,11 @@ async function confirmDelete() {
     deleting.value = false
   }
 }
-
-function priceRange(plan: Plan) {
-  const prices = plan.variants.map(variant => variant.price)
-  if (!prices.length) return "Sin precios"
-  const min = Math.min(...prices)
-  const max = Math.max(...prices)
-  return min === max ? transformPrice(min) : `${transformPrice(min)} – ${transformPrice(max)}`
-}
 </script>
 
 <template>
   <main class="space-y-6">
     <header class="relative overflow-hidden rounded-3xl border border-default bg-default px-6 py-7 shadow-sm sm:px-8">
-      <div class="pointer-events-none absolute inset-y-0 right-0 w-2/5 bg-[radial-gradient(circle_at_70%_30%,color-mix(in_oklab,var(--ui-primary)_16%,transparent),transparent_66%)]" />
       <div class="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div class="max-w-2xl">
           <h1 class="text-2xl font-bold tracking-tight text-primary sm:text-3xl">Planes y precios</h1>
@@ -165,23 +154,9 @@ function priceRange(plan: Plan) {
         </div>
         <UButton icon="i-lucide-plus" size="lg" @click="openCreate">Crear plan</UButton>
       </div>
-      <div class="relative mt-7 grid gap-3 sm:grid-cols-3">
-        <div class="rounded-2xl border border-default/70 bg-elevated/60 px-4 py-3">
-          <p class="text-xs font-medium uppercase tracking-wider text-dimmed">Planes activos</p>
-          <p class="mt-1 text-2xl font-bold text-highlighted">{{ activePlans }}</p>
-        </div>
-        <div class="rounded-2xl border border-default/70 bg-elevated/60 px-4 py-3">
-          <p class="text-xs font-medium uppercase tracking-wider text-dimmed">Variantes activas</p>
-          <p class="mt-1 text-2xl font-bold text-highlighted">{{ activeVariants }}</p>
-        </div>
-        <div class="rounded-2xl border border-default/70 bg-elevated/60 px-4 py-3">
-          <p class="text-xs font-medium uppercase tracking-wider text-dimmed">Configuración</p>
-          <p class="mt-1 text-sm font-semibold text-toned">Un plan, múltiples precios</p>
-        </div>
-      </div>
     </header>
 
-    <section v-if="status === 'pending'" class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+    <section v-if="status === 'pending'" class="grid gap-5 md:grid-cols-3">
       <USkeleton v-for="index in 4" :key="index" class="h-96 rounded-3xl" />
     </section>
 
@@ -202,31 +177,24 @@ function priceRange(plan: Plan) {
       <UButton class="mt-5" icon="i-lucide-plus" @click="openCreate">Crear plan</UButton>
     </section>
 
-    <section v-else class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+    <section v-else class="grid gap-5 md:grid-cols-3">
       <article
         v-for="plan in plans"
         :key="plan.id"
-        class="group overflow-hidden rounded-3xl border border-default bg-default shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+        class="overflow-hidden rounded-3xl border border-default bg-default shadow-sm"
       >
-        <div class="relative h-44 overflow-hidden bg-elevated">
-          <NuxtImg :src="plan.image" :alt="plan.title" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
-          <div class="absolute inset-0 bg-linear-to-t from-black/65 via-black/5 to-transparent" />
-          <UBadge :color="plan.isActive ? 'success' : 'neutral'" variant="solid" class="absolute right-4 top-4">
-            {{ plan.isActive ? "Activo" : "Pausado" }}
-          </UBadge>
-          <div class="absolute inset-x-0 bottom-0 px-5 pb-4 text-white">
-            <p class="text-xs font-medium uppercase tracking-widest text-white/70">{{ priceRange(plan) }}</p>
-            <h2 class="mt-1 text-xl font-bold">{{ plan.title }}</h2>
-          </div>
-        </div>
-
         <div class="space-y-5 p-5">
-          <p class="min-h-10 text-sm leading-5 text-muted">{{ plan.description }}</p>
-
-          <div class="flex flex-wrap gap-2">
-            <UBadge v-for="slot in plan.slotTypes" :key="slot" color="neutral" variant="soft">
-              {{ slotOptions.find(option => option.value === slot)?.label }}
-            </UBadge>
+          <div class="flex items-start justify-between gap-2">
+            <div class="space-y-2">
+              <UBadge :color="plan.isActive ? 'success' : 'neutral'" variant="solid">
+                {{ plan.isActive ? "Activo" : "Pausado" }}
+              </UBadge>
+              <h2 class="text-xl font-bold text-highlighted">{{ plan.title }}</h2>
+            </div>
+            <div class="flex gap-1">
+              <UButton icon="i-lucide-pencil" color="neutral" variant="ghost" aria-label="Editar plan" @click="openEdit(plan)" />
+              <UButton icon="i-lucide-trash-2" color="error" variant="ghost" aria-label="Eliminar plan" @click="requestDelete(plan)" />
+            </div>
           </div>
 
           <div class="space-y-2 rounded-2xl bg-elevated/65 p-3">
@@ -236,14 +204,6 @@ function priceRange(plan: Plan) {
                 {{ variant.title }}
               </span>
               <span class="font-semibold tabular-nums text-highlighted">{{ transformPrice(variant.price) }}</span>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between border-t border-default/70 pt-4">
-            <span class="text-xs text-dimmed">{{ plan.variants.length }} opciones</span>
-            <div class="flex gap-1">
-              <UButton icon="i-lucide-pencil" color="neutral" variant="ghost" aria-label="Editar plan" @click="openEdit(plan)" />
-              <UButton icon="i-lucide-trash-2" color="error" variant="ghost" aria-label="Eliminar plan" @click="requestDelete(plan)" />
             </div>
           </div>
         </div>
