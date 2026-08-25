@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { OrderListItem, OrderListResponse, OrderStatusValue } from "~~/layers/menu/shared/types/types"
+import type { OrderListResponse, OrderStatusValue } from "~~/layers/menu/shared/types/types"
 
 definePageMeta({ layout: "admin" })
 
@@ -85,11 +85,8 @@ function resetFilters() {
   loadOrders()
 }
 
-function actionItems(order: OrderListItem) {
-  return [[
-    { label: "Abrir pedido", icon: "i-lucide-arrow-up-right", to: `/admin/pedidos/${order.id}` },
-    { label: "Llamar al cliente", icon: "i-lucide-phone", to: `tel:${order.customerPhone}` }
-  ]]
+function openOrder(orderId: string) {
+  return navigateTo(`/admin/pedidos/${orderId}`)
 }
 
 watch(selectedStatus, () => loadOrders())
@@ -111,20 +108,19 @@ onMounted(loadOrders)
       <UButton to="/admin/pedidos/crear-nuevo" icon="i-lucide-plus" size="lg" class="shrink-0 justify-center">Nuevo pedido</UButton>
     </header>
 
-    <section class="grid grid-cols-2 gap-3 md:grid-cols-[1.15fr_1fr_1fr] md:grid-rows-2" aria-label="Resumen de pedidos">
+    <section class="grid grid-flow-col auto-cols-[minmax(9rem,1fr)] gap-3 overflow-x-auto pb-1 md:grid-flow-row md:grid-cols-5 md:auto-cols-auto md:overflow-visible md:pb-0" aria-label="Resumen de pedidos">
       <article
-        v-for="(stat, index) in stats"
+        v-for="stat in stats"
         :key="stat.label"
-        class="rounded-2xl border border-default bg-default px-4 py-4 shadow-sm"
-        :class="index === 0 ? 'col-span-2 md:col-span-1 md:row-span-2 md:flex md:flex-col md:justify-between md:p-5' : ''"
+        class="flex min-w-0 items-center justify-between gap-2 rounded-xl border border-default bg-default px-3 py-3 shadow-sm sm:px-4"
       >
-        <div class="flex items-center justify-between gap-3">
-          <p class="text-xs font-semibold tracking-wide text-dimmed">{{ stat.label }}</p>
-          <span class="flex size-8 items-center justify-center rounded-lg bg-elevated">
-            <UIcon :name="stat.icon" class="size-4" :class="stat.tone" />
-          </span>
+        <div class="min-w-0">
+          <p class="truncate text-xs font-semibold tracking-wide text-dimmed">{{ stat.label }}</p>
+          <p class="mt-0.5 text-xl font-bold tabular-nums text-highlighted">{{ stat.value }}</p>
         </div>
-        <p class="mt-2 font-bold tabular-nums text-highlighted" :class="index === 0 ? 'text-4xl tracking-tight md:text-5xl' : 'text-2xl'">{{ stat.value }}</p>
+        <span class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-elevated">
+          <UIcon :name="stat.icon" class="size-4" :class="stat.tone" />
+        </span>
       </article>
     </section>
 
@@ -138,10 +134,10 @@ onMounted(loadOrders)
             <USelect v-model="selectedStatus" :items="statusOptions" value-key="value" class="w-full" />
           </UFormField>
           <UFormField label="Desde" class="md:col-span-5 xl:col-auto">
-            <UInput v-model="from" type="date" class="w-full" />
+            <CalendarInput v-model="from" aria-label="Fecha inicial" />
           </UFormField>
           <UFormField label="Hasta" class="md:col-span-5 xl:col-auto">
-            <UInput v-model="to" type="date" class="w-full" />
+            <CalendarInput v-model="to" aria-label="Fecha final" />
           </UFormField>
           <UButton
             color="neutral"
@@ -156,15 +152,16 @@ onMounted(loadOrders)
       </template>
 
       <section v-if="loading">
-        <div class="grid gap-3 p-3 sm:p-4 md:grid-cols-2 xl:hidden">
-          <article v-for="index in 6" :key="index" class="space-y-4 rounded-2xl border border-default p-4" aria-hidden="true">
-            <div class="flex items-start justify-between gap-4">
-              <div class="flex-1 space-y-2"><USkeleton class="h-5 w-3/5" /><USkeleton class="h-3.5 w-2/5" /></div>
-              <USkeleton class="h-6 w-24 rounded-lg" />
+        <div class="grid gap-3 p-3 sm:p-4 xl:hidden">
+          <article v-for="index in 6" :key="index" class="grid gap-4 rounded-2xl border border-default p-4 md:grid-cols-[minmax(0,1fr)_7rem]" aria-hidden="true">
+            <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_13rem]">
+              <div class="space-y-2"><USkeleton class="h-5 w-3/5" /><USkeleton class="h-6 w-24 rounded-lg" /></div>
+              <USkeleton class="h-12 w-full rounded-xl" />
+              <USkeleton class="h-14 rounded-xl sm:col-span-2 md:col-span-1" />
             </div>
-            <USkeleton class="h-12 w-full rounded-xl" />
-            <div class="grid grid-cols-2 gap-2"><USkeleton class="h-24 rounded-xl" /><USkeleton class="h-24 rounded-xl" /></div>
-            <div class="flex justify-between"><USkeleton class="h-5 w-20" /><USkeleton class="size-8 rounded-lg" /></div>
+            <div class="flex items-end justify-end border-t border-default/70 pt-3 md:flex-col md:items-center md:justify-center md:border-t-0 md:border-l md:pt-0 md:pl-4">
+              <USkeleton class="h-9 w-16" />
+            </div>
           </article>
         </div>
         <div class="hidden space-y-3 p-5 xl:block">
@@ -186,65 +183,77 @@ onMounted(loadOrders)
       </section>
 
       <div v-else>
-        <section class="grid gap-3 p-3 sm:p-4 md:grid-cols-2 xl:hidden" aria-label="Listado de pedidos">
+        <section class="grid gap-3 p-3 sm:p-4 xl:hidden" aria-label="Listado de pedidos">
           <NuxtLink
             v-for="order in response.items"
             :key="`card-${order.id}`"
             :to="`/admin/pedidos/${order.id}`"
-            class="group flex min-w-0 flex-col gap-4 rounded-2xl border border-default bg-default p-4 transition duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md active:translate-y-0 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            :aria-label="`Abrir pedido de ${order.customerName}`"
+            class="group grid min-w-0 cursor-pointer touch-manipulation select-none gap-4 rounded-2xl border border-default bg-default p-4 transition-[transform,background-color,border-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md active:translate-y-0 active:scale-[0.992] active:border-primary/60 active:bg-primary/5 active:shadow-inner active:duration-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transform-none md:grid-cols-[minmax(0,1fr)_7rem]"
           >
-            <div class="flex items-start justify-between gap-3">
+            <div class="grid min-w-0 gap-3 sm:grid-cols-2 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_13rem]">
               <div class="min-w-0">
                 <p class="truncate font-semibold text-highlighted transition-colors group-hover:text-primary">{{ order.customerName }}</p>
-                <p class="mt-1 truncate text-xs text-muted">{{ order.customerPhone }}</p>
+                <UBadge :color="statusAppearance(order.status).color" variant="soft" class="mt-2 shrink-0">
+                  <UIcon :name="statusAppearance(order.status).icon" class="size-3" />
+                  {{ statusAppearance(order.status).label }}
+                </UBadge>
               </div>
-              <UBadge :color="statusAppearance(order.status).color" variant="soft" class="shrink-0">
-                <UIcon :name="statusAppearance(order.status).icon" class="size-3" />
-                {{ statusAppearance(order.status).label }}
-              </UBadge>
+
+              <div class="rounded-xl bg-elevated/60 px-3 py-2.5">
+                <p class="truncate text-sm font-medium text-toned">{{ order.planTitle }}</p>
+                <p class="mt-0.5 truncate text-xs text-muted">{{ order.planVariantTitle }}</p>
+              </div>
+
+              <div class="rounded-xl border border-default/70 px-3 py-2 text-xs sm:col-span-2 md:col-span-1">
+                <div class="flex items-center gap-1.5 text-dimmed">
+                  <UIcon name="i-heroicons-calendar-days" class="size-3.5" />
+                  <span>Entregas</span>
+                </div>
+                <div class="mt-1.5 grid grid-cols-2 divide-x divide-default/70">
+                  <div class="min-w-0 pr-2">
+                    <p class="truncate font-semibold tabular-nums text-toned"><span class="sr-only">Primera entrega: </span>{{ formatDate(order.firstDeliveryDate) }}</p>
+                  </div>
+                  <div class="min-w-0 pl-2">
+                    <p class="truncate font-semibold tabular-nums text-toned"><span class="sr-only">Segunda entrega: </span>{{ formatDate(order.secondDeliveryDate) }}</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div class="rounded-xl bg-elevated/60 px-3 py-2.5">
-              <p class="truncate text-sm font-medium text-toned">{{ order.planTitle }}</p>
-              <p class="mt-0.5 truncate text-xs text-muted">{{ order.planVariantTitle }}</p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2 text-xs">
-              <div class="min-w-0 rounded-xl border border-default/70 p-3">
-                <div class="flex items-center gap-1.5 text-dimmed"><UIcon name="i-heroicons-truck" class="size-3.5" /><span>Primera entrega</span></div>
-                <p class="mt-2 font-semibold tabular-nums text-toned">{{ formatDate(order.firstDeliveryDate) }}</p>
-                <p class="mt-1 line-clamp-2 leading-4 text-muted">{{ order.firstDeliveryAddress }}</p>
-              </div>
-              <div class="min-w-0 rounded-xl border border-default/70 p-3">
-                <div class="flex items-center gap-1.5 text-dimmed"><UIcon name="i-heroicons-map-pin" class="size-3.5" /><span>Segunda entrega</span></div>
-                <p class="mt-2 font-semibold tabular-nums text-toned">{{ formatDate(order.secondDeliveryDate) }}</p>
-                <p class="mt-1 line-clamp-2 leading-4 text-muted">{{ order.secondDeliveryAddress }}</p>
-              </div>
-            </div>
-
-            <div class="mt-auto flex items-end justify-between gap-3 border-t border-default/70 pt-3">
-              <div><p class="text-xs text-dimmed">Total</p><p class="font-semibold tabular-nums text-highlighted">{{ transformPrice(order.price) }}</p></div>
-              <span class="flex size-9 items-center justify-center rounded-lg bg-elevated text-muted transition group-hover:bg-primary group-hover:text-inverted">
-                <UIcon name="i-heroicons-arrow-right" class="size-4" />
-              </span>
+            <div class="flex items-end justify-end border-t border-default/70 pt-3 md:flex-col md:items-center md:justify-center md:border-t-0 md:border-l md:pt-0 md:pl-4">
+              <div class="md:text-center"><p class="text-xs text-dimmed">Total</p><p class="font-semibold tabular-nums text-highlighted">{{ transformPrice(order.price) }}</p></div>
             </div>
           </NuxtLink>
         </section>
 
         <div class="hidden overflow-x-auto xl:block">
-          <table class="min-w-[920px] w-full text-sm">
+          <table class="min-w-[820px] w-full text-sm">
             <thead class="bg-elevated/55 text-left text-xs font-medium uppercase tracking-[0.14em] text-muted">
-              <tr><th class="px-6 py-3">Cliente</th><th class="px-5 py-3">Plan</th><th class="px-5 py-3">Estado</th><th class="px-5 py-3">Primera entrega</th><th class="px-5 py-3">Segunda entrega</th><th class="px-5 py-3 text-right">Total</th><th class="w-14 px-4 py-3"><span class="sr-only">Acciones</span></th></tr>
+              <tr><th class="px-6 py-3">Cliente</th><th class="px-5 py-3">Plan</th><th class="px-5 py-3">Estado</th><th class="px-5 py-3">Entregas</th><th class="px-5 py-3 text-right">Total</th></tr>
             </thead>
             <tbody class="divide-y divide-default">
-              <tr v-for="order in response.items" :key="order.id" class="transition hover:bg-elevated/35">
-                <td class="px-6 py-4"><NuxtLink :to="`/admin/pedidos/${order.id}`" class="font-semibold text-highlighted hover:text-primary">{{ order.customerName }}</NuxtLink><p class="mt-0.5 text-xs text-muted">{{ order.customerPhone }}</p></td>
+              <tr
+                v-for="order in response.items"
+                :key="order.id"
+                role="link"
+                tabindex="0"
+                :aria-label="`Abrir pedido de ${order.customerName}`"
+                class="cursor-pointer touch-manipulation select-none transition-[background-color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-elevated/35 active:bg-primary/10 active:shadow-inner active:duration-100 focus-visible:bg-primary/5 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary"
+                @click="openOrder(order.id)"
+                @keydown.enter="openOrder(order.id)"
+                @keydown.space.prevent="openOrder(order.id)"
+              >
+                <td class="px-6 py-4"><p class="font-semibold text-highlighted">{{ order.customerName }}</p></td>
                 <td class="px-5 py-4"><p class="font-medium text-toned">{{ order.planTitle }}</p><p class="mt-0.5 text-xs text-muted">{{ order.planVariantTitle }}</p></td>
                 <td class="px-5 py-4"><UBadge :color="statusAppearance(order.status).color" variant="soft"><UIcon :name="statusAppearance(order.status).icon" class="size-3" />{{ statusAppearance(order.status).label }}</UBadge></td>
-                <td class="max-w-56 px-5 py-4"><p class="font-medium text-toned">{{ formatDate(order.firstDeliveryDate) }}</p><p class="mt-0.5 truncate text-xs text-muted">{{ order.firstDeliveryAddress }}</p></td>
-                <td class="max-w-56 px-5 py-4"><p class="font-medium text-toned">{{ formatDate(order.secondDeliveryDate) }}</p><p class="mt-0.5 truncate text-xs text-muted">{{ order.secondDeliveryAddress }}</p></td>
+                <td class="px-5 py-4">
+                  <div class="grid min-w-52 grid-cols-2 gap-4 text-xs">
+                    <div><p class="text-dimmed">Primera</p><p class="mt-1 font-medium tabular-nums text-toned">{{ formatDate(order.firstDeliveryDate) }}</p></div>
+                    <div><p class="text-dimmed">Segunda</p><p class="mt-1 font-medium tabular-nums text-toned">{{ formatDate(order.secondDeliveryDate) }}</p></div>
+                  </div>
+                </td>
                 <td class="px-5 py-4 text-right font-semibold tabular-nums text-highlighted">{{ transformPrice(order.price) }}</td>
-                <td class="px-4 py-4"><UDropdownMenu :items="actionItems(order)"><UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" aria-label="Acciones del pedido" /></UDropdownMenu></td>
               </tr>
             </tbody>
           </table>
