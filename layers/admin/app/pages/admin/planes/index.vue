@@ -12,11 +12,16 @@ useSeoMeta({
 
 const toast = useToast()
 const { createPlan, updatePlan, deletePlan } = usePlans()
-const { data: plans, status, error, refresh } = await useLazyFetch<Plan[]>("/api/plans/all", {
+const {
+  data: plans,
+  status,
+  error,
+  refresh
+} = await useLazyFetch<Plan[]>("/api/plans/all", {
   default: () => []
 })
 
-const slotOptions: Array<{ label: string, value: SlotTypeValue, icon: string }> = [
+const slotOptions: Array<{ label: string; value: SlotTypeValue; icon: string }> = [
   { label: "Desayuno", value: "DESAYUNO", icon: "i-lucide-sunrise" },
   { label: "Comida", value: "COMIDA", icon: "i-lucide-sun" },
   { label: "Cena", value: "CENA", icon: "i-lucide-moon-star" },
@@ -42,10 +47,12 @@ function emptyPlan(): PlanInput {
 }
 
 const formState = reactive<PlanInput>(emptyPlan())
-const formTitle = computed(() => editingPlan.value ? "Editar plan" : "Nuevo plan")
+const formTitle = computed(() => (editingPlan.value ? "Editar plan" : "Nuevo plan"))
 const isDeleteOpen = computed({
   get: () => Boolean(pendingDelete.value),
-  set: open => { if (!open) pendingDelete.value = null }
+  set: (open) => {
+    if (!open) pendingDelete.value = null
+  }
 })
 
 function openCreate() {
@@ -62,7 +69,7 @@ function openEdit(plan: Plan) {
     image: plan.image,
     slotTypes: [...plan.slotTypes],
     isActive: plan.isActive,
-    variants: plan.variants.map(variant => ({ ...variant }))
+    variants: plan.variants.map((variant) => ({ ...variant }))
   })
   isFormOpen.value = true
 }
@@ -85,8 +92,8 @@ function cancelDelete() {
 }
 
 function addVariant() {
-  const used = new Set(formState.variants.map(variant => variant.daysCount))
-  const daysCount = [3, 4, 5, 6, 7].find(days => !used.has(days)) ?? 1
+  const used = new Set(formState.variants.map((variant) => variant.daysCount))
+  const daysCount = [3, 4, 5, 6, 7].find((days) => !used.has(days)) ?? 1
   formState.variants.push({ title: `${daysCount} días`, daysCount, price: 0, isActive: true })
 }
 
@@ -98,16 +105,14 @@ function removeVariant(index: number) {
 function toggleSlot(slot: SlotTypeValue, checked: boolean) {
   if (checked && !formState.slotTypes.includes(slot)) formState.slotTypes.push(slot)
   if (!checked && formState.slotTypes.length > 1) {
-    formState.slotTypes = formState.slotTypes.filter(item => item !== slot)
+    formState.slotTypes = formState.slotTypes.filter((item) => item !== slot)
   }
 }
 
 async function savePlan() {
   saving.value = true
   try {
-    const saved = editingPlan.value
-      ? await updatePlan(editingPlan.value.id, formState)
-      : await createPlan(formState)
+    const saved = editingPlan.value ? await updatePlan(editingPlan.value.id, formState) : await createPlan(formState)
     toast.add({
       title: editingPlan.value ? "Plan actualizado" : "Plan creado",
       description: `${saved.title} ya está disponible en el catálogo.`,
@@ -157,13 +162,23 @@ async function confirmDelete() {
       <div class="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div class="max-w-2xl">
           <h1 class="text-2xl font-bold tracking-tight text-primary sm:text-3xl">Planes y precios</h1>
-          <p class="mt-2 max-w-xl text-sm leading-6 text-muted">Define qué tiempos incluye cada plan y ofrece diferentes cantidades de días sin duplicar productos.</p>
+          <p class="mt-2 max-w-xl text-sm leading-6 text-muted">
+            Define qué tiempos incluye cada plan y ofrece diferentes cantidades de días.
+          </p>
         </div>
-        <UButton icon="i-lucide-plus" size="lg" @click="openCreate">Crear plan</UButton>
+        <UButton
+          icon="i-lucide-plus"
+          size="lg"
+          @click="openCreate"
+          >Crear plan</UButton
+        >
       </div>
     </header>
 
-    <section v-if="status === 'pending'" class="grid gap-5 md:grid-cols-3">
+    <section
+      v-if="status === 'pending'"
+      class="grid gap-5 md:grid-cols-3"
+    >
       <article
         v-for="index in 4"
         :key="index"
@@ -180,10 +195,17 @@ async function confirmDelete() {
           </div>
 
           <div class="space-y-3 rounded-2xl bg-elevated/65 p-3">
-            <div v-for="variant in 3" :key="variant" class="flex items-center justify-between gap-3">
+            <div
+              v-for="variant in 3"
+              :key="variant"
+              class="flex items-center justify-between gap-3"
+            >
               <div class="flex flex-1 items-center gap-2">
                 <USkeleton class="size-1.5 shrink-0 rounded-full" />
-                <USkeleton class="h-4" :class="variant === 2 ? 'w-24' : 'w-20'" />
+                <USkeleton
+                  class="h-4"
+                  :class="variant === 2 ? 'w-24' : 'w-20'"
+                />
               </div>
               <USkeleton class="h-4 w-14" />
             </div>
@@ -202,14 +224,28 @@ async function confirmDelete() {
       :actions="[{ label: 'Reintentar', onClick: () => refresh() }]"
     />
 
-    <section v-else-if="!plans.length" class="rounded-3xl border border-dashed border-default bg-default px-6 py-20 text-center">
-      <UIcon name="i-lucide-notebook-tabs" class="mx-auto size-10 text-dimmed" />
+    <section
+      v-else-if="!plans.length"
+      class="rounded-3xl border border-dashed border-default bg-default px-6 py-20 text-center"
+    >
+      <UIcon
+        name="i-lucide-notebook-tabs"
+        class="mx-auto size-10 text-dimmed"
+      />
       <h2 class="mt-4 font-semibold text-highlighted">Aún no hay planes</h2>
       <p class="mt-1 text-sm text-muted">Crea el primero para comenzar a registrar pedidos.</p>
-      <UButton class="mt-5" icon="i-lucide-plus" @click="openCreate">Crear plan</UButton>
+      <UButton
+        class="mt-5"
+        icon="i-lucide-plus"
+        @click="openCreate"
+        >Crear plan</UButton
+      >
     </section>
 
-    <section v-else class="grid gap-5 md:grid-cols-3">
+    <section
+      v-else
+      class="grid gap-5 md:grid-cols-3"
+    >
       <article
         v-for="plan in plans"
         :key="plan.id"
@@ -218,18 +254,34 @@ async function confirmDelete() {
         <div class="space-y-5 p-5">
           <div class="space-y-2">
             <div class="flex items-start justify-between gap-2">
-              <UBadge :color="plan.isActive ? 'success' : 'neutral'" variant="solid">
+              <UBadge
+                :color="plan.isActive ? 'success' : 'neutral'"
+                variant="solid"
+              >
                 {{ plan.isActive ? "Activo" : "Pausado" }}
               </UBadge>
-              <UButton icon="i-lucide-pencil" color="neutral" variant="ghost" aria-label="Editar plan" @click="openEdit(plan)" />
+              <UButton
+                icon="i-lucide-pencil"
+                color="neutral"
+                variant="ghost"
+                aria-label="Editar plan"
+                @click="openEdit(plan)"
+              />
             </div>
             <h2 class="w-full text-xl font-bold text-highlighted">{{ plan.title }}</h2>
           </div>
 
           <div class="space-y-2 rounded-2xl bg-elevated/65 p-3">
-            <div v-for="variant in plan.variants" :key="variant.id" class="flex items-center justify-between gap-3 text-sm">
+            <div
+              v-for="variant in plan.variants"
+              :key="variant.id"
+              class="flex items-center justify-between gap-3 text-sm"
+            >
               <span class="flex items-center gap-2 text-toned">
-                <span class="size-1.5 rounded-full" :class="variant.isActive ? 'bg-success' : 'bg-muted'" />
+                <span
+                  class="size-1.5 rounded-full"
+                  :class="variant.isActive ? 'bg-success' : 'bg-muted'"
+                />
                 {{ variant.title }}
               </span>
               <span class="font-semibold tabular-nums text-highlighted">{{ transformPrice(variant.price) }}</span>
@@ -239,18 +291,59 @@ async function confirmDelete() {
       </article>
     </section>
 
-    <UModal v-model:open="isFormOpen" :title="formTitle" description="Configura el contenido y las opciones que verá el equipo al crear pedidos." :ui="{ content: 'max-w-4xl' }" scrollable>
+    <UModal
+      v-model:open="isFormOpen"
+      :title="formTitle"
+      description="Configura el contenido y las opciones que verá el equipo al crear pedidos."
+      :ui="{ content: 'max-w-4xl' }"
+      scrollable
+    >
       <template #body>
-        <UForm :schema="planInputSchema" :state="formState" class="space-y-7" @submit="savePlan">
+        <UForm
+          :schema="planInputSchema"
+          :state="formState"
+          class="space-y-7"
+          @submit="savePlan"
+        >
           <div class="grid gap-5 md:grid-cols-2">
-            <UFormField label="Nombre del plan" name="title" required>
-              <UInput v-model="formState.title" icon="i-lucide-notebook-tabs" placeholder="Plan comidas" class="w-full" autofocus />
+            <UFormField
+              label="Nombre del plan"
+              name="title"
+              required
+            >
+              <UInput
+                v-model="formState.title"
+                icon="i-lucide-notebook-tabs"
+                placeholder="Plan comidas"
+                class="w-full"
+                autofocus
+              />
             </UFormField>
-            <UFormField label="Imagen" name="image" required>
-              <UInput v-model="formState.image" icon="i-lucide-image" placeholder="Ruta de Cloudinary" class="w-full" />
+            <UFormField
+              label="Imagen"
+              name="image"
+              required
+            >
+              <UInput
+                v-model="formState.image"
+                icon="i-lucide-image"
+                placeholder="Ruta de Cloudinary"
+                class="w-full"
+              />
             </UFormField>
-            <UFormField label="Descripción" name="description" required class="md:col-span-2">
-              <UTextarea v-model="formState.description" :rows="3" autoresize class="w-full" placeholder="Describe para quién es este plan." />
+            <UFormField
+              label="Descripción"
+              name="description"
+              required
+              class="md:col-span-2"
+            >
+              <UTextarea
+                v-model="formState.description"
+                :rows="3"
+                autoresize
+                class="w-full"
+                placeholder="Describe para quién es este plan."
+              />
             </UFormField>
           </div>
 
@@ -260,20 +353,30 @@ async function confirmDelete() {
                 <h3 class="font-semibold text-highlighted">Tiempos incluidos</h3>
                 <p class="text-xs text-muted">El pedido copiará únicamente estos tiempos del menú activo.</p>
               </div>
-              <USwitch v-model="formState.isActive" label="Disponible" />
+              <USwitch
+                v-model="formState.isActive"
+                label="Disponible"
+              />
             </div>
             <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
               <label
                 v-for="slot in slotOptions"
                 :key="slot.value"
                 class="flex cursor-pointer items-center gap-3 rounded-2xl border px-3 py-3 transition"
-                :class="formState.slotTypes.includes(slot.value) ? 'border-primary bg-primary/5 text-highlighted' : 'border-default bg-elevated/40 text-muted'"
+                :class="
+                  formState.slotTypes.includes(slot.value)
+                    ? 'border-primary bg-primary/5 text-highlighted'
+                    : 'border-default bg-elevated/40 text-muted'
+                "
               >
                 <UCheckbox
                   :model-value="formState.slotTypes.includes(slot.value)"
                   @update:model-value="toggleSlot(slot.value, Boolean($event))"
                 />
-                <UIcon :name="slot.icon" class="size-4" />
+                <UIcon
+                  :name="slot.icon"
+                  class="size-4"
+                />
                 <span class="text-sm font-medium">{{ slot.label }}</span>
               </label>
             </div>
@@ -285,42 +388,133 @@ async function confirmDelete() {
                 <h3 class="font-semibold text-highlighted">Variantes</h3>
                 <p class="text-xs text-muted">Cada cantidad de días puede tener un precio distinto.</p>
               </div>
-              <UButton type="button" size="sm" color="neutral" variant="soft" icon="i-lucide-plus" @click="addVariant">Agregar</UButton>
+              <UButton
+                type="button"
+                size="sm"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-plus"
+                @click="addVariant"
+                >Agregar</UButton
+              >
             </div>
             <div class="space-y-3">
-              <div v-for="(variant, index) in formState.variants" :key="variant.id || index" class="grid gap-3 rounded-2xl border border-default bg-elevated/35 p-4 sm:grid-cols-[1fr_110px_150px_auto_auto] sm:items-end">
-                <UFormField :name="`variants.${index}.title`" label="Nombre">
-                  <UInput v-model="variant.title" class="w-full" />
+              <div
+                v-for="(variant, index) in formState.variants"
+                :key="variant.id || index"
+                class="grid gap-3 rounded-2xl border border-default bg-elevated/35 p-4 sm:grid-cols-[1fr_110px_150px_auto_auto] sm:items-end"
+              >
+                <UFormField
+                  :name="`variants.${index}.title`"
+                  label="Nombre"
+                >
+                  <UInput
+                    v-model="variant.title"
+                    class="w-full"
+                  />
                 </UFormField>
-                <UFormField :name="`variants.${index}.daysCount`" label="Días">
-                  <UInputNumber v-model="variant.daysCount" :min="1" :max="7" class="w-full" />
+                <UFormField
+                  :name="`variants.${index}.daysCount`"
+                  label="Días"
+                >
+                  <UInputNumber
+                    v-model="variant.daysCount"
+                    :min="1"
+                    :max="7"
+                    class="w-full"
+                  />
                 </UFormField>
-                <UFormField :name="`variants.${index}.price`" label="Precio">
-                  <UInputNumber v-model="variant.price" :min="0" :step="50" class="w-full" />
+                <UFormField
+                  :name="`variants.${index}.price`"
+                  label="Precio"
+                >
+                  <UInputNumber
+                    v-model="variant.price"
+                    :min="0"
+                    :step="50"
+                    class="w-full"
+                  />
                 </UFormField>
-                <USwitch v-model="variant.isActive" label="Activa" class="pb-2" />
-                <UButton type="button" icon="i-lucide-x" color="error" variant="ghost" :disabled="formState.variants.length === 1" aria-label="Quitar variante" class="mb-0.5" @click="removeVariant(index)" />
+                <USwitch
+                  v-model="variant.isActive"
+                  label="Activa"
+                  class="pb-2"
+                />
+                <UButton
+                  type="button"
+                  icon="i-lucide-x"
+                  color="error"
+                  variant="ghost"
+                  :disabled="formState.variants.length === 1"
+                  aria-label="Quitar variante"
+                  class="mb-0.5"
+                  @click="removeVariant(index)"
+                />
               </div>
             </div>
           </section>
 
           <div class="flex justify-end gap-3 border-t border-default pt-5">
-            <UButton type="button" color="neutral" variant="ghost" :disabled="saving" @click="closeForm">Cancelar</UButton>
-            <UButton v-if="editingPlan" type="button" color="error" variant="soft" icon="i-lucide-trash-2" :disabled="saving" @click="requestEditingPlanDelete">Eliminar plan</UButton>
-            <UButton type="submit" icon="i-lucide-save" :loading="saving">Guardar plan</UButton>
+            <UButton
+              type="button"
+              color="neutral"
+              variant="ghost"
+              :disabled="saving"
+              @click="closeForm"
+              >Cancelar</UButton
+            >
+            <UButton
+              v-if="editingPlan"
+              type="button"
+              color="error"
+              variant="soft"
+              icon="i-lucide-trash-2"
+              :disabled="saving"
+              @click="requestEditingPlanDelete"
+              >Eliminar plan</UButton
+            >
+            <UButton
+              type="submit"
+              icon="i-lucide-save"
+              :loading="saving"
+              >Guardar plan</UButton
+            >
           </div>
         </UForm>
       </template>
     </UModal>
 
-    <UModal v-model:open="isDeleteOpen" title="Eliminar plan" :description="pendingDelete ? `Se eliminarán ${pendingDelete.title} y sus variantes.` : undefined" :ui="{ content: 'max-w-md' }">
+    <UModal
+      v-model:open="isDeleteOpen"
+      title="Eliminar plan"
+      :description="pendingDelete ? `Se eliminarán ${pendingDelete.title} y sus variantes.` : undefined"
+      :ui="{ content: 'max-w-md' }"
+    >
       <template #body>
-        <UAlert color="error" variant="soft" icon="i-lucide-triangle-alert" title="Los pedidos históricos se conservarán" description="Mantendrán el nombre y precio guardados, pero ya no podrás crear pedidos nuevos con este plan." />
+        <UAlert
+          color="error"
+          variant="soft"
+          icon="i-lucide-triangle-alert"
+          title="Los pedidos históricos se conservarán"
+          description="Mantendrán el nombre y precio guardados, pero ya no podrás crear pedidos nuevos con este plan."
+        />
       </template>
       <template #footer>
         <div class="flex w-full justify-end gap-3">
-          <UButton color="neutral" variant="ghost" :disabled="deleting" @click="cancelDelete">Cancelar</UButton>
-          <UButton color="error" icon="i-lucide-trash-2" :loading="deleting" @click="confirmDelete">Eliminar</UButton>
+          <UButton
+            color="neutral"
+            variant="ghost"
+            :disabled="deleting"
+            @click="cancelDelete"
+            >Cancelar</UButton
+          >
+          <UButton
+            color="error"
+            icon="i-lucide-trash-2"
+            :loading="deleting"
+            @click="confirmDelete"
+            >Eliminar</UButton
+          >
         </div>
       </template>
     </UModal>
