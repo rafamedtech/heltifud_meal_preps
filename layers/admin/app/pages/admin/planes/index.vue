@@ -75,6 +75,11 @@ function requestDelete(plan: Plan) {
   pendingDelete.value = plan
 }
 
+function requestEditingPlanDelete() {
+  if (!editingPlan.value) return
+  requestDelete(editingPlan.value)
+}
+
 function cancelDelete() {
   pendingDelete.value = null
 }
@@ -129,6 +134,8 @@ async function confirmDelete() {
   try {
     await deletePlan(pendingDelete.value.id)
     toast.add({ title: "Plan eliminado", color: "success", icon: "i-lucide-trash-2" })
+    isFormOpen.value = false
+    editingPlan.value = null
     pendingDelete.value = null
     await refresh()
   } catch (error) {
@@ -157,7 +164,32 @@ async function confirmDelete() {
     </header>
 
     <section v-if="status === 'pending'" class="grid gap-5 md:grid-cols-3">
-      <USkeleton v-for="index in 4" :key="index" class="h-96 rounded-3xl" />
+      <article
+        v-for="index in 4"
+        :key="index"
+        class="overflow-hidden rounded-3xl border border-default bg-default shadow-sm"
+        aria-hidden="true"
+      >
+        <div class="space-y-5 p-5">
+          <div class="space-y-2">
+            <div class="flex items-start justify-between gap-2">
+              <USkeleton class="h-5 w-16 rounded-full" />
+              <USkeleton class="size-8 rounded-lg" />
+            </div>
+            <USkeleton class="h-7 w-3/4 rounded-lg" />
+          </div>
+
+          <div class="space-y-3 rounded-2xl bg-elevated/65 p-3">
+            <div v-for="variant in 3" :key="variant" class="flex items-center justify-between gap-3">
+              <div class="flex flex-1 items-center gap-2">
+                <USkeleton class="size-1.5 shrink-0 rounded-full" />
+                <USkeleton class="h-4" :class="variant === 2 ? 'w-24' : 'w-20'" />
+              </div>
+              <USkeleton class="h-4 w-14" />
+            </div>
+          </div>
+        </div>
+      </article>
     </section>
 
     <UAlert
@@ -184,17 +216,14 @@ async function confirmDelete() {
         class="overflow-hidden rounded-3xl border border-default bg-default shadow-sm"
       >
         <div class="space-y-5 p-5">
-          <div class="flex items-start justify-between gap-2">
-            <div class="space-y-2">
+          <div class="space-y-2">
+            <div class="flex items-start justify-between gap-2">
               <UBadge :color="plan.isActive ? 'success' : 'neutral'" variant="solid">
                 {{ plan.isActive ? "Activo" : "Pausado" }}
               </UBadge>
-              <h2 class="text-xl font-bold text-highlighted">{{ plan.title }}</h2>
-            </div>
-            <div class="flex gap-1">
               <UButton icon="i-lucide-pencil" color="neutral" variant="ghost" aria-label="Editar plan" @click="openEdit(plan)" />
-              <UButton icon="i-lucide-trash-2" color="error" variant="ghost" aria-label="Eliminar plan" @click="requestDelete(plan)" />
             </div>
+            <h2 class="w-full text-xl font-bold text-highlighted">{{ plan.title }}</h2>
           </div>
 
           <div class="space-y-2 rounded-2xl bg-elevated/65 p-3">
@@ -277,6 +306,7 @@ async function confirmDelete() {
 
           <div class="flex justify-end gap-3 border-t border-default pt-5">
             <UButton type="button" color="neutral" variant="ghost" :disabled="saving" @click="closeForm">Cancelar</UButton>
+            <UButton v-if="editingPlan" type="button" color="error" variant="soft" icon="i-lucide-trash-2" :disabled="saving" @click="requestEditingPlanDelete">Eliminar plan</UButton>
             <UButton type="submit" icon="i-lucide-save" :loading="saving">Guardar plan</UButton>
           </div>
         </UForm>
