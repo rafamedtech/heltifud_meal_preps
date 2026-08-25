@@ -101,11 +101,8 @@ async function submitOrder() {
     <header class="flex flex-col gap-5 rounded-3xl border border-default bg-default px-6 py-7 shadow-sm sm:px-8 lg:flex-row lg:items-end lg:justify-between">
       <div>
         <UButton to="/admin/pedidos" color="neutral" variant="ghost" icon="i-lucide-arrow-left" class="-ml-3 mb-3">Volver a pedidos</UButton>
-        <h1 class="text-2xl font-bold tracking-tight text-highlighted sm:text-3xl">Crear pedido</h1>
+        <h1 class="text-2xl font-bold tracking-tight text-primary sm:text-3xl">Crear pedido</h1>
         <p class="mt-2 max-w-2xl text-sm leading-6 text-muted">Selecciona cliente, plan y las dos entregas. El menú activo se copiará automáticamente al guardar.</p>
-      </div>
-      <div class="flex items-center gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-primary">
-        <UIcon name="i-lucide-wand-sparkles" class="size-4" /> Copia de menú editable
       </div>
     </header>
 
