@@ -5,6 +5,81 @@ const toast = useToast()
 const isConfirmOpen = ref(false)
 const isLoggingOut = ref(false)
 const mobileMenuOpen = ref(false)
+const expenseCreateRequest = useState("admin-expense-create-request", () => 0)
+
+const pageHeaders: Record<string, { title: string; description: string }> = {
+  "/admin": {
+    title: "Panel de gestión",
+    description: "Consulta y administra las principales secciones de Heltifud Meal Preps."
+  },
+  "/admin/planes": {
+    title: "Planes y precios",
+    description: "Define qué tiempos incluye cada plan y ofrece diferentes cantidades de días."
+  },
+  "/admin/pedidos": {
+    title: "Pedidos y entregas",
+    description: "Controla cada pedido desde la confirmación hasta su segunda entrega."
+  },
+  "/admin/pedidos/crear-nuevo": {
+    title: "Crear pedido",
+    description: "Selecciona cliente, plan y entregas para registrar un nuevo pedido."
+  },
+  "/admin/clientes": {
+    title: "Clientes",
+    description: "Centraliza sus datos de contacto, origen y etapa de relación."
+  },
+  "/admin/gastos": {
+    title: "Control de gastos",
+    description: "Registra cada salida, consulta su historial y mantén visible el costo operativo."
+  },
+  "/admin/menu": {
+    title: "Menú semanal",
+    description: "Crea nuevos menús, edita los existentes y mantén visible la próxima rotación semanal."
+  },
+  "/admin/menu/crear-nuevo": {
+    title: "Crear nuevo menú",
+    description: "Crea un nuevo menú semanal y define los platillos de cada día."
+  },
+  "/admin/platillos": {
+    title: "Platillos",
+    description: "Administra el catálogo de platillos para los menús semanales."
+  },
+  "/admin/platillos/crear-nuevo": {
+    title: "Crear nuevo platillo",
+    description: "Crea un platillo reusable para utilizarlo en los menús semanales."
+  }
+}
+
+const pageHeader = computed(() => {
+  const path = route.path.replace(/\/$/, "") || "/"
+  const exactHeader = pageHeaders[path]
+
+  if (exactHeader) return exactHeader
+
+  if (path.startsWith("/admin/pedidos/")) {
+    return {
+      title: "Detalle del pedido",
+      description: "Consulta y actualiza el estado, las entregas y el menú personalizado."
+    }
+  }
+
+  if (path.startsWith("/admin/menu/")) {
+    return {
+      title: "Editar menú",
+      description: "Actualiza la rotación, las fechas y los platillos del menú semanal."
+    }
+  }
+
+  if (path.startsWith("/admin/platillos/")) {
+    return {
+      title: "Editar platillo",
+      description: "Mantén actualizada la información del platillo dentro del catálogo."
+    }
+  }
+
+  return pageHeaders["/admin"]!
+})
+const isExpensesPage = computed(() => route.path.replace(/\/$/, "") === "/admin/gastos")
 
 const mobileNavItems = [
   {
@@ -58,6 +133,10 @@ function openLogoutConfirmFromMobile() {
   isConfirmOpen.value = true
 }
 
+function requestExpenseCreate() {
+  expenseCreateRequest.value += 1
+}
+
 async function logout() {
   isLoggingOut.value = true
 
@@ -93,12 +172,19 @@ async function logout() {
   <header class="flex min-h-24 items-center justify-between gap-4">
     <div class="min-w-0">
       <div class="min-w-0">
-        <h1 class="truncate text-xl font-semibold text-highlighted">Panel de gestión</h1>
-        <p class="mt-1 text-sm text-muted">Controla menús, platillos y rotación semanal.</p>
+        <h1 class="truncate text-xl font-semibold text-primary">{{ pageHeader.title }}</h1>
       </div>
     </div>
 
     <div class="flex items-center gap-2 min-[744px]:hidden">
+      <UButton
+        v-if="isExpensesPage"
+        square
+        icon="i-lucide-wallet-cards"
+        aria-label="Registrar gasto"
+        @click="requestExpenseCreate"
+      />
+
       <ColorMode compact />
 
       <button
@@ -173,6 +259,14 @@ async function logout() {
     </div>
 
     <div class="hidden items-center gap-3 min-[744px]:flex">
+      <UButton
+        v-if="isExpensesPage"
+        icon="i-lucide-wallet-cards"
+        @click="requestExpenseCreate"
+      >
+        Registrar
+      </UButton>
+
       <UButton
         color="neutral"
         variant="outline"

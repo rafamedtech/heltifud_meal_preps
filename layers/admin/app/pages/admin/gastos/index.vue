@@ -102,6 +102,7 @@ const fromDate = ref('');
 const toDate = ref('');
 const isFormOpen = ref(false);
 const isFiltersOpen = ref(false);
+const expenseCreateRequest = useState<number>('admin-expense-create-request', () => 0);
 const editingExpense = ref<Expense | null>(null);
 const pendingDelete = ref<Expense | null>(null);
 let requestId = 0;
@@ -229,6 +230,8 @@ function openCreate() {
   Object.assign(formState, emptyExpense());
   isFormOpen.value = true;
 }
+
+watch(expenseCreateRequest, openCreate);
 
 function openEdit(expense: Expense) {
   editingExpense.value = expense;
@@ -397,18 +400,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
 
 <template>
   <main class="flex min-h-full flex-col space-y-6">
-    <section class="flex flex-col gap-4 min-[744px]:flex-row min-[744px]:items-end min-[744px]:justify-between">
-      <div class="space-y-1">
-        <h1 class="text-3xl font-semibold tracking-tight text-primary">Control de gastos</h1>
-        <p class="max-w-2xl text-sm text-muted">Registra cada salida, consulta su historial y mantén visible el costo operativo.</p>
-      </div>
-
-      <UButton icon="i-lucide-plus" size="lg" class="w-full justify-center sm:w-auto" @click="openCreate">
-        Registrar gasto
-      </UButton>
-    </section>
-
-    <section class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <section class="grid gap-3 sm:grid-cols-3">
       <UCard class="app-surface" :ui="{ body: 'p-5 sm:p-5' }">
         <div class="flex items-start justify-between gap-3">
           <div><p class="text-xs font-medium uppercase tracking-wider text-muted">Total filtrado</p><p class="mt-2 text-2xl font-semibold text-highlighted">{{ currency(summary.total) }}</p></div>
@@ -425,12 +417,6 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
         <div class="flex items-start justify-between gap-3">
           <div><p class="text-xs font-medium uppercase tracking-wider text-muted">Movimientos</p><p class="mt-2 text-2xl font-semibold text-highlighted">{{ summary.count }}</p></div>
           <div class="flex size-10 items-center justify-center rounded-xl bg-success/10 text-success"><UIcon name="i-lucide-receipt-text" class="size-5" /></div>
-        </div>
-      </UCard>
-      <UCard class="app-surface" :ui="{ body: 'p-5 sm:p-5' }">
-        <div class="flex items-start justify-between gap-3">
-          <div><p class="text-xs font-medium uppercase tracking-wider text-muted">Promedio</p><p class="mt-2 text-2xl font-semibold text-highlighted">{{ currency(summary.average) }}</p></div>
-          <div class="flex size-10 items-center justify-center rounded-xl bg-warning/10 text-warning"><UIcon name="i-lucide-chart-no-axes-column-increasing" class="size-5" /></div>
         </div>
       </UCard>
     </section>
