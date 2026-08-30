@@ -1,14 +1,14 @@
 <script setup lang="ts">
 const isSidebarCollapsed = useState("admin-sidebar-collapsed", () => false)
 
-const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "lg:w-24 xl:w-24" : "lg:w-24 xl:w-64"))
+const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "min-[744px]:w-24 xl:w-24" : "min-[744px]:w-24 xl:w-64"))
 </script>
 
 <template>
   <div class="admin-shell h-dvh min-h-dvh overflow-hidden bg-neutral-50 text-highlighted dark:bg-neutral-950">
     <div class="flex h-full w-full">
       <aside
-        class="app-sidebar hidden h-full shrink-0 transition-[width] duration-200 lg:flex lg:flex-col"
+        class="app-sidebar hidden h-full shrink-0 transition-[width] duration-200 min-[744px]:flex min-[744px]:flex-col"
         :class="sidebarWidthClass"
       >
         <div class="app-sidebar-header relative flex h-24 items-center px-4">
@@ -182,7 +182,7 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "lg:w-24 xl
 
         <section
           data-route-scroll-container
-          class="admin-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-6 pb-24 md:px-8 md:pb-8 lg:[scrollbar-gutter:stable]"
+          class="admin-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-6 pb-24 md:px-8 md:pb-8 min-[744px]:[scrollbar-gutter:stable]"
         >
           <div class="mx-auto w-full max-w-400">
             <slot />

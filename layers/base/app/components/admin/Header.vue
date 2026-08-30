@@ -98,7 +98,7 @@ async function logout() {
       </div>
     </div>
 
-    <div class="flex items-center gap-2 lg:hidden">
+    <div class="flex items-center gap-2 min-[744px]:hidden">
       <ColorMode compact />
 
       <button
@@ -172,7 +172,7 @@ async function logout() {
       </USlideover>
     </div>
 
-    <div class="hidden items-center gap-3 lg:flex">
+    <div class="hidden items-center gap-3 min-[744px]:flex">
       <UButton
         color="neutral"
         variant="outline"
