@@ -101,6 +101,7 @@ const draftInvoiceStatus = ref('todos');
 const fromDate = ref('');
 const toDate = ref('');
 const isFormOpen = ref(false);
+const isCancelConfirmOpen = ref(false);
 const isFiltersOpen = ref(false);
 const expenseCreateRequest = useState<number>('admin-expense-create-request', () => 0);
 const editingExpense = ref<Expense | null>(null);
@@ -133,10 +134,10 @@ function emptyExpense(): ExpenseInput {
 }
 
 const formState = reactive<ExpenseInput>(emptyExpense());
+const initialFormState = ref<ExpenseInput>({ ...formState });
+const hasFormChanges = computed(() => (Object.keys(initialFormState.value) as (keyof ExpenseInput)[])
+  .some(key => key !== 'description' && formState[key] !== initialFormState.value[key]));
 const formTitle = computed(() => editingExpense.value ? 'Editar gasto' : 'Registrar gasto');
-const formDescription = computed(() => editingExpense.value
-  ? 'Actualiza la información de este movimiento.'
-  : 'Agrega un gasto operativo al control financiero.');
 const isDeleteOpen = computed({
   get: () => Boolean(pendingDelete.value),
   set: (open) => {
@@ -228,7 +229,25 @@ function createVendor(value: string) {
 function openCreate() {
   editingExpense.value = null;
   Object.assign(formState, emptyExpense());
+  initialFormState.value = { ...formState };
+  isCancelConfirmOpen.value = false;
   isFormOpen.value = true;
+}
+
+function cancelForm() {
+  if (saving.value) return;
+
+  if (hasFormChanges.value) {
+    isCancelConfirmOpen.value = true;
+    return;
+  }
+
+  isFormOpen.value = false;
+}
+
+function discardForm() {
+  isCancelConfirmOpen.value = false;
+  isFormOpen.value = false;
 }
 
 watch(expenseCreateRequest, openCreate);
@@ -248,6 +267,8 @@ function openEdit(expense: Expense) {
     isInvoiced: expense.isInvoiced,
     notes: expense.notes,
   });
+  initialFormState.value = { ...formState };
+  isCancelConfirmOpen.value = false;
   isFormOpen.value = true;
 }
 
@@ -590,7 +611,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
       </template>
     </UModal>
 
-    <UModal v-model:open="isFormOpen" :title="formTitle" :description="formDescription" :ui="{ content: 'max-w-3xl' }">
+    <UModal v-model:open="isFormOpen" :title="formTitle" :close="false" :dismissible="false" :ui="{ content: 'max-w-3xl' }">
       <template #body>
         <UForm :schema="expenseInputSchema" :state="formState" class="space-y-5" @submit="saveExpense">
           <div class="grid gap-5 sm:grid-cols-2">
@@ -628,8 +649,24 @@ onBeforeUnmount(() => clearTimeout(searchTimer));
             </UFormField>
             <UFormField label="Notas" name="notes" hint="Opcional"><UTextarea v-model="formState.notes" placeholder="Detalles, folio o contexto adicional" autoresize :rows="3" class="w-full" /></UFormField>
           </div>
-          <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"><UButton type="button" color="neutral" variant="ghost" @click="isFormOpen = false">Cancelar</UButton><UButton type="submit" icon="i-lucide-save" :loading="saving">{{ editingExpense ? 'Guardar cambios' : 'Registrar gasto' }}</UButton></div>
+          <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"><UButton type="button" color="neutral" variant="ghost" :disabled="saving" @click="cancelForm">Cancelar</UButton><UButton type="submit" icon="i-lucide-save" :loading="saving">{{ editingExpense ? 'Guardar cambios' : 'Registrar gasto' }}</UButton></div>
         </UForm>
+      </template>
+    </UModal>
+
+    <UModal
+      v-model:open="isCancelConfirmOpen"
+      :title="editingExpense ? '¿Cancelar la edición?' : '¿Cancelar el registro?'"
+      description="Tienes cambios sin guardar. Si cancelas, se perderán."
+      :close="false"
+      :dismissible="false"
+      :ui="{ content: 'max-w-md' }"
+    >
+      <template #footer>
+        <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <UButton color="neutral" variant="ghost" @click="isCancelConfirmOpen = false">Seguir editando</UButton>
+          <UButton color="error" @click="discardForm">Descartar cambios</UButton>
+        </div>
       </template>
     </UModal>
 

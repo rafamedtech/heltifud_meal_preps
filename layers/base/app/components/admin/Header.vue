@@ -2,7 +2,7 @@
 const route = useRoute()
 const supabase = useSupabaseClient()
 const toast = useToast()
-const isConfirmOpen = ref(false)
+const isConfirmOpen = useState("admin-logout-confirm-open", () => false)
 const isLoggingOut = ref(false)
 const mobileMenuOpen = ref(false)
 const expenseCreateRequest = useState("admin-expense-create-request", () => 0)
@@ -78,6 +78,15 @@ const pageHeader = computed(() => {
   }
 
   return pageHeaders["/admin"]!
+})
+const pageIcon = computed(() => {
+  const path = route.path.replace(/\/$/, "") || "/"
+  const matchingItem = adminLinks
+    .flat()
+    .filter((item) => typeof item.to === "string" && (path === item.to || path.startsWith(`${item.to}/`)))
+    .sort((a, b) => String(b.to).length - String(a.to).length)[0]
+
+  return matchingItem?.icon || "i-lucide-house"
 })
 const isExpensesPage = computed(() => route.path.replace(/\/$/, "") === "/admin/gastos")
 
@@ -170,9 +179,13 @@ async function logout() {
 
 <template>
   <header class="flex min-h-24 items-center justify-between gap-4">
-    <div class="min-w-0">
+    <div class="flex min-w-0 items-center gap-2.5">
+      <UIcon
+        :name="pageIcon"
+        class="size-6 shrink-0 text-primary"
+      />
       <div class="min-w-0">
-        <h1 class="truncate text-xl font-semibold text-primary">{{ pageHeader.title }}</h1>
+        <h1 class="truncate text-2xl font-semibold">{{ pageHeader.title }}</h1>
       </div>
     </div>
 
@@ -180,7 +193,7 @@ async function logout() {
       <UButton
         v-if="isExpensesPage"
         square
-        icon="i-lucide-wallet-cards"
+        icon="i-lucide-plus"
         aria-label="Registrar gasto"
         @click="requestExpenseCreate"
       />
@@ -261,21 +274,12 @@ async function logout() {
     <div class="hidden items-center gap-3 min-[744px]:flex">
       <UButton
         v-if="isExpensesPage"
-        icon="i-lucide-wallet-cards"
+        icon="i-lucide-plus"
         @click="requestExpenseCreate"
       >
         Registrar
       </UButton>
 
-      <UButton
-        color="neutral"
-        variant="outline"
-        icon="i-lucide-log-out"
-        class="app-chip-surface"
-        @click="isConfirmOpen = true"
-      >
-        Salir
-      </UButton>
     </div>
 
     <UModal

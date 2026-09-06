@@ -116,7 +116,7 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "min-[744px
 
         <div class="app-sidebar-footer py-4 px-4 xl:hidden">
           <div class="flex w-full justify-center">
-            <ColorMode compact />
+            <AdminUserMenu collapsed />
           </div>
         </div>
 
@@ -131,7 +131,7 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "min-[744px
               class="flex flex-col items-center gap-3"
             >
               <div class="flex w-full justify-center">
-                <ColorMode compact />
+                <AdminUserMenu collapsed />
               </div>
 
               <div class="flex w-full justify-center">
@@ -153,7 +153,7 @@ const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "min-[744px
               key="sidebar-footer-expanded"
               class="flex flex-col items-stretch gap-3"
             >
-              <ColorMode />
+              <AdminUserMenu />
 
               <UButton
                 size="sm"
