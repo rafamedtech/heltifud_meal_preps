@@ -98,6 +98,7 @@ function getMonthBounds(now = new Date()) {
   const [year, month] = localDate.split('-').map(Number) as [number, number, number];
 
   return {
+    previousStart: new Date(Date.UTC(year, month - 2, 1)),
     start: new Date(Date.UTC(year, month - 1, 1)),
     end: new Date(Date.UTC(year, month, 1)),
   };
@@ -148,7 +149,7 @@ export async function getExpenses(query: unknown): Promise<ExpenseListResponse> 
   const month = getMonthBounds();
   const listWhere = after ? { AND: [filteredWhere, cursorWhere] } : filteredWhere;
 
-  const [rows, aggregate, currentMonthAggregate] = await prisma.$transaction([
+  const [rows, aggregate, currentMonthAggregate, previousMonthAggregate] = await prisma.$transaction([
     prisma.expense.findMany({
       where: listWhere,
       orderBy: [{ expenseDate: 'desc' }, { id: 'desc' }],
@@ -167,6 +168,13 @@ export async function getExpenses(query: unknown): Promise<ExpenseListResponse> 
       },
       _sum: { amount: true },
     }),
+    prisma.expense.aggregate({
+      where: {
+        ...baseWhere,
+        expenseDate: { gte: month.previousStart, lt: month.start },
+      },
+      _sum: { amount: true },
+    }),
   ]);
 
   const hasMore = rows.length > limit;
@@ -180,6 +188,7 @@ export async function getExpenses(query: unknown): Promise<ExpenseListResponse> 
       count: aggregate._count._all,
       average: Number(aggregate._avg.amount?.toString() ?? 0),
       currentMonthTotal: Number(currentMonthAggregate._sum.amount?.toString() ?? 0),
+      previousMonthTotal: Number(previousMonthAggregate._sum.amount?.toString() ?? 0),
     },
   };
 }

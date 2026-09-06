@@ -298,6 +298,7 @@ export interface ExpenseSummary {
   count: number;
   average: number;
   currentMonthTotal: number;
+  previousMonthTotal: number;
 }
 
 export interface ExpenseListResponse {

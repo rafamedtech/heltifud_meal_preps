@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import type { CalendarDate } from '@internationalized/date';
+import type { ButtonProps } from '@nuxt/ui';
 import { DateFormatter, getLocalTimeZone, parseDate } from '@internationalized/date';
 
 interface Props {
   ariaLabel: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  buttonUi?: ButtonProps['ui'];
 }
 
 const props = withDefaults(defineProps<Props>(), {
   size: 'lg',
+  buttonUi: undefined,
 });
 
 const model = defineModel<string>({ required: true });
@@ -35,6 +38,7 @@ const displayDate = computed(() => calendarValue.value
       variant="subtle"
       icon="i-lucide-calendar"
       :size="props.size"
+      :ui="props.buttonUi"
       :aria-label="`Abrir calendario para ${props.ariaLabel.toLocaleLowerCase('es-MX')}`"
       class="w-full justify-start"
       :class="calendarValue ? 'text-highlighted' : 'text-muted'"

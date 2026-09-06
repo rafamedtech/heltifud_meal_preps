@@ -3,6 +3,11 @@ import type { DropdownMenuItem } from "@nuxt/ui"
 
 defineProps<{
   collapsed?: boolean
+  mobile?: boolean
+}>()
+
+const emit = defineEmits<{
+  logout: []
 }>()
 
 const user = useSupabaseUser()
@@ -49,6 +54,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
     label: "Cerrar sesión",
     icon: "i-lucide-log-out",
     onSelect() {
+      emit("logout")
       isLogoutConfirmOpen.value = true
     }
   }]
@@ -58,8 +64,16 @@ const items = computed<DropdownMenuItem[][]>(() => [
 <template>
   <UDropdownMenu
     :items="items"
+    :size="mobile ? 'xl' : 'md'"
     :content="{ side: 'top', align: 'start', collisionPadding: 12 }"
-    :ui="{ content: 'w-64', itemLabel: 'truncate', itemDescription: 'truncate' }"
+    :ui="{
+      content: mobile ? 'w-(--reka-dropdown-menu-trigger-width) max-w-[calc(100vw-2rem)] rounded-2xl' : 'w-64',
+      group: mobile ? 'p-2' : undefined,
+      label: mobile ? 'gap-3 px-4 py-4' : undefined,
+      item: mobile ? 'min-h-14 items-center gap-3 rounded-xl px-4 py-4 before:rounded-xl' : undefined,
+      itemLabel: 'truncate',
+      itemDescription: mobile ? 'truncate text-sm' : 'truncate'
+    }"
   >
     <UButton
       :avatar="avatar"

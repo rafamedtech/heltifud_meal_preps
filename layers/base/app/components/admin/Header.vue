@@ -137,11 +137,6 @@ function closeMobileMenu() {
   mobileMenuOpen.value = false
 }
 
-function openLogoutConfirmFromMobile() {
-  closeMobileMenu()
-  isConfirmOpen.value = true
-}
-
 function requestExpenseCreate() {
   expenseCreateRequest.value += 1
 }
@@ -185,7 +180,7 @@ async function logout() {
         class="size-6 shrink-0 text-primary"
       />
       <div class="min-w-0">
-        <h1 class="truncate text-2xl font-semibold">{{ pageHeader.title }}</h1>
+        <h1 class="truncate text-xl font-semibold">{{ pageHeader.title }}</h1>
       </div>
     </div>
 
@@ -197,8 +192,6 @@ async function logout() {
         aria-label="Registrar gasto"
         @click="requestExpenseCreate"
       />
-
-      <ColorMode compact />
 
       <button
         type="button"
@@ -256,16 +249,11 @@ async function logout() {
         </template>
 
         <template #footer>
-          <div class="px-1 pb-1">
-            <UButton
-              color="error"
-              variant="soft"
-              icon="i-lucide-log-out"
-              class="w-full justify-center py-3"
-              @click="openLogoutConfirmFromMobile"
-            >
-              Cerrar sesión
-            </UButton>
+          <div class="w-full px-1 pb-1">
+            <AdminUserMenu
+              mobile
+              @logout="closeMobileMenu"
+            />
           </div>
         </template>
       </USlideover>
@@ -279,7 +267,6 @@ async function logout() {
       >
         Registrar
       </UButton>
-
     </div>
 
     <UModal
