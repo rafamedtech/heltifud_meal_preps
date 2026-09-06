@@ -832,7 +832,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
     <UModal
       v-model:open="isFiltersOpen"
       title="Filtrar gastos"
-      description="Selecciona los criterios y aplícalos al historial."
+      :close="false"
       :ui="{ content: 'max-w-lg' }"
     >
       <template #body>
@@ -879,18 +879,22 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
         </div>
       </template>
       <template #footer>
-        <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <UButton
             color="neutral"
-            variant="ghost"
+            variant="solid"
             icon="i-lucide-filter-x"
             @click="clearDraftFilters"
             >Limpiar</UButton
           >
-          <div class="flex justify-end gap-2">
+          <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
             <UButton
               color="neutral"
-              variant="ghost"
+              variant="solid"
+              icon="i-lucide-x"
+              :ui="{
+                base: 'text-default bg-elevated hover:bg-accented/75 active:bg-accented/75 disabled:bg-elevated aria-disabled:bg-elevated'
+              }"
               @click="closeFilters"
               >Cancelar</UButton
             >
