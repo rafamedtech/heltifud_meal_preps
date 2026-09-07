@@ -53,6 +53,7 @@ const selectedSource = ref("todos")
 const selectedStatus = ref("todos")
 const selectedType = ref("todos")
 const isFormOpen = ref(false)
+const customerCreateRequest = useState<number>("admin-customer-create-request", () => 0)
 const editingCustomer = ref<Customer | null>(null)
 const pendingDelete = ref<Customer | null>(null)
 const saving = ref(false)
@@ -246,6 +247,7 @@ function actionItems(customer: Customer) {
 }
 
 watch([selectedSource, selectedStatus, selectedType], () => loadCustomers())
+watch(customerCreateRequest, openCreate)
 watch(search, () => {
   clearTimeout(searchTimer)
   searchTimer = setTimeout(() => loadCustomers(), 300)
@@ -257,65 +259,57 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
 
 <template>
   <main class="flex min-h-full flex-col space-y-6">
-    <section class="space-y-4">
-      <div class="flex items-center justify-between gap-4">
-        <div class="min-w-0 space-y-1">
-          <h1 class="text-3xl font-semibold tracking-tight text-primary">Clientes</h1>
-          <p class="max-w-2xl text-sm text-muted">Centraliza sus datos de contacto, origen y etapa de relación.</p>
-        </div>
-
-        <UButton icon="i-lucide-user-plus" class="hidden shrink-0 justify-center md:inline-flex" @click="openCreate">
-          Nuevo cliente
-        </UButton>
+    <UCard class="app-surface" :ui="{ body: 'p-5 sm:p-6' }">
+      <div class="grid gap-3 md:grid-cols-3 xl:grid-cols-[minmax(260px,1fr)_190px_190px_190px]">
+        <UInput v-model="search" icon="i-lucide-search" placeholder="Buscar por nombre, teléfono o correo" class="md:col-span-3 xl:col-span-1" />
+        <USelect v-model="selectedStatus" :items="statusOptions" value-key="value" />
+        <USelect v-model="selectedType" :items="customerTypeOptions" value-key="value" />
+        <USelect v-model="selectedSource" :items="sourceOptions" value-key="value" />
       </div>
 
-      <UButton icon="i-lucide-user-plus" class="w-full justify-center md:hidden" @click="openCreate">
-        Nuevo cliente
-      </UButton>
+      <UButton v-if="isFiltering" label="Limpiar filtros" icon="i-lucide-filter-x" variant="ghost" color="neutral" size="xs" class="mt-3 ml-auto flex" @click="resetFilters" />
+    </UCard>
+
+    <section
+      v-if="loading"
+      role="status"
+      aria-live="polite"
+      class="flex min-h-64 flex-col items-center justify-center gap-3 text-muted"
+    >
+      <UIcon
+        name="i-lucide-loader-circle"
+        class="size-12 animate-spin"
+        aria-hidden="true"
+      />
+      <span>Cargando</span>
     </section>
 
-    <UCard class="app-surface overflow-hidden" :ui="{ body: 'p-0 sm:p-0' }">
-      <section class="border-b border-default/70 px-5 py-5 sm:px-6">
-        <div class="grid gap-3 md:grid-cols-3 xl:grid-cols-[minmax(260px,1fr)_190px_190px_190px]">
-          <UInput v-model="search" icon="i-lucide-search" placeholder="Buscar por nombre, teléfono o correo" class="md:col-span-3 xl:col-span-1" />
-          <USelect v-model="selectedStatus" :items="statusOptions" value-key="value" />
-          <USelect v-model="selectedType" :items="customerTypeOptions" value-key="value" />
-          <USelect v-model="selectedSource" :items="sourceOptions" value-key="value" />
+    <UCard v-else-if="loadError" class="app-surface" :ui="{ body: 'py-14 sm:py-16' }">
+      <div class="mx-auto max-w-md space-y-4 text-center">
+        <UIcon name="i-lucide-cloud-alert" class="mx-auto size-10 text-error" />
+        <div>
+          <h2 class="font-semibold text-highlighted">No fue posible cargar los clientes</h2>
+          <p class="mt-1 text-sm text-muted">{{ loadError }}</p>
         </div>
+        <UButton icon="i-lucide-refresh-cw" variant="soft" @click="loadCustomers()">Reintentar</UButton>
+      </div>
+    </UCard>
 
-        <UButton v-if="isFiltering" label="Limpiar filtros" icon="i-lucide-filter-x" variant="ghost" color="neutral" size="xs" class="mt-3 ml-auto flex" @click="resetFilters" />
-      </section>
-
-      <section v-if="loading" class="space-y-3 px-5 py-6 sm:px-6">
-        <USkeleton v-for="row in 6" :key="row" class="h-16 w-full rounded-xl" />
-      </section>
-
-      <section v-else-if="loadError" class="flex min-h-80 items-center justify-center px-5 py-10">
-        <div class="max-w-md space-y-4 text-center">
-          <UIcon name="i-lucide-cloud-alert" class="mx-auto size-10 text-error" />
-          <div>
-            <h2 class="font-semibold text-highlighted">No fue posible cargar los clientes</h2>
-            <p class="mt-1 text-sm text-muted">{{ loadError }}</p>
-          </div>
-          <UButton icon="i-lucide-refresh-cw" variant="soft" @click="loadCustomers()">Reintentar</UButton>
+    <UCard v-else-if="!customers.length" class="app-surface" :ui="{ body: 'py-14 sm:py-16' }">
+      <div class="mx-auto max-w-md space-y-4 text-center">
+        <div class="mx-auto flex size-12 items-center justify-center rounded-xl border border-default bg-elevated">
+          <UIcon :name="isFiltering ? 'i-lucide-search-x' : 'i-lucide-users-round'" class="size-5 text-muted" />
         </div>
-      </section>
-
-      <section v-else-if="!customers.length" class="flex min-h-80 items-center justify-center px-5 py-10">
-        <div class="max-w-md space-y-4 text-center">
-          <div class="mx-auto flex size-12 items-center justify-center rounded-xl border border-default bg-elevated">
-            <UIcon :name="isFiltering ? 'i-lucide-search-x' : 'i-lucide-users-round'" class="size-5 text-muted" />
-          </div>
-          <div>
-            <h2 class="font-semibold text-highlighted">{{ isFiltering ? "No encontramos coincidencias" : "Aún no hay clientes" }}</h2>
-            <p class="mt-1 text-sm text-muted">{{ isFiltering ? "Prueba otra búsqueda o limpia los filtros." : "Crea el primer registro para comenzar a administrar tu cartera." }}</p>
-          </div>
-          <UButton v-if="isFiltering" variant="soft" icon="i-lucide-filter-x" @click="resetFilters">Limpiar filtros</UButton>
-          <UButton v-else icon="i-lucide-user-plus" @click="openCreate">Crear cliente</UButton>
+        <div>
+          <h2 class="font-semibold text-highlighted">{{ isFiltering ? "No encontramos coincidencias" : "Aún no hay clientes" }}</h2>
+          <p class="mt-1 text-sm text-muted">{{ isFiltering ? "Prueba otra búsqueda o limpia los filtros." : "Crea el primer registro para comenzar a administrar tu cartera." }}</p>
         </div>
-      </section>
+        <UButton v-if="isFiltering" variant="soft" icon="i-lucide-filter-x" @click="resetFilters">Limpiar filtros</UButton>
+        <UButton v-else icon="i-lucide-user-plus" @click="openCreate">Crear cliente</UButton>
+      </div>
+    </UCard>
 
-      <div v-else>
+    <UCard v-else class="app-surface overflow-hidden" :ui="{ body: 'p-0 sm:p-0' }">
         <div class="divide-y divide-default/70 md:grid md:grid-cols-2 md:divide-y-0 lg:hidden">
           <article
             v-for="customer in customers"
@@ -372,12 +366,12 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
         <div class="hidden overflow-x-auto lg:block">
           <table class="min-w-[860px] w-full text-sm">
           <thead class="bg-elevated/50">
-            <tr class="border-b border-default/70 text-left text-xs font-medium uppercase tracking-[0.16em] text-muted">
-              <th class="px-5 py-3 sm:px-6">Cliente</th>
-              <th class="px-5 py-3">Contacto</th>
-              <th class="px-5 py-3">Tipo de cliente</th>
-              <th class="px-5 py-3">Origen</th>
-              <th class="w-16 px-5 py-3"><span class="sr-only">Acciones</span></th>
+            <tr class="border-b border-default/70 text-left">
+              <th class="px-5 py-3.5 sm:px-6 text-sm font-semibold text-highlighted">Cliente</th>
+              <th class="px-5 py-3.5 text-sm font-semibold text-highlighted">Contacto</th>
+              <th class="px-5 py-3.5 text-sm font-semibold text-highlighted">Tipo de cliente</th>
+              <th class="px-5 py-3.5 text-sm font-semibold text-highlighted">Origen</th>
+              <th class="w-16 px-5 py-3.5"><span class="sr-only">Acciones</span></th>
             </tr>
           </thead>
           <tbody class="divide-y divide-default/70">
@@ -426,7 +420,6 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
           </tbody>
           </table>
         </div>
-      </div>
 
       <section v-if="nextCursor && !loading" class="border-t border-default/70 px-5 py-4 text-center sm:px-6">
         <UButton color="neutral" variant="soft" icon="i-lucide-chevrons-down" :loading="loadingMore" @click="loadCustomers(true)">

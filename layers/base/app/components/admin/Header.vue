@@ -6,6 +6,7 @@ const isConfirmOpen = useState("admin-logout-confirm-open", () => false)
 const isLoggingOut = ref(false)
 const mobileMenuOpen = ref(false)
 const expenseCreateRequest = useState("admin-expense-create-request", () => 0)
+const customerCreateRequest = useState("admin-customer-create-request", () => 0)
 
 const pageHeaders: Record<string, { title: string; description: string }> = {
   "/admin": {
@@ -89,6 +90,7 @@ const pageIcon = computed(() => {
   return matchingItem?.icon || "i-lucide-house"
 })
 const isExpensesPage = computed(() => route.path.replace(/\/$/, "") === "/admin/gastos")
+const isCustomersPage = computed(() => route.path.replace(/\/$/, "") === "/admin/clientes")
 
 const mobileNavItems = [
   {
@@ -141,6 +143,10 @@ function requestExpenseCreate() {
   expenseCreateRequest.value += 1
 }
 
+function requestCustomerCreate() {
+  customerCreateRequest.value += 1
+}
+
 async function logout() {
   isLoggingOut.value = true
 
@@ -191,6 +197,14 @@ async function logout() {
         icon="i-lucide-plus"
         aria-label="Registrar gasto"
         @click="requestExpenseCreate"
+      />
+
+      <UButton
+        v-if="isCustomersPage"
+        square
+        icon="i-lucide-user-plus"
+        aria-label="Nuevo cliente"
+        @click="requestCustomerCreate"
       />
 
       <button
@@ -266,6 +280,14 @@ async function logout() {
         @click="requestExpenseCreate"
       >
         Registrar
+      </UButton>
+
+      <UButton
+        v-if="isCustomersPage"
+        icon="i-lucide-user-plus"
+        @click="requestCustomerCreate"
+      >
+        Nuevo
       </UButton>
     </div>
 
