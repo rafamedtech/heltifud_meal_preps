@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import { customerDeliveryDays } from "~~/layers/menu/shared/utils/customerDeliveryDays"
 import { customerInputSchema } from "~~/layers/menu/shared/types/menuSchema"
 import type {
   Customer,
   CustomerInput,
   CustomerSource,
   CustomerStatus,
-  CustomerType
+  CustomerType,
+  DayOfWeek
 } from "~~/layers/menu/shared/types/types"
 
 definePageMeta({ layout: "admin" })
@@ -63,6 +65,8 @@ let searchTimer: ReturnType<typeof setTimeout> | undefined
 
 function emptyCustomer(): CustomerInput {
   return {
+    firstDeliveryDay: null,
+    secondDeliveryDay: null,
     nombre: "",
     telefono: "",
     ubicacion1: "",
@@ -161,6 +165,8 @@ function cancelDelete() {
 function openEdit(customer: Customer) {
   editingCustomer.value = customer
   Object.assign(formState, {
+    firstDeliveryDay: customer.firstDeliveryDay ?? null,
+    secondDeliveryDay: customer.secondDeliveryDay ?? null,
     nombre: customer.nombre,
     telefono: customer.telefono,
     ubicacion1: customer.ubicacion1,
@@ -241,9 +247,16 @@ function sourceIcon(source: CustomerSource) {
 
 function actionItems(customer: Customer) {
   return [[
+    { label: "Ver perfil", icon: "i-lucide-user-round", to: `/admin/clientes/${customer.id}` },
     { label: "Editar", icon: "i-lucide-square-pen", onSelect: () => openEdit(customer) },
     { label: "Eliminar", icon: "i-lucide-trash", color: "error" as const, onSelect: () => { pendingDelete.value = customer } }
   ]]
+}
+
+function openProfile(event: MouseEvent, customer: Customer) {
+  // Preserve links, dropdowns and other controls inside the row.
+  if ((event.target as HTMLElement).closest('a, button, [role="menuitem"]')) return
+  return navigateTo(`/admin/clientes/${customer.id}`)
 }
 
 watch([selectedSource, selectedStatus, selectedType], () => loadCustomers())
@@ -314,16 +327,17 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
           <article
             v-for="customer in customers"
             :key="`mobile-${customer.id}`"
-            class="space-y-3 px-5 py-4 md:border-b md:border-default/70 md:odd:border-r"
+            class="cursor-pointer space-y-3 px-5 py-4 transition-colors hover:bg-elevated/35 md:border-b md:border-default/70 md:odd:border-r"
+            @click="openProfile($event, customer)"
           >
             <div class="flex items-start gap-3">
               <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
                 {{ customer.nombre.slice(0, 2).toUpperCase() }}
               </div>
 
-              <div class="min-w-0 flex-1">
-                <p class="truncate font-semibold text-highlighted">{{ customer.nombre }}</p>
-                <UBadge :color="statusAppearance(customer.status).color" variant="soft" size="sm" class="mt-1">
+              <div class="flex min-w-0 flex-1 items-center gap-2">
+                <NuxtLink :to="`/admin/clientes/${customer.id}`" class="block truncate rounded font-semibold text-highlighted hover:text-primary focus-visible:outline-2 focus-visible:outline-primary">{{ customer.nombre }}</NuxtLink>
+                <UBadge :color="statusAppearance(customer.status).color" variant="soft" size="sm" class="shrink-0">
                   <UIcon :name="statusAppearance(customer.status).icon" class="size-3" />
                   {{ labelFor(statusOptions, customer.status) }}
                 </UBadge>
@@ -375,15 +389,15 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
             </tr>
           </thead>
           <tbody class="divide-y divide-default/70">
-            <tr v-for="customer in customers" :key="customer.id" class="transition-colors hover:bg-elevated/35">
+            <tr v-for="customer in customers" :key="customer.id" class="cursor-pointer transition-colors hover:bg-elevated/35" @click="openProfile($event, customer)">
               <td class="px-5 py-4 sm:px-6">
                 <div class="flex items-center gap-3">
                   <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
                     {{ customer.nombre.slice(0, 2).toUpperCase() }}
                   </div>
-                  <div class="min-w-0">
-                    <p class="truncate font-semibold text-highlighted">{{ customer.nombre }}</p>
-                    <UBadge :color="statusAppearance(customer.status).color" variant="soft" size="sm" class="mt-1">
+                  <div class="flex min-w-0 items-center gap-2">
+                    <NuxtLink :to="`/admin/clientes/${customer.id}`" class="block truncate rounded font-semibold text-highlighted hover:text-primary focus-visible:outline-2 focus-visible:outline-primary">{{ customer.nombre }}</NuxtLink>
+                    <UBadge :color="statusAppearance(customer.status).color" variant="soft" size="sm" class="shrink-0">
                       <UIcon :name="statusAppearance(customer.status).icon" class="size-3" />
                       {{ labelFor(statusOptions, customer.status) }}
                     </UBadge>
@@ -461,6 +475,12 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
                 description="Ubicación secundaria de entrega del cliente"
                 :disabled="saving"
               />
+            </UFormField>
+            <UFormField label="Día predeterminado de primera entrega" name="firstDeliveryDay" hint="Opcional">
+              <USelect :model-value="formState.firstDeliveryDay ?? 'sin_definir'" :items="customerDeliveryDays" value-key="value" class="w-full" @update:model-value="formState.firstDeliveryDay = $event === 'sin_definir' ? null : $event as DayOfWeek" />
+            </UFormField>
+            <UFormField label="Día predeterminado de segunda entrega" name="secondDeliveryDay" hint="Opcional">
+              <USelect :model-value="formState.secondDeliveryDay ?? 'sin_definir'" :items="customerDeliveryDays" value-key="value" class="w-full" @update:model-value="formState.secondDeliveryDay = $event === 'sin_definir' ? null : $event as DayOfWeek" />
             </UFormField>
             <UFormField label="Estado" name="status" required>
               <USelect v-model="formState.status" :items="statusOptions.slice(1)" value-key="value" class="w-full" />

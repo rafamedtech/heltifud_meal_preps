@@ -121,6 +121,8 @@ model Customer {
   tipoCliente       String   @default("menu") @map("tipo_cliente")
   createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  firstDeliveryDay  DayOfWeek? @map("first_delivery_day")
+  secondDeliveryDay DayOfWeek? @map("second_delivery_day")
   orders            Order[]
 
   @@index([status, tipoCliente, nombre, id], map: "customers_status_tipo_nombre_idx")

@@ -36,6 +36,8 @@ export type CustomerMinAggregateOutputType = {
   tipoCliente: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  firstDeliveryDay: $Enums.DayOfWeek | null
+  secondDeliveryDay: $Enums.DayOfWeek | null
 }
 
 export type CustomerMaxAggregateOutputType = {
@@ -50,6 +52,8 @@ export type CustomerMaxAggregateOutputType = {
   tipoCliente: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  firstDeliveryDay: $Enums.DayOfWeek | null
+  secondDeliveryDay: $Enums.DayOfWeek | null
 }
 
 export type CustomerCountAggregateOutputType = {
@@ -64,6 +68,8 @@ export type CustomerCountAggregateOutputType = {
   tipoCliente: number
   createdAt: number
   updatedAt: number
+  firstDeliveryDay: number
+  secondDeliveryDay: number
   _all: number
 }
 
@@ -80,6 +86,8 @@ export type CustomerMinAggregateInputType = {
   tipoCliente?: true
   createdAt?: true
   updatedAt?: true
+  firstDeliveryDay?: true
+  secondDeliveryDay?: true
 }
 
 export type CustomerMaxAggregateInputType = {
@@ -94,6 +102,8 @@ export type CustomerMaxAggregateInputType = {
   tipoCliente?: true
   createdAt?: true
   updatedAt?: true
+  firstDeliveryDay?: true
+  secondDeliveryDay?: true
 }
 
 export type CustomerCountAggregateInputType = {
@@ -108,6 +118,8 @@ export type CustomerCountAggregateInputType = {
   tipoCliente?: true
   createdAt?: true
   updatedAt?: true
+  firstDeliveryDay?: true
+  secondDeliveryDay?: true
   _all?: true
 }
 
@@ -195,6 +207,8 @@ export type CustomerGroupByOutputType = {
   tipoCliente: string
   createdAt: Date
   updatedAt: Date
+  firstDeliveryDay: $Enums.DayOfWeek | null
+  secondDeliveryDay: $Enums.DayOfWeek | null
   _count: CustomerCountAggregateOutputType | null
   _min: CustomerMinAggregateOutputType | null
   _max: CustomerMaxAggregateOutputType | null
@@ -230,6 +244,8 @@ export type CustomerWhereInput = {
   tipoCliente?: Prisma.StringFilter<"Customer"> | string
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
+  firstDeliveryDay?: Prisma.EnumDayOfWeekNullableFilter<"Customer"> | $Enums.DayOfWeek | null
+  secondDeliveryDay?: Prisma.EnumDayOfWeekNullableFilter<"Customer"> | $Enums.DayOfWeek | null
   orders?: Prisma.OrderListRelationFilter
 }
 
@@ -245,6 +261,8 @@ export type CustomerOrderByWithRelationInput = {
   tipoCliente?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  firstDeliveryDay?: Prisma.SortOrderInput | Prisma.SortOrder
+  secondDeliveryDay?: Prisma.SortOrderInput | Prisma.SortOrder
   orders?: Prisma.OrderOrderByRelationAggregateInput
 }
 
@@ -263,6 +281,8 @@ export type CustomerWhereUniqueInput = Prisma.AtLeast<{
   tipoCliente?: Prisma.StringFilter<"Customer"> | string
   createdAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Customer"> | Date | string
+  firstDeliveryDay?: Prisma.EnumDayOfWeekNullableFilter<"Customer"> | $Enums.DayOfWeek | null
+  secondDeliveryDay?: Prisma.EnumDayOfWeekNullableFilter<"Customer"> | $Enums.DayOfWeek | null
   orders?: Prisma.OrderListRelationFilter
 }, "id">
 
@@ -278,6 +298,8 @@ export type CustomerOrderByWithAggregationInput = {
   tipoCliente?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  firstDeliveryDay?: Prisma.SortOrderInput | Prisma.SortOrder
+  secondDeliveryDay?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CustomerCountOrderByAggregateInput
   _max?: Prisma.CustomerMaxOrderByAggregateInput
   _min?: Prisma.CustomerMinOrderByAggregateInput
@@ -298,6 +320,8 @@ export type CustomerScalarWhereWithAggregatesInput = {
   tipoCliente?: Prisma.StringWithAggregatesFilter<"Customer"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Customer"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Customer"> | Date | string
+  firstDeliveryDay?: Prisma.EnumDayOfWeekNullableWithAggregatesFilter<"Customer"> | $Enums.DayOfWeek | null
+  secondDeliveryDay?: Prisma.EnumDayOfWeekNullableWithAggregatesFilter<"Customer"> | $Enums.DayOfWeek | null
 }
 
 export type CustomerCreateInput = {
@@ -312,6 +336,8 @@ export type CustomerCreateInput = {
   tipoCliente?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  firstDeliveryDay?: $Enums.DayOfWeek | null
+  secondDeliveryDay?: $Enums.DayOfWeek | null
   orders?: Prisma.OrderCreateNestedManyWithoutCustomerInput
 }
 
@@ -327,6 +353,8 @@ export type CustomerUncheckedCreateInput = {
   tipoCliente?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  firstDeliveryDay?: $Enums.DayOfWeek | null
+  secondDeliveryDay?: $Enums.DayOfWeek | null
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCustomerInput
 }
 
@@ -342,6 +370,8 @@ export type CustomerUpdateInput = {
   tipoCliente?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   orders?: Prisma.OrderUpdateManyWithoutCustomerNestedInput
 }
 
@@ -357,6 +387,8 @@ export type CustomerUncheckedUpdateInput = {
   tipoCliente?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   orders?: Prisma.OrderUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
@@ -372,6 +404,8 @@ export type CustomerCreateManyInput = {
   tipoCliente?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  firstDeliveryDay?: $Enums.DayOfWeek | null
+  secondDeliveryDay?: $Enums.DayOfWeek | null
 }
 
 export type CustomerUpdateManyMutationInput = {
@@ -386,6 +420,8 @@ export type CustomerUpdateManyMutationInput = {
   tipoCliente?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
 }
 
 export type CustomerUncheckedUpdateManyInput = {
@@ -400,6 +436,8 @@ export type CustomerUncheckedUpdateManyInput = {
   tipoCliente?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
 }
 
 export type CustomerCountOrderByAggregateInput = {
@@ -414,6 +452,8 @@ export type CustomerCountOrderByAggregateInput = {
   tipoCliente?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  firstDeliveryDay?: Prisma.SortOrder
+  secondDeliveryDay?: Prisma.SortOrder
 }
 
 export type CustomerMaxOrderByAggregateInput = {
@@ -428,6 +468,8 @@ export type CustomerMaxOrderByAggregateInput = {
   tipoCliente?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  firstDeliveryDay?: Prisma.SortOrder
+  secondDeliveryDay?: Prisma.SortOrder
 }
 
 export type CustomerMinOrderByAggregateInput = {
@@ -442,11 +484,17 @@ export type CustomerMinOrderByAggregateInput = {
   tipoCliente?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  firstDeliveryDay?: Prisma.SortOrder
+  secondDeliveryDay?: Prisma.SortOrder
 }
 
 export type CustomerScalarRelationFilter = {
   is?: Prisma.CustomerWhereInput
   isNot?: Prisma.CustomerWhereInput
+}
+
+export type NullableEnumDayOfWeekFieldUpdateOperationsInput = {
+  set?: $Enums.DayOfWeek | null
 }
 
 export type CustomerCreateNestedOneWithoutOrdersInput = {
@@ -475,6 +523,8 @@ export type CustomerCreateWithoutOrdersInput = {
   tipoCliente?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  firstDeliveryDay?: $Enums.DayOfWeek | null
+  secondDeliveryDay?: $Enums.DayOfWeek | null
 }
 
 export type CustomerUncheckedCreateWithoutOrdersInput = {
@@ -489,6 +539,8 @@ export type CustomerUncheckedCreateWithoutOrdersInput = {
   tipoCliente?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  firstDeliveryDay?: $Enums.DayOfWeek | null
+  secondDeliveryDay?: $Enums.DayOfWeek | null
 }
 
 export type CustomerCreateOrConnectWithoutOrdersInput = {
@@ -519,6 +571,8 @@ export type CustomerUpdateWithoutOrdersInput = {
   tipoCliente?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
 }
 
 export type CustomerUncheckedUpdateWithoutOrdersInput = {
@@ -533,6 +587,8 @@ export type CustomerUncheckedUpdateWithoutOrdersInput = {
   tipoCliente?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
 }
 
 
@@ -578,6 +634,8 @@ export type CustomerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   tipoCliente?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  firstDeliveryDay?: boolean
+  secondDeliveryDay?: boolean
   orders?: boolean | Prisma.Customer$ordersArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["customer"]>
@@ -594,6 +652,8 @@ export type CustomerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   tipoCliente?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  firstDeliveryDay?: boolean
+  secondDeliveryDay?: boolean
 }, ExtArgs["result"]["customer"]>
 
 export type CustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -608,6 +668,8 @@ export type CustomerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   tipoCliente?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  firstDeliveryDay?: boolean
+  secondDeliveryDay?: boolean
 }, ExtArgs["result"]["customer"]>
 
 export type CustomerSelectScalar = {
@@ -622,9 +684,11 @@ export type CustomerSelectScalar = {
   tipoCliente?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  firstDeliveryDay?: boolean
+  secondDeliveryDay?: boolean
 }
 
-export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nombre" | "telefono" | "ubicacion1" | "ubicacion2" | "correoElectronico" | "source" | "status" | "tipoCliente" | "createdAt" | "updatedAt", ExtArgs["result"]["customer"]>
+export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nombre" | "telefono" | "ubicacion1" | "ubicacion2" | "correoElectronico" | "source" | "status" | "tipoCliente" | "createdAt" | "updatedAt" | "firstDeliveryDay" | "secondDeliveryDay", ExtArgs["result"]["customer"]>
 export type CustomerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   orders?: boolean | Prisma.Customer$ordersArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerCountOutputTypeDefaultArgs<ExtArgs>
@@ -649,6 +713,8 @@ export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     tipoCliente: string
     createdAt: Date
     updatedAt: Date
+    firstDeliveryDay: $Enums.DayOfWeek | null
+    secondDeliveryDay: $Enums.DayOfWeek | null
   }, ExtArgs["result"]["customer"]>
   composites: {}
 }
@@ -1084,6 +1150,8 @@ export interface CustomerFieldRefs {
   readonly tipoCliente: Prisma.FieldRef<"Customer", 'String'>
   readonly createdAt: Prisma.FieldRef<"Customer", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Customer", 'DateTime'>
+  readonly firstDeliveryDay: Prisma.FieldRef<"Customer", 'DayOfWeek'>
+  readonly secondDeliveryDay: Prisma.FieldRef<"Customer", 'DayOfWeek'>
 }
     
 

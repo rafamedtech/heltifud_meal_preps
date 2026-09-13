@@ -99,6 +99,8 @@ export type CustomerStatus = (typeof CUSTOMER_STATUS_VALUES)[number];
 export type CustomerType = (typeof CUSTOMER_TYPE_VALUES)[number];
 
 export interface CustomerInput {
+  firstDeliveryDay?: DayOfWeek | null;
+  secondDeliveryDay?: DayOfWeek | null;
   nombre: string;
   telefono: string;
   ubicacion1: string;

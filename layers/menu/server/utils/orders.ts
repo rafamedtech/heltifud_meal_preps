@@ -47,6 +47,8 @@ function toDateString(value: Date) {
 }
 
 function mapCustomer(customer: {
+  firstDeliveryDay: Customer['firstDeliveryDay'];
+  secondDeliveryDay: Customer['secondDeliveryDay'];
   id: string;
   nombre: string;
   telefono: string;
@@ -69,6 +71,8 @@ function mapCustomer(customer: {
     source: customer.source as Customer['source'],
     status: customer.status as Customer['status'],
     tipoCliente: customer.tipoCliente as Customer['tipoCliente'],
+    firstDeliveryDay: customer.firstDeliveryDay ?? null,
+    secondDeliveryDay: customer.secondDeliveryDay ?? null,
     createdAt: customer.createdAt.toISOString(),
     updatedAt: customer.updatedAt.toISOString(),
   };
@@ -166,8 +170,9 @@ function buildEditableMenu(slots: OrderMenuSlotInput[]) {
 export async function getOrders(query: unknown): Promise<OrderListResponse> {
   const parsed = orderListQuerySchema.safeParse(query);
   if (!parsed.success) throw createError({ statusCode: 400, statusMessage: 'Los filtros no son válidos.' });
-  const { q, status, from, to, limit } = parsed.data;
+  const { q, status, from, to, limit, customerId, offset } = parsed.data;
   const where: Prisma.OrderWhereInput = {
+    ...(customerId ? { customerId } : {}),
     ...(status ? { status } : {}),
     ...(q ? {
       OR: [
@@ -188,7 +193,8 @@ export async function getOrders(query: unknown): Promise<OrderListResponse> {
     prisma.order.findMany({
       where,
       take: limit,
-      orderBy: [{ firstDeliveryDate: 'desc' }, { createdAt: 'desc' }],
+      skip: offset,
+      orderBy: [{ firstDeliveryDate: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }],
       include: { customer: { select: { nombre: true, telefono: true } } },
     }),
     prisma.order.groupBy({ by: ['status'], where, _count: { _all: true } }),

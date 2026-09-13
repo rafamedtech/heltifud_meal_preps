@@ -18,13 +18,10 @@ const [{ data: order, status, error, refresh }, { data: catalog }] = await Promi
   useFetch<Order>(`/api/orders/${id}`),
   useFetch<FoodCatalogItem[]>("/api/food-components", { default: () => [] })
 ])
-
-if (error.value?.statusCode === 404) {
-  throw createError({ statusCode: 404, statusMessage: "Pedido no encontrado" })
-}
+const notFound = computed(() => error.value?.statusCode === 404)
 
 useSeoMeta({
-  title: computed(() => order.value ? `${order.value.customerName} · Pedido | Heltifud` : "Pedido | Heltifud"),
+  title: computed(() => order.value ? `${order.value.planTitle} · ${order.value.customerName} | Heltifud` : "Pedido | Heltifud"),
   robots: "noindex, nofollow"
 })
 
@@ -81,10 +78,23 @@ const dayGroups = computed(() => {
   })
   return [...groups.values()].sort((a, b) => a.dayOrder - b.dayOrder)
 })
-const statusStep = computed(() => {
-  const steps: OrderStatusValue[] = ["DRAFT", "CONFIRMED", "PREPARING", "PARTIALLY_DELIVERED", "DELIVERED"]
-  return state.status === "CANCELLED" ? -1 : steps.indexOf(state.status)
-})
+const currentStatus = computed(() => statusOptions.find(item => item.value === state.status))
+const statusColor = computed(() =>
+  state.status === "CANCELLED" ? "error" : state.status === "DELIVERED" ? "success" : state.status === "DRAFT" ? "neutral" : "primary"
+)
+const deliveries = computed(() => [
+  { number: 1, title: "Primera entrega", dateField: "firstDeliveryDate", locationField: "firstDeliveryLocation" },
+  { number: 2, title: "Segunda entrega", dateField: "secondDeliveryDate", locationField: "secondDeliveryLocation" }
+] as const)
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("es-MX", { dateStyle: "long", timeZone: "America/Tijuana" }).format(new Date(value))
+}
+
+function locationAddress(location: number) {
+  if (!order.value) return ""
+  return location === 2 ? order.value.customer.ubicacion2 : order.value.customer.ubicacion1
+}
 
 function slotLabel(slot: string) {
   return { DESAYUNO: "Desayuno", COMIDA: "Comida", CENA: "Cena", SNACK1: "Colación 1", SNACK2: "Colación 2" }[slot] ?? slot
@@ -180,83 +190,139 @@ async function saveOrder() {
 </script>
 
 <template>
-  <main v-if="status === 'pending'" class="space-y-5"><USkeleton class="h-44 rounded-3xl" /><div class="grid gap-5 lg:grid-cols-[320px_1fr]"><USkeleton class="h-120 rounded-3xl" /><USkeleton class="h-160 rounded-3xl" /></div></main>
+  <main class="space-y-6">
+    <UButton to="/admin/pedidos" color="neutral" variant="ghost" icon="i-lucide-arrow-left" class="-ml-3">Volver a pedidos</UButton>
 
-  <main v-else-if="order" class="space-y-6">
-    <header class="relative overflow-hidden rounded-3xl border border-default bg-default px-6 py-7 shadow-sm sm:px-8">
-      <div class="pointer-events-none absolute -right-20 -top-24 size-72 rounded-full bg-primary/8 blur-3xl" />
-      <div class="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <UButton to="/admin/pedidos" color="neutral" variant="ghost" icon="i-lucide-arrow-left" class="-ml-3 mb-3">Volver a pedidos</UButton>
-          <div class="flex flex-wrap items-center gap-3"><h1 class="text-2xl font-bold tracking-tight text-highlighted sm:text-3xl">{{ order.customerName }}</h1><UBadge :color="state.status === 'CANCELLED' ? 'error' : 'primary'" variant="soft">{{ statusOptions.find(item => item.value === state.status)?.label }}</UBadge></div>
-          <p class="mt-2 text-sm text-muted">{{ order.planTitle }} · {{ order.planVariantTitle }} · {{ transformPrice(order.price) }}</p>
+    <section v-if="status === 'pending'" role="status" aria-live="polite" class="space-y-5">
+      <span class="sr-only">Cargando pedido</span>
+      <USkeleton class="h-44 rounded-2xl" />
+      <div class="grid gap-5 lg:grid-cols-2"><USkeleton class="h-64 rounded-2xl" /><USkeleton class="h-64 rounded-2xl" /></div>
+      <USkeleton class="h-96 rounded-2xl" />
+    </section>
+
+    <UCard v-else-if="error || !order" class="app-surface" :ui="{ body: 'py-16 text-center' }">
+      <UIcon :name="notFound ? 'i-lucide-package-x' : 'i-lucide-cloud-alert'" class="size-10 text-muted" />
+      <h1 class="mt-4 text-xl font-semibold text-highlighted">{{ notFound ? "Pedido no encontrado" : "No fue posible cargar el pedido" }}</h1>
+      <p class="mt-2 text-sm text-muted">{{ notFound ? "El registro ya no existe o el enlace es incorrecto." : "Intenta cargar nuevamente la información del pedido." }}</p>
+      <UButton v-if="!notFound" class="mt-5" variant="soft" icon="i-lucide-refresh-cw" @click="refresh()">Reintentar</UButton>
+    </UCard>
+
+    <UForm v-else :schema="orderUpdateInputSchema" :state="state" class="space-y-6" @submit="saveOrder">
+      <header class="flex flex-col gap-5 px-1 pb-3 pt-1 sm:flex-row sm:items-center sm:gap-6 sm:pb-5">
+        <div class="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary" aria-hidden="true">
+          <UIcon name="i-lucide-shopping-bag" class="size-8" />
         </div>
-        <div class="flex flex-wrap gap-2"><UButton :to="`tel:${order.customerPhone}`" color="neutral" variant="soft" icon="i-lucide-phone">{{ order.customerPhone }}</UButton><UButton icon="i-lucide-save" :loading="saving" @click="saveOrder">Guardar cambios</UButton></div>
-      </div>
-
-      <div v-if="state.status !== 'CANCELLED'" class="relative mt-7 grid grid-cols-5 gap-2">
-        <div v-for="(step, index) in statusOptions.slice(0, 5)" :key="step.value" class="min-w-0">
-          <div class="h-1.5 rounded-full" :class="index <= statusStep ? 'bg-primary' : 'bg-elevated'" />
-          <p class="mt-2 hidden truncate text-[11px] font-medium text-muted sm:block">{{ step.label }}</p>
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-3">
+            <h1 class="min-w-0 break-words text-2xl font-bold tracking-tight text-highlighted sm:text-3xl">{{ order.planTitle }}</h1>
+            <UBadge :color="statusColor" variant="soft">
+              <UIcon v-if="currentStatus" :name="currentStatus.icon" class="size-3" />
+              {{ currentStatus?.label }}
+            </UBadge>
+          </div>
+          <p class="mt-3 text-sm text-muted">{{ order.planVariantTitle }} · Creado el {{ formatDate(order.createdAt) }}</p>
         </div>
-      </div>
-    </header>
+        <UButton type="submit" icon="i-lucide-save" :loading="saving" class="self-start sm:self-center">Guardar cambios</UButton>
+      </header>
 
-    <UForm :schema="orderUpdateInputSchema" :state="state" class="grid items-start gap-5 xl:grid-cols-[330px_minmax(0,1fr)]" @submit="saveOrder">
-      <aside class="space-y-5 xl:sticky xl:top-0">
-        <UCard class="rounded-3xl shadow-sm">
-          <template #header><div><h2 class="font-semibold text-highlighted">Control del pedido</h2><p class="mt-1 text-xs text-muted">Estado operativo y notas internas.</p></div></template>
-          <div class="space-y-5">
+      <div class="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
+        <UCard class="app-surface">
+          <template #header><h2 class="flex items-center gap-2 font-semibold text-highlighted"><UIcon name="i-lucide-receipt-text" class="size-5 text-primary" />Resumen</h2></template>
+          <dl class="grid grid-cols-2 gap-5 text-sm">
+            <div>
+              <dt class="text-muted">Cliente</dt>
+              <dd class="mt-1 break-words"><NuxtLink :to="`/admin/clientes/${order.customerId}`" class="font-medium text-highlighted hover:text-primary">{{ order.customerName }}</NuxtLink></dd>
+            </div>
+            <div>
+              <dt class="text-muted">Teléfono</dt>
+              <dd class="mt-1"><a :href="`tel:${order.customerPhone}`" class="font-medium text-highlighted hover:text-primary">{{ order.customerPhone }}</a></dd>
+            </div>
+            <div>
+              <dt class="text-muted">Precio</dt>
+              <dd class="mt-1 font-medium tabular-nums text-highlighted">{{ transformPrice(order.price) }}</dd>
+            </div>
+            <div>
+              <dt class="text-muted">Menú de origen</dt>
+              <dd class="mt-1 break-words" :class="order.sourceWeeklyMenuName ? 'font-medium text-highlighted' : 'text-dimmed'">{{ order.sourceWeeklyMenuName || "No disponible" }}</dd>
+            </div>
+          </dl>
+          <div class="mt-5 space-y-4 border-t border-default pt-5">
             <UFormField label="Estado" name="status" required><USelect v-model="state.status" :items="statusOptions" value-key="value" class="w-full" /></UFormField>
-            <UFormField label="Notas" name="notes"><UTextarea v-model="state.notes" :rows="4" autoresize class="w-full" placeholder="Alergias o instrucciones" /></UFormField>
+            <UFormField label="Notas" name="notes"><UTextarea v-model="state.notes" :rows="3" autoresize class="w-full" placeholder="Alergias o instrucciones" /></UFormField>
           </div>
         </UCard>
 
-        <UCard class="rounded-3xl shadow-sm">
-          <template #header><h2 class="font-semibold text-highlighted">Entregas</h2></template>
-          <div class="space-y-5">
-            <section class="space-y-3"><div class="flex items-center gap-2 text-sm font-semibold text-highlighted"><span class="flex size-6 items-center justify-center rounded-full bg-primary text-xs text-inverted">1</span>Primera parte</div><UFormField label="Fecha" name="firstDeliveryDate"><UInput v-model="state.firstDeliveryDate" type="date" class="w-full" /></UFormField><UFormField label="Ubicación" name="firstDeliveryLocation"><USelect v-model="state.firstDeliveryLocation" :items="locationOptions" value-key="value" class="w-full" /></UFormField></section>
-            <USeparator />
-            <section class="space-y-3"><div class="flex items-center gap-2 text-sm font-semibold text-highlighted"><span class="flex size-6 items-center justify-center rounded-full bg-primary text-xs text-inverted">2</span>Segunda parte</div><UFormField label="Fecha" name="secondDeliveryDate"><UInput v-model="state.secondDeliveryDate" type="date" class="w-full" /></UFormField><UFormField label="Ubicación" name="secondDeliveryLocation"><USelect v-model="state.secondDeliveryLocation" :items="locationOptions" value-key="value" class="w-full" /></UFormField></section>
-          </div>
-        </UCard>
-
-        <UAlert color="info" variant="soft" icon="i-lucide-copy-check" title="Copia independiente" :description="order.sourceWeeklyMenuName ? `Origen: ${order.sourceWeeklyMenuName}` : 'El menú original ya no está disponible.'" />
-      </aside>
-
-      <section class="space-y-5">
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"><div><h2 class="text-xl font-bold text-highlighted">Menú personalizado</h2><p class="mt-1 text-sm text-muted">Sustituye platillos desde el catálogo, cambia su función o agrega componentes.</p></div><UBadge color="neutral" variant="soft">{{ state.menuSlots.length }} tiempos</UBadge></div>
-
-        <article v-for="day in dayGroups" :key="day.dayOrder" class="overflow-hidden rounded-3xl border border-default bg-default shadow-sm">
-          <header class="flex items-center justify-between border-b border-default bg-elevated/50 px-5 py-4"><div class="flex items-center gap-3"><span class="flex size-9 items-center justify-center rounded-xl bg-primary/10 font-bold text-primary">{{ day.dayOrder }}</span><div><h3 class="font-semibold text-highlighted">{{ dayLabel(day.dayOfWeek) }}</h3><p class="text-xs text-muted">{{ day.slots.length }} tiempos incluidos</p></div></div></header>
-
-          <div class="divide-y divide-default">
-            <section v-for="slot in day.slots" :key="slot.slotType" class="p-5">
-              <div class="mb-4 flex flex-wrap items-center justify-between gap-3"><div><h4 class="font-semibold text-highlighted">{{ slotLabel(slot.slotType) }}</h4><p class="text-xs text-muted">{{ slot.components.length }} componentes</p></div><div class="flex items-center gap-2"><UInput v-model="slot.contenedor" size="sm" icon="i-lucide-package" placeholder="Contenedor" class="w-40" /><UButton type="button" size="sm" color="neutral" variant="soft" icon="i-lucide-plus" @click="addComponent(slot)">Agregar</UButton></div></div>
-
-              <div class="grid gap-3">
-                <div v-for="(component, componentIndex) in slot.components" :key="componentKey(slot, component, componentIndex)" class="grid gap-3 rounded-2xl border border-default bg-elevated/25 p-3 md:grid-cols-[minmax(0,1fr)_160px_210px_auto] md:items-center">
-                  <div class="flex min-w-0 items-center gap-3"><div class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-elevated"><NuxtImg v-if="component.imagen" :src="component.imagen" :alt="component.nombre" class="h-full w-full object-cover" /><UIcon v-else name="i-lucide-utensils" class="size-4 text-dimmed" /></div><div class="min-w-0"><p class="truncate font-medium text-highlighted">{{ component.nombre }}</p><p class="truncate text-xs text-muted">{{ component.calorias }} kcal · {{ component.tipo }}</p></div></div>
-                  <USelect v-model="component.componentRole" :items="roleOptions" value-key="value" size="sm" class="w-full" />
-                  <USelectMenu
-                    :model-value="replacementSelections[componentKey(slot, component, componentIndex)]"
-                    :items="catalogOptions"
-                    value-key="value"
-                    searchable
-                    size="sm"
-                    placeholder="Sustituir por..."
-                    class="w-full"
-                    @update:model-value="replaceComponent(component, $event as string | undefined, componentKey(slot, component, componentIndex))"
-                  />
-                  <UButton type="button" icon="i-lucide-trash-2" color="error" variant="ghost" :disabled="slot.components.length === 1" aria-label="Quitar componente" @click="removeComponent(slot, componentIndex)" />
-                </div>
+        <UCard class="app-surface flex flex-col" :ui="{ header: 'shrink-0', body: 'flex flex-1 flex-col' }">
+          <template #header><h2 class="flex items-center gap-2 font-semibold text-highlighted"><UIcon name="i-lucide-truck" class="size-5 text-primary" />Entregas</h2></template>
+          <div class="grid flex-1 gap-4 sm:grid-cols-2">
+            <section v-for="delivery in deliveries" :key="delivery.number" class="flex min-w-0 flex-col gap-3 rounded-xl border border-default bg-elevated/30 p-4">
+              <div class="flex items-center gap-3">
+                <span class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-semibold text-primary">{{ delivery.number }}</span>
+                <h3 class="text-sm font-semibold text-highlighted">{{ delivery.title }}</h3>
               </div>
+              <UFormField label="Fecha" :name="delivery.dateField"><UInput v-model="state[delivery.dateField]" type="date" class="w-full" /></UFormField>
+              <UFormField label="Ubicación" :name="delivery.locationField"><USelect v-model="state[delivery.locationField]" :items="locationOptions" value-key="value" class="w-full" /></UFormField>
+              <p class="whitespace-pre-line break-words text-sm leading-relaxed" :class="locationAddress(state[delivery.locationField]) ? 'text-toned' : 'text-dimmed'">
+                {{ locationAddress(state[delivery.locationField]) || "Sin dirección registrada" }}
+              </p>
             </section>
           </div>
-        </article>
+        </UCard>
+      </div>
 
-        <div class="sticky bottom-3 z-10 flex justify-end rounded-2xl border border-default bg-default/90 p-3 shadow-xl backdrop-blur"><UButton type="submit" size="lg" icon="i-lucide-save" :loading="saving">Guardar pedido</UButton></div>
-      </section>
+      <UCard class="app-surface" :ui="{ body: 'p-0 sm:p-0' }">
+        <template #header>
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <h2 class="flex items-center gap-2 font-semibold text-highlighted"><UIcon name="i-lucide-utensils" class="size-5 text-primary" />Menú personalizado</h2>
+            <UBadge color="neutral" variant="soft">{{ state.menuSlots.length }} tiempos</UBadge>
+          </div>
+        </template>
+
+        <div class="divide-y divide-default">
+          <section v-for="day in dayGroups" :key="day.dayOrder">
+            <h3 class="bg-elevated/30 px-5 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted sm:px-6">Día {{ day.dayOrder }} · {{ dayLabel(day.dayOfWeek) }}</h3>
+            <div class="divide-y divide-default">
+              <div v-for="slot in day.slots" :key="slot.slotType" class="px-5 py-4 sm:px-6">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <h4 class="text-sm font-medium text-highlighted">{{ slotLabel(slot.slotType) }}</h4>
+                  <div class="flex items-center gap-1">
+                    <UInput v-model="slot.contenedor" size="sm" variant="ghost" icon="i-lucide-package" placeholder="Contenedor" class="w-36" aria-label="Contenedor" />
+                    <UButton type="button" size="sm" color="neutral" variant="ghost" icon="i-lucide-plus" aria-label="Agregar componente" @click="addComponent(slot)" />
+                  </div>
+                </div>
+
+                <div class="mt-2 space-y-1">
+                  <div v-for="(component, componentIndex) in slot.components" :key="componentKey(slot, component, componentIndex)" class="grid gap-2 py-2 md:grid-cols-[minmax(0,1fr)_150px_200px_auto] md:items-center md:gap-3">
+                    <div class="flex min-w-0 items-center gap-3">
+                      <div class="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-elevated">
+                        <NuxtImg v-if="component.imagen" :src="component.imagen" :alt="component.nombre" class="h-full w-full object-cover" />
+                        <UIcon v-else name="i-lucide-utensils" class="size-4 text-dimmed" />
+                      </div>
+                      <div class="min-w-0">
+                        <p class="truncate text-sm font-medium text-highlighted">{{ component.nombre }}</p>
+                        <p class="truncate text-xs text-muted">{{ component.calorias }} kcal · {{ component.tipo }}</p>
+                      </div>
+                    </div>
+                    <USelect v-model="component.componentRole" :items="roleOptions" value-key="value" size="sm" variant="soft" class="w-full" aria-label="Función" />
+                    <USelectMenu
+                      :model-value="replacementSelections[componentKey(slot, component, componentIndex)]"
+                      :items="catalogOptions"
+                      value-key="value"
+                      searchable
+                      size="sm"
+                      variant="soft"
+                      placeholder="Sustituir por..."
+                      class="w-full"
+                      @update:model-value="replaceComponent(component, $event as string | undefined, componentKey(slot, component, componentIndex))"
+                    />
+                    <UButton type="button" size="sm" icon="i-lucide-x" color="neutral" variant="ghost" class="justify-self-end hover:text-error" :disabled="slot.components.length === 1" aria-label="Quitar componente" @click="removeComponent(slot, componentIndex)" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </UCard>
     </UForm>
   </main>
 </template>

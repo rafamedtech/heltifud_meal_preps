@@ -191,6 +191,8 @@ export type FoodCatalogItemInputParsed = z.infer<typeof foodCatalogItemInputSche
 const optionalTrimmedString = (max: number) => z.string().trim().max(max).default('');
 
 export const customerInputSchema = z.object({
+  firstDeliveryDay: z.enum(DAY_OF_WEEK_VALUES).nullable().optional(),
+  secondDeliveryDay: z.enum(DAY_OF_WEEK_VALUES).nullable().optional(),
   nombre: z.string().trim().min(2, 'El nombre debe tener al menos 2 caracteres').max(160),
   telefono: z.string().trim().min(7, 'Ingresa un teléfono válido').max(30),
   ubicacion1: z.string().trim().min(3, 'La ubicación principal es obligatoria').max(300),
@@ -352,6 +354,8 @@ export const orderUpdateInputSchema = z.object({
 });
 
 export const orderListQuerySchema = z.object({
+  customerId: z.string().trim().min(1).optional(),
+  offset: z.coerce.number().int().min(0).default(0),
   q: optionalTrimmedString(100),
   status: z.enum(ORDER_STATUS_VALUES).optional(),
   from: isoDateSchema.optional(),

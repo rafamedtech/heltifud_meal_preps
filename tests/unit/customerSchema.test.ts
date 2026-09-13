@@ -31,6 +31,15 @@ describe('customerInputSchema', () => {
     expect(result.success).toBe(true);
   });
 
+  it('accepts optional delivery weekdays and rejects invalid days', () => {
+    const result = customerInputSchema.parse({ ...validCustomer, firstDeliveryDay: 'LUNES', secondDeliveryDay: 'JUEVES' });
+    expect(result.firstDeliveryDay).toBe('LUNES');
+    expect(result.secondDeliveryDay).toBe('JUEVES');
+    expect(customerInputSchema.parse({ ...validCustomer, firstDeliveryDay: null }).firstDeliveryDay).toBeNull();
+    expect(customerInputSchema.parse(validCustomer).firstDeliveryDay).toBeUndefined();
+    expect(customerInputSchema.safeParse({ ...validCustomer, secondDeliveryDay: 'INVALID' }).success).toBe(false);
+  });
+
   it('rejects invalid contact and classification values', () => {
     const result = customerInputSchema.safeParse({
       ...validCustomer,

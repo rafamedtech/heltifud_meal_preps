@@ -8,6 +8,8 @@ import { prisma } from './prisma';
 type CustomerCursor = { nombre: string; id: string };
 
 function mapCustomer(customer: {
+  firstDeliveryDay: Customer['firstDeliveryDay'];
+  secondDeliveryDay: Customer['secondDeliveryDay'];
   id: string;
   nombre: string;
   telefono: string;
@@ -27,6 +29,8 @@ function mapCustomer(customer: {
     source: customer.source as Customer['source'],
     status: customer.status as Customer['status'],
     tipoCliente: customer.tipoCliente as Customer['tipoCliente'],
+    firstDeliveryDay: customer.firstDeliveryDay ?? null,
+    secondDeliveryDay: customer.secondDeliveryDay ?? null,
     createdAt: customer.createdAt.toISOString(),
     updatedAt: customer.updatedAt.toISOString(),
   };
@@ -108,6 +112,16 @@ export async function getCustomers(query: unknown): Promise<CustomerListResponse
     items: items.map(mapCustomer),
     nextCursor: hasMore && items.length ? encodeCursor(items[items.length - 1]!) : null,
   };
+}
+
+export async function getCustomerById(id: string): Promise<Customer> {
+  const customer = await prisma.customer.findUnique({ where: { id } });
+
+  if (!customer) {
+    throw createError({ statusCode: 404, statusMessage: 'Cliente no encontrado.' });
+  }
+
+  return mapCustomer(customer);
 }
 
 export async function createCustomer(input: CustomerInput) {

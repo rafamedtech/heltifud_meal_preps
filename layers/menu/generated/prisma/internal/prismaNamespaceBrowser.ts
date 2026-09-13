@@ -181,7 +181,9 @@ export const CustomerScalarFieldEnum = {
   status: 'status',
   tipoCliente: 'tipoCliente',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  firstDeliveryDay: 'firstDeliveryDay',
+  secondDeliveryDay: 'secondDeliveryDay'
 } as const
 
 export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]

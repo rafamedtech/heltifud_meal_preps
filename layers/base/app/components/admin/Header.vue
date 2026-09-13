@@ -57,6 +57,13 @@ const pageHeader = computed(() => {
 
   if (exactHeader) return exactHeader
 
+  if (path.startsWith("/admin/clientes/")) {
+    return {
+      title: "Perfil del cliente",
+      description: "Consulta sus datos de contacto, seguimiento y ubicaciones de entrega."
+    }
+  }
+
   if (path.startsWith("/admin/pedidos/")) {
     return {
       title: "Detalle del pedido",
