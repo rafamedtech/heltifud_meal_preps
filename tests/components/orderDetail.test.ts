@@ -54,7 +54,8 @@ describe('OrderDetail', () => {
     expect(wrapper.find('a[href="tel:6641234567"]').exists()).toBe(true);
     expect(wrapper.text()).toContain('Semana 37');
     expect(wrapper.text()).toContain('Zona Río, Tijuana');
-    expect(wrapper.text()).toContain('Día 1 · Lunes');
+    expect(wrapper.text()).toContain('Lunes');
+    expect(wrapper.text()).toContain('Día 1 · 1 tiempo');
     expect(wrapper.text()).toContain('Pollo al limón');
     expect(wrapper.find('a[href="/admin/pedidos"]').exists()).toBe(true);
     wrapper.unmount();

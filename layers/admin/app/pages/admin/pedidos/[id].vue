@@ -270,59 +270,70 @@ async function saveOrder() {
         </UCard>
       </div>
 
-      <UCard class="app-surface" :ui="{ body: 'p-0 sm:p-0' }">
-        <template #header>
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <h2 class="flex items-center gap-2 font-semibold text-highlighted"><UIcon name="i-lucide-utensils" class="size-5 text-primary" />Menú personalizado</h2>
-            <UBadge color="neutral" variant="soft">{{ state.menuSlots.length }} tiempos</UBadge>
-          </div>
-        </template>
+      <section class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 px-1">
+          <h2 class="flex items-center gap-2 font-semibold text-highlighted"><UIcon name="i-lucide-utensils" class="size-5 text-primary" />Menú personalizado</h2>
+          <UBadge color="neutral" variant="soft">{{ dayGroups.length }} días · {{ state.menuSlots.length }} tiempos</UBadge>
+        </div>
 
-        <div class="divide-y divide-default">
-          <section v-for="day in dayGroups" :key="day.dayOrder">
-            <h3 class="bg-elevated/30 px-5 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted sm:px-6">Día {{ day.dayOrder }} · {{ dayLabel(day.dayOfWeek) }}</h3>
-            <div class="divide-y divide-default">
-              <div v-for="slot in day.slots" :key="slot.slotType" class="px-5 py-4 sm:px-6">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <h4 class="text-sm font-medium text-highlighted">{{ slotLabel(slot.slotType) }}</h4>
-                  <div class="flex items-center gap-1">
-                    <UInput v-model="slot.contenedor" size="sm" variant="ghost" icon="i-lucide-package" placeholder="Contenedor" class="w-36" aria-label="Contenedor" />
-                    <UButton type="button" size="sm" color="neutral" variant="ghost" icon="i-lucide-plus" aria-label="Agregar componente" @click="addComponent(slot)" />
-                  </div>
+        <div class="-mx-1 flex snap-x snap-mandatory items-start gap-4 overflow-x-auto px-1 pb-3">
+          <UCard
+            v-for="day in dayGroups"
+            :key="day.dayOrder"
+            class="app-surface w-[min(20rem,calc(100vw-4rem))] shrink-0 snap-start"
+            :ui="{ header: 'px-4 py-3 sm:px-4', body: 'p-0 sm:p-0' }"
+          >
+            <template #header>
+              <div class="flex items-center gap-3">
+                <span class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-semibold text-primary">{{ day.dayOrder }}</span>
+                <div class="min-w-0">
+                  <h3 class="text-sm font-semibold text-highlighted">{{ dayLabel(day.dayOfWeek) }}</h3>
+                  <p class="text-xs text-muted">Día {{ day.dayOrder }} · {{ day.slots.length }} {{ day.slots.length === 1 ? "tiempo" : "tiempos" }}</p>
                 </div>
+              </div>
+            </template>
 
-                <div class="mt-2 space-y-1">
-                  <div v-for="(component, componentIndex) in slot.components" :key="componentKey(slot, component, componentIndex)" class="grid gap-2 py-2 md:grid-cols-[minmax(0,1fr)_150px_200px_auto] md:items-center md:gap-3">
-                    <div class="flex min-w-0 items-center gap-3">
-                      <div class="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-elevated">
-                        <NuxtImg v-if="component.imagen" :src="component.imagen" :alt="component.nombre" class="h-full w-full object-cover" />
-                        <UIcon v-else name="i-lucide-utensils" class="size-4 text-dimmed" />
-                      </div>
-                      <div class="min-w-0">
-                        <p class="truncate text-sm font-medium text-highlighted">{{ component.nombre }}</p>
-                        <p class="truncate text-xs text-muted">{{ component.calorias }} kcal · {{ component.tipo }}</p>
-                      </div>
+            <div class="divide-y divide-default">
+              <div v-for="slot in day.slots" :key="slot.slotType" class="space-y-3 p-4">
+                <div class="flex items-center justify-between gap-2">
+                  <h4 class="text-xs font-semibold uppercase tracking-wide text-muted">{{ slotLabel(slot.slotType) }}</h4>
+                  <UButton type="button" size="xs" color="neutral" variant="ghost" icon="i-lucide-plus" aria-label="Agregar componente" @click="addComponent(slot)" />
+                </div>
+                <UInput v-model="slot.contenedor" size="sm" variant="soft" icon="i-lucide-package" placeholder="Contenedor" class="w-full" aria-label="Contenedor" />
+
+                <div v-for="(component, componentIndex) in slot.components" :key="componentKey(slot, component, componentIndex)" class="space-y-2">
+                  <div class="flex min-w-0 items-center gap-3">
+                    <div class="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-elevated">
+                      <NuxtImg v-if="component.imagen" :src="component.imagen" :alt="component.nombre" class="h-full w-full object-cover" />
+                      <UIcon v-else name="i-lucide-utensils" class="size-4 text-dimmed" />
                     </div>
-                    <USelect v-model="component.componentRole" :items="roleOptions" value-key="value" size="sm" variant="soft" class="w-full" aria-label="Función" />
+                    <div class="min-w-0 flex-1">
+                      <p class="truncate text-sm font-medium text-highlighted">{{ component.nombre }}</p>
+                      <p class="truncate text-xs text-muted">{{ component.calorias }} kcal · {{ component.tipo }}</p>
+                    </div>
+                    <UButton type="button" size="xs" icon="i-lucide-x" color="neutral" variant="ghost" class="hover:text-error" :disabled="slot.components.length === 1" aria-label="Quitar componente" @click="removeComponent(slot, componentIndex)" />
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <USelect v-model="component.componentRole" :items="roleOptions" value-key="value" size="xs" variant="soft" class="w-full" aria-label="Función" />
                     <USelectMenu
                       :model-value="replacementSelections[componentKey(slot, component, componentIndex)]"
                       :items="catalogOptions"
                       value-key="value"
                       searchable
-                      size="sm"
+                      size="xs"
                       variant="soft"
-                      placeholder="Sustituir por..."
+                      placeholder="Sustituir..."
                       class="w-full"
+                      aria-label="Sustituir componente"
                       @update:model-value="replaceComponent(component, $event as string | undefined, componentKey(slot, component, componentIndex))"
                     />
-                    <UButton type="button" size="sm" icon="i-lucide-x" color="neutral" variant="ghost" class="justify-self-end hover:text-error" :disabled="slot.components.length === 1" aria-label="Quitar componente" @click="removeComponent(slot, componentIndex)" />
                   </div>
                 </div>
               </div>
             </div>
-          </section>
+          </UCard>
         </div>
-      </UCard>
+      </section>
     </UForm>
   </main>
 </template>
