@@ -49,7 +49,14 @@ export default defineNuxtConfig({
     }
   },
 
-  modules: ["@nuxt/eslint", "@nuxt/image", "@nuxtjs/supabase", "@netlify/nuxt"],
+  // @netlify/nuxt only emulates Netlify in dev and fetches the linked site's data on startup,
+  // which crashes the dev server when api.netlify.com is unreachable. Opt in with NETLIFY_DEV_EMULATION=true.
+  modules: [
+    "@nuxt/eslint",
+    "@nuxt/image",
+    "@nuxtjs/supabase",
+    ...(process.env.NETLIFY_DEV_EMULATION === "true" ? ["@netlify/nuxt"] : [])
+  ],
 
   app: {
     pageTransition: { name: "page", mode: "out-in" },
