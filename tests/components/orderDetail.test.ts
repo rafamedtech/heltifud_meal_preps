@@ -1,4 +1,5 @@
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime';
+import { flushPromises } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 
@@ -74,6 +75,28 @@ describe('OrderDetail', () => {
     const wrapper = await mountSuspended(OrderDetail);
     await wrapper.findAll('button').at(-1)!.trigger('click');
     expect(retry).toHaveBeenCalledOnce();
+    wrapper.unmount();
+  });
+
+  it('fills the form with the order loaded by a retry', async () => {
+    const data = ref<typeof order | null>(null);
+    const status = ref('error');
+    const error = ref<{ statusCode: number } | null>({ statusCode: 500 });
+    mockFetch({ data, status, error });
+    retry.mockImplementation(() => {
+      data.value = order;
+      status.value = 'success';
+      error.value = null;
+    });
+
+    const wrapper = await mountSuspended(OrderDetail);
+    await wrapper.findAll('button').at(-1)!.trigger('click');
+    await flushPromises();
+
+    expect(wrapper.get('h1').text()).toBe(order.planTitle);
+    expect((wrapper.get('input[type="date"]').element as HTMLInputElement).value).toBe(order.firstDeliveryDate);
+    expect(wrapper.text()).toContain('Día 1 · 1 tiempo');
+    expect(wrapper.text()).toContain('Pollo al limón');
     wrapper.unmount();
   });
 });

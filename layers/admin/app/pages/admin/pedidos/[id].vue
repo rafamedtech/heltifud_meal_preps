@@ -30,20 +30,33 @@ const { updateOrder } = useOrders()
 const saving = ref(false)
 const replacementSelections = reactive<Record<string, string>>({})
 
-const state = reactive<OrderUpdateInput>({
-  status: order.value?.status ?? "DRAFT",
-  firstDeliveryDate: order.value?.firstDeliveryDate ?? "",
-  firstDeliveryLocation: order.value?.firstDeliveryLocation ?? 1,
-  secondDeliveryDate: order.value?.secondDeliveryDate ?? "",
-  secondDeliveryLocation: order.value?.secondDeliveryLocation ?? 1,
-  notes: order.value?.notes ?? "",
-  menuSlots: order.value?.menuSlots.map(slot => ({
-    dayOfWeek: slot.dayOfWeek,
-    dayOrder: slot.dayOrder,
-    slotType: slot.slotType,
-    contenedor: slot.contenedor,
-    components: slot.components.map(({ id: _id, ...component }) => ({ ...component }))
-  })) ?? []
+function editableState(source?: Order | null): OrderUpdateInput {
+  return {
+    status: source?.status ?? "DRAFT",
+    firstDeliveryDate: source?.firstDeliveryDate ?? "",
+    firstDeliveryLocation: source?.firstDeliveryLocation ?? 1,
+    secondDeliveryDate: source?.secondDeliveryDate ?? "",
+    secondDeliveryLocation: source?.secondDeliveryLocation ?? 1,
+    notes: source?.notes ?? "",
+    menuSlots: source?.menuSlots.map(slot => ({
+      dayOfWeek: slot.dayOfWeek,
+      dayOrder: slot.dayOrder,
+      slotType: slot.slotType,
+      contenedor: slot.contenedor,
+      components: slot.components.map(({ id: _id, ...component }) => ({ ...component }))
+    })) ?? []
+  }
+}
+
+const state = reactive<OrderUpdateInput>(editableState(order.value))
+
+// Fill the form when the order arrives after a failed first load ("Reintentar").
+// Refreshes of the same order keep the state as-is so in-progress edits survive.
+let syncedOrderId = order.value?.id
+watch(order, (value) => {
+  if (!value || value.id === syncedOrderId) return
+  syncedOrderId = value.id
+  Object.assign(state, editableState(value))
 })
 
 const statusOptions: Array<{ label: string, value: OrderStatusValue, icon: string }> = [
@@ -164,21 +177,7 @@ async function saveOrder() {
   saving.value = true
   try {
     const saved = await updateOrder(id, { ...state, menuSlots: normalizedSlots() })
-    Object.assign(state, {
-      status: saved.status,
-      firstDeliveryDate: saved.firstDeliveryDate,
-      firstDeliveryLocation: saved.firstDeliveryLocation,
-      secondDeliveryDate: saved.secondDeliveryDate,
-      secondDeliveryLocation: saved.secondDeliveryLocation,
-      notes: saved.notes,
-      menuSlots: saved.menuSlots.map(slot => ({
-        dayOfWeek: slot.dayOfWeek,
-        dayOrder: slot.dayOrder,
-        slotType: slot.slotType,
-        contenedor: slot.contenedor,
-        components: slot.components.map(({ id: _id, ...component }) => ({ ...component }))
-      }))
-    })
+    Object.assign(state, editableState(saved))
     await refresh()
     toast.add({ title: "Pedido actualizado", description: "Las entregas y el menú personalizado quedaron guardados.", color: "success", icon: "i-lucide-circle-check" })
   } catch (error) {
