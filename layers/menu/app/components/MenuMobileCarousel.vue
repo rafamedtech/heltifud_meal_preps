@@ -83,7 +83,7 @@ function onTouchEnd(event: TouchEvent) {
         <section
           v-for="day in days"
           :key="day.dayOfWeek"
-          class="w-full min-w-full max-w-full shrink-0 p-0.5"
+          class="w-full min-w-full max-w-full shrink-0 p-3"
           role="group"
           aria-roledescription="slide"
           :aria-label="day.dayOfWeek"

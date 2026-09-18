@@ -21,14 +21,14 @@ const labels: Record<DayMenu["dayOfWeek"], string> = {
 <template>
   <UCard
     variant="subtle"
-    class="min-w-0 h-full min-h-90 overflow-hidden md:min-h-0"
-    :ui="{ root: 'h-full min-w-0 overflow-hidden', body: 'p-0 sm:p-0 h-full' }"
+    class="min-w-0 h-full overflow-hidden shadow-[0_0_10px_0] shadow-primary/20"
+    :ui="{ root: 'flex h-full min-w-0 flex-col overflow-hidden', header: 'shrink-0 px-5 py-4 lg:px-6', body: 'flex flex-1 p-0 sm:p-0' }"
   >
     <template #header>
-      <h3 class="text-xl font-bold text-primary-500">{{ labels[day.dayOfWeek] }}</h3>
+      <h3 class="text-xl font-bold text-highlighted">{{ labels[day.dayOfWeek] }}</h3>
     </template>
 
-    <section class="grid grid-cols-1 gap-0 divide-y divide-default/70 md:grid-cols-3 md:divide-y-0 md:divide-x">
+    <section class="grid min-w-0 flex-1 auto-rows-fr grid-cols-1 items-stretch gap-0 divide-y divide-default/70 md:grid-cols-3 md:divide-y-0 md:divide-x">
       <MenuMeal
         :meal="day.desayuno"
         title="Desayuno"

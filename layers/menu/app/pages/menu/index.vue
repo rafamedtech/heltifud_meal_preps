@@ -117,12 +117,12 @@ useSeoMeta({
           />
         </section>
 
-        <section class="hidden md:flex md:flex-col md:gap-8">
+        <section class="hidden md:grid md:auto-rows-fr md:grid-cols-1 md:gap-8">
           <template v-if="isLoading">
             <section
               v-for="day in 5"
               :key="`desktop-skeleton-${day}`"
-              class="p-0.5"
+              class="p-3"
             >
               <UCard
                 variant="subtle"
@@ -155,7 +155,7 @@ useSeoMeta({
             v-for="item in publicDays"
             v-else
             :key="item.dayOfWeek"
-            class="p-0.5"
+            class="p-3"
           >
             <MenuCard :day="item" />
           </section>

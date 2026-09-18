@@ -18,53 +18,37 @@ const iconByTitle: Record<string, string> = {
 
 const icon = computed(() => iconByTitle[title] ?? 'lucide:utensils');
 
-const totalCalories = computed(() => {
-  const base = meal.platilloPrincipal.calorias;
-  const side1 = meal.guarnicion1?.calorias ?? 0;
-  const side2 = meal.guarnicion2?.calorias ?? 0;
-  const adicionales = meal.adicionales.reduce((sum, item) => sum + item.calorias, 0);
-  return (base + side1 + side2 + adicionales).toLocaleString('es-MX', {
-    maximumFractionDigits: 0,
-  });
-});
-
-const guarnicion1Name = computed(() => meal.guarnicion1?.nombre?.trim());
-const guarnicion2Name = computed(() => meal.guarnicion2?.nombre?.trim());
+const accompaniments = computed(() => [
+  meal.guarnicion1?.nombre,
+  meal.guarnicion2?.nombre,
+  ...meal.adicionales.map(item => item.nombre),
+].map(name => name?.trim()).filter(Boolean));
 </script>
 
 <template>
-  <section class="h-full min-w-0 px-4 py-4">
-    <h3 class="flex min-w-0 items-center gap-2 text-lg font-bold">
+  <section class="flex h-full min-w-0 flex-col gap-3 px-5 py-5 lg:px-6 lg:py-6">
+    <h4 class="flex min-w-0 items-center gap-2 text-sm font-semibold text-primary">
       <Icon
         :name="icon"
-        class="shrink-0"
+        class="size-4 shrink-0"
       />
       <span class="min-w-0">{{ title }}</span>
-    </h3>
+    </h4>
 
-    <section class="mt-2 grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-3 text-sm">
-      <article class="flex min-w-0 flex-col gap-2">
-        <span class="min-h-[1.25rem] break-words">- {{ meal.platilloPrincipal.nombre }}</span>
-        <span class="min-h-[1.25rem]">
-          <template v-if="guarnicion1Name">- {{ guarnicion1Name }}</template>
-          <template v-else>&nbsp;</template>
-        </span>
-        <span class="min-h-[1.25rem]">
-          <template v-if="guarnicion2Name">- {{ guarnicion2Name }}</template>
-          <template v-else>&nbsp;</template>
-        </span>
-        <span
-          v-for="(adicional, index) in meal.adicionales"
-          :key="`${adicional.nombre}-${index}`"
-          class="break-words"
+    <div class="min-w-0 space-y-2.5">
+      <p class="break-words text-base font-semibold leading-snug text-highlighted">
+        {{ meal.platilloPrincipal.nombre }}
+      </p>
+      <ul v-if="accompaniments.length" class="space-y-1.5 text-sm leading-relaxed text-toned">
+        <li
+          v-for="(name, index) in accompaniments"
+          :key="`${name}-${index}`"
+          class="flex min-w-0 items-start gap-2"
         >
-          - {{ adicional.nombre }}
-        </span>
-      </article>
-
-      <article class="flex shrink-0 items-start justify-end">
-        <span class="whitespace-nowrap font-semibold text-primary-500">{{ totalCalories }} Cal</span>
-      </article>
-    </section>
+          <span aria-hidden="true" class="mt-2 size-1 shrink-0 rounded-full bg-primary/50" />
+          <span class="min-w-0 break-words">{{ name }}</span>
+        </li>
+      </ul>
+    </div>
   </section>
 </template>
