@@ -120,28 +120,6 @@ useSeoMeta({
 
 <template>
   <main class="flex min-h-full flex-col space-y-6">
-    <section class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-      <div class="space-y-2">
-        <div class="space-y-1">
-          <h1 class="text-3xl font-semibold tracking-tight text-primary">Menú semanal</h1>
-          <p class="max-w-2xl text-sm text-muted">
-            Crea nuevos menús, edita los existentes y mantén visible la próxima rotación semanal.
-          </p>
-        </div>
-      </div>
-
-      <div class="flex w-full items-center gap-3 lg:w-auto lg:justify-end">
-        <UButton
-          to="/admin/menu/crear-nuevo"
-          icon="i-lucide-plus"
-          class="w-full justify-center lg:w-auto"
-          size="lg"
-        >
-          Nuevo menú
-        </UButton>
-      </div>
-    </section>
-
     <section class="space-y-4">
       <AdminMenuIndexSkeleton v-if="isLoading" />
 
@@ -226,6 +204,20 @@ useSeoMeta({
             <p class="text-sm text-muted">Total de menús semanales registrados.</p>
           </div>
         </div>
+      </section>
+
+      <section
+        v-if="isLoading"
+        role="status"
+        aria-live="polite"
+        class="flex min-h-64 flex-col items-center justify-center gap-3 text-muted"
+      >
+        <UIcon
+          name="i-lucide-loader-circle"
+          class="size-12 animate-spin"
+          aria-hidden="true"
+        />
+        <span>Cargando</span>
       </section>
 
       <UAlert

@@ -98,6 +98,11 @@ const pageIcon = computed(() => {
 })
 const isExpensesPage = computed(() => route.path.replace(/\/$/, "") === "/admin/gastos")
 const isCustomersPage = computed(() => route.path.replace(/\/$/, "") === "/admin/clientes")
+const isMenuPage = computed(() => route.path.replace(/\/$/, "") === "/admin/menu")
+const isMenuEditPage = computed(() => {
+  const path = route.path.replace(/\/$/, "")
+  return path.startsWith("/admin/menu/") && path !== "/admin/menu/crear-nuevo"
+})
 const isFoodCatalogPage = computed(() => route.path.replace(/\/$/, "") === "/admin/platillos")
 const isFoodCatalogEditPage = computed(() => {
   const path = route.path.replace(/\/$/, "")
@@ -244,6 +249,22 @@ async function logout() {
         @click="requestCustomerCreate"
       />
 
+      <UButton
+        v-if="isMenuPage"
+        square
+        icon="i-lucide-plus"
+        aria-label="Nuevo menú"
+        to="/admin/menu/crear-nuevo"
+      />
+
+      <UButton
+        v-if="isMenuEditPage"
+        square
+        icon="i-lucide-arrow-left"
+        aria-label="Regresar"
+        to="/admin/menu"
+      />
+
       <button
         type="button"
         class="inline-flex items-center justify-center rounded-md p-1.5 text-sm font-medium text-default transition-colors hover:bg-elevated active:bg-elevated focus:outline-none focus-visible:bg-elevated"
@@ -341,6 +362,22 @@ async function logout() {
         @click="requestCustomerCreate"
       >
         Nuevo
+      </UButton>
+
+      <UButton
+        v-if="isMenuPage"
+        icon="i-lucide-plus"
+        to="/admin/menu/crear-nuevo"
+      >
+        Nuevo menú
+      </UButton>
+
+      <UButton
+        v-if="isMenuEditPage"
+        icon="i-lucide-arrow-left"
+        to="/admin/menu"
+      >
+        Regresar
       </UButton>
     </div>
 

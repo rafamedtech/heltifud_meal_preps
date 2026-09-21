@@ -702,7 +702,10 @@ async function onSubmit() {
 
 <template>
   <section class="space-y-6">
-    <div class="flex items-center justify-between gap-4">
+    <div
+      v-if="mode !== 'edit'"
+      class="flex items-center justify-between gap-4"
+    >
       <div>
         <h1 class="text-2xl font-semibold text-primary">
           {{ title }}
