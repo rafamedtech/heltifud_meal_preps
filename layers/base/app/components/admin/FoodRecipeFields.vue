@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TableColumn } from "@nuxt/ui"
+import { ConfigProvider } from "reka-ui"
 import { ingredientInputSchema } from "~~/layers/menu/shared/types/menuSchema"
 import type { Ingredient, IngredientInput, RecipeIngredientInput } from "~~/layers/menu/shared/types/types"
 
@@ -237,13 +238,17 @@ async function saveNewIngredient() {
           </template>
 
           <template #quantity-cell="{ row }">
-            <UInputNumber
-              v-model="row.original.cantidad"
-              :min="1"
-              :step="1"
-              aria-label="Cantidad"
-              class="w-full"
-            />
+            <ConfigProvider locale="en-US">
+              <UInputNumber
+                v-model="row.original.cantidad"
+                :min="0.01"
+                :max="999999"
+                :step="0.01"
+                :format-options="{ maximumFractionDigits: 2 }"
+                aria-label="Cantidad"
+                class="w-full"
+              />
+            </ConfigProvider>
           </template>
 
           <template #unit-cell="{ row }">
@@ -322,6 +327,7 @@ async function saveNewIngredient() {
           <UInput
             v-model="newIngredient.nombre"
             autofocus
+            autocomplete="off"
             placeholder="Ej. Pechuga de pollo"
             class="w-full"
           />

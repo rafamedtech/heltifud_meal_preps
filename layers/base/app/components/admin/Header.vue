@@ -98,6 +98,16 @@ const pageIcon = computed(() => {
 })
 const isExpensesPage = computed(() => route.path.replace(/\/$/, "") === "/admin/gastos")
 const isCustomersPage = computed(() => route.path.replace(/\/$/, "") === "/admin/clientes")
+const isFoodCatalogPage = computed(() => route.path.replace(/\/$/, "") === "/admin/platillos")
+const isFoodCatalogEditPage = computed(() => {
+  const path = route.path.replace(/\/$/, "")
+  return path.startsWith("/admin/platillos/") && path !== "/admin/platillos/crear-nuevo"
+})
+const foodCatalogBackRequest = useState("admin-food-catalog-back-request", () => 0)
+const foodCatalogCreateTo = computed(() => ({
+  path: "/admin/platillos/crear-nuevo",
+  query: typeof route.query.returnTo === "string" ? { returnTo: route.query.returnTo } : {}
+}))
 
 const mobileNavItems = [
   {
@@ -154,6 +164,10 @@ function requestCustomerCreate() {
   customerCreateRequest.value += 1
 }
 
+function requestFoodCatalogBack() {
+  foodCatalogBackRequest.value += 1
+}
+
 async function logout() {
   isLoggingOut.value = true
 
@@ -198,6 +212,22 @@ async function logout() {
     </div>
 
     <div class="flex items-center gap-2 min-[744px]:hidden">
+      <UButton
+        v-if="isFoodCatalogEditPage"
+        square
+        icon="i-lucide-arrow-left"
+        aria-label="Regresar"
+        @click="requestFoodCatalogBack"
+      />
+
+      <UButton
+        v-if="isFoodCatalogPage"
+        square
+        icon="i-lucide-plus"
+        aria-label="Nuevo platillo"
+        :to="foodCatalogCreateTo"
+      />
+
       <UButton
         v-if="isExpensesPage"
         square
@@ -281,6 +311,22 @@ async function logout() {
     </div>
 
     <div class="hidden items-center gap-3 min-[744px]:flex">
+      <UButton
+        v-if="isFoodCatalogEditPage"
+        icon="i-lucide-arrow-left"
+        @click="requestFoodCatalogBack"
+      >
+        Regresar
+      </UButton>
+
+      <UButton
+        v-if="isFoodCatalogPage"
+        icon="i-lucide-plus"
+        :to="foodCatalogCreateTo"
+      >
+        Nuevo platillo
+      </UButton>
+
       <UButton
         v-if="isExpensesPage"
         icon="i-lucide-plus"

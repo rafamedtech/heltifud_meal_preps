@@ -164,7 +164,10 @@ export const ingredientInputSchema = z.object({
 
 export const recipeIngredientInputSchema = z.object({
   ingredientId: z.string().uuid('Selecciona un ingrediente'),
-  cantidad: z.number().positive('La cantidad debe ser mayor que cero').max(999999),
+  cantidad: z.number()
+    .positive('La cantidad debe ser mayor que cero')
+    .max(999999)
+    .refine((value) => Number(value.toFixed(2)) === value, 'La cantidad debe tener máximo 2 decimales'),
   unidad: z.string().trim().min(1, 'La unidad de medida es obligatoria').max(50),
 });
 

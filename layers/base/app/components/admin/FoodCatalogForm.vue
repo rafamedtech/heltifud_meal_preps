@@ -297,6 +297,7 @@ function onCancel() {
     <UCard class="app-surface">
       <UForm
         :state="state"
+        autocomplete="off"
         class="space-y-5"
         @submit="onSubmit"
       >

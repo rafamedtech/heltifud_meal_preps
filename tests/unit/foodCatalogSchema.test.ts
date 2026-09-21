@@ -17,13 +17,27 @@ describe('foodCatalogItemInputSchema', () => {
       preparacion: '1. Sazonar el pollo.\n2. Cocinar a la plancha.',
       ingredientes: [{
         ingredientId: '123e4567-e89b-12d3-a456-426614174000',
-        cantidad: 250,
+        cantidad: 0.25,
         unidad: 'g',
       }],
     })
 
     expect(parsed.preparacion).toBe('1. Sazonar el pollo.\n2. Cocinar a la plancha.')
     expect(parsed.ingredientes).toHaveLength(1)
+    expect(parsed.ingredientes[0]?.cantidad).toBe(0.25)
+  })
+
+  it('rechaza cantidades con más de 2 decimales', () => {
+    const parsed = foodCatalogItemInputSchema.safeParse({
+      ...baseItem,
+      ingredientes: [{
+        ingredientId: '123e4567-e89b-12d3-a456-426614174000',
+        cantidad: 1.234,
+        unidad: 'kg',
+      }],
+    })
+
+    expect(parsed.success).toBe(false)
   })
 
   it('usa una receta estructurada vacía cuando no se envía', () => {

@@ -10,6 +10,7 @@ const returnTo = computed(() => (typeof route.query.returnTo === 'string' ? rout
 const backTo = computed(() => returnTo.value ?? '/admin/platillos');
 const hasUnsavedChanges = ref(false);
 const leaveConfirmOpen = ref(false);
+const foodCatalogBackRequest = useState('admin-food-catalog-back-request', () => 0);
 
 useSeoMeta({
   title: 'Gestión de platillos | Editar platillo | Heltifud Meal Preps',
@@ -45,6 +46,12 @@ async function onBack() {
   await navigateTo(backTo.value);
 }
 
+watch(foodCatalogBackRequest, (value, previousValue) => {
+  if (value !== previousValue) {
+    void onBack();
+  }
+});
+
 async function leaveWithoutSaving() {
   leaveConfirmOpen.value = false;
   await navigateTo(backTo.value);
@@ -65,26 +72,6 @@ async function leaveWithoutSaving() {
     />
 
     <template v-else>
-      <section class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div class="space-y-1">
-          <h1 class="text-3xl font-semibold tracking-tight text-primary">Editar platillo</h1>
-          <p class="max-w-2xl text-sm text-muted">
-            Edita un platillo existente y conserva su información actualizada dentro del catálogo reusable.
-          </p>
-        </div>
-
-        <div class="flex items-center gap-3 lg:justify-end">
-          <UButton
-            variant="ghost"
-            color="neutral"
-            icon="i-lucide-arrow-left"
-            @click="onBack"
-          >
-            Regresar
-          </UButton>
-        </div>
-      </section>
-
       <div class="mx-auto w-full max-w-5xl">
         <AdminFoodCatalogForm :item="item" mode="edit" @saved="onSaved" @dirty-change="onDirtyChange" />
       </div>

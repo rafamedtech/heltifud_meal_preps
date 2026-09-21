@@ -124,33 +124,16 @@ function editTo(item: FoodCatalogItem) {
 
 <template>
   <main class="flex min-h-full flex-col space-y-6">
-    <section class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-      <div class="space-y-2">
-        <div class="space-y-1">
-          <h1 class="text-3xl font-semibold tracking-tight text-primary">Platillos</h1>
-          <p class="max-w-2xl text-sm text-muted">Administra el catálogo de platillos para los menús semanales.</p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-3 lg:justify-end">
-        <UButton
-          v-if="returnTo"
-          :to="returnTo"
-          variant="ghost"
-          color="neutral"
-          icon="i-lucide-arrow-left"
-        >
-          Regresar
-        </UButton>
-
-        <UButton
-          :to="{ path: '/admin/platillos/crear-nuevo', query: returnTo ? { returnTo } : {} }"
-          icon="i-lucide-plus"
-        >
-          Nuevo platillo
-        </UButton>
-      </div>
-    </section>
+    <div v-if="returnTo" class="flex justify-end">
+      <UButton
+        :to="returnTo"
+        variant="ghost"
+        color="neutral"
+        icon="i-lucide-arrow-left"
+      >
+        Regresar
+      </UButton>
+    </div>
 
     <div class="mx-auto w-full max-w-5xl">
       <UCard
