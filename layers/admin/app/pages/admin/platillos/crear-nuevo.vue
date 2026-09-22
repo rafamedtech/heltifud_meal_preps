@@ -4,6 +4,7 @@ definePageMeta({
 });
 
 const route = useRoute();
+const router = useRouter();
 const returnTo = computed(() => (typeof route.query.returnTo === 'string' ? route.query.returnTo : undefined));
 const backTo = computed(() => returnTo.value ?? '/admin/platillos');
 const hasUnsavedChanges = ref(false);
@@ -15,9 +16,17 @@ useSeoMeta({
   robots: 'noindex, nofollow',
 })
 
-async function onSaved() {
+async function onSaved(itemId: string) {
   if (typeof route.query.returnTo === 'string') {
-    await navigateTo(route.query.returnTo);
+    const destination = router.resolve(route.query.returnTo);
+    await navigateTo({
+      path: destination.path,
+      query: {
+        ...destination.query,
+        createdCatalogItemId: itemId,
+      },
+      hash: destination.hash,
+    });
     return;
   }
 

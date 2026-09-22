@@ -279,7 +279,7 @@ interface MenuFormDraftPayload {
   daySectionsExpanded: Record<DayOfWeek, boolean>
 }
 
-type RestoreSelectionView = "select-platillo-principal" | "select-guarnicion-1" | "select-guarnicion-2"
+type RestoreSelectionView = "select-platillo-principal" | "select-guarnicion-1" | "select-guarnicion-2" | "extras"
 
 interface RestoreSelectionTarget {
   dayOfWeek: DayOfWeek
@@ -287,9 +287,12 @@ interface RestoreSelectionTarget {
   view: RestoreSelectionView
   search?: string
   selectedType?: string
+  additionalIndex?: number
 }
 
 const restoreSelectionTarget = ref<RestoreSelectionTarget | null>(null)
+const pendingCreatedCatalogItemId = ref<string | null>(null)
+const pendingCreatedSelectionTarget = ref<RestoreSelectionTarget | null>(null)
 
 watch(
   () => menu.value,
@@ -420,6 +423,8 @@ function cleanedReturnQuery() {
   delete nextQuery.restoreSelectionView
   delete nextQuery.restoreSearch
   delete nextQuery.restoreSelectedType
+  delete nextQuery.restoreAdditionalIndex
+  delete nextQuery.createdCatalogItemId
   return nextQuery
 }
 
@@ -444,7 +449,10 @@ function buildReturnToPath() {
         restoreSlot: restoreSelectionTarget.value.slotKey,
         restoreSelectionView: restoreSelectionTarget.value.view,
         ...(restoreSelectionTarget.value.search ? { restoreSearch: restoreSelectionTarget.value.search } : {}),
-        ...(restoreSelectionTarget.value.selectedType ? { restoreSelectedType: restoreSelectionTarget.value.selectedType } : {})
+        ...(restoreSelectionTarget.value.selectedType ? { restoreSelectedType: restoreSelectionTarget.value.selectedType } : {}),
+        ...(restoreSelectionTarget.value.additionalIndex !== undefined
+          ? { restoreAdditionalIndex: String(restoreSelectionTarget.value.additionalIndex) }
+          : {})
       }
     : {}
 
@@ -468,6 +476,8 @@ function restoreSelectionTargetFromQuery() {
   const view = route.query.restoreSelectionView
   const search = route.query.restoreSearch
   const selectedType = route.query.restoreSelectedType
+  const additionalIndex = route.query.restoreAdditionalIndex
+  const createdCatalogItemId = route.query.createdCatalogItemId
 
   if (
     typeof day === "string" &&
@@ -475,15 +485,24 @@ function restoreSelectionTargetFromQuery() {
     typeof slot === "string" &&
     ["desayuno", "comida", "cena", "snack1", "snack2"].includes(slot) &&
     typeof view === "string" &&
-    ["select-platillo-principal", "select-guarnicion-1", "select-guarnicion-2"].includes(view)
+    ["select-platillo-principal", "select-guarnicion-1", "select-guarnicion-2", "extras"].includes(view)
   ) {
     restoreSelectionTarget.value = {
       dayOfWeek: day as DayOfWeek,
       slotKey: slot as SlotKey,
       view: view as RestoreSelectionView,
       search: typeof search === "string" ? search : undefined,
-      selectedType: typeof selectedType === "string" ? selectedType : undefined
+      selectedType: typeof selectedType === "string" ? selectedType : undefined,
+      additionalIndex:
+        typeof additionalIndex === "string" && /^\d+$/.test(additionalIndex)
+          ? Number(additionalIndex)
+          : undefined
     }
+
+    pendingCreatedCatalogItemId.value = typeof createdCatalogItemId === "string" ? createdCatalogItemId : null
+    pendingCreatedSelectionTarget.value = pendingCreatedCatalogItemId.value
+      ? { ...restoreSelectionTarget.value }
+      : null
 
     if (slot === "snack1" || slot === "snack2") {
       snacksExpanded[day as DayOfWeek] = true
@@ -491,7 +510,68 @@ function restoreSelectionTargetFromQuery() {
   }
 }
 
-async function openCreateCatalogItem(payload: { tipo?: string, view?: RestoreSelectionView, search?: string, selectedType?: string }, target?: Omit<RestoreSelectionTarget, "view"> | null) {
+function applyCreatedCatalogItemFromReturn() {
+  const itemId = pendingCreatedCatalogItemId.value
+  const target = pendingCreatedSelectionTarget.value
+
+  if (!itemId || !target) {
+    return
+  }
+
+  const catalogItem = resolvedCatalogItems.value.find((item) => item.id === itemId)
+
+  if (!catalogItem) {
+    return
+  }
+
+  const day = state.days.find((entry) => entry.dayOfWeek === target.dayOfWeek)
+
+  if (!day) {
+    return
+  }
+
+  const selectedItem = cloneFoodItem({
+    catalogItemId: catalogItem.id,
+    nombre: catalogItem.nombre,
+    descripcion: catalogItem.descripcion,
+    calorias: catalogItem.calorias,
+    imagen: catalogItem.imagen,
+    tipo: catalogItem.tipo
+  })
+  const slot = day[target.slotKey]
+
+  switch (target.view) {
+    case "select-platillo-principal":
+      slot.platilloPrincipal = selectedItem
+      break
+    case "select-guarnicion-1":
+      slot.guarnicion1 = selectedItem
+      break
+    case "select-guarnicion-2":
+      slot.guarnicion2 = selectedItem
+      break
+    case "extras":
+      if (target.additionalIndex === undefined) {
+        return
+      }
+      slot.adicionales[target.additionalIndex] = selectedItem
+      break
+  }
+
+  pendingCreatedCatalogItemId.value = null
+  pendingCreatedSelectionTarget.value = null
+
+  toast.add({
+    title: "Platillo seleccionado",
+    description: `${catalogItem.nombre} quedó asignado al menú.`,
+    color: "success",
+    icon: "i-lucide-check-circle"
+  })
+}
+
+watch(resolvedCatalogItems, applyCreatedCatalogItemFromReturn, { deep: true })
+
+async function openCreateCatalogItem(payload: { tipo?: string, view?: RestoreSelectionView, search?: string, selectedType?: string, additionalIndex?: number }, target?: Omit<RestoreSelectionTarget, "view"> | null) {
   const prefilledName = payload.search?.trim()
   const prefilledType = payload.tipo ?? payload.selectedType
 
@@ -500,7 +580,8 @@ async function openCreateCatalogItem(payload: { tipo?: string, view?: RestoreSel
         ...target,
         view: payload.view,
         search: payload.search,
-        selectedType: payload.selectedType
+        selectedType: payload.selectedType,
+        additionalIndex: payload.additionalIndex
       }
     : null
   persistDraft()
@@ -515,9 +596,9 @@ async function openCreateCatalogItem(payload: { tipo?: string, view?: RestoreSel
   })
 }
 
-async function openEditCatalogItem(payload: { id: string, view: RestoreSelectionView }, target?: Omit<RestoreSelectionTarget, "view"> | null) {
+async function openEditCatalogItem(payload: { id: string, view: RestoreSelectionView, additionalIndex?: number }, target?: Omit<RestoreSelectionTarget, "view"> | null) {
   restoreSelectionTarget.value = target
-    ? { ...target, view: payload.view }
+    ? { ...target, view: payload.view, additionalIndex: payload.additionalIndex }
     : null
   persistDraft()
 
@@ -532,6 +613,7 @@ async function openEditCatalogItem(payload: { id: string, view: RestoreSelection
 onMounted(async () => {
   restorePersistedDraft()
   restoreSelectionTargetFromQuery()
+  applyCreatedCatalogItemFromReturn()
   await clearRestoreQueryIfNeeded()
 })
 

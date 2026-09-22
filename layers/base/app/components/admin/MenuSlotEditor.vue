@@ -12,7 +12,7 @@ type DetailModalView =
   | "extras"
   | null
 
-type SelectionModalView = Exclude<DetailModalView, "extras" | null>
+type SelectionModalView = Exclude<DetailModalView, null>
 
 interface Props {
   title: string
@@ -30,11 +30,13 @@ interface CreateCatalogItemPayload {
   view?: SelectionModalView
   search?: string
   selectedType?: string
+  additionalIndex?: number
 }
 
 interface EditCatalogItemPayload {
   id: string
   view: SelectionModalView
+  additionalIndex?: number
 }
 
 const {
@@ -295,6 +297,26 @@ function editCatalogItem(target?: FoodItemDetail | null, view: SelectionModalVie
   })
 }
 
+function requestCreateAdditionalCatalogItem(index: number) {
+  emit("createCatalogItem", {
+    tipo: "ramekin",
+    view: "extras",
+    additionalIndex: index
+  })
+
+  isModalOpen.value = false
+}
+
+function requestEditAdditionalCatalogItem(itemId: string, index: number) {
+  emit("editCatalogItem", {
+    id: itemId,
+    view: "extras",
+    additionalIndex: index
+  })
+
+  isModalOpen.value = false
+}
+
 function actionItems(target: FoodItemDetail, view: SelectionModalView = "select-platillo-principal") {
   return [[
     {
@@ -516,6 +538,7 @@ watch(
     }
 
     modalView.value = view
+    isModalOpen.value = true
     emit("restoreSelectionApplied")
   },
   { immediate: true }
@@ -815,6 +838,8 @@ watch(
             :title="`Adicional ${index + 1}`"
             :catalog-items="adicionalItems"
             @update:model-value="setAdicional(index, $event)"
+            @create-catalog-item="requestCreateAdditionalCatalogItem(index)"
+            @edit-catalog-item="requestEditAdditionalCatalogItem($event, index)"
           />
         </section>
       </section>

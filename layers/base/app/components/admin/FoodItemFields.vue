@@ -10,9 +10,13 @@ interface Props {
 
 const props = defineProps<Props>();
 const model = defineModel<FoodItemDetail>({ required: true });
-const route = useRoute();
 const optional = computed(() => props.optional ?? false);
 const catalogItems = computed(() => props.catalogItems ?? []);
+
+const emit = defineEmits<{
+  createCatalogItem: [];
+  editCatalogItem: [itemId: string];
+}>();
 
 const typeOptions = [
   { label: 'Desayuno', value: 'desayuno' },
@@ -38,20 +42,6 @@ const catalogOptions = computed(() =>
     value: item.id,
   }))
 );
-
-const returnTo = computed(() => route.fullPath);
-
-const createComponentLink = computed(() => ({
-  path: '/admin/platillos/crear-nuevo',
-  query: { returnTo: returnTo.value },
-}));
-
-const editComponentLink = computed(() => ({
-  path: `/admin/platillos/${selectedCatalogId.value}`,
-  query: {
-    returnTo: returnTo.value,
-  },
-}));
 
 function applyCatalogItem(itemId: string | undefined) {
   selectedCatalogId.value = itemId;
@@ -116,13 +106,20 @@ watchEffect(() => {
         </USelect>
 
         <section class="flex gap-2">
-          <UButton :to="createComponentLink" variant="outline" size="sm" icon="i-lucide-plus">Nuevo</UButton>
           <UButton
-            :to="selectedCatalogId ? editComponentLink : createComponentLink"
+            variant="outline"
+            size="sm"
+            icon="i-lucide-plus"
+            @click="emit('createCatalogItem')"
+          >
+            Nuevo
+          </UButton>
+          <UButton
             variant="ghost"
             size="sm"
             icon="i-lucide-pencil"
             :disabled="!selectedCatalogId"
+            @click="selectedCatalogId && emit('editCatalogItem', selectedCatalogId)"
           >
             Editar
           </UButton>
