@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { getFoodTypeAppearance } from "~~/layers/base/app/utils/foodTypeAppearance"
+import { addDays, format, startOfWeek } from "date-fns"
+import { es } from "date-fns/locale"
 import { weeklyMenuInputSchema } from "~~/layers/menu/shared/types/menuSchema"
 import {
   DAY_OF_WEEK_VALUES,
@@ -49,12 +50,6 @@ const SLOT_LABELS: Record<keyof Omit<DayMenu, "dayOfWeek">, string> = {
   snack1: "Snack 1",
   snack2: "Snack 2"
 }
-
-const COLLAPSED_DAY_SUMMARY_SLOTS = [
-  "desayuno",
-  "comida",
-  "cena"
-] as const
 
 function createEmptyFoodItem(): FoodItemDetail {
   return {
@@ -113,10 +108,6 @@ function cloneSlot(slot?: MenuSlot | null): MenuSlot {
   }
 }
 
-function getCollapsedSlotSummary(slot: MenuSlot) {
-  return slot.platilloPrincipal.nombre.trim() || "Pendiente"
-}
-
 function createStateFromMenu(menu?: WeeklyMenu | null): WeeklyMenuInput {
   if (!menu) {
     return {
@@ -150,7 +141,7 @@ function createStateFromMenu(menu?: WeeklyMenu | null): WeeklyMenuInput {
 
 const state = reactive<WeeklyMenuInput>(createStateFromMenu(menu.value))
 const loading = ref(false)
-const hiddenDays = new Set<DayOfWeek>(["SABADO", "DOMINGO"])
+const hiddenDays = new Set<DayOfWeek>()
 const markAsActive = ref(Boolean(menu.value?.isActive))
 const snacksExpanded = reactive<Record<DayOfWeek, boolean>>(
   DAY_OF_WEEK_VALUES.reduce(
@@ -161,15 +152,59 @@ const snacksExpanded = reactive<Record<DayOfWeek, boolean>>(
     {} as Record<DayOfWeek, boolean>
   )
 )
-const daySectionsExpanded = reactive<Record<DayOfWeek, boolean>>(
-  DAY_OF_WEEK_VALUES.reduce(
-    (acc, day) => {
-      acc[day] = false
-      return acc
-    },
-    {} as Record<DayOfWeek, boolean>
-  )
-)
+const activeDay = ref<DayOfWeek>(DAY_OF_WEEK_VALUES[0]!)
+const activeSlot = ref<SlotKey>("comida")
+const editorOpen = ref(false)
+const primarySlots = ["desayuno", "comida", "cena"] as const
+const snackSlots = ["snack1", "snack2"] as const
+const showSnacks = ref(false)
+const weekStart = computed(() => startOfWeek(new Date(state.startDate), { weekStartsOn: 1 }))
+const weekRange = computed(() => `${format(weekStart.value, "d MMM", { locale: es })} – ${format(addDays(weekStart.value, 6), "d MMM, yyyy", { locale: es })}`)
+const activeDayData = computed(() => state.days.find((day) => day.dayOfWeek === activeDay.value))
+const activeMeal = computed(() => activeDayData.value?.[activeSlot.value])
+const failedImages = ref(new Set<string>())
+
+function hasUsableImage(image?: string | null) {
+  return Boolean(image?.trim() && !failedImages.value.has(image))
+}
+
+function markImageAsFailed(image: string) {
+  failedImages.value = new Set([...failedImages.value, image])
+}
+
+function dayDate(index: number) {
+  return format(addDays(weekStart.value, index), "d", { locale: es })
+}
+
+function selectMeal(day: DayOfWeek, slot: SlotKey) {
+  activeDay.value = day
+  activeSlot.value = slot
+  if (slot === "snack1" || slot === "snack2") {
+    snacksExpanded[day] = true
+  }
+}
+
+function openMealEditor(day: DayOfWeek, slot: SlotKey) {
+  selectMeal(day, slot)
+  editorOpen.value = true
+}
+
+function toggleSnacksVisibility() {
+  showSnacks.value = !showSnacks.value
+}
+
+function toggleMealEditor() {
+  editorOpen.value = !editorOpen.value
+}
+
+function closeMealEditor() {
+  editorOpen.value = false
+}
+
+async function publishMenu() {
+  markAsActive.value = true
+  await onSubmit()
+}
 
 const title = computed(() => {
   if (mode.value === "edit") {
@@ -179,13 +214,6 @@ const title = computed(() => {
   return "Nuevo menú semanal"
 })
 const actionLabel = computed(() => (mode.value === "edit" ? "Guardar" : "Crear"))
-const activeActionLabel = computed(() => {
-  if (menu.value?.isActive || markAsActive.value) {
-    return "Activo"
-  }
-
-  return "Activar"
-})
 const visibleDayEntries = computed(() =>
   state.days.map((day) => ({ day })).filter(({ day }) => !hiddenDays.has(day.dayOfWeek))
 )
@@ -276,7 +304,8 @@ interface MenuFormDraftPayload {
   state: WeeklyMenuInput
   markAsActive: boolean
   snacksExpanded: Record<DayOfWeek, boolean>
-  daySectionsExpanded: Record<DayOfWeek, boolean>
+  activeDay?: DayOfWeek
+  daySectionsExpanded?: Record<DayOfWeek, boolean>
 }
 
 type RestoreSelectionView = "select-platillo-principal" | "select-guarnicion-1" | "select-guarnicion-2" | "extras"
@@ -300,8 +329,10 @@ watch(
     Object.assign(state, createStateFromMenu(menu))
     markAsActive.value = Boolean(menu?.isActive)
     clearValidationHighlights()
+    activeDay.value = DAY_OF_WEEK_VALUES[0]!
+    activeSlot.value = "comida"
+    editorOpen.value = false
     for (const day of DAY_OF_WEEK_VALUES) {
-      daySectionsExpanded[day] = false
       snacksExpanded[day] = false
     }
   }
@@ -333,16 +364,6 @@ function snapshotSnacksExpanded(): Record<DayOfWeek, boolean> {
   )
 }
 
-function snapshotDaySectionsExpanded(): Record<DayOfWeek, boolean> {
-  return DAY_OF_WEEK_VALUES.reduce(
-    (acc, day) => {
-      acc[day] = daySectionsExpanded[day]
-      return acc
-    },
-    {} as Record<DayOfWeek, boolean>
-  )
-}
-
 function persistDraft() {
   if (!import.meta.client) {
     return
@@ -352,7 +373,7 @@ function persistDraft() {
     state: snapshotDraftState(),
     markAsActive: markAsActive.value,
     snacksExpanded: snapshotSnacksExpanded(),
-    daySectionsExpanded: snapshotDaySectionsExpanded()
+    activeDay: activeDay.value
   }
 
   sessionStorage.setItem(draftStorageKey.value, JSON.stringify(payload))
@@ -395,9 +416,11 @@ function restorePersistedDraft() {
     })
 
     markAsActive.value = payload.markAsActive
+    activeDay.value = payload.activeDay && DAY_OF_WEEK_VALUES.includes(payload.activeDay)
+      ? payload.activeDay
+      : DAY_OF_WEEK_VALUES.find((day) => payload.daySectionsExpanded?.[day]) ?? DAY_OF_WEEK_VALUES[0]!
 
     for (const day of DAY_OF_WEEK_VALUES) {
-      daySectionsExpanded[day] = payload.daySectionsExpanded?.[day] ?? false
       snacksExpanded[day] = Boolean(payload.snacksExpanded?.[day])
     }
 
@@ -503,6 +526,9 @@ function restoreSelectionTargetFromQuery() {
     pendingCreatedSelectionTarget.value = pendingCreatedCatalogItemId.value
       ? { ...restoreSelectionTarget.value }
       : null
+    activeDay.value = day as DayOfWeek
+    activeSlot.value = slot as SlotKey
+    editorOpen.value = true
 
     if (slot === "snack1" || slot === "snack2") {
       snacksExpanded[day as DayOfWeek] = true
@@ -621,10 +647,6 @@ function toggleSnacks(dayOfWeek: DayOfWeek) {
   snacksExpanded[dayOfWeek] = !snacksExpanded[dayOfWeek]
 }
 
-function toggleDaySection(dayOfWeek: DayOfWeek) {
-  daySectionsExpanded[dayOfWeek] = !daySectionsExpanded[dayOfWeek]
-}
-
 function clearValidationHighlights() {
   invalidFields.name = false
   invalidFields.startDate = false
@@ -674,7 +696,10 @@ function applyValidationHighlights(issues: ZodIssue[]) {
 
       invalidDays.value.add(day.dayOfWeek)
       invalidSlots.value[day.dayOfWeek].add(normalizedSlotKey)
-      daySectionsExpanded[day.dayOfWeek] = true
+      if (invalidDays.value.size === 1) {
+        activeDay.value = day.dayOfWeek
+        activeSlot.value = normalizedSlotKey
+      }
 
       if (normalizedSlotKey === "snack1" || normalizedSlotKey === "snack2") {
         snacksExpanded[day.dayOfWeek] = true
@@ -784,17 +809,10 @@ async function onSubmit() {
 
 <template>
   <section class="space-y-6">
-    <div
-      v-if="mode !== 'edit'"
-      class="flex items-center justify-between gap-4"
-    >
+    <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-semibold text-primary">
-          {{ title }}
-        </h1>
-        <p class="mt-1 text-sm text-muted">
-          Captura una semana completa, define el menú activo y administra cada día desde una sola vista.
-        </p>
+        <h1 class="text-3xl font-bold tracking-tight text-highlighted sm:text-4xl">Menú semanal</h1>
+        <p class="mt-1 text-sm text-muted sm:text-base">Organiza la semana, un plato a la vez.</p>
       </div>
 
       <UButton
@@ -815,7 +833,7 @@ async function onSubmit() {
         <template #header>
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div class="max-w-2xl">
-              <h2 class="text-base font-semibold text-highlighted">Información general</h2>
+              <h2 class="text-base font-semibold text-highlighted">{{ title }}</h2>
               <p class="mt-1 text-sm text-muted">
                 Define el nombre del menú y el rango de fechas en el que estará disponible.
               </p>
@@ -834,18 +852,21 @@ async function onSubmit() {
               >
                 {{ actionLabel }}
               </UButton>
+              <UBadge v-if="mode === 'edit' && !isDirty" color="success" variant="soft" icon="i-lucide-circle-check">Guardado</UBadge>
 
               <UButton
-                :variant="markAsActive || menu?.isActive ? 'soft' : 'outline'"
-                :color="markAsActive || menu?.isActive ? 'success' : 'primary'"
-                icon="i-lucide-badge-check"
+                v-if="!menu?.isActive"
+                type="button"
+                color="primary"
+                icon="i-lucide-send"
                 block
                 size="lg"
                 class="justify-center"
-                @click="markAsActive = true"
-              >
-                {{ activeActionLabel }}
-              </UButton>
+                :loading="loading"
+                :disabled="!canSubmitByValidation || loading"
+                @click="publishMenu"
+              >Publicar menú</UButton>
+              <UBadge v-else color="success" variant="soft" icon="i-lucide-circle-check" size="lg">Publicado</UBadge>
             </div>
           </div>
         </template>
@@ -894,9 +915,110 @@ async function onSubmit() {
         </div>
       </UCard>
 
-      <section class="space-y-5">
+      <section class="space-y-4">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2 text-sm text-muted">
+            <UIcon name="i-lucide-calendar-days" class="size-4 text-primary" />
+            <span class="font-medium text-highlighted">{{ weekRange }}</span>
+          </div>
+          <UButton
+            type="button"
+            size="sm"
+            color="neutral"
+            variant="ghost"
+            :icon="showSnacks ? 'i-lucide-minus' : 'i-lucide-plus'"
+            @click="toggleSnacksVisibility"
+          >{{ showSnacks ? 'Ocultar snacks' : 'Mostrar snacks' }}</UButton>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-default bg-default shadow-sm">
+          <div class="grid min-w-[1100px] grid-cols-[104px_repeat(7,minmax(0,1fr))] gap-px bg-[var(--ui-border)]">
+            <div class="bg-elevated/70" />
+            <div
+              v-for="(entry, index) in visibleDayEntries"
+              :key="entry.day.dayOfWeek"
+              class="bg-elevated/70 px-2 py-3 text-center text-sm font-semibold text-highlighted"
+            >{{ DAY_LABELS[entry.day.dayOfWeek].slice(0, 3) }} {{ dayDate(index) }}</div>
+
+            <template v-for="slotKey in (showSnacks ? [...primarySlots, ...snackSlots] : primarySlots)" :key="slotKey">
+              <div class="flex items-center bg-elevated/70 px-3 text-sm font-semibold text-highlighted">{{ SLOT_LABELS[slotKey] }}</div>
+              <div
+                v-for="entry in visibleDayEntries"
+                :key="`${entry.day.dayOfWeek}-${slotKey}`"
+                class="bg-default p-1.5"
+              >
+                <button
+                  type="button"
+                  :aria-label="`${SLOT_LABELS[slotKey]} de ${DAY_LABELS[entry.day.dayOfWeek]}: ${entry.day[slotKey].platilloPrincipal.nombre || 'Añadir plato'}`"
+                  :aria-pressed="activeDay === entry.day.dayOfWeek && activeSlot === slotKey"
+                  :class="[
+                    'group flex h-40 w-full flex-col rounded-lg border bg-default p-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+                    activeDay === entry.day.dayOfWeek && activeSlot === slotKey ? 'border-primary ring-1 ring-primary/50 shadow-sm' : 'border-default',
+                    isSlotInvalid(entry.day.dayOfWeek, slotKey) ? 'border-error ring-1 ring-error/40' : ''
+                  ]"
+                  @click="entry.day[slotKey].platilloPrincipal.nombre ? selectMeal(entry.day.dayOfWeek, slotKey) : openMealEditor(entry.day.dayOfWeek, slotKey)"
+                  @dblclick="openMealEditor(entry.day.dayOfWeek, slotKey)"
+                >
+                  <template v-if="entry.day[slotKey].platilloPrincipal.nombre">
+                    <div class="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-md bg-elevated/50">
+                      <img
+                        v-if="hasUsableImage(entry.day[slotKey].platilloPrincipal.imagen)"
+                        :src="entry.day[slotKey].platilloPrincipal.imagen"
+                        :alt="entry.day[slotKey].platilloPrincipal.nombre"
+                        class="h-full w-full object-cover"
+                        loading="lazy"
+                        @error="markImageAsFailed(entry.day[slotKey].platilloPrincipal.imagen)"
+                      >
+                      <UIcon v-else name="i-lucide-utensils" class="size-9 text-muted/40" />
+                    </div>
+                    <span class="mt-2 line-clamp-2 w-full text-xs font-medium leading-snug text-highlighted">{{ entry.day[slotKey].platilloPrincipal.nombre }}</span>
+                  </template>
+                  <template v-else>
+                    <span class="flex min-h-0 w-full flex-1 items-center justify-center rounded-md bg-elevated/50">
+                      <UIcon name="i-lucide-utensils" class="size-9 text-muted/40" />
+                    </span>
+                    <span class="mt-2 w-full text-xs font-medium text-muted group-hover:text-primary">Añadir plato</span>
+                  </template>
+                </button>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <UCard v-if="activeMeal" :ui="{ root: 'app-surface', body: 'p-4 sm:p-5' }">
+          <div class="flex flex-wrap items-center gap-4">
+            <div class="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-elevated sm:size-24">
+              <img
+                v-if="hasUsableImage(activeMeal.platilloPrincipal.imagen)"
+                :src="activeMeal.platilloPrincipal.imagen"
+                :alt="activeMeal.platilloPrincipal.nombre"
+                class="size-full object-cover"
+                @error="markImageAsFailed(activeMeal.platilloPrincipal.imagen)"
+              >
+              <UIcon v-else name="i-lucide-utensils" class="size-8 text-muted/50" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-xs font-medium text-muted">{{ DAY_LABELS[activeDay] }} · {{ SLOT_LABELS[activeSlot] }}</p>
+              <h3 class="mt-1 text-lg font-semibold text-highlighted">{{ activeMeal.platilloPrincipal.nombre || 'Sin plato asignado' }}</h3>
+              <p class="mt-1 text-sm text-muted">{{ [activeMeal.guarnicion1?.nombre, activeMeal.guarnicion2?.nombre].filter(Boolean).join(' · ') || 'Selecciona un plato para comenzar.' }}</p>
+            </div>
+            <UButton type="button" color="primary" variant="soft" icon="i-lucide-refresh-cw" @click="toggleMealEditor">
+              {{ editorOpen ? 'Cerrar editor' : activeMeal.platilloPrincipal.nombre ? 'Cambiar plato' : 'Añadir plato' }}
+            </UButton>
+            <UButton
+              v-if="activeMeal.platilloPrincipal.catalogItemId"
+              type="button"
+              color="neutral"
+              variant="outline"
+              icon="i-lucide-pencil"
+              @click="openEditCatalogItem({ id: activeMeal.platilloPrincipal.catalogItemId, view: 'select-platillo-principal' }, { dayOfWeek: activeDay, slotKey: activeSlot })"
+            >Editar receta</UButton>
+          </div>
+        </UCard>
+
         <UCard
           v-for="entry in visibleDayEntries"
+          v-show="editorOpen && activeDay === entry.day.dayOfWeek"
           :key="entry.day.dayOfWeek"
           variant="subtle"
           :class="[
@@ -906,64 +1028,18 @@ async function onSubmit() {
           :ui="{ root: 'app-surface-soft overflow-hidden', header: 'px-5 py-4 sm:px-5', body: 'p-0 sm:p-0' }"
         >
           <template #header>
-            <div class="flex items-center justify-between gap-4">
-              <div class="min-w-0 flex-1 space-y-2">
-                <h3 class="text-base font-semibold text-primary">
-                  {{ DAY_LABELS[entry.day.dayOfWeek] }}
-                </h3>
-                <div
-                  v-if="!daySectionsExpanded[entry.day.dayOfWeek]"
-                  class="flex max-w-4xl flex-wrap items-center gap-2"
-                >
-                  <span
-                    v-for="slotKey in COLLAPSED_DAY_SUMMARY_SLOTS"
-                    :key="slotKey"
-                    class="inline-flex min-w-0 max-w-full items-center gap-1.5"
-                  >
-                    <UBadge
-                      :color="getFoodTypeAppearance(slotKey).color"
-                      variant="soft"
-                      :class="[
-                        'inline-flex shrink-0 rounded-xl px-2.5 py-1 ring-1 ring-inset',
-                        getFoodTypeAppearance(slotKey).className
-                      ]"
-                    >
-                      <UIcon
-                        :name="getFoodTypeAppearance(slotKey).icon"
-                        class="size-3.5 shrink-0"
-                      />
-                      {{ getFoodTypeAppearance(slotKey).label }}
-                    </UBadge>
-
-                    <span
-                      class="min-w-0 truncate rounded-xl border border-default/70 bg-default/40 px-2.5 py-1 text-xs font-semibold text-highlighted"
-                      :title="getCollapsedSlotSummary(entry.day[slotKey])"
-                    >
-                      {{ getCollapsedSlotSummary(entry.day[slotKey]) }}
-                    </span>
-                  </span>
-                </div>
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <h3 class="text-base font-semibold text-primary">Editar {{ SLOT_LABELS[activeSlot].toLowerCase() }} · {{ DAY_LABELS[entry.day.dayOfWeek] }}</h3>
+                <p class="mt-1 text-xs text-muted">Selecciona el platillo, guarniciones y adicionales de este día.</p>
               </div>
-
-              <UButton
-                size="sm"
-                variant="ghost"
-                color="neutral"
-                :icon="daySectionsExpanded[entry.day.dayOfWeek] ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-                :aria-label="daySectionsExpanded[entry.day.dayOfWeek] ? 'Ocultar día' : 'Mostrar día'"
-                @click="toggleDaySection(entry.day.dayOfWeek)"
-              >
-                <span class="hidden sm:inline">
-                  {{ daySectionsExpanded[entry.day.dayOfWeek] ? "Ocultar" : "Mostrar" }}
-                </span>
-              </UButton>
+              <UButton type="button" icon="i-lucide-x" color="neutral" variant="ghost" aria-label="Cerrar editor" @click="closeMealEditor" />
             </div>
           </template>
 
-          <UCollapsible v-model:open="daySectionsExpanded[entry.day.dayOfWeek]">
-            <template #content>
-              <section class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-3">
+              <section class="grid grid-cols-1 gap-0 border-t border-default/70">
                 <AdminMenuSlotEditor
+                  v-show="activeSlot === 'desayuno'"
                   v-model="entry.day.desayuno"
                   title="Desayuno"
                   :day-label="DAY_LABELS[entry.day.dayOfWeek]"
@@ -993,6 +1069,7 @@ async function onSubmit() {
                   @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'desayuno' })"
                 />
                 <AdminMenuSlotEditor
+                  v-show="activeSlot === 'comida'"
                   v-model="entry.day.comida"
                   title="Comida"
                   :day-label="DAY_LABELS[entry.day.dayOfWeek]"
@@ -1022,6 +1099,7 @@ async function onSubmit() {
                   @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'comida' })"
                 />
                 <AdminMenuSlotEditor
+                  v-show="activeSlot === 'cena'"
                   v-model="entry.day.cena"
                   title="Cena"
                   :day-label="DAY_LABELS[entry.day.dayOfWeek]"
@@ -1049,7 +1127,7 @@ async function onSubmit() {
                 />
               </section>
 
-              <section class="border-t border-default/70">
+              <section v-if="activeSlot === 'snack1' || activeSlot === 'snack2'" class="border-t border-default/70">
                 <button
                   type="button"
                   class="flex w-full items-center justify-between px-5 py-3 text-left transition-colors hover:bg-elevated/20"
@@ -1074,9 +1152,10 @@ async function onSubmit() {
 
                 <section
                   v-if="snacksExpanded[entry.day.dayOfWeek]"
-                  class="grid grid-cols-1 gap-0 border-t border-default/70 lg:grid-cols-2"
+                  class="grid grid-cols-1 gap-0 border-t border-default/70"
                 >
                   <AdminMenuSlotEditor
+                    v-show="activeSlot === 'snack1'"
                     v-model="entry.day.snack1"
                     title="Snack 1"
                     :day-label="DAY_LABELS[entry.day.dayOfWeek]"
@@ -1107,6 +1186,7 @@ async function onSubmit() {
                     @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack1' })"
                   />
                   <AdminMenuSlotEditor
+                    v-show="activeSlot === 'snack2'"
                     v-model="entry.day.snack2"
                     title="Snack 2"
                     :day-label="DAY_LABELS[entry.day.dayOfWeek]"
@@ -1137,8 +1217,6 @@ async function onSubmit() {
                   />
                 </section>
               </section>
-            </template>
-          </UCollapsible>
         </UCard>
       </section>
     </UForm>
