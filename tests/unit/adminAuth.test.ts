@@ -96,7 +96,10 @@ describe("administrative API authorization", () => {
     ["/api/customers/customer-1", "DELETE"], ["/api/expenses", "POST"],
     ["/api/expenses/vendors", "GET"], ["/api/plans", "POST"],
     ["/api/plans/all", "GET"], ["/api/plans/plan-1", "PUT"],
-    ["/api/orders", "GET"], ["/api/orders/order-1", "PUT"]
+    ["/api/orders", "GET"], ["/api/orders/order-1", "PUT"],
+    ["/api/ingredients", "GET"], ["/api/ingredients", "POST"],
+    ["/api/ingredients/", "GET"], ["/api/ingredients/?categoria=proteina", "POST"],
+    ["/api/ingredients/ingredient-1", "PUT"], ["/api/ingredients/ingredient-1", "DELETE"]
   ])("protects %s %s", async (path, method) => {
     getUser.mockResolvedValue({ data: { user: authenticatedUser({ role: "customer" }) }, error: null })
     await expect(adminAuth(request(path, method))).rejects.toMatchObject({ statusCode: 403 })
