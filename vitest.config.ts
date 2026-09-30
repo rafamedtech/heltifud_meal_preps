@@ -6,6 +6,11 @@ process.env.NUXT_PUBLIC_SUPABASE_URL ||= "http://127.0.0.1:54321"
 process.env.NUXT_PUBLIC_SUPABASE_KEY ||= "test-supabase-key"
 
 export default defineVitestConfig({
+  resolve: {
+    alias: {
+      "#supabase/server": fileURLToPath(new URL("./node_modules/@nuxtjs/supabase/dist/runtime/server/services/index.js", import.meta.url))
+    }
+  },
   test: {
     environment: "nuxt",
     include: ["tests/unit/**/*.{test,spec}.ts", "tests/components/**/*.{test,spec}.ts"],

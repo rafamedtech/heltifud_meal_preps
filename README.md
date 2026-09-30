@@ -50,6 +50,46 @@ Restrict the key to the HTTP referrers used by the app (for example `http://loca
 
 ## Testing
 
+### Administrative API access
+
+Protected administrative endpoints require a Supabase Auth user whose
+`app_metadata.role` is exactly `admin`. The server calls `auth.getUser()` on each
+protected request to validate the user and read the current role. Missing or
+invalid authentication returns 401; an authenticated user without this role
+receives 403. `user_metadata`, request parameters and headers do not grant access.
+
+Before deploying this authorization check, assign the role to the existing
+administrators. Use the Supabase SQL Editor with privileged project access and
+replace the example UUID with the verified user's Auth ID. These operations
+preserve all other application metadata fields; they are manual administration
+steps, not application migrations.
+
+```sql
+-- Grant access to one verified administrator.
+update auth.users
+set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb)
+  || '{"role":"admin"}'::jsonb
+where id = '00000000-0000-0000-0000-000000000000'::uuid
+returning id, raw_app_meta_data;
+
+-- Revoke the administrative role without deleting other metadata.
+update auth.users
+set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb) - 'role'
+where id = '00000000-0000-0000-0000-000000000000'::uuid
+returning id, raw_app_meta_data;
+```
+
+Run only the desired grant or revoke statement and confirm it returns the
+intended user. Verify access using that user's session: a protected API request
+should reach its handler after granting the role and return 403 after revocation.
+If no row is returned, check the Auth ID; do not remove the `where` clause.
+Never grant roles from browser code or expose privileged Supabase credentials.
+
+This change covers the API endpoints already protected by the authentication
+middleware. Ingredient authorization (H02), database RLS (H03), and role checks
+for the administrative UI remain separate work. The public GET endpoints
+`/api/menu`, `/api/menu/next` and `/api/plans` remain accessible without a session.
+
 Run the unit and component tests with Vitest:
 
 ```bash

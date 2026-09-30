@@ -809,22 +809,6 @@ async function onSubmit() {
 
 <template>
   <section class="space-y-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <div>
-        <h1 class="text-3xl font-bold tracking-tight text-highlighted sm:text-4xl">Menú semanal</h1>
-        <p class="mt-1 text-sm text-muted sm:text-base">Organiza la semana, un plato a la vez.</p>
-      </div>
-
-      <UButton
-        to="/admin/menu"
-        variant="ghost"
-        color="neutral"
-        icon="i-lucide-arrow-left"
-      >
-        Volver
-      </UButton>
-    </div>
-
     <UForm
       class="space-y-6"
       @submit="onSubmit"

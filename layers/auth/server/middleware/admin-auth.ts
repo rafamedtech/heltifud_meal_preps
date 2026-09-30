@@ -1,5 +1,5 @@
-import { createError, getMethod, getRequestURL } from "h3"
-import { serverSupabaseUser } from "#supabase/server"
+import { createError, defineEventHandler, getMethod, getRequestURL } from "h3"
+import { serverSupabaseClient } from "#supabase/server"
 
 const publicMenuRoutes = new Set(["/api/menu", "/api/menu/next"])
 
@@ -21,12 +21,23 @@ export default defineEventHandler(async (event) => {
     return
   }
 
-  const user = await serverSupabaseUser(event).catch(() => null)
+  const user = await (async () => {
+    const client = await serverSupabaseClient(event)
+    const { data, error } = await client.auth.getUser()
+    return error ? null : data.user
+  })().catch(() => null)
 
   if (!user) {
     throw createError({
       statusCode: 401,
       statusMessage: "Unauthorized"
+    })
+  }
+
+  if (user.app_metadata?.role !== "admin") {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Forbidden"
     })
   }
 })
