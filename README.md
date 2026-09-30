@@ -85,10 +85,34 @@ should reach its handler after granting the role and return 403 after revocation
 If no row is returned, check the Auth ID; do not remove the `where` clause.
 Never grant roles from browser code or expose privileged Supabase credentials.
 
-This change covers the API endpoints already protected by the authentication
-middleware. Ingredient authorization (H02), database RLS (H03), and role checks
-for the administrative UI remain separate work. The public GET endpoints
+This check covers administrative API endpoints, including ingredients (H02).
+Role checks for the administrative UI remain separate work. The public GET endpoints
 `/api/menu`, `/api/menu/next` and `/api/plans` remain accessible without a session.
+
+### Menu and catalog database access (H03)
+
+Menu and catalog tables are accessed through Nuxt/Prisma, rather than directly
+from browser Supabase clients. Migration `20260930010000_secure_menu_catalog_rls`
+enables RLS on `WeeklyMenu`, `MenuDay`, `DaySlot`, `FoodComponent` and
+`FoodCatalogItem` and revokes table privileges from `PUBLIC`, `anon` and
+`authenticated`. No client policies are added. The server connection must use
+the table owner or a trusted role with `BYPASSRLS`; keep its credentials private.
+
+Apply reviewed pending Prisma migrations to the intended environment, then
+verify using that environment's Nuxt connection:
+
+```bash
+pnpm exec prisma migrate deploy
+node --env-file=.env scripts/verify-menu-rls.mjs
+```
+
+The verifier requires a privileged connection that can assume the client roles
+and temporarily grant privileges. It checks RLS, effective client privileges,
+denied reads/writes and server access without changing rows. It also temporarily
+grants schema usage and table reads to prove RLS independently of grants; all
+temporary changes are rolled back. Run against each environment after migration.
+The broader permission audit in T03 remains pending; see
+`docs/plan-pedidos-clientes.md` for evidence and scope.
 
 Run the unit and component tests with Vitest:
 
