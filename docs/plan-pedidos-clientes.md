@@ -12,7 +12,7 @@ La base administrativa existe. El flujo de autoservicio del cliente todavía no 
 
 Revisión de arquitectura Nuxt por capas, rutas públicas y administrativas, composables, API, validaciones Zod, modelos Prisma, migraciones, autenticación, pruebas y configuración de despliegue. Inventario: 167 archivos en app/layers/tests/prisma, excluyendo cliente Prisma generado. Se priorizó lectura del flujo de pedidos y dependencias; no se afirma que cada componente visual haya sido probado en navegador.
 
-La revisión inicial no modificó lógica de aplicación ni consultó/escribió la base remota. La corrección posterior de H01 sí modifica el middleware de autorización, con evidencia abajo; no modifica la base remota. Había un cambio local previo en `layers/base/app/components/admin/MenuForm.vue`; queda preservado. La revisión usa el estado actual del checkout, incluido ese cambio.
+La revisión inicial no modificó lógica de aplicación ni consultó/escribió la base remota. La corrección posterior de H01 modifica el middleware de autorización, con evidencia abajo. Tras autorización explícita del usuario, se asignó el rol administrativo únicamente a `admin@heltifud.com` en Supabase y se verificó su sesión existente. Había un cambio local previo en `layers/base/app/components/admin/MenuForm.vue`; quedó preservado y se incluyó en el commit `74dd61a`.
 
 | Verificación ejecutada | Resultado |
 | --- | --- |
@@ -38,7 +38,7 @@ P0 = cerrar antes de abrir autoservicio. P1 = necesario para operar pedidos. P2 
 
 | ID | Prioridad | Hallazgo / pendiente | Evidencia | Consecuencia |
 | --- | --- | --- | --- | --- |
-| H01 | P0 | Corregido en código: autorización administrativa por `app_metadata.role === "admin"` | `layers/auth/server/middleware/admin-auth.ts` consulta `auth.getUser()`; `tests/unit/adminAuth.test.ts` cubre permisos y rutas | Sin usuario válido: 401; usuario sin rol admin: 403. Asignar rol a administradores existentes antes del despliegue y verificar en entorno real. |
+| H01 | P0 | Corregido: autorización administrativa por `app_metadata.role === "admin"` | `layers/auth/server/middleware/admin-auth.ts` consulta `auth.getUser()`; pruebas unitarias y sesión real local verificadas | Sin usuario válido: 401; usuario sin rol admin: 403. Rol asignado únicamente a `admin@heltifud.com`; acceso verificado en localhost. Preview/despliegue sigue sin verificar. |
 | H02 | P0 | Ingredientes quedan fuera del middleware | `/api/ingredients` GET/POST y `admin-auth.ts:11-20` | Creación anónima alcanza DB; falta control explícito. |
 | H03 | P0 | RLS incompleto en historial de migraciones | No aparecen habilitaciones para WeeklyMenu/MenuDay/DaySlot/FoodComponent/FoodCatalogItem | Riesgo de acceso directo según grants/configuración real. Verificar DB antes de afirmar exposición efectiva. |
 | H04 | P0 | No existe compra ni personalización cliente | `layers/base/app/components/PlanCard.vue:7-22`; modal solo muestra títulos/precios | Variante no seleccionable ni transmitida; salida a WhatsApp, sin pedido persistido. |
@@ -65,12 +65,13 @@ P0 = cerrar antes de abrir autoservicio. P1 = necesario para operar pedidos. P2 
 
 ### Evidencia de corrección H01
 
-- Responsable: Codex. Fecha: 29 de septiembre de 2026, America/Tijuana. Implementación local, sin PR ni despliegue en esta sesión.
+- Responsable: Codex. Fecha: 29 de septiembre de 2026, America/Tijuana. Implementación en commit `74dd61a`, sin PR ni despliegue en esta sesión.
 - El servidor consulta el usuario actual con `serverSupabaseClient(event).auth.getUser()` en cada petición protegida y exige `app_metadata.role === "admin"`. No confía en `user_metadata`, el rol PostgreSQL ni roles enviados en la petición; un error de autenticación o excepción rechaza acceso con 401.
 - Se conserva la cobertura administrativa existente y el acceso público a GET `/api/menu`, `/api/menu/next` y `/api/plans`. H02, H03 y autorización visual del panel quedan pendientes.
 - `pnpm lint`: pasa. `pnpm test:unit`: 15 archivos y 84 pruebas pasan, incluidas 35 nuevas de autorización. `pnpm build`: pasa con preset `node-server`. Persisten advertencias de deprecación Vitest/Nuxt y sourcemaps de Tailwind/module-preload-polyfill.
 - Las pruebas cubren usuario ausente, error/excepción, roles ausentes o mal formados, rol falsificado en metadatos editables y petición, administrador autorizado, revocación frente a claims anteriores y todas las familias protegidas. Usan mocks de Supabase; no sustituyen la verificación de sesiones reales en preview.
-- Asignación y revocación privilegiada del rol documentadas en `README.md`, conservando los demás campos de `app_metadata`. No se asignaron roles remotos. Pendiente operativo antes del despliegue: configurar administradores existentes y verificar 401/403/acceso autorizado con sesiones reales.
+- Asignación y revocación privilegiada del rol documentadas en `README.md`, conservando los demás campos de `app_metadata`. Con autorización explícita del usuario, se actualizó únicamente el UUID verificado de `admin@heltifud.com`; consulta posterior confirmó su rol `admin` y las otras dos cuentas sin rol. No se modificaron contraseñas ni se crearon cuentas.
+- Verificación HTTP local sin sesión: GET `/api/orders`, `/api/customers`, `/api/expenses`, `/api/plans/all`, `/api/menu/all` y `/api/food-components` devolvieron 401. La sesión existente de `admin@heltifud.com` en `http://localhost:3000/admin/clientes` mostró 403 antes de asignar el rol y cargó la lista de clientes al reintentar después, sin volver a iniciar sesión. Se verificó contra Supabase real desde la aplicación local; preview/despliegue continúa pendiente.
 - T02 permanece pendiente: H01 resuelve solo autorización de las rutas ya protegidas; faltan ingredientes, separación de operación/cliente y ownership/token.
 
 ## Decisiones de producto propuestas
