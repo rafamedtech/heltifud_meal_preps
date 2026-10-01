@@ -158,6 +158,7 @@ const editorOpen = ref(false)
 const primarySlots = ["desayuno", "comida", "cena"] as const
 const snackSlots = ["snack1", "snack2"] as const
 const showSnacks = ref(false)
+const showWeekend = ref(false)
 const weekStart = computed(() => startOfWeek(new Date(state.startDate), { weekStartsOn: 1 }))
 const weekRange = computed(() => `${format(weekStart.value, "d MMM", { locale: es })} – ${format(addDays(weekStart.value, 6), "d MMM, yyyy", { locale: es })}`)
 const activeDayData = computed(() => state.days.find((day) => day.dayOfWeek === activeDay.value))
@@ -215,7 +216,9 @@ const title = computed(() => {
 })
 const actionLabel = computed(() => (mode.value === "edit" ? "Guardar" : "Crear"))
 const visibleDayEntries = computed(() =>
-  state.days.map((day) => ({ day })).filter(({ day }) => !hiddenDays.has(day.dayOfWeek))
+  state.days.map((day, index) => ({ day, index })).filter(({ day }) =>
+    !hiddenDays.has(day.dayOfWeek) && (showWeekend.value || (day.dayOfWeek !== "SABADO" && day.dayOfWeek !== "DOMINGO"))
+  )
 )
 const cardSurfaceUi = {
   root: "app-surface",
@@ -643,10 +646,6 @@ onMounted(async () => {
   await clearRestoreQueryIfNeeded()
 })
 
-function toggleSnacks(dayOfWeek: DayOfWeek) {
-  snacksExpanded[dayOfWeek] = !snacksExpanded[dayOfWeek]
-}
-
 function clearValidationHighlights() {
   invalidFields.name = false
   invalidFields.startDate = false
@@ -706,10 +705,6 @@ function applyValidationHighlights(issues: ZodIssue[]) {
       }
     }
   }
-}
-
-function isDayInvalid(dayOfWeek: DayOfWeek) {
-  return invalidDays.value.has(dayOfWeek)
 }
 
 function isSlotInvalid(dayOfWeek: DayOfWeek, slotKey: SlotKey) {
@@ -900,29 +895,46 @@ async function onSubmit() {
       </UCard>
 
       <section class="space-y-4">
-        <div class="flex items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2 text-sm text-muted">
             <UIcon name="i-lucide-calendar-days" class="size-4 text-primary" />
             <span class="font-medium text-highlighted">{{ weekRange }}</span>
           </div>
-          <UButton
-            type="button"
-            size="sm"
-            color="neutral"
-            variant="ghost"
-            :icon="showSnacks ? 'i-lucide-minus' : 'i-lucide-plus'"
-            @click="toggleSnacksVisibility"
-          >{{ showSnacks ? 'Ocultar snacks' : 'Mostrar snacks' }}</UButton>
+          <div class="flex flex-wrap items-center gap-2">
+            <UButton
+              type="button"
+              size="sm"
+              color="neutral"
+              variant="ghost"
+              :icon="showSnacks ? 'i-lucide-minus' : 'i-lucide-plus'"
+              @click="toggleSnacksVisibility"
+            >{{ showSnacks ? 'Ocultar snacks' : 'Mostrar snacks' }}</UButton>
+            <UButton
+              type="button"
+              size="sm"
+              color="neutral"
+              variant="ghost"
+              :icon="showWeekend ? 'i-lucide-minus' : 'i-lucide-plus'"
+              :aria-pressed="showWeekend"
+              @click="showWeekend = !showWeekend"
+            >{{ showWeekend ? 'Ocultar fin de semana' : 'Mostrar fin de semana' }}</UButton>
+          </div>
         </div>
 
         <div class="overflow-x-auto rounded-xl border border-default bg-default shadow-sm">
-          <div class="grid min-w-[1100px] grid-cols-[104px_repeat(7,minmax(0,1fr))] gap-px bg-[var(--ui-border)]">
+          <div
+            class="grid gap-px bg-[var(--ui-border)]"
+            :style="{
+              gridTemplateColumns: `104px repeat(${visibleDayEntries.length}, minmax(0, 1fr))`,
+              minWidth: showWeekend ? '1100px' : '820px'
+            }"
+          >
             <div class="bg-elevated/70" />
             <div
-              v-for="(entry, index) in visibleDayEntries"
+              v-for="entry in visibleDayEntries"
               :key="entry.day.dayOfWeek"
               class="bg-elevated/70 px-2 py-3 text-center text-sm font-semibold text-highlighted"
-            >{{ DAY_LABELS[entry.day.dayOfWeek].slice(0, 3) }} {{ dayDate(index) }}</div>
+            >{{ DAY_LABELS[entry.day.dayOfWeek].slice(0, 3) }} {{ dayDate(entry.index) }}</div>
 
             <template v-for="slotKey in (showSnacks ? [...primarySlots, ...snackSlots] : primarySlots)" :key="slotKey">
               <div class="flex items-center bg-elevated/70 px-3 text-sm font-semibold text-highlighted">{{ SLOT_LABELS[slotKey] }}</div>
@@ -934,14 +946,13 @@ async function onSubmit() {
                 <button
                   type="button"
                   :aria-label="`${SLOT_LABELS[slotKey]} de ${DAY_LABELS[entry.day.dayOfWeek]}: ${entry.day[slotKey].platilloPrincipal.nombre || 'Añadir plato'}`"
-                  :aria-pressed="activeDay === entry.day.dayOfWeek && activeSlot === slotKey"
+                  aria-haspopup="dialog"
                   :class="[
                     'group flex h-40 w-full flex-col rounded-lg border bg-default p-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
                     activeDay === entry.day.dayOfWeek && activeSlot === slotKey ? 'border-primary ring-1 ring-primary/50 shadow-sm' : 'border-default',
                     isSlotInvalid(entry.day.dayOfWeek, slotKey) ? 'border-error ring-1 ring-error/40' : ''
                   ]"
-                  @click="entry.day[slotKey].platilloPrincipal.nombre ? selectMeal(entry.day.dayOfWeek, slotKey) : openMealEditor(entry.day.dayOfWeek, slotKey)"
-                  @dblclick="openMealEditor(entry.day.dayOfWeek, slotKey)"
+                  @click="openMealEditor(entry.day.dayOfWeek, slotKey)"
                 >
                   <template v-if="entry.day[slotKey].platilloPrincipal.nombre">
                     <div class="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-md bg-elevated/50">
@@ -987,7 +998,7 @@ async function onSubmit() {
               <p class="mt-1 text-sm text-muted">{{ [activeMeal.guarnicion1?.nombre, activeMeal.guarnicion2?.nombre].filter(Boolean).join(' · ') || 'Selecciona un plato para comenzar.' }}</p>
             </div>
             <UButton type="button" color="primary" variant="soft" icon="i-lucide-refresh-cw" @click="toggleMealEditor">
-              {{ editorOpen ? 'Cerrar editor' : activeMeal.platilloPrincipal.nombre ? 'Cambiar plato' : 'Añadir plato' }}
+              Editar tiempo de comida
             </UButton>
             <UButton
               v-if="activeMeal.platilloPrincipal.catalogItemId"
@@ -1000,208 +1011,55 @@ async function onSubmit() {
           </div>
         </UCard>
 
-        <UCard
-          v-for="entry in visibleDayEntries"
-          v-show="editorOpen && activeDay === entry.day.dayOfWeek"
-          :key="entry.day.dayOfWeek"
-          variant="subtle"
-          :class="[
-            'app-surface-soft overflow-hidden',
-            isDayInvalid(entry.day.dayOfWeek) ? 'ring-1 ring-error/35 border-error/50' : ''
-          ]"
-          :ui="{ root: 'app-surface-soft overflow-hidden', header: 'px-5 py-4 sm:px-5', body: 'p-0 sm:p-0' }"
+        <UModal
+          v-model:open="editorOpen"
+          :title="`Editar ${SLOT_LABELS[activeSlot].toLowerCase()} · ${DAY_LABELS[activeDay]}`"
+          description="Edita el platillo principal, las guarniciones, los adicionales y el contenedor de este tiempo de comida."
+          :ui="{ content: 'max-w-3xl', body: 'p-0 sm:p-0', footer: 'justify-between' }"
         >
-          <template #header>
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <h3 class="text-base font-semibold text-primary">Editar {{ SLOT_LABELS[activeSlot].toLowerCase() }} · {{ DAY_LABELS[entry.day.dayOfWeek] }}</h3>
-                <p class="mt-1 text-xs text-muted">Selecciona el platillo, guarniciones y adicionales de este día.</p>
+          <template #body>
+            <section v-if="activeMeal && activeDayData">
+              <div class="flex items-start gap-4 border-b border-default p-4 sm:p-6">
+                <div class="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-elevated">
+                  <img
+                    v-if="hasUsableImage(activeMeal.platilloPrincipal.imagen)"
+                    :src="activeMeal.platilloPrincipal.imagen"
+                    :alt="activeMeal.platilloPrincipal.nombre"
+                    class="size-full object-cover"
+                    @error="markImageAsFailed(activeMeal.platilloPrincipal.imagen)"
+                  >
+                  <UIcon v-else name="i-lucide-utensils" class="size-8 text-muted" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h3 class="font-semibold text-highlighted">{{ activeMeal.platilloPrincipal.nombre || 'Sin plato asignado' }}</h3>
+                  <p v-if="activeMeal.platilloPrincipal.descripcion" class="mt-1 text-sm text-muted">{{ activeMeal.platilloPrincipal.descripcion }}</p>
+                  <p class="mt-2 text-sm font-medium text-primary">{{ activeMeal.platilloPrincipal.calorias ?? 0 }} cal</p>
+                </div>
               </div>
-              <UButton type="button" icon="i-lucide-x" color="neutral" variant="ghost" aria-label="Cerrar editor" @click="closeMealEditor" />
-            </div>
+
+              <AdminMenuSlotEditor
+                :key="`${activeDay}-${activeSlot}`"
+                v-model="activeDayData[activeSlot]"
+                :title="SLOT_LABELS[activeSlot]"
+                :day-label="DAY_LABELS[activeDay]"
+                :show-sides="activeSlot !== 'snack1' && activeSlot !== 'snack2'"
+                :show-toggle="false"
+                :catalog-items="resolvedCatalogItems"
+                :restore-selection-view="restoreSelectionTarget?.view ?? null"
+                :restore-search="restoreSelectionTarget?.search ?? ''"
+                :restore-selected-type="restoreSelectionTarget?.selectedType ?? 'todos'"
+                :class="isSlotInvalid(activeDay, activeSlot) ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''"
+                @restore-selection-applied="clearRestoreSelectionTarget"
+                @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: activeDay, slotKey: activeSlot })"
+                @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: activeDay, slotKey: activeSlot })"
+              />
+            </section>
           </template>
-
-              <section class="grid grid-cols-1 gap-0 border-t border-default/70">
-                <AdminMenuSlotEditor
-                  v-show="activeSlot === 'desayuno'"
-                  v-model="entry.day.desayuno"
-                  title="Desayuno"
-                  :day-label="DAY_LABELS[entry.day.dayOfWeek]"
-                  :show-toggle="false"
-                  :catalog-items="resolvedCatalogItems"
-                  :restore-selection-view="
-                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'desayuno'
-                      ? restoreSelectionTarget.view
-                      : null
-                  "
-                  :restore-search="
-                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'desayuno'
-                      ? restoreSelectionTarget.search ?? ''
-                      : ''
-                  "
-                  :restore-selected-type="
-                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'desayuno'
-                      ? restoreSelectionTarget.selectedType ?? 'todos'
-                      : 'todos'
-                  "
-                  :class="[
-                    'lg:border-r lg:border-default/70',
-                    isSlotInvalid(entry.day.dayOfWeek, 'desayuno') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
-                  ]"
-                  @restore-selection-applied="clearRestoreSelectionTarget"
-                  @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'desayuno' })"
-                  @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'desayuno' })"
-                />
-                <AdminMenuSlotEditor
-                  v-show="activeSlot === 'comida'"
-                  v-model="entry.day.comida"
-                  title="Comida"
-                  :day-label="DAY_LABELS[entry.day.dayOfWeek]"
-                  :show-toggle="false"
-                  :catalog-items="resolvedCatalogItems"
-                  :restore-selection-view="
-                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'comida'
-                      ? restoreSelectionTarget.view
-                      : null
-                  "
-                  :restore-search="
-                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'comida'
-                      ? restoreSelectionTarget.search ?? ''
-                      : ''
-                  "
-                  :restore-selected-type="
-                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'comida'
-                      ? restoreSelectionTarget.selectedType ?? 'todos'
-                      : 'todos'
-                  "
-                  :class="[
-                    'lg:border-r lg:border-default/70',
-                    isSlotInvalid(entry.day.dayOfWeek, 'comida') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
-                  ]"
-                  @restore-selection-applied="clearRestoreSelectionTarget"
-                  @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'comida' })"
-                  @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'comida' })"
-                />
-                <AdminMenuSlotEditor
-                  v-show="activeSlot === 'cena'"
-                  v-model="entry.day.cena"
-                  title="Cena"
-                  :day-label="DAY_LABELS[entry.day.dayOfWeek]"
-                  :show-toggle="false"
-                  :catalog-items="resolvedCatalogItems"
-                  :restore-selection-view="
-                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'cena'
-                      ? restoreSelectionTarget.view
-                      : null
-                  "
-                  :restore-search="
-                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'cena'
-                      ? restoreSelectionTarget.search ?? ''
-                      : ''
-                  "
-                  :restore-selected-type="
-                    restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'cena'
-                      ? restoreSelectionTarget.selectedType ?? 'todos'
-                      : 'todos'
-                  "
-                  :class="isSlotInvalid(entry.day.dayOfWeek, 'cena') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''"
-                  @restore-selection-applied="clearRestoreSelectionTarget"
-                  @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'cena' })"
-                  @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'cena' })"
-                />
-              </section>
-
-              <section v-if="activeSlot === 'snack1' || activeSlot === 'snack2'" class="border-t border-default/70">
-                <button
-                  type="button"
-                  class="flex w-full items-center justify-between px-5 py-3 text-left transition-colors hover:bg-elevated/20"
-                  @click="toggleSnacks(entry.day.dayOfWeek)"
-                >
-                  <span>
-                    <span class="block text-sm font-semibold text-primary">Snacks</span>
-                    <span class="mt-1 block text-xs text-muted">
-                      {{
-                        snacksExpanded[entry.day.dayOfWeek]
-                          ? "Oculta colaciones y snacks de este día."
-                          : "Muestra Snack 1 y Snack 2 de este día."
-                      }}
-                    </span>
-                  </span>
-
-                  <UIcon
-                    :name="snacksExpanded[entry.day.dayOfWeek] ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-                    class="size-4 text-muted"
-                  />
-                </button>
-
-                <section
-                  v-if="snacksExpanded[entry.day.dayOfWeek]"
-                  class="grid grid-cols-1 gap-0 border-t border-default/70"
-                >
-                  <AdminMenuSlotEditor
-                    v-show="activeSlot === 'snack1'"
-                    v-model="entry.day.snack1"
-                    title="Snack 1"
-                    :day-label="DAY_LABELS[entry.day.dayOfWeek]"
-                    :show-sides="false"
-                    :show-toggle="false"
-                    :catalog-items="resolvedCatalogItems"
-                    :restore-selection-view="
-                      restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack1'
-                        ? restoreSelectionTarget.view
-                        : null
-                    "
-                    :restore-search="
-                      restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack1'
-                        ? restoreSelectionTarget.search ?? ''
-                        : ''
-                    "
-                    :restore-selected-type="
-                      restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack1'
-                        ? restoreSelectionTarget.selectedType ?? 'todos'
-                        : 'todos'
-                    "
-                    :class="[
-                      'lg:border-r lg:border-default/70',
-                      isSlotInvalid(entry.day.dayOfWeek, 'snack1') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
-                    ]"
-                    @restore-selection-applied="clearRestoreSelectionTarget"
-                    @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack1' })"
-                    @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack1' })"
-                  />
-                  <AdminMenuSlotEditor
-                    v-show="activeSlot === 'snack2'"
-                    v-model="entry.day.snack2"
-                    title="Snack 2"
-                    :day-label="DAY_LABELS[entry.day.dayOfWeek]"
-                    :show-sides="false"
-                    :show-toggle="false"
-                    :catalog-items="resolvedCatalogItems"
-                    :restore-selection-view="
-                      restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack2'
-                        ? restoreSelectionTarget.view
-                        : null
-                    "
-                    :restore-search="
-                      restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack2'
-                        ? restoreSelectionTarget.search ?? ''
-                        : ''
-                    "
-                    :restore-selected-type="
-                      restoreSelectionTarget?.dayOfWeek === entry.day.dayOfWeek && restoreSelectionTarget?.slotKey === 'snack2'
-                        ? restoreSelectionTarget.selectedType ?? 'todos'
-                        : 'todos'
-                    "
-                    :class="
-                      isSlotInvalid(entry.day.dayOfWeek, 'snack2') ? 'bg-error/5 ring-1 ring-inset ring-error/30' : ''
-                    "
-                    @restore-selection-applied="clearRestoreSelectionTarget"
-                    @create-catalog-item="openCreateCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack2' })"
-                    @edit-catalog-item="openEditCatalogItem($event, { dayOfWeek: entry.day.dayOfWeek, slotKey: 'snack2' })"
-                  />
-                </section>
-              </section>
-        </UCard>
+          <template #footer>
+            <p class="text-xs text-muted">Los cambios se guardan al guardar el menú.</p>
+            <UButton type="button" icon="i-lucide-check" @click="closeMealEditor">Listo</UButton>
+          </template>
+        </UModal>
       </section>
     </UForm>
   </section>

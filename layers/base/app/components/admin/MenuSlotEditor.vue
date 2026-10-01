@@ -210,19 +210,6 @@ function openSelectionModalFromKeyboard(
   }
 }
 
-function openExtrasFromKeyboard(event: KeyboardEvent) {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault()
-    modalView.value = "extras"
-    isModalOpen.value = true
-  }
-}
-
-function openExtrasModal() {
-  modalView.value = "extras"
-  isModalOpen.value = true
-}
-
 function scheduleModalViewCleanup() {
   if (clearModalViewTimer) {
     clearTimeout(clearModalViewTimer)
@@ -255,26 +242,8 @@ function caloriesSummary(item?: FoodItemDetail | null) {
   return `${item.calorias ?? 0} cal`
 }
 
-const extrasSummary = computed(() => {
-  const parts = []
-
-  if (model.value.adicionales.length) {
-    parts.push(`${model.value.adicionales.length} adicional(es)`)
-  }
-
-  if (model.value.contenedor?.trim()) {
-    parts.push(model.value.contenedor)
-  }
-
-  return parts.length ? parts.join(" · ") : "Sin capturar"
-})
-
 function hasValue(item?: FoodItemDetail | null) {
   return Boolean(item?.nombre?.trim())
-}
-
-function hasExtrasValue() {
-  return Boolean(model.value.adicionales.length || model.value.contenedor?.trim())
 }
 
 function clearFoodItem(target: FoodItemDetail) {
@@ -537,8 +506,8 @@ watch(
       return
     }
 
-    modalView.value = view
-    isModalOpen.value = true
+    modalView.value = view === "extras" ? null : view
+    isModalOpen.value = view !== "extras"
     emit("restoreSelectionApplied")
   },
   { immediate: true }
@@ -618,6 +587,7 @@ watch(
             <span class="min-w-0">
               <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Platillo principal</span>
               <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.platilloPrincipal))]">{{ itemSummary(model.platilloPrincipal) }}</span>
+              <span v-if="model.platilloPrincipal?.descripcion" class="mt-1 block text-xs text-muted">{{ model.platilloPrincipal.descripcion }}</span>
               <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.platilloPrincipal))]">{{ caloriesSummary(model.platilloPrincipal) }}</span>
             </span>
             <span class="relative z-10 flex shrink-0 self-start">
@@ -647,6 +617,7 @@ watch(
               <span class="min-w-0">
                 <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Guarnición 1</span>
                 <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.guarnicion1))]">{{ itemSummary(model.guarnicion1) }}</span>
+                <span v-if="model.guarnicion1?.descripcion" class="mt-1 block text-xs text-muted">{{ model.guarnicion1.descripcion }}</span>
                 <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.guarnicion1))]">{{ caloriesSummary(model.guarnicion1) }}</span>
               </span>
               <span class="relative z-10 flex shrink-0 self-start">
@@ -675,6 +646,7 @@ watch(
               <span class="min-w-0">
                 <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Guarnición 2</span>
                 <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.guarnicion2))]">{{ itemSummary(model.guarnicion2) }}</span>
+                <span v-if="model.guarnicion2?.descripcion" class="mt-1 block text-xs text-muted">{{ model.guarnicion2.descripcion }}</span>
                 <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.guarnicion2))]">{{ caloriesSummary(model.guarnicion2) }}</span>
               </span>
               <span class="relative z-10 flex shrink-0 self-start">
@@ -709,6 +681,7 @@ watch(
             <span class="min-w-0">
               <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Principal</span>
               <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.platilloPrincipal))]">{{ itemSummary(model.platilloPrincipal) }}</span>
+              <span v-if="model.platilloPrincipal?.descripcion" class="mt-1 block text-xs text-muted">{{ model.platilloPrincipal.descripcion }}</span>
               <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.platilloPrincipal))]">{{ caloriesSummary(model.platilloPrincipal) }}</span>
             </span>
             <span class="relative z-10 flex shrink-0 self-start">
@@ -728,22 +701,68 @@ watch(
           </div>
         </section>
 
-        <section class="grid grid-cols-1 gap-3">
-          <div
-            role="button"
-            tabindex="0"
-            :class="`${selectFieldClass} w-full`"
-            @click="openExtrasModal"
-            @keydown="openExtrasFromKeyboard"
+        <section
+          class="space-y-4"
+        >
+          <UFormField label="Contenedor">
+            <USelect
+              v-model="contenedorModel"
+              :items="contenedorOptions"
+              placeholder="Selecciona un contenedor"
+              icon="i-lucide-package"
+              :ui="detailFieldInputUi"
+            />
+          </UFormField>
+
+          <section class="flex items-center justify-between gap-3">
+            <p class="text-sm text-muted">
+              Agrega y organiza los adicionales de este tiempo.
+            </p>
+            <UButton
+              size="sm"
+              variant="outline"
+              icon="i-lucide-plus"
+              @click="addAdicional"
+            >
+              Agregar adicional
+            </UButton>
+          </section>
+
+          <UAlert
+            v-if="!model.adicionales.length"
+            title="Sin adicionales"
+            description="Agrega adicionales si este tiempo los necesita."
+            color="neutral"
+            variant="soft"
+          />
+
+          <section
+            v-for="(adicional, index) in model.adicionales"
+            :key="index"
+            class="space-y-3 rounded-xl border border-default p-3"
           >
-            <span class="min-w-0">
-              <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Adicionales y contenedor</span>
-              <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasExtrasValue())]">
-                {{ extrasSummary }}
-              </span>
-            </span>
-            <UIcon name="i-lucide-chevron-right" class="size-4 shrink-0 text-muted" />
-          </div>
+            <section class="flex items-center justify-between gap-3">
+              <h4 class="font-medium text-highlighted">Adicional {{ index + 1 }}</h4>
+              <UButton
+                size="xs"
+                color="error"
+                variant="ghost"
+                icon="i-lucide-trash"
+                @click="removeAdicional(index)"
+              >
+                Eliminar
+              </UButton>
+            </section>
+
+            <AdminFoodItemFields
+              :model-value="getAdicional(index)"
+              :title="`Adicional ${index + 1}`"
+              :catalog-items="adicionalItems"
+              @update:model-value="setAdicional(index, $event)"
+              @create-catalog-item="requestCreateAdditionalCatalogItem(index)"
+              @edit-catalog-item="requestEditAdditionalCatalogItem($event, index)"
+            />
+          </section>
         </section>
 
       </section>
@@ -778,72 +797,6 @@ watch(
           @select="selectCatalogItemFromModal"
         />
       </section>
-
-      <section
-        v-else-if="modalView === 'extras'"
-        class="space-y-4"
-      >
-        <UFormField label="Contenedor">
-          <USelect
-            v-model="contenedorModel"
-            :items="contenedorOptions"
-            placeholder="Selecciona un contenedor"
-            icon="i-lucide-package"
-            :ui="detailFieldInputUi"
-          />
-        </UFormField>
-
-        <section class="flex items-center justify-between gap-3">
-          <p class="text-sm text-muted">
-            Agrega y organiza los adicionales de este tiempo.
-          </p>
-          <UButton
-            size="sm"
-            variant="outline"
-            icon="i-lucide-plus"
-            @click="addAdicional"
-          >
-            Agregar adicional
-          </UButton>
-        </section>
-
-        <UAlert
-          v-if="!model.adicionales.length"
-          title="Sin adicionales"
-          description="Agrega adicionales si este tiempo los necesita."
-          color="neutral"
-          variant="soft"
-        />
-
-        <section
-          v-for="(adicional, index) in model.adicionales"
-          :key="index"
-          class="space-y-3 rounded-xl border border-default p-3"
-        >
-          <section class="flex items-center justify-between gap-3">
-            <h4 class="font-medium text-highlighted">Adicional {{ index + 1 }}</h4>
-            <UButton
-              size="xs"
-              color="error"
-              variant="ghost"
-              icon="i-lucide-trash"
-              @click="removeAdicional(index)"
-            >
-              Eliminar
-            </UButton>
-          </section>
-
-          <AdminFoodItemFields
-            :model-value="getAdicional(index)"
-            :title="`Adicional ${index + 1}`"
-            :catalog-items="adicionalItems"
-            @update:model-value="setAdicional(index, $event)"
-            @create-catalog-item="requestCreateAdditionalCatalogItem(index)"
-            @edit-catalog-item="requestEditAdditionalCatalogItem($event, index)"
-          />
-        </section>
-      </section>
-
     </template>
   </UModal>
 </template>
