@@ -164,9 +164,20 @@ const visibleSlots = computed(() =>
 )
 const showWeekend = ref(false)
 const weekStart = computed(() => startOfWeek(new Date(state.startDate), { weekStartsOn: 1 }))
-const weekRange = computed(() => `${format(weekStart.value, "d MMM", { locale: es })} – ${format(addDays(weekStart.value, 6), "d MMM, yyyy", { locale: es })}`)
 const activeDayData = computed(() => state.days.find((day) => day.dayOfWeek === activeDay.value))
 const activeMeal = computed(() => activeDayData.value?.[activeSlot.value])
+const mealSlotEditor = useTemplateRef<{
+  openSelectionModal: (view: "select-platillo-principal" | "select-guarnicion-1" | "select-guarnicion-2") => void
+}>("mealSlotEditor")
+const activeSides = computed(() =>
+  (["guarnicion1", "guarnicion2"] as const)
+    .map((key, index) => ({
+      key,
+      name: activeMeal.value?.[key]?.nombre?.trim(),
+      view: index === 0 ? "select-guarnicion-1" as const : "select-guarnicion-2" as const
+    }))
+    .filter((side) => side.name)
+)
 const failedImages = ref(new Set<string>())
 
 function hasUsableImage(image?: string | null) {
@@ -835,7 +846,6 @@ async function onSubmit() {
               >
                 {{ actionLabel }}
               </UButton>
-              <UBadge v-if="mode === 'edit' && !isDirty" color="success" variant="soft" icon="i-lucide-circle-check">Guardado</UBadge>
 
               <UButton
                 v-if="!menu?.isActive"
@@ -848,7 +858,7 @@ async function onSubmit() {
                 :loading="loading"
                 :disabled="!canSubmitByValidation || loading"
                 @click="publishMenu"
-              >Publicar menú</UButton>
+              >Publicar</UButton>
               <UBadge v-else color="success" variant="soft" icon="i-lucide-circle-check" size="lg">Publicado</UBadge>
             </div>
           </div>
@@ -899,11 +909,7 @@ async function onSubmit() {
       </UCard>
 
       <section class="space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-2 text-sm text-muted">
-            <UIcon name="i-lucide-calendar-days" class="size-4 text-primary" />
-            <span class="font-medium text-highlighted">{{ weekRange }}</span>
-          </div>
+        <div class="flex flex-wrap items-center justify-end gap-3">
           <div class="flex flex-wrap items-center gap-2">
             <UButton
               type="button"
@@ -953,7 +959,7 @@ async function onSubmit() {
                   aria-haspopup="dialog"
                   :class="[
                     'group flex h-40 w-full flex-col rounded-lg border bg-default p-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                    activeDay === entry.day.dayOfWeek && activeSlot === slotKey ? 'border-primary ring-1 ring-primary/50 shadow-sm' : 'border-default',
+                    editorOpen && activeDay === entry.day.dayOfWeek && activeSlot === slotKey ? 'border-primary ring-1 ring-primary/50 shadow-sm' : 'border-default',
                     isSlotInvalid(entry.day.dayOfWeek, slotKey) ? 'border-error ring-1 ring-error/40' : ''
                   ]"
                   @click="openMealEditor(entry.day.dayOfWeek, slotKey)"
@@ -1018,7 +1024,6 @@ async function onSubmit() {
         <UModal
           v-model:open="editorOpen"
           :title="`Editar ${SLOT_LABELS[activeSlot].toLowerCase()} · ${DAY_LABELS[activeDay]}`"
-          description="Edita el platillo principal, las guarniciones, los adicionales y el contenedor de este tiempo de comida."
           :ui="{ content: 'max-w-3xl', body: 'p-0 sm:p-0', footer: 'justify-between' }"
         >
           <template #body>
@@ -1035,19 +1040,82 @@ async function onSubmit() {
                   <UIcon v-else name="i-lucide-utensils" class="size-8 text-muted" />
                 </div>
                 <div class="min-w-0 flex-1">
-                  <h3 class="font-semibold text-highlighted">{{ activeMeal.platilloPrincipal.nombre || 'Sin plato asignado' }}</h3>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <h3 class="min-w-0 font-semibold text-primary">{{ activeMeal.platilloPrincipal.nombre || 'Sin plato asignado' }}</h3>
+                    <UButton
+                      type="button"
+                      icon="i-lucide-arrow-left-right"
+                      label="Cambiar"
+                      size="sm"
+                      color="info"
+                      variant="subtle"
+                      class="shrink-0"
+                      aria-label="Cambiar platillo principal"
+                      @click="mealSlotEditor?.openSelectionModal('select-platillo-principal')"
+                    />
+                    <UButton
+                      v-if="activeMeal.platilloPrincipal?.catalogItemId"
+                      type="button"
+                      icon="i-lucide-pencil"
+                      label="Editar platillo"
+                      size="sm"
+                      color="secondary"
+                      variant="subtle"
+                      class="shrink-0"
+                      aria-label="Editar receta del platillo principal"
+                      @click="openEditCatalogItem({ id: activeMeal.platilloPrincipal!.catalogItemId!, view: 'select-platillo-principal' }, { dayOfWeek: activeDay, slotKey: activeSlot })"
+                    />
+                  </div>
+                  <div v-for="side in activeSides" :key="side.key" class="mt-1 flex flex-wrap items-center gap-2">
+                    <p class="min-w-0 text-sm text-muted">{{ side.name }}</p>
+                    <UButton
+                      type="button"
+                      icon="i-lucide-arrow-left-right"
+                      label="Cambiar"
+                      size="sm"
+                      color="info"
+                      variant="subtle"
+                      class="shrink-0"
+                      :aria-label="`Cambiar ${side.key === 'guarnicion1' ? 'guarnición 1' : 'guarnición 2'}`"
+                      @click="mealSlotEditor?.openSelectionModal(side.view)"
+                    />
+                    <UButton
+                      v-if="activeMeal[side.key]?.catalogItemId"
+                      type="button"
+                      icon="i-lucide-pencil"
+                      label="Editar platillo"
+                      size="sm"
+                      color="secondary"
+                      variant="subtle"
+                      class="shrink-0"
+                      :aria-label="`Editar receta de ${side.name}`"
+                      @click="openEditCatalogItem({ id: activeMeal[side.key]!.catalogItemId!, view: side.view }, { dayOfWeek: activeDay, slotKey: activeSlot })"
+                    />
+                    <UButton
+                      type="button"
+                      icon="i-lucide-eraser"
+                      label="Limpiar"
+                      size="sm"
+                      color="warning"
+                      variant="subtle"
+                      class="shrink-0"
+                      :aria-label="`Limpiar ${side.key === 'guarnicion1' ? 'guarnición 1' : 'guarnición 2'}`"
+                      @click="activeMeal[side.key] = createEmptyFoodItem()"
+                    />
+                  </div>
                   <p v-if="activeMeal.platilloPrincipal.descripcion" class="mt-1 text-sm text-muted">{{ activeMeal.platilloPrincipal.descripcion }}</p>
-                  <p class="mt-2 text-sm font-medium text-primary">{{ activeMeal.platilloPrincipal.calorias ?? 0 }} cal</p>
                 </div>
               </div>
 
               <AdminMenuSlotEditor
+                ref="mealSlotEditor"
                 :key="`${activeDay}-${activeSlot}`"
                 v-model="activeDayData[activeSlot]"
                 :title="SLOT_LABELS[activeSlot]"
                 :day-label="DAY_LABELS[activeDay]"
                 :show-sides="activeSlot !== 'snack1' && activeSlot !== 'snack2'"
                 :show-toggle="false"
+                :show-details="false"
                 :catalog-items="resolvedCatalogItems"
                 :restore-selection-view="restoreSelectionTarget?.view ?? null"
                 :restore-search="restoreSelectionTarget?.search ?? ''"

@@ -1,6 +1,7 @@
 export default defineAppConfig({
   ui: {
     colors: {
+      secondary: "pink",
       neutral: "zinc"
     },
     button: {

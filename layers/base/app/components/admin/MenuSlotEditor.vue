@@ -20,6 +20,7 @@ interface Props {
   showSides?: boolean
   catalogItems?: FoodCatalogItem[]
   showToggle?: boolean
+  showDetails?: boolean
   restoreSelectionView?: SelectionModalView | null
   restoreSearch?: string
   restoreSelectedType?: string
@@ -45,6 +46,7 @@ const {
   showSides = true,
   catalogItems = [],
   showToggle = true,
+  showDetails = true,
   restoreSelectionView = null,
   restoreSearch = "",
   restoreSelectedType = "todos"
@@ -89,6 +91,9 @@ const guarnicionItems = computed(() =>
 
 const adicionalItems = computed(() =>
   catalogItems.filter((item) => ADICIONAL_TYPES.has(item.tipo))
+)
+const adicionalOptions = computed(() =>
+  adicionalItems.value.map((item) => ({ label: item.nombre, value: item.id }))
 )
 
 const model = defineModel<MenuSlot>({ required: true })
@@ -200,6 +205,8 @@ function openSelectionModal(view: Extract<DetailModalView, "select-platillo-prin
   isModalOpen.value = true
 }
 
+defineExpose({ openSelectionModal })
+
 function openSelectionModalFromKeyboard(
   event: KeyboardEvent,
   view: Extract<DetailModalView, "select-platillo-principal" | "select-guarnicion-1" | "select-guarnicion-2">
@@ -232,14 +239,6 @@ const contenedorModel = computed<string | undefined>({
 
 function itemSummary(item?: FoodItemDetail | null, fallback = "Sin capturar") {
   return item?.nombre?.trim() || fallback
-}
-
-function caloriesSummary(item?: FoodItemDetail | null) {
-  if (!item?.nombre?.trim()) {
-    return "0 cal"
-  }
-
-  return `${item.calorias ?? 0} cal`
 }
 
 function hasValue(item?: FoodItemDetail | null) {
@@ -354,12 +353,6 @@ function summaryTextClass(isFilled: boolean) {
   return isFilled
     ? "text-highlighted"
     : "text-muted italic font-normal tracking-[0.01em]"
-}
-
-function caloriesTextClass(isFilled: boolean) {
-  return isFilled
-    ? "text-primary"
-    : "text-muted/80 font-normal"
 }
 
 function beforeEnter(el: Element) {
@@ -535,7 +528,7 @@ watch(
 </script>
 
 <template>
-  <UCard v-bind="attrs" :ui="cardUi">
+  <UCard v-if="showDetails" v-bind="attrs" :ui="cardUi">
     <template #header>
       <section class="flex items-center justify-between gap-3">
         <div>
@@ -588,7 +581,6 @@ watch(
               <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Platillo principal</span>
               <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.platilloPrincipal))]">{{ itemSummary(model.platilloPrincipal) }}</span>
               <span v-if="model.platilloPrincipal?.descripcion" class="mt-1 block text-xs text-muted">{{ model.platilloPrincipal.descripcion }}</span>
-              <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.platilloPrincipal))]">{{ caloriesSummary(model.platilloPrincipal) }}</span>
             </span>
             <span class="relative z-10 flex shrink-0 self-start">
               <UDropdownMenu :items="actionItems(model.platilloPrincipal, 'select-platillo-principal')">
@@ -618,7 +610,6 @@ watch(
                 <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Guarnición 1</span>
                 <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.guarnicion1))]">{{ itemSummary(model.guarnicion1) }}</span>
                 <span v-if="model.guarnicion1?.descripcion" class="mt-1 block text-xs text-muted">{{ model.guarnicion1.descripcion }}</span>
-                <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.guarnicion1))]">{{ caloriesSummary(model.guarnicion1) }}</span>
               </span>
               <span class="relative z-10 flex shrink-0 self-start">
                 <UDropdownMenu :items="actionItems(guarnicion1Model, 'select-guarnicion-1')">
@@ -647,7 +638,6 @@ watch(
                 <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Guarnición 2</span>
                 <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.guarnicion2))]">{{ itemSummary(model.guarnicion2) }}</span>
                 <span v-if="model.guarnicion2?.descripcion" class="mt-1 block text-xs text-muted">{{ model.guarnicion2.descripcion }}</span>
-                <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.guarnicion2))]">{{ caloriesSummary(model.guarnicion2) }}</span>
               </span>
               <span class="relative z-10 flex shrink-0 self-start">
                 <UDropdownMenu :items="actionItems(guarnicion2Model, 'select-guarnicion-2')">
@@ -682,7 +672,6 @@ watch(
               <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Principal</span>
               <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.platilloPrincipal))]">{{ itemSummary(model.platilloPrincipal) }}</span>
               <span v-if="model.platilloPrincipal?.descripcion" class="mt-1 block text-xs text-muted">{{ model.platilloPrincipal.descripcion }}</span>
-              <span :class="['mt-1 block text-xs font-semibold', caloriesTextClass(hasValue(model.platilloPrincipal))]">{{ caloriesSummary(model.platilloPrincipal) }}</span>
             </span>
             <span class="relative z-10 flex shrink-0 self-start">
               <UDropdownMenu :items="actionItems(model.platilloPrincipal, 'select-platillo-principal')">
@@ -768,6 +757,98 @@ watch(
       </section>
     </Transition>
   </UCard>
+
+  <section v-else class="space-y-5 p-4 sm:p-6">
+    <section class="space-y-3 rounded-xl border border-default bg-elevated/30 p-4">
+      <div class="flex items-center gap-2">
+        <UIcon name="i-lucide-package" class="size-4 text-primary" />
+        <h3 class="text-sm font-semibold text-highlighted">Contenedor</h3>
+      </div>
+      <UFormField label="Tipo de contenedor">
+        <USelect
+          v-model="contenedorModel"
+          :items="contenedorOptions"
+          placeholder="Selecciona un contenedor"
+          icon="i-lucide-package"
+          size="lg"
+          class="w-full"
+        />
+      </UFormField>
+    </section>
+
+    <section class="space-y-3 rounded-xl border border-default bg-elevated/30 p-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <UIcon name="i-lucide-list-plus" class="size-4 text-primary" />
+          <h3 class="text-sm font-semibold text-highlighted">Adicionales</h3>
+          <UBadge color="neutral" variant="subtle" size="sm">{{ model.adicionales.length }}</UBadge>
+        </div>
+        <UButton
+          type="button"
+          label="Agregar adicional"
+          icon="i-lucide-plus"
+          color="primary"
+          variant="subtle"
+          size="sm"
+          @click="addAdicional"
+        />
+      </div>
+
+      <p v-if="!model.adicionales.length" class="rounded-lg border border-dashed border-default p-4 text-center text-sm text-muted">
+        Este platillo aún no tiene adicionales.
+      </p>
+
+      <div
+        v-for="(adicional, index) in model.adicionales"
+        :key="index"
+        class="space-y-3 rounded-lg border border-default bg-default p-3"
+      >
+        <UFormField :label="`Adicional ${index + 1}`">
+          <USelectMenu
+            :model-value="adicional.catalogItemId ?? undefined"
+            :items="adicionalOptions"
+            value-key="value"
+            placeholder="Selecciona un adicional"
+            icon="i-lucide-utensils"
+            size="lg"
+            class="w-full"
+            @update:model-value="applyCatalogItem(adicional, $event)"
+          />
+        </UFormField>
+        <div class="flex flex-wrap items-center gap-2">
+          <UButton
+            type="button"
+            label="Nuevo adicional"
+            icon="i-lucide-plus"
+            color="primary"
+            variant="subtle"
+            size="sm"
+            @click="requestCreateAdditionalCatalogItem(index)"
+          />
+          <UButton
+            v-if="adicional.catalogItemId"
+            type="button"
+            label="Editar platillo"
+            icon="i-lucide-pencil"
+            color="secondary"
+            variant="subtle"
+            size="sm"
+            @click="requestEditAdditionalCatalogItem(adicional.catalogItemId, index)"
+          />
+          <UButton
+            type="button"
+            label="Eliminar"
+            icon="i-lucide-trash-2"
+            color="error"
+            variant="subtle"
+            size="sm"
+            :aria-label="`Eliminar adicional ${index + 1}`"
+            @click="removeAdicional(index)"
+          />
+        </div>
+      </div>
+    </section>
+  </section>
 
   <UModal
     v-model:open="isModalOpen"
