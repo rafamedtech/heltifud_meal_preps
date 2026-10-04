@@ -170,13 +170,15 @@ const mealSlotEditor = useTemplateRef<{
   openSelectionModal: (view: "select-platillo-principal" | "select-guarnicion-1" | "select-guarnicion-2") => void
 }>("mealSlotEditor")
 const activeSides = computed(() =>
-  (["guarnicion1", "guarnicion2"] as const)
+  activeSlot.value === "snack1" || activeSlot.value === "snack2"
+    ? []
+    : (["guarnicion1", "guarnicion2"] as const)
     .map((key, index) => ({
       key,
+      label: `guarnición ${index + 1}`,
       name: activeMeal.value?.[key]?.nombre?.trim(),
       view: index === 0 ? "select-guarnicion-1" as const : "select-guarnicion-2" as const
     }))
-    .filter((side) => side.name)
 )
 const failedImages = ref(new Set<string>())
 
@@ -1041,67 +1043,72 @@ async function onSubmit() {
                 </div>
                 <div class="min-w-0 flex-1">
                   <div class="flex flex-wrap items-center gap-2">
-                    <h3 class="min-w-0 font-semibold text-primary">{{ activeMeal.platilloPrincipal.nombre || 'Sin plato asignado' }}</h3>
-                    <UButton
-                      type="button"
-                      icon="i-lucide-arrow-left-right"
-                      label="Cambiar"
-                      size="sm"
-                      color="info"
-                      variant="subtle"
-                      class="shrink-0"
-                      aria-label="Cambiar platillo principal"
-                      @click="mealSlotEditor?.openSelectionModal('select-platillo-principal')"
-                    />
-                    <UButton
-                      v-if="activeMeal.platilloPrincipal?.catalogItemId"
-                      type="button"
-                      icon="i-lucide-pencil"
-                      label="Editar platillo"
-                      size="sm"
-                      color="secondary"
-                      variant="subtle"
-                      class="shrink-0"
-                      aria-label="Editar receta del platillo principal"
-                      @click="openEditCatalogItem({ id: activeMeal.platilloPrincipal!.catalogItemId!, view: 'select-platillo-principal' }, { dayOfWeek: activeDay, slotKey: activeSlot })"
-                    />
+                    <h3 class="min-w-0 flex-1 break-words font-semibold text-primary">{{ activeMeal.platilloPrincipal.nombre || 'Sin plato asignado' }}</h3>
+                    <div class="ml-auto flex max-w-full flex-wrap items-center justify-end gap-2">
+                      <UButton
+                        type="button"
+                        icon="i-lucide-arrow-left-right"
+                        label="Cambiar"
+                        size="sm"
+                        color="info"
+                        variant="subtle"
+                        class="shrink-0"
+                        aria-label="Cambiar platillo principal"
+                        @click="mealSlotEditor?.openSelectionModal('select-platillo-principal')"
+                      />
+                      <UButton
+                        v-if="activeMeal.platilloPrincipal?.catalogItemId"
+                        type="button"
+                        icon="i-lucide-pencil"
+                        label="Editar platillo"
+                        size="sm"
+                        color="secondary"
+                        variant="subtle"
+                        class="shrink-0"
+                        aria-label="Editar receta del platillo principal"
+                        @click="openEditCatalogItem({ id: activeMeal.platilloPrincipal!.catalogItemId!, view: 'select-platillo-principal' }, { dayOfWeek: activeDay, slotKey: activeSlot })"
+                      />
+                    </div>
                   </div>
                   <div v-for="side in activeSides" :key="side.key" class="mt-1 flex flex-wrap items-center gap-2">
-                    <p class="min-w-0 text-sm text-muted">{{ side.name }}</p>
-                    <UButton
-                      type="button"
-                      icon="i-lucide-arrow-left-right"
-                      label="Cambiar"
-                      size="sm"
-                      color="info"
-                      variant="subtle"
-                      class="shrink-0"
-                      :aria-label="`Cambiar ${side.key === 'guarnicion1' ? 'guarnición 1' : 'guarnición 2'}`"
-                      @click="mealSlotEditor?.openSelectionModal(side.view)"
-                    />
-                    <UButton
-                      v-if="activeMeal[side.key]?.catalogItemId"
-                      type="button"
-                      icon="i-lucide-pencil"
-                      label="Editar platillo"
-                      size="sm"
-                      color="secondary"
-                      variant="subtle"
-                      class="shrink-0"
-                      :aria-label="`Editar receta de ${side.name}`"
-                      @click="openEditCatalogItem({ id: activeMeal[side.key]!.catalogItemId!, view: side.view }, { dayOfWeek: activeDay, slotKey: activeSlot })"
-                    />
-                    <UButton
-                      type="button"
-                      icon="i-lucide-eraser"
-                      label="Limpiar"
-                      size="sm"
-                      color="warning"
-                      variant="subtle"
-                      class="shrink-0"
-                      :aria-label="`Limpiar ${side.key === 'guarnicion1' ? 'guarnición 1' : 'guarnición 2'}`"
-                      @click="activeMeal[side.key] = createEmptyFoodItem()"
-                    />
+                    <p :class="['min-w-0 flex-1 break-words text-sm text-muted', { italic: !side.name }]">{{ side.name || `Sin ${side.label}` }}</p>
+                    <div class="ml-auto flex max-w-full flex-wrap items-center justify-end gap-2">
+                      <UButton
+                        type="button"
+                        :icon="side.name ? 'i-lucide-arrow-left-right' : 'i-lucide-plus'"
+                        :label="side.name ? 'Cambiar' : 'Agregar'"
+                        size="sm"
+                        :color="side.name ? 'info' : 'primary'"
+                        variant="subtle"
+                        class="shrink-0"
+                        :aria-label="`${side.name ? 'Cambiar' : 'Agregar'} ${side.label}`"
+                        @click="mealSlotEditor?.openSelectionModal(side.view)"
+                      />
+                      <UButton
+                        v-if="activeMeal[side.key]?.catalogItemId"
+                        type="button"
+                        icon="i-lucide-pencil"
+                        label="Editar platillo"
+                        size="sm"
+                        color="secondary"
+                        variant="subtle"
+                        class="shrink-0"
+                        :aria-label="`Editar receta de ${side.name}`"
+                        @click="openEditCatalogItem({ id: activeMeal[side.key]!.catalogItemId!, view: side.view }, { dayOfWeek: activeDay, slotKey: activeSlot })"
+                      />
+                      <UButton
+                        v-if="side.name"
+                        type="button"
+                        icon="i-lucide-eraser"
+                        label="Limpiar"
+                        size="sm"
+                        color="warning"
+                        variant="subtle"
+                        class="shrink-0"
+                        :aria-label="`Limpiar ${side.key === 'guarnicion1' ? 'guarnición 1' : 'guarnición 2'}`"
+                        @click="activeMeal[side.key] = createEmptyFoodItem()"
+                      />
+                    </div>
                   </div>
                   <p v-if="activeMeal.platilloPrincipal.descripcion" class="mt-1 text-sm text-muted">{{ activeMeal.platilloPrincipal.descripcion }}</p>
                 </div>
