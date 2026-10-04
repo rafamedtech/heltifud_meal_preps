@@ -980,7 +980,7 @@ async function onSubmit() {
           </div>
         </div>
 
-        <UCard v-if="activeMeal" :ui="{ root: 'app-surface', body: 'p-4 sm:p-5' }">
+        <UCard v-if="activeMeal && mode !== 'edit'" :ui="{ root: 'app-surface', body: 'p-4 sm:p-5' }">
           <div class="flex flex-wrap items-center gap-4">
             <div class="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-elevated sm:size-24">
               <img
