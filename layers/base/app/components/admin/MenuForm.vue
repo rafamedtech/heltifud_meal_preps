@@ -156,8 +156,12 @@ const activeDay = ref<DayOfWeek>(DAY_OF_WEEK_VALUES[0]!)
 const activeSlot = ref<SlotKey>("comida")
 const editorOpen = ref(false)
 const primarySlots = ["desayuno", "comida", "cena"] as const
-const snackSlots = ["snack1", "snack2"] as const
 const showSnacks = ref(false)
+const visibleSlots = computed(() =>
+  showSnacks.value
+    ? (["desayuno", "snack1", "comida", "snack2", "cena"] as const)
+    : primarySlots
+)
 const showWeekend = ref(false)
 const weekStart = computed(() => startOfWeek(new Date(state.startDate), { weekStartsOn: 1 }))
 const weekRange = computed(() => `${format(weekStart.value, "d MMM", { locale: es })} – ${format(addDays(weekStart.value, 6), "d MMM, yyyy", { locale: es })}`)
@@ -936,7 +940,7 @@ async function onSubmit() {
               class="bg-elevated/70 px-2 py-3 text-center text-sm font-semibold text-highlighted"
             >{{ DAY_LABELS[entry.day.dayOfWeek].slice(0, 3) }} {{ dayDate(entry.index) }}</div>
 
-            <template v-for="slotKey in (showSnacks ? [...primarySlots, ...snackSlots] : primarySlots)" :key="slotKey">
+            <template v-for="slotKey in visibleSlots" :key="slotKey">
               <div class="flex items-center bg-elevated/70 px-3 text-sm font-semibold text-highlighted">{{ SLOT_LABELS[slotKey] }}</div>
               <div
                 v-for="entry in visibleDayEntries"
