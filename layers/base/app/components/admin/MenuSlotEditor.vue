@@ -758,8 +758,8 @@ watch(
     </Transition>
   </UCard>
 
-  <section v-else class="space-y-5 p-4 sm:p-6">
-    <section class="space-y-3 rounded-xl border border-default bg-elevated/30 p-4">
+  <section v-else class="grid grid-cols-1 items-start gap-5 p-4 sm:grid-cols-2 sm:p-6">
+    <section class="min-w-0 space-y-3 rounded-xl border border-default bg-elevated/30 p-4">
       <div class="flex items-center gap-2">
         <UIcon name="i-lucide-package" class="size-4 text-primary" />
         <h3 class="text-sm font-semibold text-highlighted">Contenedor</h3>
@@ -776,7 +776,7 @@ watch(
       </UFormField>
     </section>
 
-    <section class="space-y-3 rounded-xl border border-default bg-elevated/30 p-4">
+    <section class="min-w-0 space-y-3 rounded-xl border border-default bg-elevated/30 p-4">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-list-plus" class="size-4 text-primary" />

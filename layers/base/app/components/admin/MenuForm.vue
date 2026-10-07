@@ -1043,24 +1043,13 @@ async function onSubmit() {
                 </div>
                 <div class="min-w-0 flex-1">
                   <div class="flex flex-wrap items-center gap-2">
-                    <h3 class="min-w-0 flex-1 break-words font-semibold text-primary">{{ activeMeal.platilloPrincipal.nombre || 'Sin plato asignado' }}</h3>
-                    <div class="ml-auto flex max-w-full flex-wrap items-center justify-end gap-2">
-                      <UButton
-                        type="button"
-                        icon="i-lucide-arrow-left-right"
-                        label="Cambiar"
-                        size="sm"
-                        color="info"
-                        variant="subtle"
-                        class="shrink-0"
-                        aria-label="Cambiar platillo principal"
-                        @click="mealSlotEditor?.openSelectionModal('select-platillo-principal')"
-                      />
+                    <div class="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+                      <h3 class="min-w-0 max-w-full break-words font-semibold text-primary [overflow-wrap:anywhere]">{{ activeMeal.platilloPrincipal.nombre || 'Sin plato asignado' }}</h3>
                       <UButton
                         v-if="activeMeal.platilloPrincipal?.catalogItemId"
                         type="button"
                         icon="i-lucide-pencil"
-                        label="Editar platillo"
+                        label="Editar"
                         size="sm"
                         color="secondary"
                         variant="subtle"
@@ -1069,6 +1058,17 @@ async function onSubmit() {
                         @click="openEditCatalogItem({ id: activeMeal.platilloPrincipal!.catalogItemId!, view: 'select-platillo-principal' }, { dayOfWeek: activeDay, slotKey: activeSlot })"
                       />
                     </div>
+                    <UButton
+                      type="button"
+                      icon="i-lucide-arrow-left-right"
+                      label="Cambiar"
+                      size="sm"
+                      color="info"
+                      variant="subtle"
+                      class="shrink-0"
+                      aria-label="Cambiar platillo principal"
+                      @click="mealSlotEditor?.openSelectionModal('select-platillo-principal')"
+                    />
                   </div>
                   <div v-for="side in activeSides" :key="side.key" class="mt-1 flex flex-wrap items-center gap-2">
                     <p :class="['min-w-0 flex-1 break-words text-sm text-muted', { italic: !side.name }]">{{ side.name || `Sin ${side.label}` }}</p>
