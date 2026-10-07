@@ -61,15 +61,11 @@ const emit = defineEmits<{
 const attrs = useAttrs()
 
 const contenedorOptions = [
-  { label: "Charola", value: "Charola" },
-  { label: "Bowl kraft", value: "Bowl kraft" },
-  { label: "Contenedor desayuno", value: "Contenedor desayuno" },
-  { label: "Contenedor comida", value: "Contenedor comida" },
-  { label: "Contenedor cena", value: "Contenedor cena" },
-  { label: "Contenedor colación 1", value: "Contenedor colacion 1" },
-  { label: "Contenedor colación 2", value: "Contenedor colacion 2" },
-  { label: "Vaso", value: "Vaso" },
-  { label: "Caja", value: "Caja" }
+  { label: "Sin división 28oz", value: "Sin división 28oz" },
+  { label: "Sin división 38oz", value: "Sin división 38oz" },
+  { label: "Sin división 12oz", value: "Sin división 12oz" },
+  { label: "Con división 30oz", value: "Con división 30oz" },
+  { label: "Redondo 24oz", value: "Redondo 24oz" }
 ]
 
 const PLATILLO_PRINCIPAL_TYPES = new Set(["desayuno", "comida", "cena"])
@@ -762,13 +758,14 @@ watch(
     <section class="min-w-0 space-y-3 rounded-xl border border-default bg-elevated/30 p-4">
       <div class="flex items-center gap-2">
         <UIcon name="i-lucide-package" class="size-4 text-primary" />
-        <h3 class="text-sm font-semibold text-highlighted">Contenedor</h3>
+        <h3 class="text-sm font-semibold text-highlighted">Tipo de contenedor</h3>
       </div>
-      <UFormField label="Tipo de contenedor">
+      <UFormField>
         <USelect
           v-model="contenedorModel"
           :items="contenedorOptions"
           placeholder="Selecciona un contenedor"
+          aria-label="Tipo de contenedor"
           icon="i-lucide-package"
           size="lg"
           class="w-full"
