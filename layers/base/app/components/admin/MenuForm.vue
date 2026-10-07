@@ -1030,88 +1030,152 @@ async function onSubmit() {
         >
           <template #body>
             <section v-if="activeMeal && activeDayData">
-              <div class="flex items-start gap-4 border-b border-default p-4 sm:p-6">
-                <div class="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-elevated">
-                  <img
-                    v-if="hasUsableImage(activeMeal.platilloPrincipal.imagen)"
-                    :src="activeMeal.platilloPrincipal.imagen"
-                    :alt="activeMeal.platilloPrincipal.nombre"
-                    class="size-full object-cover"
-                    @error="markImageAsFailed(activeMeal.platilloPrincipal.imagen)"
-                  >
-                  <UIcon v-else name="i-lucide-utensils" class="size-8 text-muted" />
-                </div>
-                <div class="min-w-0 flex-1">
-                  <div class="flex flex-wrap items-center gap-2">
-                    <div class="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-                      <h3 class="min-w-0 max-w-full break-words font-semibold text-primary [overflow-wrap:anywhere]">{{ activeMeal.platilloPrincipal.nombre || 'Sin plato asignado' }}</h3>
-                      <UButton
-                        v-if="activeMeal.platilloPrincipal?.catalogItemId"
-                        type="button"
-                        icon="i-lucide-pencil"
-                        label="Editar"
-                        size="sm"
-                        color="secondary"
-                        variant="subtle"
-                        class="shrink-0"
-                        aria-label="Editar receta del platillo principal"
-                        @click="openEditCatalogItem({ id: activeMeal.platilloPrincipal!.catalogItemId!, view: 'select-platillo-principal' }, { dayOfWeek: activeDay, slotKey: activeSlot })"
-                      />
+              <div class="space-y-5 p-4 pb-5 sm:p-6 sm:pb-5">
+                <section class="space-y-2.5">
+                  <div class="flex items-center gap-2">
+                    <UIcon name="i-lucide-utensils" class="size-4 text-primary" />
+                    <h3 class="text-sm font-semibold text-highlighted">Platillo principal</h3>
+                  </div>
+                  <div class="flex items-start gap-3 rounded-lg border border-default bg-default p-3">
+                    <div class="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-elevated">
+                      <img
+                        v-if="hasUsableImage(activeMeal.platilloPrincipal.imagen)"
+                        :src="activeMeal.platilloPrincipal.imagen"
+                        :alt="activeMeal.platilloPrincipal.nombre"
+                        class="size-full object-cover"
+                        @error="markImageAsFailed(activeMeal.platilloPrincipal.imagen)"
+                      >
+                      <UIcon v-else name="i-lucide-utensils" class="size-6 text-muted" />
                     </div>
-                    <UButton
-                      type="button"
-                      icon="i-lucide-arrow-left-right"
-                      label="Cambiar"
+                    <div class="min-w-0 flex-1">
+                      <p :class="['break-words font-semibold [overflow-wrap:anywhere]', activeMeal.platilloPrincipal.nombre ? 'text-primary' : 'italic font-normal text-muted']">
+                        {{ activeMeal.platilloPrincipal.nombre || 'Sin plato asignado' }}
+                      </p>
+                      <p v-if="activeMeal.platilloPrincipal.descripcion" class="mt-0.5 line-clamp-2 text-xs text-muted">{{ activeMeal.platilloPrincipal.descripcion }}</p>
+                      <p v-if="activeMeal.platilloPrincipal.calorias" class="mt-1 text-xs text-muted">{{ activeMeal.platilloPrincipal.calorias }} kcal</p>
+                    </div>
+                    <div class="flex shrink-0 items-center gap-1">
+                      <UTooltip v-if="activeMeal.platilloPrincipal?.catalogItemId" text="Editar platillo">
+                        <UButton
+                          type="button"
+                          icon="i-lucide-pencil"
+                          color="neutral"
+                          variant="ghost"
+                          size="sm"
+                          square
+                          aria-label="Editar receta del platillo principal"
+                          @click="openEditCatalogItem({ id: activeMeal.platilloPrincipal!.catalogItemId!, view: 'select-platillo-principal' }, { dayOfWeek: activeDay, slotKey: activeSlot })"
+                        />
+                      </UTooltip>
+                      <UTooltip text="Cambiar platillo">
+                        <UButton
+                          type="button"
+                          icon="i-lucide-arrow-left-right"
+                          color="neutral"
+                          variant="ghost"
+                          size="sm"
+                          square
+                          aria-label="Cambiar platillo principal"
+                          @click="mealSlotEditor?.openSelectionModal('select-platillo-principal')"
+                        />
+                      </UTooltip>
+                    </div>
+                  </div>
+                </section>
+
+                <section v-if="activeSides.length" class="space-y-2.5">
+                  <div class="flex items-center gap-2">
+                    <UIcon name="i-lucide-salad" class="size-4 text-primary" />
+                    <h3 class="text-sm font-semibold text-highlighted">Guarniciones</h3>
+                    <UBadge
+                      v-if="activeSides.some((side) => side.name)"
+                      color="primary"
+                      variant="soft"
                       size="sm"
-                      color="info"
-                      variant="subtle"
-                      class="shrink-0"
-                      aria-label="Cambiar platillo principal"
-                      @click="mealSlotEditor?.openSelectionModal('select-platillo-principal')"
-                    />
+                    >
+                      {{ activeSides.filter((side) => side.name).length }}
+                    </UBadge>
                   </div>
-                  <div v-for="side in activeSides" :key="side.key" class="mt-1 flex flex-wrap items-center gap-2">
-                    <p :class="['min-w-0 flex-1 break-words text-sm text-muted', { italic: !side.name }]">{{ side.name || `Sin ${side.label}` }}</p>
-                    <div class="ml-auto flex max-w-full flex-wrap items-center justify-end gap-2">
-                      <UButton
-                        type="button"
-                        :icon="side.name ? 'i-lucide-arrow-left-right' : 'i-lucide-plus'"
-                        :label="side.name ? 'Cambiar' : 'Agregar'"
-                        size="sm"
-                        :color="side.name ? 'info' : 'primary'"
-                        variant="subtle"
-                        class="shrink-0"
-                        :aria-label="`${side.name ? 'Cambiar' : 'Agregar'} ${side.label}`"
-                        @click="mealSlotEditor?.openSelectionModal(side.view)"
-                      />
-                      <UButton
-                        v-if="activeMeal[side.key]?.catalogItemId"
-                        type="button"
-                        icon="i-lucide-pencil"
-                        label="Editar platillo"
-                        size="sm"
-                        color="secondary"
-                        variant="subtle"
-                        class="shrink-0"
-                        :aria-label="`Editar receta de ${side.name}`"
-                        @click="openEditCatalogItem({ id: activeMeal[side.key]!.catalogItemId!, view: side.view }, { dayOfWeek: activeDay, slotKey: activeSlot })"
-                      />
-                      <UButton
-                        v-if="side.name"
-                        type="button"
-                        icon="i-lucide-eraser"
-                        label="Limpiar"
-                        size="sm"
-                        color="warning"
-                        variant="subtle"
-                        class="shrink-0"
-                        :aria-label="`Limpiar ${side.key === 'guarnicion1' ? 'guarnición 1' : 'guarnición 2'}`"
-                        @click="activeMeal[side.key] = createEmptyFoodItem()"
-                      />
+                  <ul class="divide-y divide-default overflow-hidden rounded-lg border border-default">
+                    <li
+                      v-for="(side, index) in activeSides"
+                      :key="side.key"
+                      class="flex items-center gap-3 bg-default p-3"
+                    >
+                      <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-elevated text-xs font-semibold text-toned">
+                        {{ index + 1 }}
+                      </span>
+                      <p :class="['min-w-0 flex-1 break-words text-sm [overflow-wrap:anywhere]', side.name ? 'font-medium text-highlighted' : 'italic text-muted']">
+                        {{ side.name || `Sin ${side.label}` }}
+                      </p>
+                      <div class="flex shrink-0 items-center gap-1">
+                        <template v-if="side.name">
+                          <UTooltip v-if="activeMeal[side.key]?.catalogItemId" text="Editar platillo">
+                            <UButton
+                              type="button"
+                              icon="i-lucide-pencil"
+                              color="neutral"
+                              variant="ghost"
+                              size="sm"
+                              square
+                              :aria-label="`Editar receta de ${side.name}`"
+                              @click="openEditCatalogItem({ id: activeMeal[side.key]!.catalogItemId!, view: side.view }, { dayOfWeek: activeDay, slotKey: activeSlot })"
+                            />
+                          </UTooltip>
+                          <UTooltip text="Cambiar">
+                            <UButton
+                              type="button"
+                              icon="i-lucide-arrow-left-right"
+                              color="neutral"
+                              variant="ghost"
+                              size="sm"
+                              square
+                              :aria-label="`Cambiar ${side.label}`"
+                              @click="mealSlotEditor?.openSelectionModal(side.view)"
+                            />
+                          </UTooltip>
+                          <UTooltip text="Quitar">
+                            <UButton
+                              type="button"
+                              icon="i-lucide-x"
+                              color="error"
+                              variant="ghost"
+                              size="sm"
+                              square
+                              :aria-label="`Limpiar ${side.label}`"
+                              @click="activeMeal[side.key] = createEmptyFoodItem()"
+                            />
+                          </UTooltip>
+                        </template>
+                        <UButton
+                          v-else
+                          type="button"
+                          icon="i-lucide-plus"
+                          label="Agregar"
+                          color="primary"
+                          variant="subtle"
+                          size="sm"
+                          :aria-label="`Agregar ${side.label}`"
+                          @click="mealSlotEditor?.openSelectionModal(side.view)"
+                        />
+                      </div>
+                    </li>
+                  </ul>
+                </section>
+
+                <section class="space-y-2.5">
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                      <UIcon name="i-lucide-package" class="size-4 text-primary" />
+                      <h3 class="text-sm font-semibold text-highlighted">Tipo de contenedor</h3>
                     </div>
+                    <span v-if="!activeMeal.contenedor" class="text-xs italic text-muted">Sin seleccionar</span>
                   </div>
-                  <p v-if="activeMeal.platilloPrincipal.descripcion" class="mt-1 text-sm text-muted">{{ activeMeal.platilloPrincipal.descripcion }}</p>
-                </div>
+                  <AdminMenuContainerSelect
+                    v-model="activeMeal.contenedor"
+                    layout="cards"
+                  />
+                </section>
               </div>
 
               <AdminMenuSlotEditor

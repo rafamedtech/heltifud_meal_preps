@@ -60,14 +60,6 @@ const emit = defineEmits<{
 
 const attrs = useAttrs()
 
-const contenedorOptions = [
-  { label: "Sin división 28oz", value: "Sin división 28oz" },
-  { label: "Sin división 38oz", value: "Sin división 38oz" },
-  { label: "Sin división 12oz", value: "Sin división 12oz" },
-  { label: "Con división 30oz", value: "Con división 30oz" },
-  { label: "Redondo 24oz", value: "Redondo 24oz" }
-]
-
 const PLATILLO_PRINCIPAL_TYPES = new Set(["desayuno", "comida", "cena"])
 const SNACK_TYPES = new Set(["snack"])
 const GUARNICION_TYPES = new Set(["guarnicion"])
@@ -226,13 +218,6 @@ function scheduleModalViewCleanup() {
   }, 220)
 }
 
-const contenedorModel = computed<string | undefined>({
-  get: () => model.value.contenedor ?? undefined,
-  set: (value) => {
-    model.value.contenedor = value ?? ""
-  }
-})
-
 function itemSummary(item?: FoodItemDetail | null, fallback = "Sin capturar") {
   return item?.nombre?.trim() || fallback
 }
@@ -261,10 +246,11 @@ function editCatalogItem(target?: FoodItemDetail | null, view: SelectionModalVie
   })
 }
 
-function requestCreateAdditionalCatalogItem(index: number) {
+function requestCreateAdditionalCatalogItem(index: number, search?: string) {
   emit("createCatalogItem", {
     tipo: "ramekin",
     view: "extras",
+    search: search?.trim() || undefined,
     additionalIndex: index
   })
 
@@ -690,11 +676,8 @@ watch(
           class="space-y-4"
         >
           <UFormField label="Contenedor">
-            <USelect
-              v-model="contenedorModel"
-              :items="contenedorOptions"
-              placeholder="Selecciona un contenedor"
-              icon="i-lucide-package"
+            <AdminMenuContainerSelect
+              v-model="model.contenedor"
               :ui="detailFieldInputUi"
             />
           </UFormField>
@@ -754,97 +737,122 @@ watch(
     </Transition>
   </UCard>
 
-  <section v-else class="grid grid-cols-1 items-start gap-5 p-4 sm:grid-cols-2 sm:p-6">
-    <section class="min-w-0 space-y-3 rounded-xl border border-default bg-elevated/30 p-4">
+  <section v-else class="space-y-3 px-4 pb-4 sm:px-6 sm:pb-6">
+    <div class="flex items-center justify-between gap-3">
       <div class="flex items-center gap-2">
-        <UIcon name="i-lucide-package" class="size-4 text-primary" />
-        <h3 class="text-sm font-semibold text-highlighted">Tipo de contenedor</h3>
-      </div>
-      <UFormField>
-        <USelect
-          v-model="contenedorModel"
-          :items="contenedorOptions"
-          placeholder="Selecciona un contenedor"
-          aria-label="Tipo de contenedor"
-          icon="i-lucide-package"
-          size="lg"
-          class="w-full"
-        />
-      </UFormField>
-    </section>
-
-    <section class="min-w-0 space-y-3 rounded-xl border border-default bg-elevated/30 p-4">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-list-plus" class="size-4 text-primary" />
-          <h3 class="text-sm font-semibold text-highlighted">Adicionales</h3>
-          <UBadge color="neutral" variant="subtle" size="sm">{{ model.adicionales.length }}</UBadge>
-        </div>
-        <UButton
-          type="button"
-          label="Agregar adicional"
-          icon="i-lucide-plus"
+        <UIcon name="i-lucide-list-plus" class="size-4 text-primary" />
+        <h3 class="text-sm font-semibold text-highlighted">Adicionales</h3>
+        <UBadge
+          v-if="model.adicionales.length"
           color="primary"
-          variant="subtle"
+          variant="soft"
           size="sm"
-          @click="addAdicional"
-        />
+        >
+          {{ model.adicionales.length }}
+        </UBadge>
       </div>
+      <UButton
+        v-if="model.adicionales.length"
+        type="button"
+        label="Agregar"
+        icon="i-lucide-plus"
+        color="primary"
+        variant="subtle"
+        size="sm"
+        aria-label="Agregar adicional"
+        @click="addAdicional"
+      />
+    </div>
 
-      <p v-if="!model.adicionales.length" class="rounded-lg border border-dashed border-default p-4 text-center text-sm text-muted">
-        Este platillo aún no tiene adicionales.
-      </p>
+    <button
+      v-if="!model.adicionales.length"
+      type="button"
+      class="flex w-full flex-col items-center gap-2 rounded-lg border border-dashed border-default px-4 py-6 text-center transition-colors hover:border-primary/60 hover:bg-primary/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      @click="addAdicional"
+    >
+      <span class="flex size-9 items-center justify-center rounded-full bg-primary/10">
+        <UIcon name="i-lucide-plus" class="size-4 text-primary" />
+      </span>
+      <span class="text-sm font-medium text-highlighted">Agregar adicional</span>
+      <span class="text-xs text-muted">Ramekins o guarniciones extra para este tiempo.</span>
+    </button>
 
-      <div
+    <ul v-else class="divide-y divide-default overflow-hidden rounded-lg border border-default">
+      <li
         v-for="(adicional, index) in model.adicionales"
         :key="index"
-        class="space-y-3 rounded-lg border border-default bg-default p-3"
+        class="flex flex-col gap-2 bg-default p-3 sm:flex-row sm:items-center"
       >
-        <UFormField :label="`Adicional ${index + 1}`">
-          <USelectMenu
-            :model-value="adicional.catalogItemId ?? undefined"
-            :items="adicionalOptions"
-            value-key="value"
-            placeholder="Selecciona un adicional"
-            icon="i-lucide-utensils"
-            size="lg"
-            class="w-full"
-            @update:model-value="applyCatalogItem(adicional, $event)"
-          />
-        </UFormField>
-        <div class="flex flex-wrap items-center gap-2">
-          <UButton
-            type="button"
-            label="Nuevo adicional"
-            icon="i-lucide-plus"
-            color="primary"
-            variant="subtle"
-            size="sm"
-            @click="requestCreateAdditionalCatalogItem(index)"
-          />
-          <UButton
-            v-if="adicional.catalogItemId"
-            type="button"
-            label="Editar platillo"
-            icon="i-lucide-pencil"
-            color="secondary"
-            variant="subtle"
-            size="sm"
-            @click="requestEditAdditionalCatalogItem(adicional.catalogItemId, index)"
-          />
-          <UButton
-            type="button"
-            label="Eliminar"
-            icon="i-lucide-trash-2"
-            color="error"
-            variant="subtle"
-            size="sm"
-            :aria-label="`Eliminar adicional ${index + 1}`"
-            @click="removeAdicional(index)"
-          />
+        <div class="flex min-w-0 flex-1 items-center gap-3">
+          <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-elevated text-xs font-semibold text-toned">
+            {{ index + 1 }}
+          </span>
+          <div class="min-w-0 flex-1">
+            <USelectMenu
+              :model-value="adicional.catalogItemId ?? undefined"
+              :items="adicionalOptions"
+              value-key="value"
+              placeholder="Selecciona un adicional"
+              icon="i-lucide-utensils"
+              create-item
+              class="w-full"
+              :aria-label="`Adicional ${index + 1}`"
+              @update:model-value="applyCatalogItem(adicional, $event)"
+              @create="requestCreateAdditionalCatalogItem(index, $event)"
+            >
+              <template #create-item-label="{ item }">
+                <span class="flex min-w-0 items-center gap-2">
+                  <UIcon name="i-lucide-plus" class="size-4 shrink-0" />
+                  <span class="truncate">Crear “{{ item }}”</span>
+                </span>
+              </template>
+            </USelectMenu>
+            <p v-if="adicional.catalogItemId && adicional.calorias" class="mt-1 ps-1 text-xs text-muted">
+              {{ adicional.calorias }} kcal
+            </p>
+          </div>
         </div>
-      </div>
-    </section>
+
+        <div class="flex shrink-0 items-center justify-end gap-1 self-end sm:self-center">
+          <UTooltip text="Crear nuevo en catálogo">
+            <UButton
+              type="button"
+              icon="i-lucide-file-plus"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              square
+              :aria-label="`Crear nuevo adicional para la posición ${index + 1}`"
+              @click="requestCreateAdditionalCatalogItem(index)"
+            />
+          </UTooltip>
+          <UTooltip v-if="adicional.catalogItemId" text="Editar platillo">
+            <UButton
+              type="button"
+              icon="i-lucide-pencil"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              square
+              :aria-label="`Editar adicional ${index + 1}`"
+              @click="requestEditAdditionalCatalogItem(adicional.catalogItemId, index)"
+            />
+          </UTooltip>
+          <UTooltip text="Eliminar">
+            <UButton
+              type="button"
+              icon="i-lucide-trash-2"
+              color="error"
+              variant="ghost"
+              size="sm"
+              square
+              :aria-label="`Eliminar adicional ${index + 1}`"
+              @click="removeAdicional(index)"
+            />
+          </UTooltip>
+        </div>
+      </li>
+    </ul>
   </section>
 
   <UModal
