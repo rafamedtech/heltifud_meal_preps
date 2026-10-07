@@ -814,18 +814,6 @@ watch(
         </div>
 
         <div class="flex shrink-0 items-center justify-end gap-1 self-end sm:self-center">
-          <UTooltip text="Crear nuevo en catálogo">
-            <UButton
-              type="button"
-              icon="i-lucide-file-plus"
-              color="neutral"
-              variant="ghost"
-              size="sm"
-              square
-              :aria-label="`Crear nuevo adicional para la posición ${index + 1}`"
-              @click="requestCreateAdditionalCatalogItem(index)"
-            />
-          </UTooltip>
           <UTooltip v-if="adicional.catalogItemId" text="Editar platillo">
             <UButton
               type="button"

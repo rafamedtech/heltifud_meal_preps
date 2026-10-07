@@ -15,10 +15,10 @@ const preparacion = defineModel<string>("preparacion", { required: true })
 const toast = useToast()
 const { getIngredients, createIngredient } = useIngredientCatalog()
 
-const { data: ingredientCatalog, status: ingredientStatus } = await useAsyncData<Ingredient[]>(
+const { data: ingredientCatalog, status: ingredientStatus } = useAsyncData<Ingredient[]>(
   "ingredient-catalog",
   getIngredients,
-  { default: () => [] }
+  { default: () => [], lazy: true }
 )
 
 const unitOptions = [
@@ -215,7 +215,7 @@ async function saveNewIngredient() {
               :items="ingredientOptions"
               value-key="value"
               searchable
-              create-item
+              :create-item="ingredientStatus === 'success'"
               :loading="ingredientStatus === 'pending'"
               placeholder="Buscar ingrediente"
               aria-label="Ingrediente"
