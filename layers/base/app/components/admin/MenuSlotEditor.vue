@@ -75,7 +75,7 @@ const contenedorOptions = [
 const PLATILLO_PRINCIPAL_TYPES = new Set(["desayuno", "comida", "cena"])
 const SNACK_TYPES = new Set(["snack"])
 const GUARNICION_TYPES = new Set(["guarnicion"])
-const ADICIONAL_TYPES = new Set(["ramekin"])
+const ADICIONAL_TYPES = new Set(["ramekin", "guarnicion"])
 
 const platilloPrincipalItems = computed(() =>
   catalogItems.filter((item) => PLATILLO_PRINCIPAL_TYPES.has(item.tipo))
