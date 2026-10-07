@@ -978,7 +978,7 @@ async function onSubmit() {
                       >
                       <UIcon v-else name="i-lucide-utensils" class="size-9 text-muted/40" />
                     </div>
-                    <span class="mt-2 line-clamp-2 w-full text-xs font-medium leading-snug text-highlighted">{{ entry.day[slotKey].platilloPrincipal.nombre }}</span>
+                    <span class="mt-2 w-full truncate text-xs font-medium leading-snug text-highlighted">{{ entry.day[slotKey].platilloPrincipal.nombre }}</span>
                   </template>
                   <template v-else>
                     <span class="flex min-h-0 w-full flex-1 items-center justify-center rounded-md bg-elevated/50">
