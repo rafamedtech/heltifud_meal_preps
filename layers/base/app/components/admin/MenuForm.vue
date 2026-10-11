@@ -28,7 +28,7 @@ const mode = computed(() => props.mode ?? "create")
 const catalogItems = computed(() => props.catalogItems ?? [])
 
 const emit = defineEmits<{
-  saved: [menuId: string]
+  saved: [menuId: string, exitEditor: boolean]
 }>()
 
 const route = useRoute()
@@ -144,6 +144,8 @@ function createStateFromMenu(menu?: WeeklyMenu | null): WeeklyMenuInput {
 
 const state = reactive<WeeklyMenuInput>(createStateFromMenu(menu.value))
 const loading = ref(false)
+const saveConfirmationOpen = ref(false)
+const saveAction = ref<"stay" | "exit" | null>(null)
 const hiddenDays = new Set<DayOfWeek>()
 const markAsActive = ref(Boolean(menu.value?.isActive))
 const snacksExpanded = reactive<Record<DayOfWeek, boolean>>(
@@ -802,7 +804,17 @@ function formatValidationIssue(issue?: ZodIssue) {
   return issue.message || "Verifica la información del menú."
 }
 
-async function onSubmit() {
+function requestSave() {
+  if (!canSubmit.value) return
+  if (mode.value === "edit") {
+    saveConfirmationOpen.value = true
+  } else {
+    void onSubmit(true)
+  }
+}
+
+async function onSubmit(exitEditor = true) {
+  if (loading.value) return
   const parsed = weeklyMenuInputSchema.safeParse(state)
 
   if (!parsed.success) {
@@ -820,6 +832,7 @@ async function onSubmit() {
 
   clearValidationHighlights()
   loading.value = true
+  saveAction.value = exitEditor ? "exit" : "stay"
 
   try {
     const savedMenu =
@@ -842,12 +855,14 @@ async function onSubmit() {
       icon: "i-lucide-check-circle"
     })
 
-    emit("saved", savedMenu.id)
+    saveConfirmationOpen.value = false
+    emit("saved", savedMenu.id, exitEditor)
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo guardar el menú"
     toast.add({ title: "Error", description: message, color: "error", icon: "i-lucide-circle-alert" })
   } finally {
     loading.value = false
+    saveAction.value = null
   }
 }
 </script>
@@ -856,7 +871,7 @@ async function onSubmit() {
   <section class="space-y-6">
     <UForm
       class="space-y-6"
-      @submit="onSubmit"
+      @submit="requestSave"
     >
       <UCard :ui="cardSurfaceUi">
         <template #header>
@@ -1247,5 +1262,48 @@ async function onSubmit() {
         </UModal>
       </section>
     </UForm>
+
+    <UModal
+      v-model:open="saveConfirmationOpen"
+      title="Guardar cambios del menú"
+      description="Confirma cómo quieres guardar los cambios."
+      :dismissible="!loading"
+      :close="{ disabled: loading, 'aria-label': 'Cerrar confirmación de guardado' }"
+      :ui="{ content: 'max-w-md' }"
+    >
+      <template #body>
+        <section class="space-y-4">
+          <UAlert
+            color="error"
+            variant="soft"
+            icon="i-lucide-triangle-alert"
+            :title="state.name"
+            description="Si guardas los cambios de este menú, no podrás deshacerlos."
+          />
+        </section>
+      </template>
+      <template #footer>
+        <div class="flex w-full flex-col gap-3 sm:flex-row sm:justify-end">
+          <UButton
+            type="button"
+            color="neutral"
+            variant="ghost"
+            icon="i-lucide-save"
+            class="justify-center"
+            :loading="saveAction === 'stay'"
+            :disabled="!canSubmit"
+            @click="onSubmit(false)"
+          >Guardar</UButton>
+          <UButton
+            type="button"
+            icon="i-lucide-check"
+            class="justify-center"
+            :loading="saveAction === 'exit'"
+            :disabled="!canSubmit"
+            @click="onSubmit(true)"
+          >Guardar y salir</UButton>
+        </div>
+      </template>
+    </UModal>
   </section>
 </template>

@@ -29,9 +29,12 @@ useSeoMeta({
   robots: 'noindex, nofollow',
 })
 
-async function onSaved() {
-  await refresh();
-  await navigateTo('/admin/menu');
+async function onSaved(_menuId: string, exitEditor: boolean) {
+  if (exitEditor) {
+    await navigateTo('/admin/menu');
+  } else {
+    await refresh();
+  }
 }
 
 onMounted(async () => {

@@ -243,7 +243,7 @@ async function saveNewIngredient() {
                 v-model="row.original.cantidad"
                 :min="0.01"
                 :max="999999"
-                :step="0.01"
+                :step="1"
                 :format-options="{ maximumFractionDigits: 2 }"
                 aria-label="Cantidad"
                 class="w-full"
