@@ -9,6 +9,15 @@
 * 🟢 You can import this file directly.
 */
 
+export const MenuType = {
+  ESTANDAR: 'ESTANDAR',
+  VEGETARIANO: 'VEGETARIANO',
+  PERSONALIZADO: 'PERSONALIZADO'
+} as const
+
+export type MenuType = (typeof MenuType)[keyof typeof MenuType]
+
+
 export const DayOfWeek = {
   LUNES: 'LUNES',
   MARTES: 'MARTES',

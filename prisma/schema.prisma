@@ -7,9 +7,16 @@ datasource db {
   provider = "postgresql"
 }
 
+enum MenuType {
+  ESTANDAR
+  VEGETARIANO
+  PERSONALIZADO
+}
+
 model WeeklyMenu {
   id           String    @id @default(uuid())
   name         String
+  menuType     MenuType  @default(ESTANDAR)
   isActive     Boolean   @default(false)
   startDate    DateTime
   endDate      DateTime

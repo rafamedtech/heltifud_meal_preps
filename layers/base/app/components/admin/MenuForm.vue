@@ -4,6 +4,7 @@ import { es } from "date-fns/locale"
 import { weeklyMenuInputSchema } from "~~/layers/menu/shared/types/menuSchema"
 import {
   DAY_OF_WEEK_VALUES,
+  MENU_TYPE_OPTIONS,
   type DayOfWeek,
   type DayMenu,
   type FoodCatalogItem,
@@ -112,6 +113,7 @@ function createStateFromMenu(menu?: WeeklyMenu | null): WeeklyMenuInput {
   if (!menu) {
     return {
       name: "",
+      menuType: "ESTANDAR",
       startDate: new Date(),
       endDate: new Date(),
       days: DAY_OF_WEEK_VALUES.map((day) => createDay(day))
@@ -122,6 +124,7 @@ function createStateFromMenu(menu?: WeeklyMenu | null): WeeklyMenuInput {
 
   return {
     name: menu.name,
+    menuType: menu.menuType ?? "ESTANDAR",
     startDate: new Date(menu.startDate),
     endDate: new Date(menu.endDate),
     days: DAY_OF_WEEK_VALUES.map((dayOfWeek) => {
@@ -238,9 +241,9 @@ const visibleDayEntries = computed(() =>
   )
 )
 const cardSurfaceUi = {
-  root: "app-surface",
+  root: "rounded-xl bg-default shadow-sm ring ring-default divide-y divide-default",
   body: "p-0 sm:p-0",
-  header: "px-6 py-5 sm:px-6",
+  header: "bg-elevated/70 px-4 py-4 sm:px-5",
   footer: "px-6 py-5 sm:px-6"
 }
 
@@ -249,6 +252,7 @@ const { createMenuOnDB, updateMenuOnDB, setActiveMenuOnDB } = useMenu()
 const resolvedCatalogItems = computed<FoodCatalogItem[]>(() => catalogItems.value ?? [])
 const invalidFields = reactive({
   name: false,
+  menuType: false,
   startDate: false,
   endDate: false
 })
@@ -292,6 +296,7 @@ function comparableSlot(slot: MenuSlot) {
 function comparableMenuInput(input: WeeklyMenuInput) {
   return {
     name: input.name.trim(),
+    menuType: input.menuType ?? "ESTANDAR",
     startDate: toComparableDate(input.startDate),
     endDate: toComparableDate(input.endDate),
     days: input.days.map((day) => ({
@@ -303,6 +308,26 @@ function comparableMenuInput(input: WeeklyMenuInput) {
       snack2: comparableSlot(day.snack2)
     }))
   }
+}
+
+const modifiedSlots = computed(() => {
+  const originalDays = new Map(createStateFromMenu(menu.value).days.map((day) => [day.dayOfWeek, day]))
+  const changed = new Set<string>()
+
+  for (const day of state.days) {
+    const originalDay = originalDays.get(day.dayOfWeek)!
+    for (const slotKey of Object.keys(SLOT_LABELS) as SlotKey[]) {
+      if (JSON.stringify(comparableSlot(day[slotKey])) !== JSON.stringify(comparableSlot(originalDay[slotKey]))) {
+        changed.add(`${day.dayOfWeek}-${slotKey}`)
+      }
+    }
+  }
+
+  return changed
+})
+
+function isSlotModified(dayOfWeek: DayOfWeek, slotKey: SlotKey) {
+  return modifiedSlots.value.has(`${dayOfWeek}-${slotKey}`)
 }
 
 const canSubmitByValidation = computed(() => weeklyMenuInputSchema.safeParse(state).success)
@@ -361,6 +386,7 @@ watch(
 function snapshotDraftState(): WeeklyMenuInput {
   return {
     name: state.name,
+    menuType: state.menuType,
     startDate: toComparableDate(state.startDate),
     endDate: toComparableDate(state.endDate),
     days: state.days.map((day) => ({
@@ -423,6 +449,7 @@ function restorePersistedDraft() {
 
     Object.assign(state, {
       name: payload.state.name,
+      menuType: payload.state.menuType ?? "ESTANDAR",
       startDate: new Date(payload.state.startDate),
       endDate: new Date(payload.state.endDate),
       days: payload.state.days.map((day) => ({
@@ -665,6 +692,7 @@ onMounted(async () => {
 
 function clearValidationHighlights() {
   invalidFields.name = false
+  invalidFields.menuType = false
   invalidFields.startDate = false
   invalidFields.endDate = false
   invalidDays.value = new Set()
@@ -685,6 +713,11 @@ function applyValidationHighlights(issues: ZodIssue[]) {
 
     if (root === "name") {
       invalidFields.name = true
+      continue
+    }
+
+    if (root === "menuType") {
+      invalidFields.menuType = true
       continue
     }
 
@@ -827,24 +860,24 @@ async function onSubmit() {
     >
       <UCard :ui="cardSurfaceUi">
         <template #header>
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div class="max-w-2xl">
-              <h2 class="text-base font-semibold text-highlighted">{{ title }}</h2>
-              <p class="mt-1 text-sm text-muted">
-                Define el nombre del menú y el rango de fechas en el que estará disponible.
-              </p>
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2.5">
+                <UIcon name="i-lucide-calendar-days" class="size-5 shrink-0 text-primary" />
+                <h2 class="text-base font-semibold text-highlighted">{{ title }}</h2>
+                <UBadge v-if="menu?.isActive" color="success" variant="subtle" icon="i-lucide-circle-check" size="sm">Publicado</UBadge>
+              </div>
+              <p class="mt-1 text-sm text-muted">Nombre, tipo y periodo de disponibilidad del menú.</p>
             </div>
 
-            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:flex lg:items-center lg:justify-end lg:gap-3">
+            <div class="flex flex-wrap items-center gap-2">
               <UButton
                 type="submit"
                 :loading="loading"
                 :disabled="!canSubmit"
                 :color="canSubmit ? 'primary' : 'neutral'"
                 icon="i-lucide-save"
-                block
-                class="justify-center"
-                size="lg"
+                size="md"
               >
                 {{ actionLabel }}
               </UButton>
@@ -854,58 +887,63 @@ async function onSubmit() {
                 type="button"
                 color="primary"
                 icon="i-lucide-send"
-                block
-                size="lg"
-                class="justify-center"
+                size="md"
                 :loading="loading"
                 :disabled="!canSubmitByValidation || loading"
                 @click="publishMenu"
               >Publicar</UButton>
-              <UBadge v-else color="success" variant="soft" icon="i-lucide-circle-check" size="lg">Publicado</UBadge>
             </div>
           </div>
         </template>
 
-        <div class="grid gap-4 px-4 py-5 sm:px-6 sm:py-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+        <div class="grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))]">
           <UFormField
             name="name"
-            class="md:col-span-2 lg:col-span-1"
+            label="Nombre del menú"
+            :error="invalidFields.name ? 'El nombre del menú es obligatorio.' : undefined"
+            class="min-w-0"
+            :ui="{ label: 'text-xs font-medium text-toned', container: 'mt-2' }"
           >
-            <AdminMetaField
-              label="Nombre del menú"
-              :invalid="invalidFields.name"
-            >
-              <UInput
-                v-model="state.name"
-                placeholder="Ej. Menú Semana 12"
-                icon="i-lucide-notebook-pen"
-                variant="ghost"
-                class="w-full"
-                :ui="{
-                  base: 'h-5 min-h-5 max-h-5 border-0 bg-transparent px-0 py-0 text-sm font-medium leading-5 text-highlighted shadow-none hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent',
-                  leading: 'ps-0',
-                  leadingIcon: 'size-4 text-muted'
-                }"
-              />
-            </AdminMetaField>
+            <UInput
+              v-model="state.name"
+              placeholder="Ej. Menú Semana 12"
+              icon="i-lucide-notebook-pen"
+              variant="outline"
+              class="w-full"
+            />
           </UFormField>
 
-          <UFormField name="startDate">
-            <AdminMetaField
-              label="Fecha de inicio"
-              :invalid="invalidFields.startDate"
-            >
-              <DatePicker v-model="state.startDate" />
-            </AdminMetaField>
+          <UFormField
+            name="menuType"
+            label="Tipo de menú"
+            :error="invalidFields.menuType ? 'Selecciona un tipo de menú válido.' : undefined"
+            :ui="{ label: 'text-xs font-medium text-toned', container: 'mt-2' }"
+          >
+            <USelect
+              v-model="state.menuType"
+              :items="MENU_TYPE_OPTIONS"
+              value-key="value"
+              icon="i-lucide-utensils"
+              class="w-full"
+            />
           </UFormField>
 
-          <UFormField name="endDate">
-            <AdminMetaField
-              label="Fecha final"
-              :invalid="invalidFields.endDate"
-            >
-              <DatePicker v-model="state.endDate" />
-            </AdminMetaField>
+          <UFormField
+            name="startDate"
+            label="Fecha de inicio"
+            :error="invalidFields.startDate ? 'Selecciona una fecha de inicio válida.' : undefined"
+            :ui="{ label: 'text-xs font-medium text-toned', container: 'mt-2' }"
+          >
+            <DatePicker v-model="state.startDate" label="Fecha de inicio" :invalid="invalidFields.startDate" />
+          </UFormField>
+
+          <UFormField
+            name="endDate"
+            label="Fecha final"
+            :error="invalidFields.endDate ? 'Revisa la fecha final del menú.' : undefined"
+            :ui="{ label: 'text-xs font-medium text-toned', container: 'mt-2' }"
+          >
+            <DatePicker v-model="state.endDate" label="Fecha final" :invalid="invalidFields.endDate" />
           </UFormField>
         </div>
       </UCard>
@@ -935,13 +973,13 @@ async function onSubmit() {
 
         <div class="overflow-x-auto rounded-xl border border-default bg-default shadow-sm">
           <div
-            class="grid gap-px bg-[var(--ui-border)]"
+            class="grid gap-px bg-[var(--ui-border)] [--menu-label-width:44px] [--ui-secondary:var(--color-teal-500)] md:[--menu-label-width:104px] dark:[--ui-secondary:var(--color-teal-400)]"
             :style="{
-              gridTemplateColumns: `104px repeat(${visibleDayEntries.length}, minmax(0, 1fr))`,
-              minWidth: showWeekend ? '1100px' : '820px'
+              gridTemplateColumns: `var(--menu-label-width) repeat(${visibleDayEntries.length}, minmax(0, 1fr))`,
+              minWidth: `calc(${showWeekend ? 996 : 716}px + var(--menu-label-width))`
             }"
           >
-            <div class="bg-elevated/70" />
+            <div class="sticky left-0 z-10 bg-elevated shadow-[1px_0_0_var(--ui-border)] md:static md:bg-elevated/70 md:shadow-none" />
             <div
               v-for="entry in visibleDayEntries"
               :key="entry.day.dayOfWeek"
@@ -949,21 +987,25 @@ async function onSubmit() {
             >{{ DAY_LABELS[entry.day.dayOfWeek].slice(0, 3) }} {{ dayDate(entry.index) }}</div>
 
             <template v-for="slotKey in visibleSlots" :key="slotKey">
-              <div class="flex items-center bg-elevated/70 px-3 text-sm font-semibold text-highlighted">{{ SLOT_LABELS[slotKey] }}</div>
+              <div class="sticky left-0 z-10 flex items-center justify-center bg-elevated px-1 text-sm font-semibold text-highlighted shadow-[1px_0_0_var(--ui-border)] md:static md:justify-start md:bg-elevated/70 md:px-3 md:shadow-none">
+                <span class="shrink-0 -rotate-90 whitespace-nowrap md:rotate-0">{{ SLOT_LABELS[slotKey] }}</span>
+              </div>
               <div
                 v-for="entry in visibleDayEntries"
                 :key="`${entry.day.dayOfWeek}-${slotKey}`"
                 class="bg-default p-1.5"
               >
-                <button
+                <UButton
                   type="button"
-                  :aria-label="`${SLOT_LABELS[slotKey]} de ${DAY_LABELS[entry.day.dayOfWeek]}: ${entry.day[slotKey].platilloPrincipal.nombre || 'Añadir plato'}`"
+                  variant="outline"
+                  :color="isSlotInvalid(entry.day.dayOfWeek, slotKey)
+                    ? 'error'
+                    : isSlotModified(entry.day.dayOfWeek, slotKey)
+                      ? 'secondary'
+                      : editorOpen && activeDay === entry.day.dayOfWeek && activeSlot === slotKey ? 'primary' : 'neutral'"
+                  :aria-label="`${SLOT_LABELS[slotKey]} de ${DAY_LABELS[entry.day.dayOfWeek]}: ${entry.day[slotKey].platilloPrincipal.nombre || 'Añadir plato'}${isSlotModified(entry.day.dayOfWeek, slotKey) ? ', cambios sin guardar' : ''}`"
                   aria-haspopup="dialog"
-                  :class="[
-                    'group flex h-40 w-full flex-col rounded-lg border bg-default p-2 text-left transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                    editorOpen && activeDay === entry.day.dayOfWeek && activeSlot === slotKey ? 'border-primary ring-1 ring-primary/50 shadow-sm' : 'border-default',
-                    isSlotInvalid(entry.day.dayOfWeek, slotKey) ? 'border-error ring-1 ring-error/40' : ''
-                  ]"
+                  class="group h-40 w-full flex-col items-stretch gap-0 bg-default p-2 text-left text-highlighted transition-all hover:-translate-y-0.5 hover:bg-default hover:shadow-md"
                   @click="openMealEditor(entry.day.dayOfWeek, slotKey)"
                 >
                   <template v-if="entry.day[slotKey].platilloPrincipal.nombre">
@@ -986,7 +1028,7 @@ async function onSubmit() {
                     </span>
                     <span class="mt-2 w-full text-xs font-medium text-muted group-hover:text-primary">Añadir plato</span>
                   </template>
-                </button>
+                </UButton>
               </div>
             </template>
           </div>

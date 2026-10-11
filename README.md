@@ -114,6 +114,26 @@ temporary changes are rolled back. Run against each environment after migration.
 The broader permission audit in T03 remains pending; see
 `docs/plan-pedidos-clientes.md` for evidence and scope.
 
+### Weekly menu type
+
+`WeeklyMenu.menuType` uses the `MenuType` enum: `ESTANDAR`, `VEGETARIANO`,
+and `PERSONALIZADO`. The admin form displays Estándar, Vegetariano and
+Personalizado with the project's default Nuxt UI control size and radius.
+
+Migration `20261011194936_add_weekly_menu_type` adds a non-null column with
+`ESTANDAR` as its database default, which also assigns that value to existing
+menus. Apply the migration before deploying the updated application and
+regenerate the Prisma client with `pnpm exec prisma generate`. Creating a menu
+without the field defaults to standard; updating from an older client preserves
+the stored type. Changing the type also participates in unsaved-change detection
+and draft restoration.
+
+Verified on 2026-10-11: the local connection and Netlify production configuration
+point to the same Supabase project. The migration is applied in that shared
+database, and all 8 existing menus have `ESTANDAR`; RLS remains enabled.
+The deployed application still needs a code deployment to expose the new
+selector and API response field.
+
 Run the unit and component tests with Vitest:
 
 ```bash

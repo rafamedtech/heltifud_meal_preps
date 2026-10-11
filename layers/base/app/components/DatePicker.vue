@@ -11,6 +11,9 @@ const df = new DateFormatter('es-MX', {
   timeZone: 'UTC',
 });
 
+const props = defineProps<{ label?: string; invalid?: boolean }>();
+const open = ref(false);
+
 const model = defineModel<Date | string>({
   required: true,
 });
@@ -44,24 +47,27 @@ const displayDate = computed(() => df.format(calendarValue.value.toDate('UTC')))
 </script>
 
 <template>
-  <UPopover>
+  <UPopover v-model:open="open" :content="{ align: 'start' }">
     <UButton
-      color="neutral"
-      variant="ghost"
+      type="button"
+      :color="props.invalid ? 'error' : 'neutral'"
+      variant="outline"
+      :aria-label="props.label ? `${props.label}: ${displayDate}` : displayDate"
+      :aria-invalid="props.invalid || undefined"
       icon="i-lucide-calendar"
       trailing-icon="i-lucide-chevron-down"
-      class="w-full justify-between text-left text-sm font-medium text-highlighted hover:bg-transparent"
+      class="w-full text-default"
       :ui="{
-        base: 'w-full h-5 min-h-5 max-h-5 justify-between border-0 bg-transparent px-0 py-0 text-sm font-medium leading-5 text-highlighted shadow-none hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent',
-        leadingIcon: 'size-4 text-muted',
-        trailingIcon: 'size-4 text-muted'
+        base: 'justify-start',
+        leadingIcon: 'text-muted',
+        trailingIcon: 'ms-auto text-muted'
       }"
     >
       {{ displayDate }}
     </UButton>
 
     <template #content>
-      <UCalendar v-model="calendarValue" class="p-2" />
+      <UCalendar v-model="calendarValue" class="p-2" @update:model-value="open = false" />
     </template>
   </UPopover>
 </template>

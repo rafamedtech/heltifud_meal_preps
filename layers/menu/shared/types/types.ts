@@ -326,7 +326,16 @@ export interface DayMenu {
   snack2: MenuSlot;
 }
 
+export const MENU_TYPE_VALUES = ['ESTANDAR', 'VEGETARIANO', 'PERSONALIZADO'] as const;
+export type MenuType = (typeof MENU_TYPE_VALUES)[number];
+export const MENU_TYPE_OPTIONS: { label: string; value: MenuType }[] = [
+  { label: 'Estándar', value: 'ESTANDAR' },
+  { label: 'Vegetariano', value: 'VEGETARIANO' },
+  { label: 'Personalizado', value: 'PERSONALIZADO' },
+];
+
 export interface WeeklyMenu {
+  menuType: MenuType;
   id: string;
   createdAt: string;
   updatedAt: string;
@@ -338,6 +347,7 @@ export interface WeeklyMenu {
 }
 
 export interface WeeklyMenuInput {
+  menuType: MenuType;
   name: string;
   startDate: string | Date;
   endDate: string | Date;

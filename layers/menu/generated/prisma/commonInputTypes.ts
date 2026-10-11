@@ -29,6 +29,13 @@ export type StringFilter<$PrismaModel = never> = {
   not?: Prisma.NestedStringFilter<$PrismaModel> | string
 }
 
+export type EnumMenuTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.MenuType | Prisma.EnumMenuTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MenuType[] | Prisma.ListEnumMenuTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MenuType[] | Prisma.ListEnumMenuTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMenuTypeFilter<$PrismaModel> | $Enums.MenuType
+}
+
 export type BoolFilter<$PrismaModel = never> = {
   equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
   not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
@@ -61,6 +68,16 @@ export type StringWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedStringFilter<$PrismaModel>
   _max?: Prisma.NestedStringFilter<$PrismaModel>
+}
+
+export type EnumMenuTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MenuType | Prisma.EnumMenuTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MenuType[] | Prisma.ListEnumMenuTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MenuType[] | Prisma.ListEnumMenuTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMenuTypeWithAggregatesFilter<$PrismaModel> | $Enums.MenuType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMenuTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMenuTypeFilter<$PrismaModel>
 }
 
 export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -330,6 +347,13 @@ export type NestedStringFilter<$PrismaModel = never> = {
   not?: Prisma.NestedStringFilter<$PrismaModel> | string
 }
 
+export type NestedEnumMenuTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.MenuType | Prisma.EnumMenuTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MenuType[] | Prisma.ListEnumMenuTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MenuType[] | Prisma.ListEnumMenuTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMenuTypeFilter<$PrismaModel> | $Enums.MenuType
+}
+
 export type NestedBoolFilter<$PrismaModel = never> = {
   equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
   not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
@@ -372,6 +396,16 @@ export type NestedIntFilter<$PrismaModel = never> = {
   gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
   gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
   not?: Prisma.NestedIntFilter<$PrismaModel> | number
+}
+
+export type NestedEnumMenuTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MenuType | Prisma.EnumMenuTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MenuType[] | Prisma.ListEnumMenuTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MenuType[] | Prisma.ListEnumMenuTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMenuTypeWithAggregatesFilter<$PrismaModel> | $Enums.MenuType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMenuTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMenuTypeFilter<$PrismaModel>
 }
 
 export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {

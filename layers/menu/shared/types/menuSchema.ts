@@ -10,6 +10,7 @@ import {
   EXPENSE_PAYMENT_METHOD_VALUES,
   EXPENSE_TYPE_VALUES,
   ORDER_STATUS_VALUES,
+  MENU_TYPE_VALUES,
   SLOT_TYPE_VALUES,
 } from './types';
 
@@ -76,6 +77,7 @@ function slotHasContent(slot: z.infer<typeof menuSlotSchema>) {
 export const weeklyMenuInputSchema = z
   .object({
     name: z.string().min(2, 'Nombre de menú muy corto'),
+    menuType: z.enum(MENU_TYPE_VALUES).default('ESTANDAR'),
     startDate: z.coerce.date(),
     endDate: z.coerce.date(),
     days: z.array(dayMenuSchema).length(7, 'El menú debe tener exactamente 7 días'),

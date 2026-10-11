@@ -275,6 +275,7 @@ function mapMenu(record: WeeklyMenuRecord): WeeklyMenu {
   return {
     id: record.id,
     name: record.name,
+    menuType: record.menuType,
     isActive: record.isActive,
     startDate: record.startDate.toISOString(),
     endDate: record.endDate.toISOString(),
@@ -386,6 +387,7 @@ export async function createWeeklyMenu(input: WeeklyMenuInput) {
   const created = await prisma.weeklyMenu.create({
     data: {
       name: payload.name,
+      menuType: payload.menuType,
       isActive: hasActiveMenu === 0,
       startDate: payload.startDate,
       endDate: payload.endDate,
@@ -402,14 +404,14 @@ export async function createWeeklyMenu(input: WeeklyMenuInput) {
 export async function updateWeeklyMenu(id: string, input: WeeklyMenuInput) {
   const existing = await prisma.weeklyMenu.findUnique({
     where: { id },
-    select: { id: true }
+    select: { id: true, menuType: true }
   })
 
   if (!existing) {
     throw createError({ statusCode: 404, statusMessage: "Menú no encontrado." })
   }
 
-  const payload = validatePayload(input)
+  const payload = validatePayload({ ...input, menuType: input.menuType === undefined ? existing.menuType : input.menuType })
   await assertNoOverlap(payload.startDate, payload.endDate, id)
 
   const existingDays = await prisma.menuDay.findMany({
@@ -433,6 +435,7 @@ export async function updateWeeklyMenu(id: string, input: WeeklyMenuInput) {
       where: { id },
       data: {
         name: payload.name,
+        menuType: payload.menuType,
         startDate: payload.startDate,
         endDate: payload.endDate
       }
