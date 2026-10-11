@@ -219,6 +219,8 @@ async function logout() {
     <div class="flex items-center gap-2 min-[744px]:hidden">
       <UButton
         v-if="isFoodCatalogEditPage"
+        color="neutral"
+        variant="subtle"
         square
         icon="i-lucide-arrow-left"
         aria-label="Regresar"
@@ -259,6 +261,8 @@ async function logout() {
 
       <UButton
         v-if="isMenuEditPage"
+        color="neutral"
+        variant="subtle"
         square
         icon="i-lucide-arrow-left"
         aria-label="Regresar"
@@ -334,6 +338,8 @@ async function logout() {
     <div class="hidden items-center gap-3 min-[744px]:flex">
       <UButton
         v-if="isFoodCatalogEditPage"
+        color="neutral"
+        variant="subtle"
         icon="i-lucide-arrow-left"
         @click="requestFoodCatalogBack"
       >
@@ -374,6 +380,8 @@ async function logout() {
 
       <UButton
         v-if="isMenuEditPage"
+        color="neutral"
+        variant="subtle"
         icon="i-lucide-arrow-left"
         to="/admin/menu"
       >
