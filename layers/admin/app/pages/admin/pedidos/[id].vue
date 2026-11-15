@@ -194,12 +194,12 @@ async function saveOrder() {
 
     <section v-if="status === 'pending'" role="status" aria-live="polite" class="space-y-5">
       <span class="sr-only">Cargando pedido</span>
-      <USkeleton class="h-44 rounded-2xl" />
-      <div class="grid gap-5 lg:grid-cols-2"><USkeleton class="h-64 rounded-2xl" /><USkeleton class="h-64 rounded-2xl" /></div>
-      <USkeleton class="h-96 rounded-2xl" />
+      <USkeleton class="h-44" />
+      <div class="grid gap-5 lg:grid-cols-2"><USkeleton class="h-64" /><USkeleton class="h-64" /></div>
+      <USkeleton class="h-96" />
     </section>
 
-    <UCard v-else-if="error || !order" class="app-surface" :ui="{ body: 'py-16 text-center' }">
+    <UCard v-else-if="error || !order" :ui="{ body: 'py-16 text-center' }">
       <UIcon :name="notFound ? 'i-lucide-package-x' : 'i-lucide-cloud-alert'" class="size-10 text-muted" />
       <h1 class="mt-4 text-xl font-semibold text-highlighted">{{ notFound ? "Pedido no encontrado" : "No fue posible cargar el pedido" }}</h1>
       <p class="mt-2 text-sm text-muted">{{ notFound ? "El registro ya no existe o el enlace es incorrecto." : "Intenta cargar nuevamente la información del pedido." }}</p>
@@ -207,34 +207,22 @@ async function saveOrder() {
     </UCard>
 
     <UForm v-else :schema="orderUpdateInputSchema" :state="state" class="space-y-6" @submit="saveOrder">
-      <header class="flex flex-col gap-5 px-1 pb-3 pt-1 sm:flex-row sm:items-center sm:gap-6 sm:pb-5">
-        <div class="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary" aria-hidden="true">
-          <UIcon name="i-lucide-shopping-bag" class="size-8" />
-        </div>
-        <div class="min-w-0 flex-1">
-          <div class="flex flex-wrap items-center gap-3">
-            <h1 class="min-w-0 break-words text-2xl font-bold tracking-tight text-highlighted sm:text-3xl">{{ order.planTitle }}</h1>
-            <UBadge :color="statusColor" variant="soft">
-              <UIcon v-if="currentStatus" :name="currentStatus.icon" class="size-3" />
-              {{ currentStatus?.label }}
-            </UBadge>
-          </div>
-          <p class="mt-3 text-sm text-muted">{{ order.planVariantTitle }} · Creado el {{ formatDate(order.createdAt) }}</p>
-        </div>
-        <UButton type="submit" icon="i-lucide-save" :loading="saving" class="self-start sm:self-center">Guardar cambios</UButton>
-      </header>
+      <UPageHeader :title="order.planTitle" :description="`${order.planVariantTitle} · Creado el ${formatDate(order.createdAt)}`">
+        <template #headline><UBadge :color="statusColor" variant="subtle" :icon="currentStatus?.icon" :label="currentStatus?.label" /></template>
+        <template #links><UButton type="submit" icon="i-lucide-save" :loading="saving" label="Guardar cambios" /></template>
+      </UPageHeader>
 
       <div class="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
-        <UCard class="app-surface">
+        <UCard>
           <template #header><h2 class="flex items-center gap-2 font-semibold text-highlighted"><UIcon name="i-lucide-receipt-text" class="size-5 text-primary" />Resumen</h2></template>
           <dl class="grid grid-cols-2 gap-5 text-sm">
             <div>
               <dt class="text-muted">Cliente</dt>
-              <dd class="mt-1 break-words"><NuxtLink :to="`/admin/clientes/${order.customerId}`" class="font-medium text-highlighted hover:text-primary">{{ order.customerName }}</NuxtLink></dd>
+              <dd class="mt-1 break-words"><ULink :to="`/admin/clientes/${order.customerId}`" class="font-medium text-highlighted hover:text-primary">{{ order.customerName }}</ULink></dd>
             </div>
             <div>
               <dt class="text-muted">Teléfono</dt>
-              <dd class="mt-1"><a :href="`tel:${order.customerPhone}`" class="font-medium text-highlighted hover:text-primary">{{ order.customerPhone }}</a></dd>
+              <dd class="mt-1"><ULink :to="`tel:${order.customerPhone}`" class="font-medium text-highlighted hover:text-primary">{{ order.customerPhone }}</ULink></dd>
             </div>
             <div>
               <dt class="text-muted">Precio</dt>
@@ -251,7 +239,7 @@ async function saveOrder() {
           </div>
         </UCard>
 
-        <UCard class="app-surface flex flex-col" :ui="{ header: 'shrink-0', body: 'flex flex-1 flex-col' }">
+        <UCard class="flex flex-col" :ui="{ header: 'shrink-0', body: 'flex flex-1 flex-col' }">
           <template #header><h2 class="flex items-center gap-2 font-semibold text-highlighted"><UIcon name="i-lucide-truck" class="size-5 text-primary" />Entregas</h2></template>
           <div class="grid flex-1 gap-4 sm:grid-cols-2">
             <section v-for="delivery in deliveries" :key="delivery.number" class="flex min-w-0 flex-col gap-3 rounded-xl border border-default bg-elevated/30 p-4">
@@ -279,7 +267,7 @@ async function saveOrder() {
           <UCard
             v-for="day in dayGroups"
             :key="day.dayOrder"
-            class="app-surface w-[min(20rem,calc(100vw-4rem))] shrink-0 snap-start"
+            class="w-[min(20rem,calc(100vw-4rem))] shrink-0 snap-start"
             :ui="{ header: 'px-4 py-3 sm:px-4', body: 'p-0 sm:p-0' }"
           >
             <template #header>

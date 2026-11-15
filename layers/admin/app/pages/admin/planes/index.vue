@@ -29,6 +29,13 @@ const slotOptions: Array<{ label: string; value: SlotTypeValue; icon: string }> 
   { label: "Colación 2", value: "SNACK2", icon: "i-lucide-cherry" }
 ]
 
+const planCreateRequest = useState("admin-plan-create-request", () => 0)
+watch(planCreateRequest, () => openCreate())
+const slotChoices = computed(() => slotOptions.map(slot => ({
+  ...slot,
+  disabled: formState.slotTypes.length === 1 && formState.slotTypes.includes(slot.value)
+})))
+
 const isFormOpen = ref(false)
 const editingPlan = ref<Plan | null>(null)
 const pendingDelete = ref<Plan | null>(null)
@@ -102,13 +109,6 @@ function removeVariant(index: number) {
   formState.variants.splice(index, 1)
 }
 
-function toggleSlot(slot: SlotTypeValue, checked: boolean) {
-  if (checked && !formState.slotTypes.includes(slot)) formState.slotTypes.push(slot)
-  if (!checked && formState.slotTypes.length > 1) {
-    formState.slotTypes = formState.slotTypes.filter((item) => item !== slot)
-  }
-}
-
 async function savePlan() {
   saving.value = true
   try {
@@ -158,138 +158,34 @@ async function confirmDelete() {
 
 <template>
   <main class="space-y-6">
-    <header class="relative overflow-hidden rounded-3xl border border-default bg-default px-6 py-7 shadow-sm sm:px-8">
-      <div class="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div class="max-w-2xl">
-          <h1 class="text-2xl font-bold tracking-tight text-primary sm:text-3xl">Planes y precios</h1>
-          <p class="mt-2 max-w-xl text-sm leading-6 text-muted">
-            Define qué tiempos incluye cada plan y ofrece diferentes cantidades de días.
-          </p>
-        </div>
-        <UButton
-          icon="i-lucide-plus"
-          size="lg"
-          @click="openCreate"
-          >Crear plan</UButton
-        >
-      </div>
-    </header>
-
-    <section
-      v-if="status === 'pending'"
-      class="grid gap-5 md:grid-cols-3"
-    >
-      <article
-        v-for="index in 4"
-        :key="index"
-        class="overflow-hidden rounded-3xl border border-default bg-default shadow-sm"
-        aria-hidden="true"
-      >
-        <div class="space-y-5 p-5">
-          <div class="space-y-2">
-            <div class="flex items-start justify-between gap-2">
-              <USkeleton class="h-5 w-16 rounded-full" />
-              <USkeleton class="size-8 rounded-lg" />
-            </div>
-            <USkeleton class="h-7 w-3/4 rounded-lg" />
+    <UPageGrid v-if="status === 'pending'">
+      <UCard v-for="index in 3" :key="index" aria-hidden="true"><USkeleton class="h-40 w-full" /></UCard>
+    </UPageGrid>
+    <UEmpty v-else-if="error" icon="i-lucide-cloud-alert" title="No fue posible cargar los planes">
+      <template #actions><UButton color="neutral" variant="outline" @click="refresh()">Reintentar</UButton></template>
+    </UEmpty>
+    <UEmpty v-else-if="!plans.length" icon="i-lucide-clipboard-list" title="Aún no hay planes" description="Crea un plan con sus tiempos, variantes y precios.">
+      <template #actions><UButton icon="i-lucide-plus" @click="openCreate">Crear plan</UButton></template>
+    </UEmpty>
+    <UPageGrid v-else>
+      <UCard v-for="plan in plans" :key="plan.id" :title="plan.title" :description="plan.description">
+        <template #header>
+          <div class="flex items-center justify-between gap-3">
+            <UUser :name="plan.title" :description="plan.description" />
+            <UDropdownMenu :items="[{ label: 'Editar plan', icon: 'i-lucide-pencil', onSelect: () => openEdit(plan) }]" :content="{ align: 'end' }">
+              <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" size="sm" :aria-label="`Acciones de ${plan.title}`" />
+            </UDropdownMenu>
           </div>
-
-          <div class="space-y-3 rounded-2xl bg-elevated/65 p-3">
-            <div
-              v-for="variant in 3"
-              :key="variant"
-              class="flex items-center justify-between gap-3"
-            >
-              <div class="flex flex-1 items-center gap-2">
-                <USkeleton class="size-1.5 shrink-0 rounded-full" />
-                <USkeleton
-                  class="h-4"
-                  :class="variant === 2 ? 'w-24' : 'w-20'"
-                />
-              </div>
-              <USkeleton class="h-4 w-14" />
-            </div>
+        </template>
+        <dl class="divide-y divide-default">
+          <div v-for="variant in plan.variants" :key="variant.id" class="flex items-center justify-between gap-3 py-3 text-sm">
+            <dt class="flex items-center gap-2"><UBadge :color="variant.isActive ? 'success' : 'neutral'" variant="subtle" :label="variant.title" /></dt>
+            <dd class="font-semibold tabular-nums text-highlighted">{{ transformPrice(variant.price) }}</dd>
           </div>
-        </div>
-      </article>
-    </section>
-
-    <UAlert
-      v-else-if="error"
-      color="error"
-      variant="soft"
-      icon="i-lucide-circle-alert"
-      title="No fue posible cargar los planes"
-      :description="error.message"
-      :actions="[{ label: 'Reintentar', onClick: () => refresh() }]"
-    />
-
-    <section
-      v-else-if="!plans.length"
-      class="rounded-3xl border border-dashed border-default bg-default px-6 py-20 text-center"
-    >
-      <UIcon
-        name="i-lucide-notebook-tabs"
-        class="mx-auto size-10 text-dimmed"
-      />
-      <h2 class="mt-4 font-semibold text-highlighted">Aún no hay planes</h2>
-      <p class="mt-1 text-sm text-muted">Crea el primero para comenzar a registrar pedidos.</p>
-      <UButton
-        class="mt-5"
-        icon="i-lucide-plus"
-        @click="openCreate"
-        >Crear plan</UButton
-      >
-    </section>
-
-    <section
-      v-else
-      class="grid gap-5 md:grid-cols-3"
-    >
-      <article
-        v-for="plan in plans"
-        :key="plan.id"
-        class="overflow-hidden rounded-3xl border border-default bg-default shadow-sm"
-      >
-        <div class="space-y-5 p-5">
-          <div class="space-y-2">
-            <div class="flex items-start justify-between gap-2">
-              <UBadge
-                :color="plan.isActive ? 'success' : 'neutral'"
-                variant="solid"
-              >
-                {{ plan.isActive ? "Activo" : "Pausado" }}
-              </UBadge>
-              <UButton
-                icon="i-lucide-pencil"
-                color="neutral"
-                variant="ghost"
-                aria-label="Editar plan"
-                @click="openEdit(plan)"
-              />
-            </div>
-            <h2 class="w-full text-xl font-bold text-highlighted">{{ plan.title }}</h2>
-          </div>
-
-          <div class="space-y-2 rounded-2xl bg-elevated/65 p-3">
-            <div
-              v-for="variant in plan.variants"
-              :key="variant.id"
-              class="flex items-center justify-between gap-3 text-sm"
-            >
-              <span class="flex items-center gap-2 text-toned">
-                <span
-                  class="size-1.5 rounded-full"
-                  :class="variant.isActive ? 'bg-success' : 'bg-muted'"
-                />
-                {{ variant.title }}
-              </span>
-              <span class="font-semibold tabular-nums text-highlighted">{{ transformPrice(variant.price) }}</span>
-            </div>
-          </div>
-        </div>
-      </article>
-    </section>
+        </dl>
+        <template #footer><UBadge :color="plan.isActive ? 'success' : 'neutral'" variant="subtle" :label="plan.isActive ? 'Activo' : 'Pausado'" /></template>
+      </UCard>
+    </UPageGrid>
 
     <UModal
       v-model:open="isFormOpen"
@@ -358,28 +254,7 @@ async function confirmDelete() {
                 label="Disponible"
               />
             </div>
-            <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-              <label
-                v-for="slot in slotOptions"
-                :key="slot.value"
-                class="flex cursor-pointer items-center gap-3 rounded-2xl border px-3 py-3 transition"
-                :class="
-                  formState.slotTypes.includes(slot.value)
-                    ? 'border-primary bg-primary/5 text-highlighted'
-                    : 'border-default bg-elevated/40 text-muted'
-                "
-              >
-                <UCheckbox
-                  :model-value="formState.slotTypes.includes(slot.value)"
-                  @update:model-value="toggleSlot(slot.value, Boolean($event))"
-                />
-                <UIcon
-                  :name="slot.icon"
-                  class="size-4"
-                />
-                <span class="text-sm font-medium">{{ slot.label }}</span>
-              </label>
-            </div>
+            <UCheckboxGroup v-model="formState.slotTypes" :items="slotChoices" variant="card" orientation="horizontal" />
           </section>
 
           <section>

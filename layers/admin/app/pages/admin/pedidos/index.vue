@@ -128,18 +128,9 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
 <template>
   <UPage>
     <div class="space-y-6">
-    <UPageHeader
-      title="Pedidos"
-      description="Consulta tus pedidos y organiza sus dos entregas de la semana."
-    >
-      <template #links>
-        <UButton to="/admin/pedidos/crear-nuevo" icon="i-lucide-plus" label="Nuevo pedido" />
-      </template>
-    </UPageHeader>
-
-    <UCard>
-      <template #header>
-        <div class="flex flex-wrap items-center justify-between gap-3">
+    <div class="space-y-6">
+      <UDashboardToolbar class="border-0 px-0">
+        <div class="flex w-full flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2">
             <h2 class="font-semibold text-highlighted">Listado de pedidos</h2>
             <UBadge v-if="!loading && !loadError" color="neutral" variant="subtle" :label="String(response.items.length)" />
@@ -154,7 +145,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
             @click="loadOrders"
           />
         </div>
-      </template>
+      </UDashboardToolbar>
 
       <div class="space-y-6">
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_auto] xl:items-end">
@@ -304,12 +295,12 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
         </template>
       </div>
 
-      <template #footer>
+      <div class="border-t border-default pt-4">
         <p class="text-sm text-muted" role="status">
           {{ loading ? 'Cargando pedidos…' : loadError ? 'Pedidos no disponibles' : `${response.items.length} ${response.items.length === 1 ? 'pedido' : 'pedidos'}${isFiltering ? (response.items.length === 1 ? ' coincide con los filtros' : ' coinciden con los filtros') : ' en el listado'}` }}
         </p>
-      </template>
-    </UCard>
+      </div>
+    </div>
     </div>
   </UPage>
 </template>

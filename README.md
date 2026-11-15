@@ -2,6 +2,15 @@
 
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
+## Convenciones de UI y agentes
+
+Usar primero componentes de Nuxt UI y sus props documentadas. Si las props no
+bastan o complican la solución, personalizar con Tailwind mediante `class` y
+`ui`, como indica la API del componente. Conservar los radios y tamaños del
+proyecto. Las reglas completas están en [AGENTS.md](AGENTS.md), que también se
+importa desde [CLAUDE.md](CLAUDE.md); la referencia de componentes es la
+[skill de Nuxt UI](.agents/skills/nuxt-ui/SKILL.md).
+
 ## Setup
 
 Make sure to install dependencies:

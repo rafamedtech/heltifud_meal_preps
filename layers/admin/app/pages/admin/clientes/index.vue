@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { TableColumn } from "@nuxt/ui"
 import { customerDeliveryDays } from "~~/layers/menu/shared/utils/customerDeliveryDays"
 import { customerInputSchema } from "~~/layers/menu/shared/types/menuSchema"
 import type {
@@ -6,7 +7,6 @@ import type {
   CustomerInput,
   CustomerSource,
   CustomerStatus,
-  CustomerType,
   DayOfWeek
 } from "~~/layers/menu/shared/types/types"
 
@@ -43,6 +43,14 @@ const customerTypeOptions = [
   { label: "Menu", value: "menu" },
   { label: "Vegetariano", value: "vegetariano" },
   { label: "Dieta", value: "dieta" }
+]
+
+const customerColumns: TableColumn<Customer>[] = [
+  { accessorKey: "nombre", header: "Cliente" },
+  { id: "contact", header: "Contacto" },
+  { id: "profile", header: "Perfil" },
+  { id: "source", header: "Origen" },
+  { id: "actions", header: "Acciones", meta: { class: { th: "text-right", td: "text-right" } } }
 ]
 
 const customers = ref<Customer[]>([])
@@ -253,7 +261,7 @@ function actionItems(customer: Customer) {
   ]]
 }
 
-function openProfile(event: MouseEvent, customer: Customer) {
+function openProfile(event: Event, customer: Customer) {
   // Preserve links, dropdowns and other controls inside the row.
   if ((event.target as HTMLElement).closest('a, button, [role="menuitem"]')) return
   return navigateTo(`/admin/clientes/${customer.id}`)
@@ -272,8 +280,8 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
 
 <template>
   <main class="flex min-h-full flex-col space-y-6">
-    <UCard class="app-surface" :ui="{ body: 'p-5 sm:p-6' }">
-      <div class="grid gap-3 md:grid-cols-3 xl:grid-cols-[minmax(260px,1fr)_190px_190px_190px]">
+    <UDashboardToolbar class="border-0 px-0">
+      <div class="grid w-full gap-3 md:grid-cols-3 xl:grid-cols-[minmax(260px,1fr)_190px_190px_190px]">
         <UInput v-model="search" icon="i-lucide-search" placeholder="Buscar por nombre, teléfono o correo" class="md:col-span-3 xl:col-span-1" />
         <USelect v-model="selectedStatus" :items="statusOptions" value-key="value" />
         <USelect v-model="selectedType" :items="customerTypeOptions" value-key="value" />
@@ -281,166 +289,55 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
       </div>
 
       <UButton v-if="isFiltering" label="Limpiar filtros" icon="i-lucide-filter-x" variant="ghost" color="neutral" size="xs" class="mt-3 ml-auto flex" @click="resetFilters" />
-    </UCard>
+    </UDashboardToolbar>
 
-    <section
-      v-if="loading"
-      role="status"
-      aria-live="polite"
-      class="flex min-h-64 flex-col items-center justify-center gap-3 text-muted"
-    >
-      <UIcon
-        name="i-lucide-loader-circle"
-        class="size-12 animate-spin"
-        aria-hidden="true"
-      />
-      <span>Cargando</span>
-    </section>
-
-    <UCard v-else-if="loadError" class="app-surface" :ui="{ body: 'py-14 sm:py-16' }">
-      <div class="mx-auto max-w-md space-y-4 text-center">
-        <UIcon name="i-lucide-cloud-alert" class="mx-auto size-10 text-error" />
-        <div>
-          <h2 class="font-semibold text-highlighted">No fue posible cargar los clientes</h2>
-          <p class="mt-1 text-sm text-muted">{{ loadError }}</p>
-        </div>
-        <UButton icon="i-lucide-refresh-cw" variant="soft" @click="loadCustomers()">Reintentar</UButton>
-      </div>
-    </UCard>
-
-    <UCard v-else-if="!customers.length" class="app-surface" :ui="{ body: 'py-14 sm:py-16' }">
-      <div class="mx-auto max-w-md space-y-4 text-center">
-        <div class="mx-auto flex size-12 items-center justify-center rounded-xl border border-default bg-elevated">
-          <UIcon :name="isFiltering ? 'i-lucide-search-x' : 'i-lucide-users-round'" class="size-5 text-muted" />
-        </div>
-        <div>
-          <h2 class="font-semibold text-highlighted">{{ isFiltering ? "No encontramos coincidencias" : "Aún no hay clientes" }}</h2>
-          <p class="mt-1 text-sm text-muted">{{ isFiltering ? "Prueba otra búsqueda o limpia los filtros." : "Crea el primer registro para comenzar a administrar tu cartera." }}</p>
-        </div>
-        <UButton v-if="isFiltering" variant="soft" icon="i-lucide-filter-x" @click="resetFilters">Limpiar filtros</UButton>
+    <UEmpty v-if="loading" loading title="Cargando clientes" />
+    <UEmpty v-else-if="loadError" icon="i-lucide-cloud-alert" title="No fue posible cargar los clientes" :description="loadError">
+      <template #actions><UButton icon="i-lucide-refresh-cw" color="neutral" variant="outline" @click="loadCustomers()">Reintentar</UButton></template>
+    </UEmpty>
+    <UEmpty v-else-if="!customers.length" :icon="isFiltering ? 'i-lucide-search-x' : 'i-lucide-users-round'" :title="isFiltering ? 'No encontramos coincidencias' : 'Aún no hay clientes'" :description="isFiltering ? 'Prueba otra búsqueda o limpia los filtros.' : 'Crea el primer registro para comenzar a administrar tu cartera.'">
+      <template #actions>
+        <UButton v-if="isFiltering" color="neutral" variant="outline" icon="i-lucide-filter-x" @click="resetFilters">Limpiar filtros</UButton>
         <UButton v-else icon="i-lucide-user-plus" @click="openCreate">Crear cliente</UButton>
-      </div>
-    </UCard>
+      </template>
+    </UEmpty>
 
-    <UCard v-else class="app-surface overflow-hidden" :ui="{ body: 'p-0 sm:p-0' }">
-        <div class="divide-y divide-default/70 md:grid md:grid-cols-2 md:divide-y-0 lg:hidden">
-          <article
-            v-for="customer in customers"
-            :key="`mobile-${customer.id}`"
-            class="cursor-pointer space-y-3 px-5 py-4 transition-colors hover:bg-elevated/35 md:border-b md:border-default/70 md:odd:border-r"
-            @click="openProfile($event, customer)"
-          >
-            <div class="flex items-start gap-3">
-              <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                {{ customer.nombre.slice(0, 2).toUpperCase() }}
-              </div>
-
-              <div class="flex min-w-0 flex-1 items-center gap-2">
-                <NuxtLink :to="`/admin/clientes/${customer.id}`" class="block truncate rounded font-semibold text-highlighted hover:text-primary focus-visible:outline-2 focus-visible:outline-primary">{{ customer.nombre }}</NuxtLink>
-                <UBadge :color="statusAppearance(customer.status).color" variant="soft" size="sm" class="shrink-0">
-                  <UIcon :name="statusAppearance(customer.status).icon" class="size-3" />
-                  {{ labelFor(statusOptions, customer.status) }}
-                </UBadge>
-              </div>
-
-              <UDropdownMenu :items="actionItems(customer)">
-                <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" aria-label="Acciones del cliente" />
-              </UDropdownMenu>
-            </div>
-
-            <div class="grid min-w-0 grid-cols-2 gap-x-4 gap-y-3 pl-13 text-xs">
-              <div class="min-w-0">
-                <p class="mb-1 font-medium uppercase tracking-wide text-dimmed">Contacto</p>
-                <a :href="`tel:${customer.telefono}`" class="flex min-w-0 items-center gap-1.5 text-toned hover:text-primary">
-                  <UIcon name="i-lucide-phone" class="size-3.5 shrink-0" />
-                  <span class="truncate">{{ customer.telefono }}</span>
-                </a>
-                <a v-if="customer.correoElectronico" :href="`mailto:${customer.correoElectronico}`" class="mt-1 flex min-w-0 items-center gap-1.5 text-muted hover:text-primary">
-                  <UIcon name="i-lucide-mail" class="size-3.5 shrink-0" />
-                  <span class="truncate">{{ customer.correoElectronico }}</span>
-                </a>
-                <span v-else class="mt-1 block text-dimmed">Sin correo</span>
-              </div>
-
-              <div class="min-w-0">
-                <p class="mb-1 font-medium uppercase tracking-wide text-dimmed">Perfil</p>
-                <p class="flex min-w-0 items-center gap-1.5 text-toned">
-                  <UIcon name="i-lucide-contact-round" class="size-3.5 shrink-0 text-muted" />
-                  <span class="truncate">{{ labelFor(customerTypeOptions, customer.tipoCliente as CustomerType) }}</span>
-                </p>
-                <p class="mt-1 flex min-w-0 items-center gap-1.5 text-muted">
-                  <UIcon :name="sourceIcon(customer.source)" class="size-3.5 shrink-0" />
-                  <span class="truncate">{{ labelFor(sourceOptions, customer.source) }}</span>
-                </p>
-              </div>
-            </div>
-          </article>
+    <UTable
+      v-else
+      :data="customers"
+      :columns="customerColumns"
+      aria-label="Listado de clientes"
+      @select="(event, row) => openProfile(event, row.original)"
+    >
+      <template #nombre-cell="{ row }">
+        <ULink :to="`/admin/clientes/${row.original.id}`">
+          <UUser :name="row.original.nombre" :avatar="{ alt: row.original.nombre }" size="sm" />
+        </ULink>
+      </template>
+      <template #contact-cell="{ row }">
+        <div class="flex flex-col gap-1">
+          <ULink :to="`tel:${row.original.telefono}`">{{ row.original.telefono }}</ULink>
+          <ULink v-if="row.original.correoElectronico" :to="`mailto:${row.original.correoElectronico}`" class="text-muted">{{ row.original.correoElectronico }}</ULink>
         </div>
-
-        <div class="hidden overflow-x-auto lg:block">
-          <table class="min-w-[860px] w-full text-sm">
-          <thead class="bg-elevated/50">
-            <tr class="border-b border-default/70 text-left">
-              <th class="px-5 py-3.5 sm:px-6 text-sm font-semibold text-highlighted">Cliente</th>
-              <th class="px-5 py-3.5 text-sm font-semibold text-highlighted">Contacto</th>
-              <th class="px-5 py-3.5 text-sm font-semibold text-highlighted">Tipo de cliente</th>
-              <th class="px-5 py-3.5 text-sm font-semibold text-highlighted">Origen</th>
-              <th class="w-16 px-5 py-3.5"><span class="sr-only">Acciones</span></th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-default/70">
-            <tr v-for="customer in customers" :key="customer.id" class="cursor-pointer transition-colors hover:bg-elevated/35" @click="openProfile($event, customer)">
-              <td class="px-5 py-4 sm:px-6">
-                <div class="flex items-center gap-3">
-                  <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                    {{ customer.nombre.slice(0, 2).toUpperCase() }}
-                  </div>
-                  <div class="flex min-w-0 items-center gap-2">
-                    <NuxtLink :to="`/admin/clientes/${customer.id}`" class="block truncate rounded font-semibold text-highlighted hover:text-primary focus-visible:outline-2 focus-visible:outline-primary">{{ customer.nombre }}</NuxtLink>
-                    <UBadge :color="statusAppearance(customer.status).color" variant="soft" size="sm" class="shrink-0">
-                      <UIcon :name="statusAppearance(customer.status).icon" class="size-3" />
-                      {{ labelFor(statusOptions, customer.status) }}
-                    </UBadge>
-                  </div>
-                </div>
-              </td>
-              <td class="px-5 py-4">
-                <a :href="`tel:${customer.telefono}`" class="flex items-center gap-2 text-toned hover:text-primary">
-                  <UIcon name="i-lucide-phone" class="size-3.5" />{{ customer.telefono }}
-                </a>
-                <a v-if="customer.correoElectronico" :href="`mailto:${customer.correoElectronico}`" class="mt-1 flex max-w-60 items-center gap-2 truncate text-xs text-muted hover:text-primary">
-                  <UIcon name="i-lucide-mail" class="size-3.5 shrink-0" />{{ customer.correoElectronico }}
-                </a>
-                <span v-else class="mt-1 block text-xs text-dimmed">Sin correo</span>
-              </td>
-              <td class="px-5 py-4">
-                <p class="flex items-center gap-2 text-toned">
-                  <UIcon name="i-lucide-contact-round" class="size-3.5 text-muted" />
-                  {{ labelFor(customerTypeOptions, customer.tipoCliente as CustomerType) }}
-                </p>
-              </td>
-              <td class="px-5 py-4">
-                <p class="flex items-center gap-2 text-toned">
-                  <UIcon :name="sourceIcon(customer.source)" class="size-3.5" />
-                  {{ labelFor(sourceOptions, customer.source) }}
-                </p>
-              </td>
-              <td class="px-5 py-4 text-right">
-                <UDropdownMenu :items="actionItems(customer)">
-                  <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" aria-label="Acciones del cliente" />
-                </UDropdownMenu>
-              </td>
-            </tr>
-          </tbody>
-          </table>
+      </template>
+      <template #profile-cell="{ row }">
+        <div class="space-y-1">
+          <UBadge :color="statusAppearance(row.original.status).color" variant="subtle" :label="labelFor(statusOptions, row.original.status)" />
+          <p class="text-xs text-muted">{{ labelFor(customerTypeOptions, row.original.tipoCliente) }}</p>
         </div>
-
-      <section v-if="nextCursor && !loading" class="border-t border-default/70 px-5 py-4 text-center sm:px-6">
-        <UButton color="neutral" variant="soft" icon="i-lucide-chevrons-down" :loading="loadingMore" @click="loadCustomers(true)">
-          Cargar más clientes
-        </UButton>
-      </section>
-    </UCard>
+      </template>
+      <template #source-cell="{ row }">
+        <UBadge color="neutral" variant="subtle" :icon="sourceIcon(row.original.source)" :label="labelFor(sourceOptions, row.original.source)" />
+      </template>
+      <template #actions-cell="{ row }">
+        <UDropdownMenu :items="actionItems(row.original)" :content="{ align: 'end' }">
+          <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" size="sm" aria-label="Acciones del cliente" />
+        </UDropdownMenu>
+      </template>
+    </UTable>
+    <div v-if="nextCursor && !loading" class="flex justify-center border-t border-default pt-4">
+      <UButton color="neutral" variant="outline" icon="i-lucide-chevrons-down" :loading="loadingMore" @click="loadCustomers(true)">Cargar más clientes</UButton>
+    </div>
 
     <UModal v-model:open="isFormOpen" :title="formTitle" :description="formDescription" :ui="{ content: 'max-w-3xl' }">
       <template #body>

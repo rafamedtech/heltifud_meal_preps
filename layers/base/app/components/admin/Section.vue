@@ -1,37 +1,11 @@
 <script setup lang="ts">
-interface SectionProps {
-  title: string;
-  titleSize?: 'base' | 'lg';
-}
-
-const { titleSize = 'base' } = defineProps<SectionProps>();
+defineProps<{ title: string; titleSize?: "base" | "lg" }>()
 </script>
 
 <template>
-  <section class="py-6">
-    <section class="flex flex-col gap-6">
-      <article>
-        <h2
-          class="font-semibold tracking-tight text-primary"
-          :class="{
-            'text-2xl': titleSize === 'base',
-            'text-3xl': titleSize === 'lg',
-          }"
-        >
-          {{ title }}
-        </h2>
-        <p class="flex items-center gap-2 pt-2 text-sm text-muted">
-          <slot name="description" />
-        </p>
-      </article>
-
-      <article>
-        <slot />
-      </article>
-    </section>
-
-    <article class="flex flex-col items-center justify-center gap-4 pt-6">
-      <slot name="footer" />
-    </article>
-  </section>
+  <UPageSection :title="title" :ui="{ container: 'px-0 py-6 sm:px-0 sm:py-6 lg:px-0 lg:py-6', title: 'text-xl' }">
+    <template #description><slot name="description" /></template>
+    <slot />
+    <template #links><slot name="footer" /></template>
+  </UPageSection>
 </template>

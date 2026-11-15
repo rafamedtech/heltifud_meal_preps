@@ -127,7 +127,7 @@ useSeoMeta({
         v-else
         class="grid gap-3 lg:grid-cols-3"
       >
-        <div class="app-surface-soft px-4 py-4">
+        <UCard>
           <div class="flex items-start justify-between gap-4">
             <div class="min-w-0">
               <p class="text-xs uppercase tracking-[0.18em] text-muted">Menú activo</p>
@@ -166,9 +166,9 @@ useSeoMeta({
               </UButton>
             </div>
           </div>
-        </div>
+        </UCard>
 
-        <div class="app-surface-soft relative px-4 py-4">
+        <UCard>
           <p class="pr-20 text-xs uppercase tracking-[0.18em] text-muted">Siguiente menú</p>
           <UButton
             v-if="nextMenu"
@@ -193,9 +193,9 @@ useSeoMeta({
               }}
             </p>
           </div>
-        </div>
+        </UCard>
 
-        <div class="app-surface-soft px-4 py-4">
+        <UCard>
           <p class="text-xs uppercase tracking-[0.18em] text-muted">Menús creados</p>
           <div class="mt-3 space-y-1">
             <p class="text-2xl font-bold text-highlighted">
@@ -203,7 +203,7 @@ useSeoMeta({
             </p>
             <p class="text-sm text-muted">Total de menús semanales registrados.</p>
           </div>
-        </div>
+        </UCard>
       </section>
 
       <section
@@ -230,92 +230,8 @@ useSeoMeta({
       />
 
       <section
-        v-else-if="!isLoading"
-        class="grid grid-cols-1 gap-4 lg:hidden"
-      >
-        <UCard
-          v-for="menu in menus"
-          :key="menu.id"
-          class="app-surface"
-          :ui="{
-            header: menu.isActive
-              ? 'bg-primary/18 text-highlighted px-5 py-4 sm:px-6'
-              : 'bg-default text-highlighted px-5 py-4 sm:px-6',
-            body: 'px-5 py-5 sm:px-6',
-            footer: 'px-5 py-4 sm:px-6'
-          }"
-        >
-          <template #header>
-            <section class="flex items-center justify-between gap-3">
-              <div>
-                <h3
-                  class="text-lg font-bold"
-                  :class="menu.isActive ? 'text-primary' : 'text-highlighted'"
-                >
-                  {{ menu.name }}
-                </h3>
-                <p
-                  class="mt-1 text-sm"
-                  :class="menu.isActive ? 'text-slate-700 dark:text-slate-200' : 'text-muted'"
-                >
-                  {{ formatDate(menu.startDate) }} - {{ formatDate(menu.endDate) }}
-                </p>
-              </div>
-
-              <section class="flex flex-wrap justify-end gap-2">
-                <UButton
-                  :variant="menu.isActive ? 'solid' : 'soft'"
-                  :color="menu.isActive ? 'success' : 'primary'"
-                  icon="i-lucide-badge-check"
-                  :loading="activatingId === menu.id"
-                  :disabled="menu.isActive"
-                  :class="menu.isActive ? 'text-white dark:text-black' : ''"
-                  @click="onSetActive(menu.id)"
-                >
-                  {{ menu.isActive ? "Activo" : "Activar" }}
-                </UButton>
-              </section>
-            </section>
-          </template>
-
-          <section class="flex flex-wrap justify-center gap-2">
-            <UButton
-              :to="`/admin/menu/${menu.id}`"
-              variant="ghost"
-              color="neutral"
-              icon="i-lucide-square-pen"
-            >
-              Editar
-            </UButton>
-            <UButton
-              color="error"
-              variant="ghost"
-              icon="i-lucide-trash"
-              :loading="deletingId === menu.id"
-              @click="requestDelete(menu)"
-            >
-              Eliminar
-            </UButton>
-          </section>
-
-          <template v-if="menu.isActive" #footer>
-            <section class="flex justify-center">
-              <UButton
-                to="/menu"
-                variant="ghost"
-                color="neutral"
-                icon="i-lucide-eye"
-              >
-                Ver público
-              </UButton>
-            </section>
-          </template>
-        </UCard>
-      </section>
-
-      <section
         v-if="!isLoading && menus.length"
-        class="app-surface hidden overflow-hidden lg:block"
+        class="overflow-hidden"
       >
         <UTable
           :data="menus"

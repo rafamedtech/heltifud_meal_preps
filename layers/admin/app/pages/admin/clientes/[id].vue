@@ -30,15 +30,6 @@ const sourceLabels = {
   recomendacion: "Recomendación",
   otro: "Otro"
 }
-const initials = computed(() =>
-  customer.value?.nombre
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase()
-)
 const notFound = computed(() => error.value?.statusCode === 404)
 
 function formatDate(value: string) {
@@ -64,76 +55,24 @@ function formatDate(value: string) {
       class="space-y-5"
     >
       <span class="sr-only">Cargando perfil del cliente</span>
-      <USkeleton class="h-44 rounded-2xl" />
+      <USkeleton class="h-44" />
       <div class="grid gap-5 lg:grid-cols-2">
-        <USkeleton class="h-64 rounded-2xl" /><USkeleton class="h-64 rounded-2xl" />
+        <USkeleton class="h-64" /><USkeleton class="h-64" />
       </div>
     </section>
 
-    <UCard
-      v-else-if="error || !customer"
-      class="app-surface"
-      :ui="{ body: 'py-16 text-center' }"
-    >
-      <UIcon
-        :name="notFound ? 'i-lucide-user-round-x' : 'i-lucide-cloud-alert'"
-        class="size-10 text-muted"
-      />
-      <h1 class="mt-4 text-xl font-semibold text-highlighted">
-        {{ notFound ? "Cliente no encontrado" : "No fue posible cargar el perfil" }}
-      </h1>
-      <p class="mt-2 text-sm text-muted">
-        {{
-          notFound
-            ? "El registro ya no existe o el enlace es incorrecto."
-            : "Intenta cargar nuevamente la información del cliente."
-        }}
-      </p>
-      <UButton
-        v-if="!notFound"
-        class="mt-5"
-        variant="soft"
-        icon="i-lucide-refresh-cw"
-        @click="refresh()"
-        >Reintentar</UButton
-      >
-    </UCard>
+    <UEmpty v-else-if="error || !customer" :icon="notFound ? 'i-lucide-user-round-x' : 'i-lucide-cloud-alert'" :title="notFound ? 'Cliente no encontrado' : 'No fue posible cargar el perfil'" :description="notFound ? 'El registro ya no existe o el enlace es incorrecto.' : 'Intenta cargar nuevamente la información del cliente.'">
+      <template v-if="!notFound" #actions><UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" label="Reintentar" @click="refresh()" /></template>
+    </UEmpty>
 
     <template v-else>
-      <header class="flex flex-col gap-5 px-1 pb-3 pt-1 sm:flex-row sm:items-center sm:gap-6 sm:pb-5">
-        <div
-          class="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-2xl font-semibold text-primary"
-          aria-hidden="true"
-        >
-          {{ initials }}
-        </div>
-        <div class="min-w-0 flex-1">
-          <div class="flex flex-wrap items-center gap-3">
-            <h1 class="min-w-0 break-words text-2xl font-bold tracking-tight text-highlighted sm:text-3xl">
-              {{ customer.nombre }}
-            </h1>
-            <UBadge
-              :color="
-                customer.status === 'activo' ? 'success' : customer.status === 'prospecto' ? 'warning' : 'neutral'
-              "
-              variant="soft"
-            >
-              <UIcon :name="statusIcons[customer.status]" class="size-3" />
-              {{ statusLabels[customer.status] }}
-            </UBadge>
-          </div>
-          <p class="mt-3 text-sm text-muted">Cliente desde {{ formatDate(customer.createdAt) }}</p>
-        </div>
-        <UButton
-          :to="`tel:${customer.telefono}`"
-          icon="i-lucide-phone"
-          class="self-start sm:self-center"
-          >Llamar al cliente</UButton
-        >
-      </header>
+      <UPageHeader :title="customer.nombre" :description="`Cliente desde ${formatDate(customer.createdAt)}`">
+        <template #headline><UBadge :color="customer.status === 'activo' ? 'success' : customer.status === 'prospecto' ? 'warning' : 'neutral'" variant="subtle" :icon="statusIcons[customer.status]" :label="statusLabels[customer.status]" /></template>
+        <template #links><UButton :to="`tel:${customer.telefono}`" icon="i-lucide-phone" label="Llamar al cliente" /></template>
+      </UPageHeader>
 
       <div class="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
-        <UCard class="app-surface">
+        <UCard>
           <template #header
             ><h2 class="flex items-center gap-2 font-semibold text-highlighted">
               <UIcon
@@ -146,21 +85,21 @@ function formatDate(value: string) {
             <div>
               <dt class="text-muted">Teléfono</dt>
               <dd class="mt-1">
-                <a
-                  :href="`tel:${customer.telefono}`"
+                <ULink
+                  :to="`tel:${customer.telefono}`"
                   class="font-medium text-highlighted hover:text-primary"
-                  >{{ customer.telefono }}</a
+                  >{{ customer.telefono }}</ULink
                 >
               </dd>
             </div>
             <div>
               <dt class="text-muted">Correo electrónico</dt>
               <dd class="mt-1 [overflow-wrap:anywhere]">
-                <a
+                <ULink
                   v-if="customer.correoElectronico"
-                  :href="`mailto:${customer.correoElectronico}`"
+                  :to="`mailto:${customer.correoElectronico}`"
                   class="font-medium text-highlighted hover:text-primary"
-                  >{{ customer.correoElectronico }}</a
+                  >{{ customer.correoElectronico }}</ULink
                 ><span
                   v-else
                   class="text-dimmed"
@@ -185,7 +124,7 @@ function formatDate(value: string) {
           </dl>
         </UCard>
 
-        <UCard class="app-surface flex flex-col" :ui="{ header: 'shrink-0', body: 'flex flex-1 flex-col gap-5' }">
+        <UCard class="flex flex-col" :ui="{ header: 'shrink-0', body: 'flex flex-1 flex-col gap-5' }">
           <template #header
             ><h2 class="flex items-center gap-2 font-semibold text-highlighted">
               <UIcon

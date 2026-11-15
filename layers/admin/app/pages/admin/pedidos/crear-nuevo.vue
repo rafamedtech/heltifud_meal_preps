@@ -98,16 +98,12 @@ async function submitOrder() {
 
 <template>
   <main class="space-y-6">
-    <header class="flex flex-col gap-5 rounded-3xl border border-default bg-default px-6 py-7 shadow-sm sm:px-8 lg:flex-row lg:items-end lg:justify-between">
-      <div>
-        <UButton to="/admin/pedidos" color="neutral" variant="ghost" icon="i-lucide-arrow-left" class="-ml-3 mb-3">Volver a pedidos</UButton>
-        <h1 class="text-2xl font-bold tracking-tight text-primary sm:text-3xl">Crear pedido</h1>
-        <p class="mt-2 max-w-2xl text-sm leading-6 text-muted">Selecciona cliente, plan y las dos entregas. El menú activo se copiará automáticamente al guardar.</p>
-      </div>
-    </header>
+    <UPageHeader title="Nuevo pedido" description="Selecciona cliente, plan y las dos entregas. El menú activo se copiará al guardar.">
+      <template #links><UButton to="/admin/pedidos" color="neutral" variant="outline" icon="i-lucide-arrow-left" label="Volver a pedidos" /></template>
+    </UPageHeader>
 
     <section v-if="isLoading" class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
-      <USkeleton class="h-160 rounded-3xl" /><USkeleton class="h-96 rounded-3xl" />
+      <USkeleton class="h-160" /><USkeleton class="h-96" />
     </section>
 
     <UAlert v-else-if="!customerResponse.items.length || !plans.length" color="warning" variant="soft" icon="i-lucide-triangle-alert" title="Falta información para crear un pedido">

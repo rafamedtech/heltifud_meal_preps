@@ -14,11 +14,11 @@
             <div class="flex items-center gap-2.5">
               <USkeleton class="size-5 shrink-0" />
               <USkeleton class="h-5 w-32" />
-              <USkeleton class="h-5 w-20 rounded-md" />
+              <USkeleton class="h-5 w-20" />
             </div>
             <USkeleton class="h-4 w-72 max-w-full" />
           </div>
-          <USkeleton class="h-8 w-24 rounded-md" />
+          <USkeleton class="h-8 w-24" />
         </div>
       </template>
 
@@ -37,8 +37,8 @@
     <section class="space-y-4" aria-hidden="true">
       <div class="flex flex-wrap items-center justify-end gap-3">
         <div class="flex flex-wrap items-center gap-2">
-          <USkeleton class="h-8 w-32 rounded-md" />
-          <USkeleton class="h-8 w-44 rounded-md" />
+          <USkeleton class="h-8 w-32" />
+          <USkeleton class="h-8 w-44" />
         </div>
       </div>
 
@@ -56,7 +56,7 @@
             </div>
             <div v-for="day in 5" :key="`${slot}-${day}`" class="bg-default p-1.5">
               <div class="flex h-40 w-full flex-col rounded-lg border border-default bg-default p-2">
-                <USkeleton class="min-h-0 w-full flex-1 rounded-md" />
+                <USkeleton class="min-h-0 w-full flex-1" />
                 <USkeleton class="mt-2 h-4 w-4/5" />
               </div>
             </div>

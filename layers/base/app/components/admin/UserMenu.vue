@@ -62,19 +62,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
 </script>
 
 <template>
-  <UDropdownMenu
-    :items="items"
-    :size="mobile ? 'xl' : 'md'"
-    :content="{ side: 'top', align: 'start', collisionPadding: 12 }"
-    :ui="{
-      content: mobile ? 'w-(--reka-dropdown-menu-trigger-width) max-w-[calc(100vw-2rem)] rounded-2xl' : 'w-64',
-      group: mobile ? 'p-2' : undefined,
-      label: mobile ? 'gap-3 px-4 py-4' : undefined,
-      item: mobile ? 'min-h-14 items-center gap-3 rounded-xl px-4 py-4 before:rounded-xl' : undefined,
-      itemLabel: 'truncate',
-      itemDescription: mobile ? 'truncate text-sm' : 'truncate'
-    }"
-  >
+  <UDropdownMenu :items="items" :content="{ side: 'top', align: 'start' }" :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width) min-w-56' }">
     <UButton
       :avatar="avatar"
       :label="collapsed ? undefined : userName"
@@ -83,11 +71,8 @@ const items = computed<DropdownMenuItem[][]>(() => [
       color="neutral"
       variant="ghost"
       aria-label="Abrir menú de usuario"
-      :class="[
-        'min-w-0 data-[state=open]:bg-elevated',
-        collapsed ? 'size-11 justify-center p-0' : 'w-full justify-start px-3 py-2.5'
-      ]"
-      :ui="{ label: 'flex-1 text-left truncate', trailingIcon: 'shrink-0 text-dimmed' }"
+      class="w-full data-[state=open]:bg-elevated"
+      :ui="{ label: 'flex-1 text-left truncate' }"
     />
   </UDropdownMenu>
 </template>

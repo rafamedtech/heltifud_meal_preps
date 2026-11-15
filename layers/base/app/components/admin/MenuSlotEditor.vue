@@ -195,15 +195,6 @@ function openSelectionModal(view: Extract<DetailModalView, "select-platillo-prin
 
 defineExpose({ openSelectionModal })
 
-function openSelectionModalFromKeyboard(
-  event: KeyboardEvent,
-  view: Extract<DetailModalView, "select-platillo-principal" | "select-guarnicion-1" | "select-guarnicion-2">
-) {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault()
-    openSelectionModal(view)
-  }
-}
 
 function scheduleModalViewCleanup() {
   if (clearModalViewTimer) {
@@ -316,7 +307,7 @@ const summary = computed(() => {
 
 const cardUi = computed(() => ({
   root: showToggle
-    ? "app-surface"
+    ? ""
     : "h-full border-0 bg-transparent shadow-none ring-0",
   header: showToggle
     ? "px-5 py-4 sm:px-5"
@@ -327,15 +318,6 @@ const cardUi = computed(() => ({
       : "space-y-3 px-4 py-4 sm:px-4 sm:py-4"
     : "p-0 sm:p-0"
 }))
-
-const selectFieldClass =
-  "app-control-surface relative flex min-h-[96px] items-center justify-between px-3 py-2.5 text-left transition-colors hover:bg-[var(--app-surface-soft)]"
-
-function summaryTextClass(isFilled: boolean) {
-  return isFilled
-    ? "text-highlighted"
-    : "text-muted italic font-normal tracking-[0.01em]"
-}
 
 function beforeEnter(el: Element) {
   const element = el as HTMLElement
@@ -383,7 +365,7 @@ function afterLeave(el: Element) {
 }
 
 const detailFieldInputUi = {
-  base: "app-control-surface hover:bg-[var(--app-surface-soft)] focus:bg-[var(--app-surface-soft)]"
+  base: "w-full"
 }
 
 const selectionOptions = computed(() => {
@@ -550,90 +532,36 @@ watch(
           v-if="showSides"
           class="space-y-3"
         >
-          <div
-            role="button"
-            tabindex="0"
-            :class="`${selectFieldClass} w-full cursor-pointer`"
-            @click="openSelectionModal('select-platillo-principal')"
-            @keydown="openSelectionModalFromKeyboard($event, 'select-platillo-principal')"
-          >
-            <span class="min-w-0">
-              <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Platillo principal</span>
-              <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.platilloPrincipal))]">{{ itemSummary(model.platilloPrincipal) }}</span>
-              <span v-if="model.platilloPrincipal?.descripcion" class="mt-1 block text-xs text-muted">{{ model.platilloPrincipal.descripcion }}</span>
-            </span>
-            <span class="relative z-10 flex shrink-0 self-start">
+          <UFormField label="Platillo principal">
+            <div class="flex items-center gap-2">
+              <UButton type="button" color="neutral" variant="outline" icon="i-lucide-utensils" :label="itemSummary(model.platilloPrincipal)" class="min-w-0 flex-1 justify-start" @click="openSelectionModal('select-platillo-principal')" />
               <UDropdownMenu :items="actionItems(model.platilloPrincipal, 'select-platillo-principal')">
-                <UButton
-                  type="button"
-                  size="xs"
-                  variant="ghost"
-                  color="neutral"
-                  icon="i-lucide-ellipsis-vertical"
-                  square
-                  class="text-muted hover:text-highlighted"
-                  @click.stop
-                />
+                <UButton type="button" size="sm" variant="ghost" color="neutral" icon="i-lucide-ellipsis-vertical" aria-label="Acciones de platillo principal" />
               </UDropdownMenu>
-            </span>
-          </div>
+            </div>
+            <p v-if="model.platilloPrincipal?.descripcion" class="mt-1 text-xs text-muted">{{ model.platilloPrincipal?.descripcion }}</p>
+          </UFormField>
 
           <section class="grid grid-cols-1 gap-3">
-            <div
-              role="button"
-              tabindex="0"
-              :class="`${selectFieldClass} cursor-pointer`"
-              @click="openSelectionModal('select-guarnicion-1')"
-              @keydown="openSelectionModalFromKeyboard($event, 'select-guarnicion-1')"
-            >
-              <span class="min-w-0">
-                <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Guarnición 1</span>
-                <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.guarnicion1))]">{{ itemSummary(model.guarnicion1) }}</span>
-                <span v-if="model.guarnicion1?.descripcion" class="mt-1 block text-xs text-muted">{{ model.guarnicion1.descripcion }}</span>
-              </span>
-              <span class="relative z-10 flex shrink-0 self-start">
-                <UDropdownMenu :items="actionItems(guarnicion1Model, 'select-guarnicion-1')">
-                  <UButton
-                    type="button"
-                    size="xs"
-                    variant="ghost"
-                    color="neutral"
-                    icon="i-lucide-ellipsis-vertical"
-                    square
-                    class="text-muted hover:text-highlighted"
-                    @click.stop
-                  />
-                </UDropdownMenu>
-              </span>
+            <UFormField label="Guarnición 1">
+            <div class="flex items-center gap-2">
+              <UButton type="button" color="neutral" variant="outline" icon="i-lucide-utensils" :label="itemSummary(model.guarnicion1)" class="min-w-0 flex-1 justify-start" @click="openSelectionModal('select-guarnicion-1')" />
+              <UDropdownMenu :items="actionItems(guarnicion1Model, 'select-guarnicion-1')">
+                <UButton type="button" size="sm" variant="ghost" color="neutral" icon="i-lucide-ellipsis-vertical" aria-label="Acciones de guarnición 1" />
+              </UDropdownMenu>
             </div>
+            <p v-if="model.guarnicion1?.descripcion" class="mt-1 text-xs text-muted">{{ model.guarnicion1?.descripcion }}</p>
+          </UFormField>
 
-            <div
-              role="button"
-              tabindex="0"
-              :class="`${selectFieldClass} cursor-pointer`"
-              @click="openSelectionModal('select-guarnicion-2')"
-              @keydown="openSelectionModalFromKeyboard($event, 'select-guarnicion-2')"
-            >
-              <span class="min-w-0">
-                <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Guarnición 2</span>
-                <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.guarnicion2))]">{{ itemSummary(model.guarnicion2) }}</span>
-                <span v-if="model.guarnicion2?.descripcion" class="mt-1 block text-xs text-muted">{{ model.guarnicion2.descripcion }}</span>
-              </span>
-              <span class="relative z-10 flex shrink-0 self-start">
-                <UDropdownMenu :items="actionItems(guarnicion2Model, 'select-guarnicion-2')">
-                  <UButton
-                    type="button"
-                    size="xs"
-                    variant="ghost"
-                    color="neutral"
-                    icon="i-lucide-ellipsis-vertical"
-                    square
-                    class="text-muted hover:text-highlighted"
-                    @click.stop
-                  />
-                </UDropdownMenu>
-              </span>
+            <UFormField label="Guarnición 2">
+            <div class="flex items-center gap-2">
+              <UButton type="button" color="neutral" variant="outline" icon="i-lucide-utensils" :label="itemSummary(model.guarnicion2)" class="min-w-0 flex-1 justify-start" @click="openSelectionModal('select-guarnicion-2')" />
+              <UDropdownMenu :items="actionItems(guarnicion2Model, 'select-guarnicion-2')">
+                <UButton type="button" size="sm" variant="ghost" color="neutral" icon="i-lucide-ellipsis-vertical" aria-label="Acciones de guarnición 2" />
+              </UDropdownMenu>
             </div>
+            <p v-if="model.guarnicion2?.descripcion" class="mt-1 text-xs text-muted">{{ model.guarnicion2?.descripcion }}</p>
+          </UFormField>
           </section>
         </section>
 
@@ -641,33 +569,15 @@ watch(
           v-else
           class="grid grid-cols-1 gap-3"
         >
-          <div
-            role="button"
-            tabindex="0"
-            :class="`${selectFieldClass} w-full cursor-pointer`"
-            @click="openSelectionModal('select-platillo-principal')"
-            @keydown="openSelectionModalFromKeyboard($event, 'select-platillo-principal')"
-          >
-            <span class="min-w-0">
-              <span class="block text-[10px] uppercase tracking-[0.16em] text-muted">Principal</span>
-              <span :class="['mt-1.5 block line-clamp-2 text-sm font-medium', summaryTextClass(hasValue(model.platilloPrincipal))]">{{ itemSummary(model.platilloPrincipal) }}</span>
-              <span v-if="model.platilloPrincipal?.descripcion" class="mt-1 block text-xs text-muted">{{ model.platilloPrincipal.descripcion }}</span>
-            </span>
-            <span class="relative z-10 flex shrink-0 self-start">
+          <UFormField label="Principal">
+            <div class="flex items-center gap-2">
+              <UButton type="button" color="neutral" variant="outline" icon="i-lucide-utensils" :label="itemSummary(model.platilloPrincipal)" class="min-w-0 flex-1 justify-start" @click="openSelectionModal('select-platillo-principal')" />
               <UDropdownMenu :items="actionItems(model.platilloPrincipal, 'select-platillo-principal')">
-                <UButton
-                  type="button"
-                  size="xs"
-                  variant="ghost"
-                  color="neutral"
-                  icon="i-lucide-ellipsis-vertical"
-                  square
-                  class="text-muted hover:text-highlighted"
-                  @click.stop
-                />
+                <UButton type="button" size="sm" variant="ghost" color="neutral" icon="i-lucide-ellipsis-vertical" aria-label="Acciones de principal" />
               </UDropdownMenu>
-            </span>
-          </div>
+            </div>
+            <p v-if="model.platilloPrincipal?.descripcion" class="mt-1 text-xs text-muted">{{ model.platilloPrincipal?.descripcion }}</p>
+          </UFormField>
         </section>
 
         <section
@@ -762,18 +672,9 @@ watch(
       />
     </div>
 
-    <button
-      v-if="!model.adicionales.length"
-      type="button"
-      class="flex w-full flex-col items-center gap-2 rounded-lg border border-dashed border-default px-4 py-6 text-center transition-colors hover:border-primary/60 hover:bg-primary/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-      @click="addAdicional"
-    >
-      <span class="flex size-9 items-center justify-center rounded-full bg-primary/10">
-        <UIcon name="i-lucide-plus" class="size-4 text-primary" />
-      </span>
-      <span class="text-sm font-medium text-highlighted">Agregar adicional</span>
-      <span class="text-xs text-muted">Ramekins o guarniciones extra para este tiempo.</span>
-    </button>
+    <UEmpty v-if="!model.adicionales.length" title="Sin adicionales" description="Ramekins o guarniciones extra para este tiempo." icon="i-lucide-utensils">
+      <template #actions><UButton label="Agregar adicional" icon="i-lucide-plus" color="neutral" variant="outline" @click="addAdicional" /></template>
+    </UEmpty>
 
     <ul v-else class="divide-y divide-default overflow-hidden rounded-lg border border-default">
       <li

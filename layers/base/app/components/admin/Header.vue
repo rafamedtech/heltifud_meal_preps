@@ -4,7 +4,6 @@ const supabase = useSupabaseClient()
 const toast = useToast()
 const isConfirmOpen = useState("admin-logout-confirm-open", () => false)
 const isLoggingOut = ref(false)
-const mobileMenuOpen = ref(false)
 const expenseCreateRequest = useState("admin-expense-create-request", () => 0)
 const customerCreateRequest = useState("admin-customer-create-request", () => 0)
 
@@ -114,53 +113,6 @@ const foodCatalogCreateTo = computed(() => ({
   query: typeof route.query.returnTo === "string" ? { returnTo: route.query.returnTo } : {}
 }))
 
-const mobileNavItems = [
-  {
-    to: "/admin",
-    label: "Inicio",
-    icon: "i-lucide-house"
-  },
-  {
-    to: "/admin/planes",
-    label: "Planes",
-    icon: "i-lucide-clipboard-list"
-  },
-  {
-    to: "/admin/clientes",
-    label: "Clientes",
-    icon: "i-lucide-users-round"
-  },
-  {
-    to: "/admin/gastos",
-    label: "Gastos",
-    icon: "i-lucide-wallet-cards"
-  },
-  {
-    to: "/admin/menu",
-    label: "Menú",
-    icon: "i-lucide-calendar-range"
-  },
-  {
-    to: "/admin/platillos",
-    label: "Platillos",
-    icon: "i-lucide-utensils-crossed"
-  }
-] as const
-
-function isActive(path: string) {
-  return route.path === path
-}
-
-function mobileLinkClass(path: string) {
-  return isActive(path)
-    ? "border-primary/30 bg-primary/10 text-primary shadow-[0_0_0_1px_rgb(var(--ui-primary)/0.08)]"
-    : "border-default/70 bg-default/40 text-toned hover:border-primary/20 hover:bg-elevated/80 hover:text-highlighted"
-}
-
-function closeMobileMenu() {
-  mobileMenuOpen.value = false
-}
-
 function requestExpenseCreate() {
   expenseCreateRequest.value += 1
 }
@@ -202,193 +154,28 @@ async function logout() {
 
   await navigateTo("/login", { replace: true })
 }
+
+const planCreateRequest = useState("admin-plan-create-request", () => 0)
+const isPlansPage = computed(() => route.path.replace(/\/$/, "") === "/admin/planes")
+const isOrdersPage = computed(() => route.path.replace(/\/$/, "") === "/admin/pedidos")
 </script>
 
 <template>
-  <header class="flex min-h-24 items-center justify-between gap-4">
-    <div class="flex min-w-0 items-center gap-2.5">
-      <UIcon
-        :name="pageIcon"
-        class="size-6 shrink-0 text-primary"
-      />
-      <div class="min-w-0">
-        <h1 class="truncate text-xl font-semibold">{{ pageHeader.title }}</h1>
-      </div>
-    </div>
-
-    <div class="flex items-center gap-2 min-[744px]:hidden">
-      <UButton
-        v-if="isFoodCatalogEditPage"
-        color="neutral"
-        variant="subtle"
-        square
-        icon="i-lucide-arrow-left"
-        aria-label="Regresar"
-        @click="requestFoodCatalogBack"
-      />
-
-      <UButton
-        v-if="isFoodCatalogPage"
-        square
-        icon="i-lucide-plus"
-        aria-label="Nuevo platillo"
-        :to="foodCatalogCreateTo"
-      />
-
-      <UButton
-        v-if="isExpensesPage"
-        square
-        icon="i-lucide-plus"
-        aria-label="Registrar gasto"
-        @click="requestExpenseCreate"
-      />
-
-      <UButton
-        v-if="isCustomersPage"
-        square
-        icon="i-lucide-user-plus"
-        aria-label="Nuevo cliente"
-        @click="requestCustomerCreate"
-      />
-
-      <UButton
-        v-if="isMenuPage"
-        square
-        icon="i-lucide-plus"
-        aria-label="Nuevo menú"
-        to="/admin/menu/crear-nuevo"
-      />
-
-      <UButton
-        v-if="isMenuEditPage"
-        color="neutral"
-        variant="subtle"
-        square
-        icon="i-lucide-arrow-left"
-        aria-label="Regresar"
-        to="/admin/menu"
-      />
-
-      <button
-        type="button"
-        class="inline-flex items-center justify-center rounded-md p-1.5 text-sm font-medium text-default transition-colors hover:bg-elevated active:bg-elevated focus:outline-none focus-visible:bg-elevated"
-        aria-label="Abrir navegación del admin"
-        @click="mobileMenuOpen = true"
-      >
-        <UIcon
-          name="i-lucide-menu"
-          class="size-5"
-        />
-      </button>
-
-      <USlideover
-        v-model:open="mobileMenuOpen"
-        title="Navegación del panel"
-        description="Accesos del panel administrativo."
-        inset
-        side="bottom"
-        :ui="{
-          content: 'max-w-xl bg-default/95 backdrop-blur-xl',
-          title: 'sr-only',
-          description: 'sr-only'
-        }"
-      >
-        <template #body>
-          <section class="space-y-3 px-1 pb-2">
-            <NuxtLink
-              v-for="item in mobileNavItems"
-              :key="item.to"
-              :to="item.to"
-              :class="[
-                'flex items-center gap-3 rounded-2xl border px-4 py-4 transition-all active:scale-[0.99]',
-                mobileLinkClass(item.to)
-              ]"
-              @click="closeMobileMenu"
-            >
-              <div
-                class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-default/90 ring-1 ring-default/80"
-              >
-                <UIcon
-                  :name="item.icon"
-                  class="size-5"
-                />
-              </div>
-
-              <span class="min-w-0 flex-1 text-base font-semibold">{{ item.label }}</span>
-
-              <UIcon
-                name="i-lucide-chevron-right"
-                class="size-4 shrink-0 opacity-55"
-              />
-            </NuxtLink>
-          </section>
-        </template>
-
-        <template #footer>
-          <div class="w-full px-1 pb-1">
-            <AdminUserMenu
-              mobile
-              @logout="closeMobileMenu"
-            />
-          </div>
-        </template>
-      </USlideover>
-    </div>
-
-    <div class="hidden items-center gap-3 min-[744px]:flex">
-      <UButton
-        v-if="isFoodCatalogEditPage"
-        color="neutral"
-        variant="subtle"
-        icon="i-lucide-arrow-left"
-        @click="requestFoodCatalogBack"
-      >
-        Regresar
-      </UButton>
-
-      <UButton
-        v-if="isFoodCatalogPage"
-        icon="i-lucide-plus"
-        :to="foodCatalogCreateTo"
-      >
-        Nuevo platillo
-      </UButton>
-
-      <UButton
-        v-if="isExpensesPage"
-        icon="i-lucide-plus"
-        @click="requestExpenseCreate"
-      >
-        Registrar
-      </UButton>
-
-      <UButton
-        v-if="isCustomersPage"
-        icon="i-lucide-user-plus"
-        @click="requestCustomerCreate"
-      >
-        Nuevo
-      </UButton>
-
-      <UButton
-        v-if="isMenuPage"
-        icon="i-lucide-plus"
-        to="/admin/menu/crear-nuevo"
-      >
-        Nuevo menú
-      </UButton>
-
-      <UButton
-        v-if="isMenuEditPage"
-        color="neutral"
-        variant="subtle"
-        icon="i-lucide-arrow-left"
-        to="/admin/menu"
-      >
-        Regresar
-      </UButton>
-    </div>
-
+  <UDashboardNavbar :title="pageHeader.title" :icon="pageIcon" :ui="{ right: 'gap-2' }">
+    <template #leading>
+      <UDashboardSidebarCollapse size="sm" color="neutral" variant="ghost" />
+    </template>
+    <template #right>
+      <UButton v-if="isFoodCatalogEditPage" color="neutral" variant="outline" icon="i-lucide-arrow-left" label="Regresar" @click="requestFoodCatalogBack" />
+      <UButton v-if="isFoodCatalogPage" icon="i-lucide-plus" label="Nuevo platillo" :to="foodCatalogCreateTo" />
+      <UButton v-if="isExpensesPage" icon="i-lucide-plus" label="Registrar gasto" @click="requestExpenseCreate" />
+      <UButton v-if="isCustomersPage" icon="i-lucide-user-plus" label="Nuevo cliente" @click="requestCustomerCreate" />
+      <UButton v-if="isPlansPage" icon="i-lucide-plus" label="Crear plan" @click="planCreateRequest++" />
+      <UButton v-if="isOrdersPage" icon="i-lucide-plus" label="Nuevo pedido" to="/admin/pedidos/crear-nuevo" />
+      <UButton v-if="isMenuPage" icon="i-lucide-plus" label="Nuevo menú" to="/admin/menu/crear-nuevo" />
+      <UButton v-if="isMenuEditPage" color="neutral" variant="outline" icon="i-lucide-arrow-left" label="Regresar" to="/admin/menu" />
+    </template>
+  </UDashboardNavbar>
     <UModal
       v-model:open="isConfirmOpen"
       title="Cerrar sesión"
@@ -428,5 +215,4 @@ async function logout() {
         </div>
       </template>
     </UModal>
-  </header>
 </template>

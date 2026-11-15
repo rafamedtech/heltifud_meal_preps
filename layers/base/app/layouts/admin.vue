@@ -1,209 +1,75 @@
 <script setup lang="ts">
-const isSidebarCollapsed = useState("admin-sidebar-collapsed", () => false)
+import type { NavigationMenuItem } from "@nuxt/ui"
 
-const sidebarWidthClass = computed(() => (isSidebarCollapsed.value ? "min-[744px]:w-24 xl:w-24" : "min-[744px]:w-24 xl:w-64"))
+const sidebarOpen = ref(false)
+const navigation = computed<NavigationMenuItem[]>(() => adminLinks.flat().map(item => ({
+  ...item,
+  exact: item.to === "/admin",
+  onSelect: () => { sidebarOpen.value = false }
+})))
+const searchGroups = computed(() => [{ id: "navigation", label: "Secciones", items: navigation.value.map(({ label, icon, to }) => ({ label, icon, to })) }])
+const route = useRoute()
+watch(() => route.path, () => {
+  if (import.meta.client) document.querySelector(".admin-panel-scroll")?.scrollTo({ top: 0, left: 0 })
+}, { flush: "post" })
 </script>
 
 <template>
-  <div class="admin-shell h-dvh min-h-dvh overflow-hidden bg-neutral-50 text-highlighted dark:bg-neutral-950">
-    <div class="flex h-full w-full">
-      <aside
-        class="app-sidebar hidden h-full shrink-0 transition-[width] duration-200 min-[744px]:flex min-[744px]:flex-col"
-        :class="sidebarWidthClass"
-      >
-        <div class="app-sidebar-header relative flex h-24 items-center px-4">
-          <div class="relative flex h-14 w-full flex-col items-center justify-center gap-3 xl:hidden">
-            <NuxtLink
-              to="/admin"
-              class="flex h-full w-full items-center justify-center rounded-2xl"
-              aria-label="Ir al panel principal"
-            >
-              <figure class="flex w-14 items-center justify-center">
-                <NuxtImg
-                  src="v1774637949/heltifud/heltifud-logo-vertical-black-v2_kwuarg.png"
-                  alt=""
-                  width="513"
-                  height="625"
-                  class="block h-auto w-14 dark:hidden"
-                />
-                <NuxtImg
-                  src="v1774637152/heltifud/heltifud-logo-vertical-v2_rxswcq.png"
-                  alt=""
-                  width="513"
-                  height="625"
-                  class="hidden h-auto w-14 dark:block"
-                />
-              </figure>
-            </NuxtLink>
-          </div>
-
-          <Transition
-            name="sidebar-swap"
-            mode="out-in"
-          >
-            <div
-              v-if="isSidebarCollapsed"
-              key="sidebar-header-collapsed"
-              class="relative hidden h-14 w-full flex-col items-center justify-center gap-3 xl:flex"
-            >
-              <NuxtLink
-                to="/admin"
-                class="flex h-full w-full items-center justify-center rounded-2xl"
-                aria-label="Ir al panel principal"
-              >
-                <figure class="flex w-14 items-center justify-center">
-                  <NuxtImg
-                    src="v1774637949/heltifud/heltifud-logo-vertical-black-v2_kwuarg.png"
-                    alt=""
-                    width="513"
-                    height="625"
-                    class="block h-auto w-14 dark:hidden"
-                  />
-                  <NuxtImg
-                    src="v1774637152/heltifud/heltifud-logo-vertical-v2_rxswcq.png"
-                    alt=""
-                    width="513"
-                    height="625"
-                    class="hidden h-auto w-14 dark:block"
-                  />
-                </figure>
-              </NuxtLink>
-            </div>
-
-            <div
-              v-else
-              key="sidebar-header-expanded"
-              class="relative hidden h-14 w-full items-center xl:flex"
-            >
-              <NuxtLink
-                to="/admin"
-                class="flex h-full min-w-0 items-center gap-2.5 rounded-xl px-1 py-0.5"
-              >
-                <div class="min-w-0">
-                  <AppLogo />
-                </div>
-              </NuxtLink>
-            </div>
-          </Transition>
-        </div>
-
-        <div class="admin-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto py-4 px-4 xl:hidden">
-          <AdminNavigationMenu collapsed />
-        </div>
-
-        <div class="hidden min-h-0 flex-1 xl:block">
-          <Transition
-            name="sidebar-swap"
-            mode="out-in"
-          >
-            <div
-              v-if="isSidebarCollapsed"
-              key="sidebar-nav-collapsed"
-              class="admin-scrollbar min-h-0 h-full flex-1 flex-col overflow-y-auto py-4 px-4"
-            >
-              <AdminNavigationMenu collapsed />
-            </div>
-
-            <div
-              v-else
-              key="sidebar-nav-expanded"
-              class="admin-scrollbar min-h-0 h-full flex-1 flex-col overflow-y-auto py-4 px-4"
-            >
-              <AdminNavigationMenu :collapsed="false" />
-            </div>
-          </Transition>
-        </div>
-
-        <div class="app-sidebar-footer py-4 px-4 xl:hidden">
-          <div class="flex w-full justify-center">
-            <AdminUserMenu collapsed />
-          </div>
-        </div>
-
-        <div class="app-sidebar-footer hidden py-4 px-4 xl:block">
-          <Transition
-            name="sidebar-swap"
-            mode="out-in"
-          >
-            <div
-              v-if="isSidebarCollapsed"
-              key="sidebar-footer-collapsed"
-              class="flex flex-col items-center gap-3"
-            >
-              <div class="flex w-full justify-center">
-                <AdminUserMenu collapsed />
-              </div>
-
-              <div class="flex w-full justify-center">
-                <UButton
-                  square
-                  size="sm"
-                  variant="ghost"
-                  color="neutral"
-                  icon="i-lucide-panel-left-open"
-                  class="app-nav-item app-sidebar-link border-0 bg-transparent text-muted shadow-none flex size-11 items-center justify-center p-0"
-                  :ui="{ leadingIcon: 'm-0 size-5 shrink-0' }"
-                  @click="isSidebarCollapsed = !isSidebarCollapsed"
-                />
-              </div>
-            </div>
-
-            <div
-              v-else
-              key="sidebar-footer-expanded"
-              class="flex flex-col items-stretch gap-3"
-            >
-              <AdminUserMenu />
-
-              <UButton
-                size="sm"
-                variant="ghost"
-                color="neutral"
-                class="app-nav-item app-sidebar-link justify-start border-0 bg-transparent px-3 py-2.5 text-sm font-medium text-muted shadow-none"
-                :ui="{ base: 'justify-start', leadingIcon: 'm-0 size-5 shrink-0' }"
-                icon="i-lucide-panel-left-close"
-                @click="isSidebarCollapsed = !isSidebarCollapsed"
-              >
-                <span>Colapsar</span>
-              </UButton>
-            </div>
-          </Transition>
-        </div>
-      </aside>
-
-      <main class="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <div class="h-24 border-b border-default/70 bg-default/70 px-4 backdrop-blur-xl md:px-8">
-          <div class="mx-auto flex w-full max-w-400 items-center justify-between gap-3">
-            <section class="min-w-0 flex-1">
-              <AdminHeader :collapsed="isSidebarCollapsed" />
-            </section>
-          </div>
-        </div>
-
-        <section
-          data-route-scroll-container
-          class="admin-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-6 pb-24 md:px-8 md:pb-8 min-[744px]:[scrollbar-gutter:stable]"
+  <UDashboardGroup unit="rem" storage-key="heltifud-admin" class="bg-default">
+    <UDashboardSidebar
+      id="admin"
+      v-model:open="sidebarOpen"
+      collapsible
+      resizable
+      class="bg-elevated/25"
+      :ui="{ footer: 'border-t border-default' }"
+      :menu="{ title: 'Navegación del panel', description: 'Secciones de administración de Heltifud.' }"
+    >
+      <template #header="{ collapsed }">
+        <ULink
+          to="/admin"
+          aria-label="Ir al panel principal"
+          class="flex w-full items-center"
+          :class="collapsed ? 'justify-center' : 'justify-start'"
         >
-          <div class="mx-auto w-full max-w-400">
-            <slot />
-          </div>
-        </section>
-      </main>
-    </div>
-  </div>
+          <template v-if="collapsed">
+            <NuxtImg
+              src="v1774637949/heltifud/heltifud-logo-vertical-black-v2_kwuarg.png"
+              alt=""
+              width="513"
+              height="625"
+              class="block h-10 w-auto dark:hidden"
+            />
+            <NuxtImg
+              src="v1774637152/heltifud/heltifud-logo-vertical-v2_rxswcq.png"
+              alt=""
+              width="513"
+              height="625"
+              class="hidden h-10 w-auto dark:block"
+            />
+          </template>
+          <AppLogo v-else />
+        </ULink>
+      </template>
+      <template #default="{ collapsed }">
+        <UDashboardSearchButton :collapsed="collapsed" label="Buscar…" class="bg-transparent ring-default" />
+        <UNavigationMenu :collapsed="collapsed" :items="navigation" orientation="vertical" tooltip popover />
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="[{ label: 'Ver sitio web', icon: 'i-lucide-external-link', to: '/', target: '_blank' }]"
+          orientation="vertical"
+          tooltip
+          class="mt-auto"
+        />
+      </template>
+      <template #footer="{ collapsed }">
+        <AdminUserMenu :collapsed="collapsed" />
+      </template>
+    </UDashboardSidebar>
+    <UDashboardSearch :groups="searchGroups" />
+    <UDashboardPanel id="admin-content" :ui="{ body: 'gap-6 admin-panel-scroll' }">
+      <template #header><AdminHeader /></template>
+      <template #body><slot /></template>
+    </UDashboardPanel>
+  </UDashboardGroup>
 </template>
-
-<style scoped>
-.sidebar-swap-enter-active,
-.sidebar-swap-leave-active {
-  transition:
-    opacity 180ms ease,
-    transform 180ms ease;
-}
-
-.sidebar-swap-enter-from,
-.sidebar-swap-leave-to {
-  opacity: 0;
-  transform: translateY(6px);
-}
-</style>

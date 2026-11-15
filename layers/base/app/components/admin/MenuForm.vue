@@ -1010,46 +1010,30 @@ async function onSubmit(exitEditor = true) {
                 :key="`${entry.day.dayOfWeek}-${slotKey}`"
                 class="bg-default p-1.5"
               >
-                <UButton
+                <UPageCard
+                  as="button"
                   type="button"
-                  variant="outline"
-                  :color="isSlotInvalid(entry.day.dayOfWeek, slotKey)
-                    ? 'error'
-                    : isSlotModified(entry.day.dayOfWeek, slotKey)
-                      ? 'secondary'
-                      : editorOpen && activeDay === entry.day.dayOfWeek && activeSlot === slotKey ? 'primary' : 'neutral'"
+                  reverse
+                  :title="entry.day[slotKey].platilloPrincipal.nombre || 'Añadir plato'"
+                  :highlight="isSlotInvalid(entry.day.dayOfWeek, slotKey) || isSlotModified(entry.day.dayOfWeek, slotKey) || (editorOpen && activeDay === entry.day.dayOfWeek && activeSlot === slotKey)"
+                  :highlight-color="isSlotInvalid(entry.day.dayOfWeek, slotKey) ? 'error' : isSlotModified(entry.day.dayOfWeek, slotKey) ? 'secondary' : 'primary'"
                   :aria-label="`${SLOT_LABELS[slotKey]} de ${DAY_LABELS[entry.day.dayOfWeek]}: ${entry.day[slotKey].platilloPrincipal.nombre || 'Añadir plato'}${isSlotModified(entry.day.dayOfWeek, slotKey) ? ', cambios sin guardar' : ''}`"
                   aria-haspopup="dialog"
-                  class="group h-40 w-full flex-col items-stretch gap-0 bg-default p-2 text-left text-highlighted transition-all hover:-translate-y-0.5 hover:bg-default hover:shadow-md"
+                  class="w-full text-left"
+                  :ui="{ container: 'gap-2 p-2 sm:p-2', title: 'truncate text-xs', body: 'w-full' }"
                   @click="openMealEditor(entry.day.dayOfWeek, slotKey)"
                 >
-                  <template v-if="entry.day[slotKey].platilloPrincipal.nombre">
-                    <div class="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-md bg-elevated/50">
-                      <img
-                        v-if="hasUsableImage(entry.day[slotKey].platilloPrincipal.imagen)"
-                        :src="entry.day[slotKey].platilloPrincipal.imagen"
-                        :alt="entry.day[slotKey].platilloPrincipal.nombre"
-                        class="h-full w-full object-cover"
-                        loading="lazy"
-                        @error="markImageAsFailed(entry.day[slotKey].platilloPrincipal.imagen)"
-                      >
-                      <UIcon v-else name="i-lucide-utensils" class="size-9 text-muted/40" />
-                    </div>
-                    <span class="mt-2 w-full truncate text-xs font-medium leading-snug text-highlighted">{{ entry.day[slotKey].platilloPrincipal.nombre }}</span>
-                  </template>
-                  <template v-else>
-                    <span class="flex min-h-0 w-full flex-1 items-center justify-center rounded-md bg-elevated/50">
-                      <UIcon name="i-lucide-utensils" class="size-9 text-muted/40" />
-                    </span>
-                    <span class="mt-2 w-full text-xs font-medium text-muted group-hover:text-primary">Añadir plato</span>
-                  </template>
-                </UButton>
+                  <div class="flex aspect-square w-full items-center justify-center overflow-hidden bg-elevated/50">
+                    <img v-if="hasUsableImage(entry.day[slotKey].platilloPrincipal.imagen)" :src="entry.day[slotKey].platilloPrincipal.imagen" :alt="entry.day[slotKey].platilloPrincipal.nombre" class="h-full w-full object-cover" loading="lazy" @error="markImageAsFailed(entry.day[slotKey].platilloPrincipal.imagen)">
+                    <UIcon v-else name="i-lucide-utensils" class="size-9 text-muted" />
+                  </div>
+                </UPageCard>
               </div>
             </template>
           </div>
         </div>
 
-        <UCard v-if="activeMeal && mode !== 'edit'" :ui="{ root: 'app-surface', body: 'p-4 sm:p-5' }">
+        <UCard v-if="activeMeal && mode !== 'edit'" :ui="{ root: '', body: 'p-4 sm:p-5' }">
           <div class="flex flex-wrap items-center gap-4">
             <div class="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-elevated sm:size-24">
               <img

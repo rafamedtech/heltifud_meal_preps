@@ -1,5 +1,40 @@
 # Instrucciones para agentes
 
+## UI: Nuxt UI primero, props antes que Tailwind
+
+En cualquier interfaz nueva o modificada, buscar y usar primero los componentes
+de Nuxt UI disponibles en la versión instalada. Consultar la skill
+[nuxt-ui](.agents/skills/nuxt-ui/SKILL.md) y la API del componente antes de
+implementar o personalizar la interfaz.
+
+Seguir este orden:
+
+1. Elegir el componente de Nuxt UI que cubra la necesidad. Componer sus
+   componentes antes de crear controles o comportamientos equivalentes con HTML
+   propio, wrappers o librerías adicionales.
+2. Resolver el comportamiento y la presentación primero con sus props, modelos,
+   eventos y slots documentados (`variant`, `color`, `items`, `loading`, etc.).
+   Heredar los defaults del proyecto cuando ya proporcionen el resultado.
+3. Si las props no cubren el requisito o su uso complica innecesariamente la
+   solución, usar Tailwind mediante las vías documentadas de Nuxt UI: `class`
+   para el elemento raíz y `ui` para los slots de estilo del componente.
+   Consultar el tema generado en `.nuxt/ui/<componente>.ts` y los tipos
+   instalados antes de definir overrides; no inventar props ni nombres de slots.
+4. Crear un componente o control propio solo cuando Nuxt UI no ofrezca una
+   solución adecuada mediante esa composición y su API. Explicar brevemente
+   esa limitación al comunicar el cambio y conservar la accesibilidad.
+
+Usar utilidades semánticas como `text-default`, `bg-elevated` y `border-default`.
+Para personalizaciones compartidas, utilizar la configuración documentada de
+`ui` en `layers/base/app/app.config.ts`. Evitar selectores sobre la estructura
+interna, overrides globales de CSS y parches al código de la librería para
+resolver algo que su API ya permite.
+
+El uso de Tailwind no autoriza a cambiar los radios, tamaños, padding,
+tipografía o iconos protegidos por las convenciones de las siguientes secciones.
+Estas reglas del proyecto también se aplican al utilizar otras skills de diseño
+y prevalecen sobre sus ejemplos genéricos de personalización.
+
 ## Pruebas en navegador
 
 Siempre que se deban realizar pruebas en navegador, reutilizar la sesión activa

@@ -135,11 +135,8 @@ function editTo(item: FoodCatalogItem) {
       </UButton>
     </div>
 
-    <div class="mx-auto w-full max-w-5xl">
-      <UCard
-        class="app-surface flex-1 overflow-hidden"
-        :ui="{ body: 'p-0 sm:p-0', header: 'p-0 sm:p-0', footer: 'p-0 sm:p-0' }"
-      >
+    <div class="w-full">
+      <div class="space-y-4">
         <AdminFoodCatalogTable
           :items="items"
           :loading="isLoading"
@@ -147,7 +144,7 @@ function editTo(item: FoodCatalogItem) {
           :edit-to="editTo"
           @delete="requestDelete"
         />
-      </UCard>
+      </div>
     </div>
 
     <UModal

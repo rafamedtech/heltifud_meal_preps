@@ -56,14 +56,6 @@ const typeOptions = [
   { label: "Ramekin", value: "ramekin" }
 ]
 
-function normalizeTypeValue(value: unknown) {
-  if (typeof value === "string") {
-    return value
-  }
-
-  return ""
-}
-
 const state = reactive<FoodCatalogItemInput>(emptyState())
 const saving = ref(false)
 const imageLoadFailed = ref(false)
@@ -82,17 +74,6 @@ const actionLabel = computed(() => (mode.value === "edit" ? "Guardar cambios" : 
 const { createFoodCatalogItem, updateFoodCatalogItem } = useFoodCatalog()
 const normalizedImageUrl = computed(() => state.imagen.trim())
 const initialStateSnapshot = ref("")
-const fieldSurfaceClass = "app-control-surface px-4 py-3.5"
-const textFieldUi = {
-  base: "bg-transparent hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent placeholder:italic"
-}
-const typeSelectUi = {
-  ...textFieldUi,
-  value: "min-w-0",
-  content: "max-h-[28rem]",
-  viewport: "overflow-y-visible"
-}
-
 const isImageUrlValid = computed(() => {
   if (!normalizedImageUrl.value) {
     return false
@@ -292,150 +273,37 @@ function onCancel() {
 
 <template>
   <main class="space-y-4">
-    <UCard class="app-surface">
+    <UCard>
       <UForm
         :state="state"
         autocomplete="off"
         class="space-y-5"
         @submit="onSubmit"
       >
-        <div class="grid items-stretch gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div class="space-y-5">
-            <section :class="[fieldSurfaceClass, invalidFields.nombre ? 'app-control-surface-error' : '']">
-              <p class="text-xs uppercase tracking-[0.18em] text-muted">Nombre</p>
-              <UInput
-                v-model="state.nombre"
-                class="mt-2 w-full"
-                variant="ghost"
-                placeholder="Ej. Pechuga a la plancha"
-                :ui="textFieldUi"
-              />
-            </section>
-
-            <section :class="[fieldSurfaceClass, invalidFields.descripcion ? 'app-control-surface-error' : '']">
-              <p class="text-xs uppercase tracking-[0.18em] text-muted">Descripción</p>
-              <UTextarea
-                v-model="state.descripcion"
-                class="mt-2 w-full"
-                variant="ghost"
-                placeholder="Escribe aquí"
-                :rows="4"
-                :ui="textFieldUi"
-              />
-            </section>
-
-            <div class="grid gap-5 md:grid-cols-2">
-              <section :class="[fieldSurfaceClass, invalidFields.calorias ? 'app-control-surface-error' : '']">
-                <p class="text-xs uppercase tracking-[0.18em] text-muted">Calorías</p>
-                <UInput
-                  v-model.number="state.calorias"
-                  class="mt-2 w-full"
-                  variant="ghost"
-                  type="number"
-                  min="0"
-                  :ui="textFieldUi"
-                />
-              </section>
-
-              <section :class="[fieldSurfaceClass, invalidFields.tipo ? 'app-control-surface-error' : '']">
-                <p class="text-xs uppercase tracking-[0.18em] text-muted">Tipo</p>
-                <USelect
-                  v-model="state.tipo"
-                  :items="typeOptions"
-                  value-key="value"
-                  class="mt-2 w-full"
-                  variant="ghost"
-                  placeholder="Selecciona un tipo"
-                  :ui="typeSelectUi"
-                >
-                  <template #default="{ modelValue }">
-                    <span
-                      v-if="normalizeTypeValue(modelValue)"
-                      class="inline-flex min-w-0 items-center gap-2"
-                    >
-                      <UIcon
-                        :name="getFoodTypeAppearance(normalizeTypeValue(modelValue)).icon"
-                        class="size-4 shrink-0 text-muted"
-                      />
-                      <span class="truncate text-highlighted">
-                        {{ getFoodTypeAppearance(normalizeTypeValue(modelValue)).label }}
-                      </span>
-                    </span>
-                  </template>
-
-                  <template #item-label="{ item: typeItem }">
-                    <UBadge
-                      :color="getFoodTypeAppearance(typeItem.value).color"
-                      variant="soft"
-                      :class="[
-                        'inline-flex max-w-fit px-2.5 py-1 ring-1 ring-inset',
-                        getFoodTypeAppearance(typeItem.value).className
-                      ]"
-                    >
-                      <UIcon
-                        :name="getFoodTypeAppearance(typeItem.value).icon"
-                        class="size-3.5 shrink-0"
-                      />
-                      {{ getFoodTypeAppearance(typeItem.value).label }}
-                    </UBadge>
-                  </template>
-                </USelect>
-              </section>
+            <UFormField label="Nombre" name="nombre" :error="invalidFields.nombre" required>
+              <UInput v-model="state.nombre" placeholder="Ej. Pechuga a la plancha" class="w-full" />
+            </UFormField>
+            <UFormField label="Descripción" name="descripcion" :error="invalidFields.descripcion" required>
+              <UTextarea v-model="state.descripcion" placeholder="Describe el platillo" :rows="4" class="w-full" />
+            </UFormField>
+            <div class="grid gap-5 sm:grid-cols-2">
+              <UFormField label="Calorías" name="calorias" :error="invalidFields.calorias" required>
+                <UInputNumber v-model="state.calorias" :min="0" class="w-full" />
+              </UFormField>
+              <UFormField label="Tipo" name="tipo" :error="invalidFields.tipo" required>
+                <USelect v-model="state.tipo" :items="typeOptions" value-key="value" placeholder="Selecciona un tipo" :icon="state.tipo ? getFoodTypeAppearance(state.tipo).icon : undefined" class="w-full" />
+              </UFormField>
             </div>
-
-            <section :class="[fieldSurfaceClass, invalidFields.imagen ? 'app-control-surface-error' : '']">
-              <p class="text-xs uppercase tracking-[0.18em] text-muted">Imagen (URL)</p>
-              <UInput
-                v-model="state.imagen"
-                class="mt-2 w-full"
-                variant="ghost"
-                placeholder="https://..."
-                :ui="textFieldUi"
-              />
-            </section>
+            <UFormField label="Imagen (URL)" name="imagen" :error="invalidFields.imagen" required>
+              <UInput v-model="state.imagen" icon="i-lucide-image" placeholder="https://..." class="w-full" />
+            </UFormField>
           </div>
-
-          <div class="flex">
-            <section :class="[fieldSurfaceClass, 'flex min-h-full w-full flex-col overflow-hidden']">
-              <div class="flex items-center gap-3">
-                <p class="text-xs uppercase tracking-[0.18em] text-muted">Vista previa</p>
-              </div>
-
-              <div
-                class="mt-3 flex-1 overflow-hidden rounded-[calc(var(--app-control-radius)-2px)] border border-default bg-elevated/60"
-              >
-                <div class="relative h-full min-h-80 bg-linear-to-br from-muted/30 via-elevated to-muted/15">
-                  <img
-                    v-if="canRenderImagePreview"
-                    :src="normalizedImageUrl"
-                    :alt="state.nombre || 'Vista previa del platillo'"
-                    class="absolute inset-0 h-full w-full object-cover"
-                    @error="imageLoadFailed = true"
-                  >
-
-                  <div
-                    v-else
-                    class="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center"
-                  >
-                    <div
-                      class="flex size-12 items-center justify-center rounded-[calc(var(--app-control-radius)-4px)] border border-default bg-default/80 shadow-sm"
-                    >
-                      <UIcon
-                        :name="normalizedImageUrl && !isImageUrlValid ? 'i-lucide-circle-alert' : 'i-lucide-image'"
-                        :class="['size-5', normalizedImageUrl && !isImageUrlValid ? 'text-error' : 'text-dimmed']"
-                      />
-                    </div>
-                    <div class="space-y-1">
-                      <p class="text-sm font-medium text-highlighted">
-                        {{ imagePlaceholderText }}
-                      </p>
-                      <p class="text-xs text-muted">Usa una URL completa que empiece con http:// o https://</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </div>
+          <UCard title="Vista previa" variant="subtle">
+            <img v-if="canRenderImagePreview" :src="normalizedImageUrl" :alt="state.nombre || 'Vista previa del platillo'" class="aspect-square w-full object-cover" @error="imageLoadFailed = true">
+            <UEmpty v-else icon="i-lucide-image" :title="imagePlaceholderText" description="Usa una URL completa que empiece con http:// o https://" />
+          </UCard>
         </div>
 
         <AdminFoodRecipeFields

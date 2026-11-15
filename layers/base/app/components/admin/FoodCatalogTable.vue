@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { TableColumn } from "@nuxt/ui"
 import type { RouteLocationRaw } from "vue-router"
 
 import type { FoodCatalogItem } from "~~/layers/menu/shared/types/types"
@@ -19,6 +20,12 @@ interface Props {
   selectedId?: string | null
   autofocusSearch?: boolean
 }
+
+const columns: TableColumn<FoodCatalogItem>[] = [
+  { accessorKey: "nombre", header: "Platillo" },
+  { accessorKey: "calorias", header: "Calorías" },
+  { id: "actions", header: "Acciones", meta: { class: { th: "text-right", td: "text-right" } } }
+]
 
 const props = defineProps<Props>()
 
@@ -98,13 +105,7 @@ function normalizeTypeValue(value: unknown) {
 }
 
 const normalizedSelectedType = computed(() => normalizeTypeValue(selectedType.value))
-const selectedTypeLabel = computed(() => {
-  if (normalizedSelectedType.value === "todos") {
-    return "Todos"
-  }
-
-  return getFoodTypeAppearance(normalizedSelectedType.value).label
-})
+const selectedTypeLabel = computed(() => getFilterTypeAppearance(normalizedSelectedType.value).label)
 
 const filteredItems = computed(() => {
   const query = search.value.trim().toLowerCase()
@@ -252,272 +253,41 @@ function actionItems(item: FoodCatalogItem) {
 
 <template>
   <section class="space-y-0">
-    <section
-      class="border-b border-default/70"
-      :class="isSelectMode ? 'px-4 py-4 sm:px-4' : 'px-5 py-4 sm:px-6'"
-    >
-      <div
-        class="grid gap-4"
-        :class="isSelectMode ? 'grid-cols-1' : 'lg:grid-cols-[minmax(0,1fr)_740px] lg:items-center'"
-      >
-        <div
-          v-if="!isSelectMode"
-          class="flex flex-col gap-1"
-        >
-          <h2 class="text-sm font-semibold text-highlighted">Buscar y filtrar</h2>
-          <p class="text-sm text-muted">Busca por nombre o tipo.</p>
-        </div>
-
-        <div
-          class="grid grid-cols-1 gap-3"
-          :class="isSelectMode ? '' : 'md:grid-cols-[360px_220px] md:justify-end'"
-        >
-          <UInput
-            v-model="search"
-            icon="i-lucide-search"
-            :autofocus="autofocusSearch"
-            :placeholder="searchPlaceholder"
-            class="w-full"
-          />
-
-          <USelect
-            v-if="!isSelectMode"
-            v-model="selectedType"
-            :items="typeOptions"
-            value-key="value"
-            placeholder="Filtrar por tipo"
-            :content="{ position: 'popper', side: 'bottom', align: 'end', sideOffset: 8 }"
-            class="w-full"
-            :ui="{
-              value: 'min-w-0',
-              base: 'w-full',
-              content: 'max-h-[28rem]',
-              viewport: 'overflow-y-visible'
-            }"
-          >
-            <template #default="{ modelValue }">
-              <span class="inline-flex min-w-0 items-center gap-2">
-                <UIcon
-                  :name="getFilterTypeAppearance(normalizeTypeValue(modelValue)).icon"
-                  :class="[
-                    'size-4 shrink-0',
-                    normalizeTypeValue(modelValue) === 'todos' ? 'text-dimmed' : 'text-muted'
-                  ]"
-                />
-                <span class="truncate text-sm text-highlighted">
-                  {{ getFilterTypeAppearance(normalizeTypeValue(modelValue)).label }}
-                </span>
-              </span>
-            </template>
-
-            <template #item-label="{ item }">
-              <UBadge
-                :color="getFilterTypeAppearance(item.value).color"
-                variant="soft"
-                :class="[
-                  'inline-flex max-w-fit px-2.5 py-1 ring-1 ring-inset',
-                  getFilterTypeAppearance(item.value).className
-                ]"
-              >
-                <UIcon
-                  :name="getFilterTypeAppearance(item.value).icon"
-                  class="size-3.5 shrink-0"
-                />
-                {{ getFilterTypeAppearance(item.value).label }}
-              </UBadge>
-            </template>
-          </USelect>
-        </div>
-      </div>
-    </section>
+    <UDashboardToolbar class="border-0 px-0 py-4">
+      <UInput v-model="search" icon="i-lucide-search" :autofocus="autofocusSearch" :placeholder="searchPlaceholder" class="w-full sm:max-w-sm" />
+      <USelect v-if="!isSelectMode" v-model="selectedType" :items="typeOptions" value-key="value" placeholder="Filtrar por tipo" :icon="getFilterTypeAppearance(normalizedSelectedType).icon" class="w-full sm:max-w-52" />
+    </UDashboardToolbar>
 
     <AdminFoodCatalogTableSkeleton
       v-if="loading"
       :mode="mode"
     />
 
-    <section
-      v-else-if="!items.length"
-      class="flex min-h-[360px] items-center justify-center px-5 py-10 sm:px-6"
-    >
-      <div class="max-w-md space-y-3 text-center">
-        <div class="mx-auto flex size-12 items-center justify-center rounded-xl border border-default bg-elevated">
-          <UIcon
-            name="i-lucide-package-open"
-            class="size-5 text-muted"
-          />
-        </div>
-        <div class="space-y-1">
-          <h3 class="text-base font-semibold text-highlighted">{{ emptyTitle }}</h3>
-          <p class="text-sm text-muted">
-            {{ emptyDescription }}
-          </p>
-        </div>
-      </div>
-    </section>
+    <UEmpty v-else-if="!items.length" icon="i-lucide-package-open" :title="emptyTitle" :description="emptyDescription" />
+    <UEmpty v-else-if="!filteredItems.length" icon="i-lucide-search-x" :title="noResultsTitle" :description="noResultsDescription">
+      <template v-if="canCreateFromSearch || canCreateFromFilter" #actions><UButton icon="i-lucide-plus" :label="createButtonLabel" @click="onCreateCatalogItem" /></template>
+    </UEmpty>
 
-    <section
-      v-else-if="!filteredItems.length"
-      class="flex min-h-[360px] items-center justify-center px-5 py-10 sm:px-6"
-    >
-      <div class="max-w-md space-y-4 text-center">
-        <div class="mx-auto flex size-12 items-center justify-center rounded-xl border border-default bg-elevated">
-          <UIcon
-            name="i-lucide-search-x"
-            class="size-5 text-muted"
-          />
-        </div>
-        <div class="space-y-1">
-          <h3 class="text-base font-semibold text-highlighted">{{ noResultsTitle }}</h3>
-          <p class="text-sm text-muted">
-            {{ noResultsDescription }}
-            <template v-if="canCreateFromSearch">
-              También puedes crear un nuevo platillo usando <span class="font-medium text-highlighted">"{{ normalizedSearch }}"</span>.
-            </template>
-            <template v-else-if="canCreateFromFilter">
-              Todavía no hay platillos de tipo <span class="font-medium text-highlighted">{{ selectedTypeLabel }}</span>, pero puedes crear el primero desde aquí.
-            </template>
-          </p>
-        </div>
-        <UButton
-          v-if="canCreateFromSearch || canCreateFromFilter"
-          icon="i-lucide-plus"
-          @click="onCreateCatalogItem"
-        >
-          {{ createButtonLabel }}
+    <UTable v-else :data="sortedItems" :columns="columns" aria-label="Catálogo de platillos">
+      <template #nombre-header>
+        <UButton color="neutral" variant="ghost" size="sm" label="Platillo" :icon="sortIcon('nombre')" @click="toggleSort('nombre')" />
+      </template>
+      <template #calorias-header>
+        <UButton color="neutral" variant="ghost" size="sm" label="Calorías" :icon="sortIcon('calorias')" @click="toggleSort('calorias')" />
+      </template>
+      <template #nombre-cell="{ row }">
+        <UUser :name="row.original.nombre" :description="getFoodTypeAppearance(row.original.tipo).label" />
+      </template>
+      <template #calorias-cell="{ row }">{{ row.original.calorias }} cal</template>
+      <template #actions-cell="{ row }">
+        <UDropdownMenu v-if="mode === 'manage'" :items="actionItems(row.original)" :content="{ align: 'end' }">
+          <UButton size="sm" variant="ghost" color="neutral" icon="i-lucide-ellipsis-vertical" :loading="deletingId === row.original.id" :aria-label="`Acciones de ${row.original.nombre}`" />
+        </UDropdownMenu>
+        <UButton v-else size="sm" color="primary" variant="soft" icon="i-lucide-check" :disabled="selectedId === row.original.id" @click="onSelect(row.original.id)">
+          {{ selectedId === row.original.id ? "Seleccionado" : selectLabel }}
         </UButton>
-      </div>
-    </section>
-
-    <div
-      v-else
-      class="overflow-x-auto"
-    >
-      <table class="min-w-full table-fixed text-sm">
-        <colgroup>
-          <col class="w-[72%] sm:w-[58%]">
-          <col class="hidden sm:table-column sm:w-[18%]">
-          <col class="w-[28%] sm:w-[24%]">
-        </colgroup>
-
-        <thead class="bg-elevated/50">
-          <tr class="border-b border-default/70">
-            <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-[0.18em] text-muted sm:px-6">
-              <button
-                type="button"
-                class="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-muted"
-                @click="toggleSort('nombre')"
-              >
-                <span>Platillo</span>
-                <UIcon :name="sortIcon('nombre')" class="size-3.5" />
-              </button>
-            </th>
-            <th class="hidden px-5 py-3 text-center text-xs font-medium uppercase tracking-[0.18em] text-muted sm:table-cell sm:px-6">
-              <button
-                type="button"
-                class="inline-flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-muted"
-                @click="toggleSort('calorias')"
-              >
-                <span>Calorías</span>
-                <UIcon :name="sortIcon('calorias')" class="size-3.5" />
-              </button>
-            </th>
-            <th class="px-5 py-3 text-right text-xs font-medium uppercase tracking-[0.18em] text-muted sm:px-6">Acciones</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr
-            v-for="item in sortedItems"
-            :key="item.id"
-            class="border-b border-default/60 transition-colors hover:bg-elevated/30 last:border-b-0"
-          >
-            <td class="px-5 py-4 sm:px-6">
-              <div class="min-w-0 space-y-1">
-                <p class="truncate font-medium text-highlighted">{{ item.nombre }}</p>
-                <div class="flex flex-wrap items-center gap-2">
-                  <UBadge
-                    :color="getFoodTypeAppearance(item.tipo).color"
-                    variant="soft"
-                    :class="['inline-flex max-w-fit px-2.5 py-1 ring-1 ring-inset', getFoodTypeAppearance(item.tipo).className]"
-                  >
-                    <UIcon :name="getFoodTypeAppearance(item.tipo).icon" class="size-3.5 shrink-0" />
-                    {{ getFoodTypeAppearance(item.tipo).label }}
-                  </UBadge>
-
-                  <span class="text-sm font-medium text-muted sm:hidden">
-                    {{ item.calorias }} cal
-                  </span>
-                </div>
-              </div>
-            </td>
-            <td class="hidden px-5 py-4 text-center font-medium text-highlighted sm:table-cell sm:px-6">
-              {{ item.calorias }} cal
-            </td>
-            <td class="px-5 py-4 sm:px-6">
-              <div class="flex justify-end">
-                <template v-if="mode === 'manage'">
-                  <div class="hidden items-center justify-end gap-2 lg:flex">
-                    <UButton
-                      variant="ghost"
-                      color="neutral"
-                      icon="i-lucide-square-pen"
-                      :to="editTo?.(item)"
-                      :ui="{
-                        base: 'justify-center px-0 lg:flex-col lg:gap-1 lg:py-1.5',
-                        leadingIcon: 'size-4.5 lg:size-5'
-                      }"
-                    >
-                      <span class="inline-block w-[8ch] text-center text-[11px] leading-none xl:text-xs">Editar</span>
-                    </UButton>
-
-                    <UButton
-                      variant="ghost"
-                      color="error"
-                      icon="i-lucide-trash"
-                      :loading="deletingId === item.id"
-                      :ui="{
-                        base: 'justify-center px-0 lg:flex-col lg:gap-1 lg:py-1.5',
-                        leadingIcon: 'size-4.5 lg:size-5'
-                      }"
-                      @click="onDelete(item)"
-                    >
-                      <span class="inline-block w-[8ch] text-center text-[11px] leading-none xl:text-xs">Eliminar</span>
-                    </UButton>
-                  </div>
-
-                  <UDropdownMenu
-                    :items="actionItems(item)"
-                    class="lg:hidden"
-                  >
-                    <UButton
-                      size="sm"
-                      variant="ghost"
-                      color="neutral"
-                      icon="i-lucide-ellipsis-vertical"
-                      square
-                      :loading="deletingId === item.id"
-                    />
-                  </UDropdownMenu>
-                </template>
-
-                <UButton
-                  v-else
-                  size="sm"
-                  color="primary"
-                  variant="soft"
-                  icon="i-lucide-check"
-                  :disabled="selectedId === item.id"
-                  @click="onSelect(item.id)"
-                >
-                  {{ selectedId === item.id ? "Seleccionado" : selectLabel }}
-                </UButton>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      </template>
+    </UTable>
 
     <section
       v-if="mode === 'manage'"

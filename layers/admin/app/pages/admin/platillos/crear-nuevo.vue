@@ -54,25 +54,9 @@ async function leaveWithoutSaving() {
 
 <template>
   <main class="space-y-6">
-    <section class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-      <div class="space-y-1">
-        <h1 class="text-3xl font-semibold tracking-tight text-primary">Crear nuevo platillo</h1>
-        <p class="max-w-2xl text-sm text-muted">
-          Crea un nuevo platillo y guárdalo en el catálogo reusable para usarlo en los menús semanales.
-        </p>
-      </div>
-
-      <div class="flex items-center gap-3 lg:justify-end">
-        <UButton
-          variant="ghost"
-          color="neutral"
-          icon="i-lucide-arrow-left"
-          @click="onBack"
-        >
-          Regresar
-        </UButton>
-      </div>
-    </section>
+    <UPageHeader title="Crear nuevo platillo" description="Guarda un platillo reutilizable para los menús semanales.">
+      <template #links><UButton color="neutral" variant="outline" icon="i-lucide-arrow-left" label="Regresar" @click="onBack" /></template>
+    </UPageHeader>
 
     <div class="mx-auto w-full max-w-5xl">
       <AdminFoodCatalogForm mode="create" @saved="onSaved" @dirty-change="onDirtyChange" />

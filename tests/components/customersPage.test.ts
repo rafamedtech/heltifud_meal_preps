@@ -40,7 +40,7 @@ describe('CustomersPage', () => {
     expect(document.body.querySelector('input[name="ubicacion2"]')).not.toBeNull();
     expect(document.body.textContent).toContain('Configura Google Maps para activar las sugerencias');
   });
-  it('opens profiles from rows and mobile cards while preserving nested controls', async () => {
+  it('opens profiles from table rows by click and keyboard while preserving nested controls', async () => {
     const customer = {
       id: 'customer-1', nombre: 'Ana López', telefono: '6641234567',
       correoElectronico: 'ana@example.com', ubicacion1: 'Zona Río', ubicacion2: '',
@@ -49,11 +49,11 @@ describe('CustomersPage', () => {
     getCustomers.mockResolvedValue({ items: [customer], nextCursor: null });
     navigate.mockClear();
     const wrapper = await mountSuspended(CustomersPage);
-    await vi.waitFor(() => expect(wrapper.findAll('a[href="/admin/clientes/customer-1"]')).toHaveLength(2));
+    await vi.waitFor(() => expect(wrapper.findAll('a[href="/admin/clientes/customer-1"]')).toHaveLength(1));
     await wrapper.get('tbody tr').trigger('click');
     expect(navigate).toHaveBeenLastCalledWith('/admin/clientes/customer-1');
     navigate.mockClear();
-    await wrapper.get('article').trigger('click');
+    await wrapper.get('tbody tr').trigger('keydown', { key: 'Enter' });
     expect(navigate).toHaveBeenCalledOnce();
     navigate.mockClear();
     await wrapper.get('tbody a[href^="tel:"]').trigger('click');

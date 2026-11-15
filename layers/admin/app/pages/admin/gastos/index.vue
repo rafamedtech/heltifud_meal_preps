@@ -60,21 +60,6 @@ const columns: TableColumn<Expense>[] = [
   }
 ]
 
-const tabletColumns: TableColumn<Expense>[] = [
-  {
-    accessorKey: "description",
-    header: "Descripción",
-    meta: { class: { th: "w-[40%]", td: "w-[40%]" } }
-  },
-  { id: "details", header: "Categoría" },
-  { id: "billingStatus", header: "Factura" },
-  {
-    accessorKey: "amount",
-    header: "Monto",
-    meta: { class: { th: "text-right", td: "text-right" } }
-  }
-]
-
 const toast = useToast()
 const { createExpense, updateExpense, deleteExpense, getExpenses, getExpenseVendors } = useExpenses()
 const expenses = ref<Expense[]>([])
@@ -446,7 +431,6 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
   <main class="flex min-h-full flex-col space-y-6">
     <section class="grid gap-3 sm:grid-cols-3">
       <UCard
-        class="app-surface"
         :ui="{ body: 'p-5 sm:p-5' }"
       >
         <div class="flex items-start justify-between gap-3">
@@ -477,7 +461,6 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
         </div>
       </UCard>
       <UCard
-        class="app-surface"
         :ui="{ body: 'p-5 sm:p-5' }"
       >
         <div class="flex items-start justify-between gap-3">
@@ -503,7 +486,6 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
         </div>
       </UCard>
       <UCard
-        class="app-surface"
         :ui="{ body: 'p-5 sm:p-5' }"
       >
         <div class="flex items-start justify-between gap-3">
@@ -530,11 +512,8 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
       </UCard>
     </section>
 
-    <UCard
-      class="app-surface"
-      :ui="{ body: 'p-5 sm:p-6' }"
-    >
-      <div class="grid gap-3 min-[744px]:grid-cols-2">
+    <UDashboardToolbar class="border-0 px-0">
+      <div class="grid w-full gap-3 min-[744px]:grid-cols-2">
         <UInput
           v-model="search"
           icon="i-lucide-search"
@@ -561,197 +540,21 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
           />
         </div>
       </div>
-    </UCard>
+    </UDashboardToolbar>
 
-    <section
-      v-if="loading"
-      role="status"
-      aria-live="polite"
-      class="flex min-h-64 flex-col items-center justify-center gap-3 text-muted"
-    >
-      <UIcon
-        name="i-lucide-loader-circle"
-        class="size-12 animate-spin"
-        aria-hidden="true"
-      />
-      <span>Cargando</span>
-    </section>
+    <UEmpty v-if="loading" loading title="Cargando gastos" />
+    <UEmpty v-else-if="loadError" icon="i-lucide-cloud-alert" title="No fue posible cargar los gastos" :description="loadError">
+      <template #actions><UButton icon="i-lucide-refresh-cw" color="neutral" variant="outline" @click="loadExpenses()">Reintentar</UButton></template>
+    </UEmpty>
+    <UEmpty v-else-if="!expenses.length" :icon="isFiltering ? 'i-lucide-search-x' : 'i-lucide-receipt-text'" :title="isFiltering ? 'No encontramos gastos' : 'Aún no hay gastos'" :description="isFiltering ? 'Ajusta la búsqueda o limpia los filtros.' : 'Registra el primer movimiento para comenzar el control.'">
+      <template #actions>
+        <UButton v-if="isFiltering" color="neutral" variant="outline" icon="i-lucide-filter-x" @click="resetFilters">Limpiar filtros</UButton>
+        <UButton v-else icon="i-lucide-plus" @click="openCreate">Registrar gasto</UButton>
+      </template>
+    </UEmpty>
 
-    <UCard
-      v-else-if="loadError"
-      class="app-surface"
-      :ui="{ body: 'py-14 sm:py-16' }"
-    >
-      <div class="mx-auto max-w-md space-y-4 text-center">
-        <UIcon
-          name="i-lucide-cloud-alert"
-          class="mx-auto size-10 text-error"
-        />
-        <div>
-          <h2 class="font-semibold text-highlighted">No fue posible cargar los gastos</h2>
-          <p class="mt-1 text-sm text-muted">{{ loadError }}</p>
-        </div>
-        <UButton
-          icon="i-lucide-refresh-cw"
-          variant="soft"
-          @click="loadExpenses()"
-          >Reintentar</UButton
-        >
-      </div>
-    </UCard>
-
-    <UCard
-      v-else-if="!expenses.length"
-      class="app-surface"
-      :ui="{ body: 'py-14 sm:py-16' }"
-    >
-      <div class="mx-auto max-w-md space-y-4 text-center">
-        <div class="mx-auto flex size-12 items-center justify-center rounded-xl border border-default bg-elevated">
-          <UIcon
-            :name="isFiltering ? 'i-lucide-search-x' : 'i-lucide-receipt-text'"
-            class="size-5 text-muted"
-          />
-        </div>
-        <div>
-          <h2 class="font-semibold text-highlighted">
-            {{ isFiltering ? "No encontramos gastos" : "Aún no hay gastos" }}
-          </h2>
-          <p class="mt-1 text-sm text-muted">
-            {{
-              isFiltering
-                ? "Ajusta la búsqueda o limpia los filtros."
-                : "Registra el primer movimiento para comenzar el control."
-            }}
-          </p>
-        </div>
-        <UButton
-          v-if="isFiltering"
-          variant="soft"
-          icon="i-lucide-filter-x"
-          @click="resetFilters"
-          >Limpiar filtros</UButton
-        >
-        <UButton
+        <UTable
           v-else
-          icon="i-lucide-plus"
-          @click="openCreate"
-          >Registrar gasto</UButton
-        >
-      </div>
-    </UCard>
-
-    <template v-else>
-      <section class="grid gap-3 min-[744px]:landscape:hidden min-[1025px]:portrait:hidden">
-        <UCard
-          v-for="expense in expenses"
-          :key="expense.id"
-          role="button"
-          tabindex="0"
-          :aria-label="`Editar gasto: ${expense.description}`"
-          class="app-surface cursor-pointer transition-colors hover:bg-elevated/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-          :ui="{ body: 'p-5 sm:p-5' }"
-          @click="openEdit(expense)"
-          @keydown.enter.prevent="openEdit(expense)"
-          @keydown.space.prevent="openEdit(expense)"
-        >
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0">
-              <p class="mb-1 text-sm text-muted">{{ displayDate(expense.expenseDate) }}</p>
-              <div class="flex items-center gap-2">
-                <UIcon
-                  :name="categoryIcon(expense.category)"
-                  class="size-4 shrink-0 text-primary"
-                />
-                <h2 class="truncate font-semibold text-highlighted">{{ expense.description }}</h2>
-              </div>
-              <p
-                v-if="expense.billingReference1 || expense.billingReference2"
-                class="mt-3 truncate text-xs text-muted"
-              >
-                Ref: {{ [expense.billingReference1, expense.billingReference2].filter(Boolean).join(" · ") }}
-              </p>
-            </div>
-          </div>
-          <div class="mt-5 flex items-end justify-between gap-4 border-t border-default/70 pt-4">
-            <UBadge
-              :color="expense.isInvoiced ? 'success' : 'warning'"
-              variant="soft"
-            >
-              <UIcon
-                :name="expense.isInvoiced ? 'i-lucide-file-check-2' : 'i-lucide-file-clock'"
-                class="size-3"
-              />
-              {{ expense.isInvoiced ? "Facturado" : "Pendiente" }}
-            </UBadge>
-            <p class="text-xl font-semibold text-highlighted">{{ currency(expense.amount) }}</p>
-          </div>
-        </UCard>
-      </section>
-
-      <UCard
-        class="app-surface hidden overflow-hidden min-[744px]:landscape:block min-[1025px]:portrait:block 2xl:hidden"
-        :ui="{ body: 'p-0 sm:p-0' }"
-      >
-        <UTable
-          :data="expenses"
-          :columns="tabletColumns"
-          :ui="{
-            th: 'px-4 py-3',
-            td: 'px-4 py-3.5 align-middle',
-            tr: 'cursor-pointer transition-colors hover:bg-elevated/50 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary'
-          }"
-          @select="selectExpense"
-        >
-          <template #description-cell="{ row }">
-            <div class="flex min-w-0 items-center gap-3">
-              <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <UIcon
-                  :name="categoryIcon(row.original.category)"
-                  class="size-4"
-                />
-              </div>
-              <div class="min-w-0">
-                <p class="wrap-break-word font-semibold leading-snug text-highlighted">
-                  {{ row.original.description }}
-                </p>
-                <p class="whitespace-nowrap text-xs text-muted">{{ displayDate(row.original.expenseDate) }}</p>
-              </div>
-            </div>
-          </template>
-          <template #details-cell="{ row }">
-            <div class="flex max-w-48 flex-wrap gap-1.5">
-              <UBadge
-                color="neutral"
-                variant="soft"
-                >{{ optionLabel(categoryOptions, row.original.category) }}</UBadge
-              >
-            </div>
-          </template>
-          <template #billingStatus-cell="{ row }">
-            <UBadge
-              :color="row.original.isInvoiced ? 'success' : 'warning'"
-              variant="soft"
-            >
-              <UIcon
-                :name="row.original.isInvoiced ? 'i-lucide-file-check-2' : 'i-lucide-file-clock'"
-                class="size-3"
-              />
-              {{ row.original.isInvoiced ? "Facturado" : "Pendiente" }}
-            </UBadge>
-          </template>
-          <template #amount-cell="{ row }"
-            ><span class="whitespace-nowrap font-semibold text-highlighted">{{
-              currency(row.original.amount)
-            }}</span></template
-          >
-        </UTable>
-      </UCard>
-
-      <UCard
-        class="app-surface hidden overflow-hidden 2xl:block"
-        :ui="{ body: 'p-0 sm:p-0' }"
-      >
-        <UTable
           :data="expenses"
           :columns="columns"
           :ui="{
@@ -810,22 +613,6 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
             ><span class="font-semibold text-highlighted">{{ currency(row.original.amount) }}</span></template
           >
         </UTable>
-      </UCard>
-
-      <div
-        v-if="nextCursor"
-        class="text-center"
-      >
-        <UButton
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-chevrons-down"
-          :loading="loadingMore"
-          @click="loadExpenses(true)"
-          >Cargar más gastos</UButton
-        >
-      </div>
-    </template>
 
     <UModal
       v-model:open="isFiltersOpen"

@@ -27,43 +27,16 @@ const contenedorModel = computed<string | undefined>({
 </script>
 
 <template>
-  <div
+  <URadioGroup
     v-if="layout === 'cards'"
     v-bind="attrs"
-    role="radiogroup"
+    v-model="contenedorModel"
+    :items="contenedorOptions.map(option => ({ ...option, label: option.capacidad, description: option.tipo }))"
+    variant="card"
+    orientation="horizontal"
     aria-label="Tipo de contenedor"
-    class="grid grid-cols-2 gap-2 sm:grid-cols-5"
-  >
-    <button
-      v-for="option in contenedorOptions"
-      :key="option.value"
-      type="button"
-      role="radio"
-      :aria-checked="contenedorModel === option.value"
-      :aria-label="option.label"
-      :class="[
-        'relative flex flex-col items-start gap-2 rounded-md border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-        contenedorModel === option.value
-          ? 'border-primary bg-primary/10 ring-1 ring-inset ring-primary'
-          : 'border-default bg-default hover:border-accented hover:bg-elevated/50'
-      ]"
-      @click="contenedorModel = option.value"
-    >
-      <UIcon
-        :name="option.icon"
-        :class="['size-5', contenedorModel === option.value ? 'text-primary' : 'text-muted']"
-      />
-      <span class="min-w-0">
-        <span class="block text-base font-semibold leading-tight text-highlighted">{{ option.capacidad }}</span>
-        <span class="mt-0.5 block text-xs text-muted">{{ option.tipo }}</span>
-      </span>
-      <UIcon
-        v-if="contenedorModel === option.value"
-        name="i-lucide-circle-check"
-        class="absolute right-2 top-2 size-4 text-primary"
-      />
-    </button>
-  </div>
+    :ui="{ fieldset: 'grid grid-cols-2 gap-2 sm:grid-cols-5' }"
+  />
 
   <USelect
     v-else
