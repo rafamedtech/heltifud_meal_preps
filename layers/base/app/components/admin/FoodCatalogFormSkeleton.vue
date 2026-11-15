@@ -14,11 +14,11 @@
             class="app-control-surface px-4 py-3"
           >
             <USkeleton :class="['h-3 rounded-lg', labelWidth]" />
-            <USkeleton class="mt-2 h-10 w-full rounded-lg" />
+            <USkeleton class="mt-2 h-10 w-full rounded-md" />
           </section>
 
           <section class="flex justify-end pt-2">
-            <USkeleton class="h-10 w-36 rounded-lg" />
+            <USkeleton class="h-10 w-36 rounded-md" />
           </section>
         </section>
       </UCard>

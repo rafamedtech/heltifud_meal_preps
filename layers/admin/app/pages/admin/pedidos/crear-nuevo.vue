@@ -122,14 +122,14 @@ async function submitOrder() {
 
     <UForm v-else :schema="orderCreateInputSchema" :state="state" class="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_340px]" @submit="submitOrder">
       <div class="space-y-5">
-        <UCard class="rounded-3xl shadow-sm">
+        <UCard class="shadow-sm">
           <template #header><div><h2 class="font-semibold text-highlighted">Cliente y plan</h2><p class="mt-1 text-xs text-muted">La variante define cuántos días se copiarán del menú.</p></div></template>
           <div class="grid gap-5 md:grid-cols-2">
             <UFormField label="Cliente" name="customerId" required>
-              <USelectMenu v-model="state.customerId" :items="customerOptions" value-key="value" searchable placeholder="Buscar cliente" class="w-full" />
+              <USelectMenu v-model="state.customerId" :items="customerOptions" value-key="value" placeholder="Buscar cliente" class="w-full" />
             </UFormField>
             <UFormField label="Plan y variante" name="planVariantId" required>
-              <USelectMenu v-model="state.planVariantId" :items="variantOptions" value-key="value" searchable placeholder="Seleccionar plan" class="w-full" />
+              <USelectMenu v-model="state.planVariantId" :items="variantOptions" value-key="value" placeholder="Seleccionar plan" class="w-full" />
             </UFormField>
           </div>
 
@@ -139,7 +139,7 @@ async function submitOrder() {
           </div>
         </UCard>
 
-        <UCard class="rounded-3xl shadow-sm">
+        <UCard class="shadow-sm">
           <template #header><div><h2 class="font-semibold text-highlighted">Entregas</h2><p class="mt-1 text-xs text-muted">Cada parte puede enviarse a una dirección diferente del cliente.</p></div></template>
           <div class="grid gap-5 xl:grid-cols-2">
             <section class="rounded-2xl border border-default bg-elevated/30 p-4">
@@ -162,13 +162,13 @@ async function submitOrder() {
           </div>
         </UCard>
 
-        <UCard class="rounded-3xl shadow-sm">
+        <UCard class="shadow-sm">
           <UFormField label="Notas del pedido" name="notes" hint="Opcional"><UTextarea v-model="state.notes" :rows="4" autoresize class="w-full" placeholder="Alergias, instrucciones o acuerdos con el cliente." /></UFormField>
         </UCard>
       </div>
 
       <aside class="space-y-4 lg:sticky lg:top-0">
-        <UCard class="rounded-3xl shadow-sm">
+        <UCard class="shadow-sm">
           <template #header><h2 class="font-semibold text-highlighted">Resumen</h2></template>
           <div v-if="selectedOption" class="space-y-5">
             <div><p class="text-xs uppercase tracking-wider text-dimmed">Plan</p><p class="mt-1 font-semibold text-highlighted">{{ selectedOption.plan.title }}</p><p class="text-sm text-muted">{{ selectedOption.variant.title }}</p></div>
@@ -177,7 +177,7 @@ async function submitOrder() {
             <div class="flex items-end justify-between"><span class="text-sm text-muted">Total</span><span class="text-2xl font-bold tabular-nums text-highlighted">{{ transformPrice(selectedOption.variant.price) }}</span></div>
           </div>
           <div v-else class="py-8 text-center"><UIcon name="i-lucide-receipt-text" class="mx-auto size-8 text-dimmed" /><p class="mt-3 text-sm text-muted">Selecciona una variante para ver el resumen.</p></div>
-          <template #footer><UButton type="submit" block size="lg" icon="i-lucide-sparkles" :loading="saving" :disabled="!selectedOption || !selectedCustomer">Crear y personalizar</UButton></template>
+          <template #footer><UButton type="submit" block icon="i-lucide-sparkles" :loading="saving" :disabled="!selectedOption || !selectedCustomer">Crear y personalizar</UButton></template>
         </UCard>
         <UAlert color="info" variant="soft" icon="i-lucide-info" title="Menú activo" description="Los cambios posteriores al menú semanal no modificarán este pedido." />
       </aside>

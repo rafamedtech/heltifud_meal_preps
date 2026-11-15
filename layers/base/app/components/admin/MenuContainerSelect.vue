@@ -7,7 +7,7 @@ const { layout = "select" } = defineProps<{
   layout?: "select" | "cards"
 }>()
 
-const model = defineModel<string>()
+const model = defineModel<string | null>()
 const attrs = useAttrs()
 
 const contenedorOptions = [
@@ -42,7 +42,7 @@ const contenedorModel = computed<string | undefined>({
       :aria-checked="contenedorModel === option.value"
       :aria-label="option.label"
       :class="[
-        'relative flex flex-col items-start gap-2 rounded-lg border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+        'relative flex flex-col items-start gap-2 rounded-md border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
         contenedorModel === option.value
           ? 'border-primary bg-primary/10 ring-1 ring-inset ring-primary'
           : 'border-default bg-default hover:border-accented hover:bg-elevated/50'

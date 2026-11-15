@@ -3,12 +3,18 @@ import { describe, expect, it, vi } from 'vitest';
 
 import CustomersPage from '../../layers/admin/app/pages/admin/clientes/index.vue';
 
-const { navigate } = vi.hoisted(() => ({ navigate: vi.fn() }));
+const { navigate, getCustomers } = vi.hoisted(() => ({ navigate: vi.fn(), getCustomers: vi.fn() }));
 mockNuxtImport('navigateTo', () => navigate);
+mockNuxtImport('useCustomers', () => () => ({
+  getCustomers,
+  createCustomer: vi.fn(),
+  updateCustomer: vi.fn(),
+  deleteCustomer: vi.fn()
+}));
 
 describe('CustomersPage', () => {
   it('renders all filters without invalid empty SelectItem values', async () => {
-    vi.stubGlobal('$fetch', vi.fn().mockResolvedValue({ items: [], nextCursor: null }));
+    getCustomers.mockResolvedValue({ items: [], nextCursor: null });
 
     const wrapper = await mountSuspended(CustomersPage);
 
@@ -19,9 +25,10 @@ describe('CustomersPage', () => {
   });
 
   it('uses Google Maps location search fields in the customer form', async () => {
-    vi.stubGlobal('$fetch', vi.fn().mockResolvedValue({ items: [], nextCursor: null }));
+    getCustomers.mockResolvedValue({ items: [], nextCursor: null });
 
     const wrapper = await mountSuspended(CustomersPage);
+    await vi.waitFor(() => expect(wrapper.text()).toContain('Crear cliente'));
     const createButton = wrapper.findAll('button').find((button) => button.text().includes('Crear cliente'));
     expect(createButton).toBeDefined();
     await createButton!.trigger('click');
@@ -39,10 +46,10 @@ describe('CustomersPage', () => {
       correoElectronico: 'ana@example.com', ubicacion1: 'Zona Río', ubicacion2: '',
       source: 'whatsapp', status: 'activo', tipoCliente: 'menu'
     };
-    vi.stubGlobal('$fetch', vi.fn().mockResolvedValue({ items: [customer], nextCursor: null }));
+    getCustomers.mockResolvedValue({ items: [customer], nextCursor: null });
     navigate.mockClear();
     const wrapper = await mountSuspended(CustomersPage);
-    expect(wrapper.findAll('a[href="/admin/clientes/customer-1"]')).toHaveLength(2);
+    await vi.waitFor(() => expect(wrapper.findAll('a[href="/admin/clientes/customer-1"]')).toHaveLength(2));
     await wrapper.get('tbody tr').trigger('click');
     expect(navigate).toHaveBeenLastCalledWith('/admin/clientes/customer-1');
     navigate.mockClear();

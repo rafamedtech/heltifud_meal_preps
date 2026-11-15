@@ -317,7 +317,7 @@ const summary = computed(() => {
 const cardUi = computed(() => ({
   root: showToggle
     ? "app-surface"
-    : "h-full rounded-none border-0 bg-transparent shadow-none ring-0",
+    : "h-full border-0 bg-transparent shadow-none ring-0",
   header: showToggle
     ? "px-5 py-4 sm:px-5"
     : "border-b border-default/60 bg-elevated/30 px-4 py-3 sm:px-4",
@@ -383,9 +383,7 @@ function afterLeave(el: Element) {
 }
 
 const detailFieldInputUi = {
-  base: "app-control-surface px-3.5 py-2.5 hover:bg-[var(--app-surface-soft)] focus:bg-[var(--app-surface-soft)]",
-  leading: "ps-0",
-  trailing: "pe-0"
+  base: "app-control-surface hover:bg-[var(--app-surface-soft)] focus:bg-[var(--app-surface-soft)]"
 }
 
 const selectionOptions = computed(() => {

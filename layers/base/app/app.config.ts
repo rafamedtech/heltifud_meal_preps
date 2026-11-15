@@ -14,6 +14,16 @@ export default defineAppConfig({
         size: "xl"
       }
     },
+    inputNumber: {
+      defaultVariants: {
+        size: "xl"
+      }
+    },
+    textarea: {
+      defaultVariants: {
+        size: "xl"
+      }
+    },
     select: {
       defaultVariants: {
         size: "xl"

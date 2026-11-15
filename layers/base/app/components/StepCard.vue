@@ -16,7 +16,7 @@ const { title, description, image, button } = step;
 </script>
 
 <template>
-  <UCard :key="title" variant="subtle" class="rounded-xl shadow">
+  <UCard :key="title" variant="subtle" class="shadow">
     <template #header>
       <h3 class="text-primary-500 text-xl">{{ title }}</h3>
     </template>
@@ -37,7 +37,6 @@ const { title, description, image, button } = step;
       <section class="flex items-center justify-center">
         <UButton
           :label="button.label"
-          size="xl"
           :icon="button.icon"
           trailing
           @click="button.click"

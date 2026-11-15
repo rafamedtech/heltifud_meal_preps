@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums"
-import type * as Prisma from "../internal/prismaNamespace"
+import type * as $Enums from "../enums.ts"
+import type * as Prisma from "../internal/prismaNamespace.ts"
 
 /**
  * Model FoodComponent
@@ -220,7 +220,7 @@ export type FoodComponentGroupByOutputType = {
   _max: FoodComponentMaxAggregateOutputType | null
 }
 
-type GetFoodComponentGroupByPayload<T extends FoodComponentGroupByArgs> = Prisma.PrismaPromise<
+export type GetFoodComponentGroupByPayload<T extends FoodComponentGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<FoodComponentGroupByOutputType, T['by']> &
       {

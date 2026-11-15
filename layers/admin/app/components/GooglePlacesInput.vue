@@ -184,7 +184,6 @@ onBeforeUnmount(() => {
         :color="color"
         :highlight="highlight"
         maxlength="300"
-        size="lg"
         class="w-full"
       />
 
@@ -208,23 +207,23 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .google-places-host {
-  min-height: 2.25rem;
+  min-height: 2.5rem;
   width: 100%;
 }
 
 .google-places-host :deep(gmp-place-autocomplete) {
   display: block;
-  height: 2.25rem;
+  height: 2.5rem;
   width: 100%;
   border: 0;
-  border-radius: var(--ui-radius);
+  border-radius: var(--radius-md);
   background-color: var(--ui-bg);
   color: var(--ui-text-highlighted);
   color-scheme: inherit;
   box-shadow: inset 0 0 0 1px var(--ui-border-accented);
   font-family: inherit;
   font-size: 1rem;
-  line-height: 1.25rem;
+  line-height: 1.5rem;
   transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
 }
 
@@ -250,8 +249,8 @@ onBeforeUnmount(() => {
 
 .google-places-host :deep(gmp-place-autocomplete)::part(input) {
   box-sizing: border-box;
-  height: 2.25rem;
-  min-height: 2.25rem;
+  height: 2.5rem;
+  min-height: 2.5rem;
   padding: 0.5rem 2.5rem;
   border: 0;
   background: transparent;
@@ -266,7 +265,7 @@ onBeforeUnmount(() => {
 
 .google-places-host :deep(gmp-place-autocomplete)::part(prediction-list) {
   border: 1px solid var(--ui-border-accented);
-  border-radius: var(--ui-radius);
+  border-radius: var(--radius-md);
   background-color: var(--ui-bg-elevated);
   box-shadow: var(--app-shadow-sm);
 }

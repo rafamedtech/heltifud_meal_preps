@@ -69,7 +69,7 @@ const ingredientTableColumns: TableColumn<RecipeIngredientInput>[] = [
   },
   {
     id: "actions",
-    header: "",
+    header: "Acciones",
     meta: { class: { th: "w-12", td: "w-12 text-right" } }
   }
 ]
@@ -128,9 +128,8 @@ async function saveNewIngredient() {
       )
     }
 
-    if (createTargetIndex.value !== null && ingredientes.value[createTargetIndex.value]) {
-      ingredientes.value[createTargetIndex.value].ingredientId = savedIngredient.id
-    }
+    const targetIngredient = createTargetIndex.value === null ? undefined : ingredientes.value[createTargetIndex.value]
+    if (targetIngredient) targetIngredient.ingredientId = savedIngredient.id
 
     createIngredientOpen.value = false
     toast.add({
@@ -214,7 +213,6 @@ async function saveNewIngredient() {
               v-model="row.original.ingredientId"
               :items="ingredientOptions"
               value-key="value"
-              searchable
               :create-item="ingredientStatus === 'success'"
               :loading="ingredientStatus === 'pending'"
               placeholder="Buscar ingrediente"

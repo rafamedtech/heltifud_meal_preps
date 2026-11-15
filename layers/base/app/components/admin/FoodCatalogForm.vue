@@ -84,9 +84,7 @@ const normalizedImageUrl = computed(() => state.imagen.trim())
 const initialStateSnapshot = ref("")
 const fieldSurfaceClass = "app-control-surface px-4 py-3.5"
 const textFieldUi = {
-  base: "px-0 text-base bg-transparent hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent placeholder:italic",
-  leading: "ps-0",
-  trailing: "pe-0"
+  base: "bg-transparent hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent placeholder:italic"
 }
 const typeSelectUi = {
   ...textFieldUi,
@@ -316,17 +314,13 @@ function onCancel() {
 
             <section :class="[fieldSurfaceClass, invalidFields.descripcion ? 'app-control-surface-error' : '']">
               <p class="text-xs uppercase tracking-[0.18em] text-muted">Descripción</p>
-              <UInput
+              <UTextarea
                 v-model="state.descripcion"
                 class="mt-2 w-full"
                 variant="ghost"
                 placeholder="Escribe aquí"
                 :rows="4"
-                :ui="{
-                  base: ' resize-none placeholder:italic px-0 text-base bg-transparent hover:bg-transparent focus:bg-transparent focus-visible:bg-transparent',
-                  leading: 'ps-0',
-                  trailing: 'pe-0'
-                }"
+                :ui="textFieldUi"
               />
             </section>
 
@@ -363,7 +357,7 @@ function onCancel() {
                         :name="getFoodTypeAppearance(normalizeTypeValue(modelValue)).icon"
                         class="size-4 shrink-0 text-muted"
                       />
-                      <span class="truncate text-sm text-highlighted">
+                      <span class="truncate text-highlighted">
                         {{ getFoodTypeAppearance(normalizeTypeValue(modelValue)).label }}
                       </span>
                     </span>
@@ -374,7 +368,7 @@ function onCancel() {
                       :color="getFoodTypeAppearance(typeItem.value).color"
                       variant="soft"
                       :class="[
-                        'inline-flex max-w-fit rounded-(--app-control-radius) px-2.5 py-1 ring-1 ring-inset',
+                        'inline-flex max-w-fit px-2.5 py-1 ring-1 ring-inset',
                         getFoodTypeAppearance(typeItem.value).className
                       ]"
                     >
@@ -454,7 +448,6 @@ function onCancel() {
           <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <UButton
               color="neutral"
-              size="lg"
               icon="i-lucide-x"
               block
               class="sm:w-auto"
@@ -466,7 +459,6 @@ function onCancel() {
               type="submit"
               :loading="saving"
               icon="i-lucide-save"
-              size="lg"
               block
               class="min-w-44 justify-center shadow-sm sm:w-auto"
             >

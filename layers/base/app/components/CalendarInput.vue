@@ -4,13 +4,13 @@ import type { ButtonProps } from '@nuxt/ui';
 import { DateFormatter, getLocalTimeZone, parseDate } from '@internationalized/date';
 
 interface Props {
-  ariaLabel: string;
+  label: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   buttonUi?: ButtonProps['ui'];
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  size: 'lg',
+  size: undefined,
   buttonUi: undefined,
 });
 
@@ -28,7 +28,7 @@ const calendarValue = computed<CalendarDate | null>({
 
 const displayDate = computed(() => calendarValue.value
   ? dateFormatter.format(calendarValue.value.toDate(getLocalTimeZone()))
-  : props.ariaLabel);
+  : props.label);
 </script>
 
 <template>
@@ -39,7 +39,7 @@ const displayDate = computed(() => calendarValue.value
       icon="i-lucide-calendar"
       :size="props.size"
       :ui="props.buttonUi"
-      :aria-label="`Abrir calendario para ${props.ariaLabel.toLocaleLowerCase('es-MX')}`"
+      :aria-label="`Abrir calendario para ${props.label.toLocaleLowerCase('es-MX')}`"
       class="w-full justify-start"
       :class="calendarValue ? 'text-highlighted' : 'text-muted'"
     >

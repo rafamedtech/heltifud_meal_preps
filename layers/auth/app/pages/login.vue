@@ -94,7 +94,7 @@ useSeoMeta({
         <UCard
           class="overflow-hidden shadow-2xl shadow-black/8 dark:shadow-black/45"
           :ui="{
-            root: 'rounded-2xl border border-default/70 bg-default/92 backdrop-blur-sm dark:border-white/8 dark:bg-neutral-900/90',
+            root: 'border border-default/70 bg-default/92 backdrop-blur-sm dark:border-white/8 dark:bg-neutral-900/90',
             body: 'p-0 sm:p-0'
           }"
         >
@@ -139,7 +139,6 @@ useSeoMeta({
                 <UInput
                   v-model="state.email"
                   type="email"
-                  size="xl"
                   autofocus
                   autocomplete="email"
                   icon="i-lucide-mail"
@@ -168,7 +167,6 @@ useSeoMeta({
                   id="login-password"
                   v-model="state.password"
                   type="password"
-                  size="xl"
                   autocomplete="current-password"
                   icon="i-lucide-key-round"
                   placeholder="Ingresa tu contraseña"
@@ -183,7 +181,6 @@ useSeoMeta({
               <UButton
                 type="submit"
                 block
-                size="xl"
                 color="primary"
                 class="justify-center"
                 :loading="isSubmitting"

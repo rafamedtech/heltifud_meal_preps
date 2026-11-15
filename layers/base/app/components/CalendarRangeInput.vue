@@ -4,13 +4,13 @@ import type { DateRange } from 'reka-ui';
 import { DateFormatter, getLocalTimeZone, parseDate } from '@internationalized/date';
 
 interface Props {
-  ariaLabel?: string;
+  label?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  ariaLabel: 'Rango de fechas',
-  size: 'lg',
+  label: 'Rango de fechas',
+  size: undefined,
 });
 
 const start = defineModel<string>('start', { required: true });
@@ -32,7 +32,7 @@ const calendarValue = computed<DateRange>({
 });
 
 const displayRange = computed(() => {
-  if (!calendarValue.value.start) return props.ariaLabel;
+  if (!calendarValue.value.start) return props.label;
 
   const formattedStart = dateFormatter.format(calendarValue.value.start.toDate(timeZone));
   if (!calendarValue.value.end) return `Desde ${formattedStart}`;
@@ -55,7 +55,7 @@ function clearRange() {
       icon="i-lucide-calendar-range"
       trailing-icon="i-lucide-chevron-down"
       :size="props.size"
-      :aria-label="`Abrir calendario para ${props.ariaLabel.toLocaleLowerCase('es-MX')}`"
+      :aria-label="`Abrir calendario para ${props.label.toLocaleLowerCase('es-MX')}`"
       class="w-full justify-start"
       :class="calendarValue.start ? 'text-highlighted' : 'text-muted'"
       :ui="{ trailingIcon: 'ms-auto' }"

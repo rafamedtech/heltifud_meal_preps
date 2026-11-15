@@ -298,7 +298,7 @@ async function saveOrder() {
                   <h4 class="text-xs font-semibold uppercase tracking-wide text-muted">{{ slotLabel(slot.slotType) }}</h4>
                   <UButton type="button" size="xs" color="neutral" variant="ghost" icon="i-lucide-plus" aria-label="Agregar componente" @click="addComponent(slot)" />
                 </div>
-                <UInput v-model="slot.contenedor" size="sm" variant="soft" icon="i-lucide-package" placeholder="Contenedor" class="w-full" aria-label="Contenedor" />
+                <UInput v-model="slot.contenedor" variant="soft" icon="i-lucide-package" placeholder="Contenedor" class="w-full" aria-label="Contenedor" />
 
                 <div v-for="(component, componentIndex) in slot.components" :key="componentKey(slot, component, componentIndex)" class="space-y-2">
                   <div class="flex min-w-0 items-center gap-3">
@@ -313,13 +313,11 @@ async function saveOrder() {
                     <UButton type="button" size="xs" icon="i-lucide-x" color="neutral" variant="ghost" class="hover:text-error" :disabled="slot.components.length === 1" aria-label="Quitar componente" @click="removeComponent(slot, componentIndex)" />
                   </div>
                   <div class="grid grid-cols-2 gap-2">
-                    <USelect v-model="component.componentRole" :items="roleOptions" value-key="value" size="xs" variant="soft" class="w-full" aria-label="Función" />
+                    <USelect v-model="component.componentRole" :items="roleOptions" value-key="value" variant="soft" class="w-full" aria-label="Función" />
                     <USelectMenu
                       :model-value="replacementSelections[componentKey(slot, component, componentIndex)]"
                       :items="catalogOptions"
                       value-key="value"
-                      searchable
-                      size="xs"
                       variant="soft"
                       placeholder="Sustituir..."
                       class="w-full"

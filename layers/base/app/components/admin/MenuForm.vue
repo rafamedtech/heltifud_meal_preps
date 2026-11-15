@@ -243,7 +243,7 @@ const visibleDayEntries = computed(() =>
   )
 )
 const cardSurfaceUi = {
-  root: "rounded-xl bg-default shadow-sm ring ring-default divide-y divide-default",
+  root: "bg-default shadow-sm ring ring-default divide-y divide-default",
   body: "p-0 sm:p-0",
   header: "bg-elevated/70 px-4 py-4 sm:px-5",
   footer: "px-6 py-5 sm:px-6"
@@ -1268,7 +1268,7 @@ async function onSubmit(exitEditor = true) {
       title="Guardar cambios del menú"
       description="Confirma cómo quieres guardar los cambios."
       :dismissible="!loading"
-      :close="{ disabled: loading, 'aria-label': 'Cerrar confirmación de guardado' }"
+      :close="{ disabled: loading }"
       :ui="{ content: 'max-w-md' }"
     >
       <template #body>

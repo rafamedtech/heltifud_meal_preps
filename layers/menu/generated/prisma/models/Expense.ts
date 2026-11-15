@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums"
-import type * as Prisma from "../internal/prismaNamespace"
+import type * as $Enums from "../enums.ts"
+import type * as Prisma from "../internal/prismaNamespace.ts"
 
 /**
  * Model Expense
@@ -255,7 +255,7 @@ export type ExpenseGroupByOutputType = {
   _max: ExpenseMaxAggregateOutputType | null
 }
 
-type GetExpenseGroupByPayload<T extends ExpenseGroupByArgs> = Prisma.PrismaPromise<
+export type GetExpenseGroupByPayload<T extends ExpenseGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ExpenseGroupByOutputType, T['by']> &
       {

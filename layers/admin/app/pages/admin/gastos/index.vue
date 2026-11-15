@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TableColumn, TableRow } from "@nuxt/ui"
+import type { SelectItem, TableColumn, TableRow } from "@nuxt/ui"
 import { expenseChangePercent } from "~~/layers/menu/shared/utils/expenseComparison"
 
 import { expenseInputSchema } from "~~/layers/menu/shared/types/menuSchema"
@@ -14,7 +14,7 @@ useSeoMeta({
 })
 
 const categoryOptions = [
-  { label: "Todas las categorías", value: "todas" },
+  { label: "Todas las categorías", value: "todas", icon: undefined },
   { label: "Insumos", value: "insumos", icon: "i-lucide-carrot" },
   { label: "Empaque", value: "empaque", icon: "i-lucide-package" },
   { label: "Nómina", value: "nomina", icon: "i-lucide-users" },
@@ -23,7 +23,7 @@ const categoryOptions = [
   { label: "Marketing", value: "marketing", icon: "i-lucide-megaphone" },
   { label: "Equipo", value: "equipo", icon: "i-lucide-cooking-pot" },
   { label: "Otros", value: "otros", icon: "i-lucide-ellipsis" }
-] as const
+] satisfies SelectItem[]
 
 const paymentOptions = [
   { label: "Todos los métodos", value: "todos" },
@@ -99,11 +99,11 @@ const deleting = ref(false)
 const loadingVendors = ref(false)
 const search = ref("")
 const selectedCategory = ref("todas")
-const selectedExpenseType = ref("todos")
-const selectedInvoiceStatus = ref("todos")
+const selectedExpenseType = ref<(typeof expenseTypeOptions)[number]["value"]>("todos")
+const selectedInvoiceStatus = ref<(typeof invoiceStatusOptions)[number]["value"]>("todos")
 const draftCategory = ref("todas")
-const draftExpenseType = ref("todos")
-const draftInvoiceStatus = ref("todos")
+const draftExpenseType = ref<(typeof expenseTypeOptions)[number]["value"]>("todos")
+const draftInvoiceStatus = ref<(typeof invoiceStatusOptions)[number]["value"]>("todos")
 const draftFromDate = ref("")
 const draftToDate = ref("")
 const fromDate = ref("")
@@ -548,7 +548,6 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
             <CalendarRangeInput
               v-model:start="fromDate"
               v-model:end="toDate"
-              size="xl"
               class="min-w-0 w-full"
             />
           </div>
@@ -556,7 +555,6 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
             color="neutral"
             variant="subtle"
             icon="i-lucide-sliders-horizontal"
-            size="xl"
             :label="activeAdvancedFilters ? `Más filtros (${activeAdvancedFilters})` : 'Más filtros'"
             class="min-w-0 w-full justify-center"
             @click="openFilters"
@@ -844,7 +842,6 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
             <CalendarRangeInput
               v-model:start="draftFromDate"
               v-model:end="draftToDate"
-              size="xl"
               class="w-full"
             />
           </UFormField>
@@ -929,8 +926,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
               required
               ><CalendarInput
                 v-model="formState.expenseDate"
-                aria-label="Fecha del gasto"
-                size="xl"
+                label="Fecha del gasto"
                 :button-ui="{ base: 'font-normal' }"
             /></UFormField>
             <UFormField
@@ -942,7 +938,6 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
                 :min="0"
                 :step="0.01"
                 :format-options="{ style: 'currency', currency: 'MXN' }"
-                size="xl"
                 class="w-full"
             /></UFormField>
             <UFormField
@@ -983,12 +978,10 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
               <USelectMenu
                 v-model="formState.vendor"
                 :items="vendorOptions"
-                searchable
                 create-item
                 :loading="loadingVendors"
                 icon="i-lucide-store"
                 placeholder="Buscar o crear proveedor"
-                size="xl"
                 class="w-full"
                 @create="createVendor"
               >
@@ -1046,7 +1039,6 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
               ><UTextarea
                 v-model="formState.notes"
                 placeholder="Detalles, folio o contexto adicional"
-                size="xl"
                 autoresize
                 :rows="3"
                 class="w-full"

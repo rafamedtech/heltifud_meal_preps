@@ -277,7 +277,6 @@ function actionItems(item: FoodCatalogItem) {
             icon="i-lucide-search"
             :autofocus="autofocusSearch"
             :placeholder="searchPlaceholder"
-            size="lg"
             class="w-full"
           />
 
@@ -287,7 +286,6 @@ function actionItems(item: FoodCatalogItem) {
             :items="typeOptions"
             value-key="value"
             placeholder="Filtrar por tipo"
-            size="lg"
             :content="{ position: 'popper', side: 'bottom', align: 'end', sideOffset: 8 }"
             class="w-full"
             :ui="{
@@ -317,7 +315,7 @@ function actionItems(item: FoodCatalogItem) {
                 :color="getFilterTypeAppearance(item.value).color"
                 variant="soft"
                 :class="[
-                  'inline-flex max-w-fit rounded-xl px-2.5 py-1 ring-1 ring-inset',
+                  'inline-flex max-w-fit px-2.5 py-1 ring-1 ring-inset',
                   getFilterTypeAppearance(item.value).className
                 ]"
               >
@@ -441,7 +439,7 @@ function actionItems(item: FoodCatalogItem) {
                   <UBadge
                     :color="getFoodTypeAppearance(item.tipo).color"
                     variant="soft"
-                    :class="['inline-flex max-w-fit rounded-xl px-2.5 py-1 ring-1 ring-inset', getFoodTypeAppearance(item.tipo).className]"
+                    :class="['inline-flex max-w-fit px-2.5 py-1 ring-1 ring-inset', getFoodTypeAppearance(item.tipo).className]"
                   >
                     <UIcon :name="getFoodTypeAppearance(item.tipo).icon" class="size-3.5 shrink-0" />
                     {{ getFoodTypeAppearance(item.tipo).label }}

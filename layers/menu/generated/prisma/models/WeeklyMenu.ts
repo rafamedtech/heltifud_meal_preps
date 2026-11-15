@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums"
-import type * as Prisma from "../internal/prismaNamespace"
+import type * as $Enums from "../enums.ts"
+import type * as Prisma from "../internal/prismaNamespace.ts"
 
 /**
  * Model WeeklyMenu
@@ -179,7 +179,7 @@ export type WeeklyMenuGroupByOutputType = {
   _max: WeeklyMenuMaxAggregateOutputType | null
 }
 
-type GetWeeklyMenuGroupByPayload<T extends WeeklyMenuGroupByArgs> = Prisma.PrismaPromise<
+export type GetWeeklyMenuGroupByPayload<T extends WeeklyMenuGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<WeeklyMenuGroupByOutputType, T['by']> &
       {

@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums"
-import type * as Prisma from "../internal/prismaNamespace"
+import type * as $Enums from "../enums.ts"
+import type * as Prisma from "../internal/prismaNamespace.ts"
 
 /**
  * Model PlanVariant
@@ -217,7 +217,7 @@ export type PlanVariantGroupByOutputType = {
   _max: PlanVariantMaxAggregateOutputType | null
 }
 
-type GetPlanVariantGroupByPayload<T extends PlanVariantGroupByArgs> = Prisma.PrismaPromise<
+export type GetPlanVariantGroupByPayload<T extends PlanVariantGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<PlanVariantGroupByOutputType, T['by']> &
       {

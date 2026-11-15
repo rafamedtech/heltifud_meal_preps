@@ -3,7 +3,7 @@
     <UCard
       aria-hidden="true"
       :ui="{
-        root: 'rounded-xl bg-default shadow-sm ring ring-default divide-y divide-default',
+        root: 'bg-default shadow-sm ring ring-default divide-y divide-default',
         header: 'bg-elevated/70 px-4 py-4 sm:px-5',
         body: 'p-0 sm:p-0'
       }"

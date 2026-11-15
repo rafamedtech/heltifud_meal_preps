@@ -98,9 +98,9 @@ button:disabled,
   opacity: 0.45;
 }
 
-.app-surface,
-.app-surface-soft,
-.app-surface-elevated {
+.app-surface:not([data-slot]),
+.app-surface-soft:not([data-slot]),
+.app-surface-elevated:not([data-slot]) {
   border-radius: var(--app-radius);
 }
 
