@@ -190,6 +190,7 @@ model Order {
   // Human-readable consecutive number.
   folio                    Int             @unique(map: "orders_folio_key") @default(autoincrement())
   status                   OrderStatus     @default(DRAFT)
+  version                  Int             @default(1)
   // True when the order was captured once the customer cutoff had passed.
   capturedAfterCutoff      Boolean         @default(false) @map("captured_after_cutoff")
   planTitleSnapshot        String          @map("plan_title_snapshot")
@@ -204,6 +205,7 @@ model Order {
   cycle                    WeeklyCycle     @relation(fields: [cycleId], references: [id], onDelete: Restrict)
   deliveries               OrderDelivery[]
   menuSlots                OrderMenuSlot[]
+  statusEvents             OrderStatusEvent[]
 
   @@index([customerId, createdAt(sort: Desc)], map: "orders_customer_created_idx")
   @@index([status, createdAt(sort: Desc)], map: "orders_status_created_idx")
@@ -232,6 +234,25 @@ model OrderDelivery {
   @@unique([orderId, sequence], map: "order_deliveries_order_sequence_key")
   @@index([scheduledDate, status], map: "order_deliveries_date_status_idx")
   @@map("order_deliveries")
+}
+
+model OrderStatusEvent {
+  id                 String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId            String          @map("order_id") @db.Uuid
+  version            Int
+  fromStatus         OrderStatus?    @map("from_status")
+  toStatus           OrderStatus     @map("to_status")
+  deliverySequence   Int?            @map("delivery_sequence")
+  fromDeliveryStatus DeliveryStatus? @map("from_delivery_status")
+  toDeliveryStatus   DeliveryStatus? @map("to_delivery_status")
+  actorId            String?         @map("actor_id") @db.Uuid
+  actorLabel         String?         @map("actor_label")
+  reason             String?
+  createdAt          DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  order              Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, version], map: "order_status_events_order_version_idx")
+  @@map("order_status_events")
 }
 
 model OrderMenuSlot {

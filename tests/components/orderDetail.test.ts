@@ -5,13 +5,13 @@ import { ref } from 'vue';
 
 import OrderDetail from '../../layers/admin/app/pages/admin/pedidos/[id].vue';
 
-const { fetchData, retry } = vi.hoisted(() => ({ fetchData: vi.fn(), retry: vi.fn() }));
+const { fetchData, retry, save } = vi.hoisted(() => ({ fetchData: vi.fn(), retry: vi.fn(), save: vi.fn() }));
 mockNuxtImport('useFetch', () => fetchData);
 mockNuxtImport('useRoute', () => () => ({ params: { id: 'order-1' } }));
-mockNuxtImport('useOrders', () => () => ({ updateOrder: vi.fn() }));
+mockNuxtImport('useOrders', () => () => ({ updateOrder: save }));
 
 const order = {
-  id: 'order-1', folio: 12, weekStart: '2026-09-14', cycleId: 'cycle-1', capturedAfterCutoff: true, status: 'CONFIRMED', customerId: 'customer-1', customerName: 'Ana López', customerPhone: '6641234567',
+  id: 'order-1', version: 1, cycleStatus: 'OPEN', deliveryDateOptions: { 1: ['2026-09-13', '2026-09-14'], 2: ['2026-09-16', '2026-09-17'] }, statusEvents: [], folio: 12, weekStart: '2026-09-14', cycleId: 'cycle-1', capturedAfterCutoff: true, status: 'CONFIRMED', customerId: 'customer-1', customerName: 'Ana López', customerPhone: '6641234567',
   planTitle: 'Plan Balance', planVariantTitle: '5 días · 3 tiempos', price: 1450,
   deliveries: [
     { id: 'delivery-1', sequence: 1, scheduledDate: '2026-09-14', locationNumber: 1, address: 'Zona Río, Tijuana', status: 'PENDING', deliveredAt: null, notes: '' },
@@ -27,7 +27,7 @@ const order = {
   menuSlots: [{
     id: 'slot-1', deliverySequence: 1, dayOfWeek: 'LUNES', dayOrder: 1, slotType: 'COMIDA', contenedor: '',
     components: [{
-      id: 'component-1', catalogItemId: 'food-1', componentRole: 'PLATILLO_PRINCIPAL', position: 0,
+      id: 'component-1', catalogItemId: '11111111-1111-4111-8111-111111111111', componentRole: 'PLATILLO_PRINCIPAL', position: 0,
       nombre: 'Pollo al limón', descripcion: '', calorias: 420, imagen: '', tipo: 'proteina'
     }]
   }]
@@ -44,7 +44,30 @@ function mockFetch(orderResult: Record<string, unknown>) {
 describe('OrderDetail', () => {
   beforeEach(() => {
     retry.mockClear();
+    save.mockReset();
     mockFetch({ data: ref(order), status: ref('success'), error: ref(null) });
+  });
+
+  it('keeps local text and offers explicit reload after a version conflict', async () => {
+    save.mockRejectedValue({ data: { statusMessage: 'Otro operador modificó el pedido', data: { code: 'ORDER_VERSION_CONFLICT' } } });
+    const wrapper = await mountSuspended(OrderDetail);
+    await wrapper.get('textarea').setValue('Cambio local pendiente');
+    await wrapper.get('form').trigger('submit');
+    await vi.waitFor(() => expect(save).toHaveBeenCalledOnce());
+    await flushPromises();
+    expect(wrapper.text()).toContain('Revisa la versión actual');
+    expect((wrapper.get('textarea').element as HTMLTextAreaElement).value).toBe('Cambio local pendiente');
+    expect(wrapper.text()).toContain('Recargar pedido');
+    wrapper.unmount();
+  });
+
+  it('locks a delivered order and offers a recorded reopening', async () => {
+    mockFetch({ data: ref({ ...order, status: 'DELIVERED', deliveries: order.deliveries.map(d => ({ ...d, status: 'DELIVERED' })) }), status: ref('success'), error: ref(null) });
+    const wrapper = await mountSuspended(OrderDetail);
+    expect(wrapper.get('textarea').attributes('disabled')).toBeDefined();
+    expect(wrapper.text()).toContain('Edición bloqueada');
+    expect(wrapper.text()).toContain('Reabrir pedido');
+    wrapper.unmount();
   });
 
   it('renders the order summary, deliveries and menu', async () => {
@@ -62,7 +85,10 @@ describe('OrderDetail', () => {
     expect(wrapper.text()).toContain('Primera entrega');
     expect(wrapper.text()).toContain('Segunda entrega');
     expect(wrapper.text()).toContain('Sin comidas asignadas');
-    expect(wrapper.findAll('input[type="date"]').map((input) => (input.element as HTMLInputElement).value)).toEqual(['2026-09-14', '2026-09-17']);
+    expect(wrapper.text()).toContain('14 de septiembre de 2026');
+    expect(wrapper.text()).toContain('17 de septiembre de 2026');
+    expect(wrapper.find('[name="status"]').exists()).toBe(false);
+    expect(wrapper.text()).toContain('Historial de estados');
     expect(wrapper.text()).toContain('Lunes');
     expect(wrapper.text()).toContain('Día 1 · 1 tiempo');
     expect(wrapper.text()).toContain('Pollo al limón');
@@ -102,7 +128,7 @@ describe('OrderDetail', () => {
     await flushPromises();
 
     expect(wrapper.get('h1').text()).toBe(order.planTitle);
-    expect((wrapper.get('input[type="date"]').element as HTMLInputElement).value).toBe(order.deliveries[0]!.scheduledDate);
+    expect(wrapper.text()).toContain('14 de septiembre de 2026');
     expect(wrapper.text()).toContain('Día 1 · 1 tiempo');
     expect(wrapper.text()).toContain('Pollo al limón');
     wrapper.unmount();

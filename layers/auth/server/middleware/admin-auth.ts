@@ -43,4 +43,5 @@ export default defineEventHandler(async (event) => {
       statusMessage: "Forbidden"
     })
   }
+  event.context.orderActor = { id: user.id, label: user.email ?? user.id }
 })

@@ -366,3 +366,22 @@ con `div` y manejadores de clic.
 Resuelto en `AdminUserMenu` (`UDropdownMenu` con etiqueta de usuario, submenú
 de apariencia con elementos `type: "checkbox"` y cierre de sesión). Las nuevas
 opciones de cuenta se añaden como grupos de ese menú.
+
+
+## Estados e historial de pedidos
+
+Referencia: `layers/admin/app/pages/admin/pedidos/[id].vue`.
+
+- `UBadge` muestra el estado guardado con los colores de `DESIGN.md`.
+- `UButton` ofrece solo transiciones del mapa compartido `orderWorkflow.ts`.
+  Guardar contenido y cambiar estado son operaciones separadas.
+- `UModal` confirma la transición y usa `UFormField` + `UTextarea` para el
+  motivo; cancelación, reapertura y entrega fallida lo requieren.
+- `UTimeline` presenta usuario, fecha, estados y motivo; no admite edición.
+- Para fechas de entrega con opciones cerradas del ciclo, `USelect` muestra
+  exclusivamente las fechas permitidas como cadenas `YYYY-MM-DD`. Un calendario
+  libre no representa esa restricción.
+- Ante conflicto de versión, `UAlert` conserva el formulario y ofrece recargar
+  explícitamente. Las acciones de estado se deshabilitan con cambios sin guardar.
+
+Se componen componentes existentes de Nuxt UI; no se creó un control propio.

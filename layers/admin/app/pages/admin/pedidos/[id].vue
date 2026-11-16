@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { orderUpdateInputSchema } from "~~/layers/menu/shared/types/menuSchema"
 import type {
+  DeliverySequence,
+  DeliveryStatusValue,
   ComponentRoleValue,
   FoodCatalogItem,
   Order,
@@ -10,6 +12,8 @@ import type {
   OrderUpdateInput
 } from "~~/layers/menu/shared/types/types"
 import { DELIVERY_SEQUENCE_LABELS, orderFolioLabel } from "~~/layers/menu/shared/utils/orderDeliveries"
+
+import { ORDER_ACTION_LABELS, DELIVERY_ACTION_LABELS, ORDER_TRANSITIONS, DELIVERY_TRANSITIONS, ORDER_STATUS_LABELS, DELIVERY_STATUS_LABELS, isClosedOrder } from "~~/layers/menu/shared/utils/orderWorkflow"
 
 definePageMeta({ layout: "admin" })
 
@@ -27,13 +31,13 @@ useSeoMeta({
 })
 
 const toast = useToast()
-const { updateOrder } = useOrders()
+const { updateOrder, transitionOrder, transitionDelivery } = useOrders()
 const saving = ref(false)
 const replacementSelections = reactive<Record<string, string>>({})
 
 function editableState(source?: Order | null): OrderUpdateInput {
   return {
-    status: source?.status ?? "DRAFT",
+    version: source?.version ?? 1,
     deliveries: source?.deliveries.map(({ sequence, scheduledDate, locationNumber }) => ({ sequence, scheduledDate, locationNumber })) ?? [],
     notes: source?.notes ?? "",
     menuSlots: source?.menuSlots.map(slot => ({
@@ -78,7 +82,7 @@ const catalogOptions = computed(() => catalog.value.map(item => ({
 })))
 const locationOptions = computed(() => order.value ? [
   { label: "Ubicación principal", value: 1, description: order.value.customer.ubicacion1 },
-  ...(order.value.customer.ubicacion2 ? [{ label: "Ubicación secundaria", value: 2, description: order.value.customer.ubicacion2 }] : [])
+  ...((order.value.customer.ubicacion2 || order.value.deliveries.some(delivery => delivery.locationNumber === 2)) ? [{ label: "Ubicación secundaria", value: 2, description: order.value.customer.ubicacion2 }] : [])
 ] : [])
 const dayGroups = computed(() => {
   const groups = new Map<number, { dayOfWeek: string, dayOrder: number, slots: OrderMenuSlotInput[] }>()
@@ -89,10 +93,10 @@ const dayGroups = computed(() => {
   })
   return [...groups.values()].sort((a, b) => a.dayOrder - b.dayOrder)
 })
-const currentStatus = computed(() => statusOptions.find(item => item.value === state.status))
-const statusColor = computed(() =>
-  state.status === "CANCELLED" ? "error" : state.status === "DELIVERED" ? "success" : state.status === "DRAFT" ? "neutral" : "primary"
-)
+const currentStatus = computed(() => statusOptions.find(item => item.value === order.value?.status))
+const statusColor = computed(() => ({
+  DRAFT: "warning", CONFIRMED: "info", PREPARING: "primary", PARTIALLY_DELIVERED: "secondary", DELIVERED: "success", CANCELLED: "error"
+} as const)[order.value?.status ?? "DRAFT"])
 // Days whose meals travel in each delivery, as saved on the order.
 const deliveryDays = computed(() => {
   const days = new Map<number, Map<number, string>>()
@@ -189,19 +193,84 @@ function normalizedSlots() {
   })
 }
 
+const conflict = ref(false)
+const pendingTransition = ref<{ status: OrderStatusValue | DeliveryStatusValue, sequence?: DeliverySequence } | null>(null)
+const transitionReason = ref("")
+const transitionOpen = computed({ get: () => Boolean(pendingTransition.value), set: value => { if (!value) pendingTransition.value = null } })
+const canEdit = computed(() => Boolean(order.value && order.value.cycleStatus === "OPEN" && !isClosedOrder(order.value.status)
+  && order.value.deliveries.every(delivery => delivery.status === "PENDING")))
+const dirty = computed(() => JSON.stringify(state) !== JSON.stringify(editableState(order.value)))
+const orderActions = computed(() => order.value ? ORDER_TRANSITIONS[order.value.status] : [])
+const reasonRequired = computed(() => pendingTransition.value?.status === "CANCELLED" || pendingTransition.value?.status === "FAILED" || Boolean(order.value && isClosedOrder(order.value.status)))
+const transitionTitle = computed(() => {
+  if (!pendingTransition.value) return "Cambiar estado"
+  if (pendingTransition.value.sequence) return `${DELIVERY_SEQUENCE_LABELS[pendingTransition.value.sequence]}: ${DELIVERY_STATUS_LABELS[pendingTransition.value.status as DeliveryStatusValue]}`
+  return order.value && isClosedOrder(order.value.status) ? "Reabrir pedido" : ORDER_STATUS_LABELS[pendingTransition.value.status as OrderStatusValue]
+})
+const timeline = computed(() => (order.value?.statusEvents ?? []).map(event => ({
+  value: event.id,
+  title: event.deliverySequence
+    ? `${DELIVERY_SEQUENCE_LABELS[event.deliverySequence as DeliverySequence]}: ${DELIVERY_STATUS_LABELS[event.fromDeliveryStatus!]} → ${DELIVERY_STATUS_LABELS[event.toDeliveryStatus!]}`
+    : event.fromStatus ? `${ORDER_STATUS_LABELS[event.fromStatus]} → ${ORDER_STATUS_LABELS[event.toStatus]}` : ORDER_STATUS_LABELS[event.toStatus],
+  description: [event.actorLabel ?? "Sistema", event.reason].filter(Boolean).join(" · "),
+  date: new Intl.DateTimeFormat("es-MX", { dateStyle: "medium", timeStyle: "short", timeZone: "America/Tijuana" }).format(new Date(event.createdAt)),
+  icon: event.deliverySequence ? "i-lucide-truck" : "i-lucide-history"
+})))
+
+function deliveryActions(sequence: number) {
+  if (!order.value || !["PREPARING", "PARTIALLY_DELIVERED"].includes(order.value.status)) return []
+  const delivery = order.value.deliveries.find(item => item.sequence === sequence)
+  return delivery ? DELIVERY_TRANSITIONS[delivery.status] : []
+}
+function deliveryStatus(sequence: number) {
+  return order.value?.deliveries.find(item => item.sequence === sequence)?.status ?? "PENDING"
+}
+function civilDateLabel(value: string) {
+  return new Intl.DateTimeFormat("es-MX", { dateStyle: "long", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`))
+}
+function datesFor(sequence: DeliverySequence) {
+  return (order.value?.deliveryDateOptions?.[sequence] ?? []).map(value => ({ value, label: civilDateLabel(value) }))
+}
+function startTransition(target: OrderStatusValue | DeliveryStatusValue, sequence?: DeliverySequence) {
+  transitionReason.value = ""
+  pendingTransition.value = { status: target, sequence }
+}
+function acceptSaved(saved: Order) {
+  order.value = saved
+  Object.assign(state, editableState(saved))
+  conflict.value = false
+}
+async function reloadOrder() {
+  await refresh()
+  if (!error.value && order.value) acceptSaved(order.value)
+}
+function mutationError(error: unknown) {
+  const failure = error as { data?: { statusMessage?: string, data?: { code?: string } } }
+  conflict.value = failure.data?.data?.code === "ORDER_VERSION_CONFLICT"
+  toast.add({ title: "No se pudo guardar el pedido", description: failure.data?.statusMessage ?? (error instanceof Error ? error.message : "Revisa los cambios."), color: "error", icon: "i-lucide-circle-alert" })
+}
 async function saveOrder() {
   saving.value = true
   try {
-    const saved = await updateOrder(id, { ...state, menuSlots: normalizedSlots() })
-    Object.assign(state, editableState(saved))
-    await refresh()
+    acceptSaved(await updateOrder(id, { ...state, menuSlots: normalizedSlots() }))
     toast.add({ title: "Pedido actualizado", description: "Las entregas y el menú personalizado quedaron guardados.", color: "success", icon: "i-lucide-circle-check" })
-  } catch (error) {
-    toast.add({ title: "No se pudo guardar el pedido", description: error instanceof Error ? error.message : "Revisa los cambios.", color: "error", icon: "i-lucide-circle-alert" })
-  } finally {
-    saving.value = false
-  }
+  } catch (error) { mutationError(error) } finally { saving.value = false }
 }
+async function applyTransition() {
+  if (!pendingTransition.value || !order.value || dirty.value) return
+  saving.value = true
+  try {
+    const { status: target, sequence } = pendingTransition.value
+    const input = { version: state.version, reason: transitionReason.value }
+    const saved = sequence
+      ? await transitionDelivery(id, sequence, { ...input, status: target as DeliveryStatusValue })
+      : await transitionOrder(id, { ...input, status: target as OrderStatusValue })
+    acceptSaved(saved)
+    pendingTransition.value = null
+    toast.add({ title: "Estado actualizado", description: "El cambio quedó registrado en el historial.", color: "success", icon: "i-lucide-circle-check" })
+  } catch (error) { pendingTransition.value = null; mutationError(error) } finally { saving.value = false }
+}
+
 </script>
 
 <template>
@@ -222,7 +291,7 @@ async function saveOrder() {
       <UButton v-if="!notFound" class="mt-5" variant="soft" icon="i-lucide-refresh-cw" @click="refresh()">Reintentar</UButton>
     </UCard>
 
-    <UForm v-else :schema="orderUpdateInputSchema" :state="state" class="space-y-6" @submit="saveOrder">
+    <UForm v-else :schema="orderUpdateInputSchema" :state="state" :disabled="saving" class="space-y-6" @submit="saveOrder">
       <UPageHeader :title="order.planTitle" :description="`${order.planVariantTitle} · Creado el ${formatDate(order.createdAt)}`">
         <template #headline>
           <div class="flex flex-wrap items-center gap-2">
@@ -231,8 +300,16 @@ async function saveOrder() {
             <UBadge v-if="order.capturedAfterCutoff" color="warning" variant="subtle" icon="i-lucide-clock-alert" label="Fuera de corte" />
           </div>
         </template>
-        <template #links><UButton type="submit" icon="i-lucide-save" :loading="saving" label="Guardar cambios" /></template>
+        <template #links><UButton type="submit" icon="i-lucide-save" :loading="saving" :disabled="!canEdit || conflict" label="Guardar cambios" /></template>
       </UPageHeader>
+
+      <UAlert v-if="conflict" color="warning" variant="soft" icon="i-lucide-refresh-cw" title="Revisa la versión actual" description="Tus cambios siguen en el formulario. Recargar reemplazará estos cambios por los guardados en el servidor.">
+        <template #actions><UButton label="Recargar pedido" color="warning" @click="reloadOrder" /></template>
+      </UAlert>
+      <UAlert v-if="!canEdit" color="info" variant="soft" icon="i-lucide-lock-keyhole" title="Edición bloqueada" description="El contenido se puede editar con la semana abierta y las entregas pendientes. Los pedidos cerrados requieren una reapertura con motivo." />
+      <UAlert v-if="dirty" color="warning" variant="soft" icon="i-lucide-pencil" title="Cambios sin guardar" description="Guarda o descarta los cambios antes de cambiar un estado.">
+        <template #actions><UButton label="Descartar cambios" color="neutral" variant="outline" @click="Object.assign(state, editableState(order))" /></template>
+      </UAlert>
 
       <div class="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
         <UCard>
@@ -256,15 +333,17 @@ async function saveOrder() {
             </div>
           </dl>
           <div class="mt-5 space-y-4 border-t border-default pt-5">
-            <UFormField label="Estado" name="status" required><USelect v-model="state.status" :items="statusOptions" value-key="value" class="w-full" /></UFormField>
-            <UFormField label="Notas" name="notes"><UTextarea v-model="state.notes" :rows="3" autoresize class="w-full" placeholder="Alergias o instrucciones" /></UFormField>
+            <div class="flex flex-wrap gap-3">
+              <UButton v-for="target in orderActions" :key="target" type="button" :label="isClosedOrder(order.status) ? 'Reabrir pedido' : ORDER_ACTION_LABELS[target]" :color="target === 'CANCELLED' ? 'error' : 'neutral'" variant="outline" :disabled="dirty || conflict" @click="startTransition(target)" />
+            </div>
+            <UFormField label="Notas" name="notes"><UTextarea v-model="state.notes" :disabled="!canEdit" :rows="3" autoresize class="w-full" placeholder="Alergias o instrucciones" /></UFormField>
           </div>
         </UCard>
 
         <UCard class="flex flex-col" :ui="{ header: 'shrink-0', body: 'flex flex-1 flex-col' }">
           <template #header><h2 class="flex items-center gap-2 font-semibold text-highlighted"><UIcon name="i-lucide-truck" class="size-5 text-primary" />Entregas</h2></template>
           <div class="grid flex-1 gap-4 sm:grid-cols-2">
-            <section v-for="(delivery, deliveryIndex) in state.deliveries" :key="delivery.sequence" class="flex min-w-0 flex-col gap-3 rounded-xl border border-default bg-elevated/30 p-4">
+            <UCard v-for="(delivery, deliveryIndex) in state.deliveries" :key="delivery.sequence" class="min-w-0" :ui="{ body: 'space-y-3' }">
               <div class="flex items-center gap-3">
                 <span class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-semibold text-primary">{{ delivery.sequence }}</span>
                 <div class="min-w-0">
@@ -272,12 +351,16 @@ async function saveOrder() {
                   <p class="truncate text-xs text-muted">{{ deliveryDaysLabel(delivery.sequence) }}</p>
                 </div>
               </div>
-              <UFormField label="Fecha" :name="`deliveries.${deliveryIndex}.scheduledDate`"><UInput v-model="delivery.scheduledDate" type="date" class="w-full" /></UFormField>
-              <UFormField label="Ubicación" :name="`deliveries.${deliveryIndex}.locationNumber`"><USelect v-model="delivery.locationNumber" :items="locationOptions" value-key="value" class="w-full" /></UFormField>
+              <UBadge color="neutral" variant="subtle" :label="DELIVERY_STATUS_LABELS[deliveryStatus(delivery.sequence)]" />
+              <UFormField label="Fecha" :name="`deliveries.${deliveryIndex}.scheduledDate`"><USelect v-model="delivery.scheduledDate" :items="datesFor(delivery.sequence)" value-key="value" :disabled="!canEdit" class="w-full" /></UFormField>
+              <UFormField label="Ubicación" :name="`deliveries.${deliveryIndex}.locationNumber`"><USelect v-model="delivery.locationNumber" :disabled="!canEdit" :items="locationOptions" value-key="value" class="w-full" /></UFormField>
               <p class="whitespace-pre-line break-words text-sm leading-relaxed" :class="deliveryAddress(delivery.sequence, delivery.locationNumber) ? 'text-toned' : 'text-dimmed'">
                 {{ deliveryAddress(delivery.sequence, delivery.locationNumber) || "Sin dirección registrada" }}
               </p>
-            </section>
+              <div class="flex flex-wrap gap-3">
+                <UButton v-for="target in deliveryActions(delivery.sequence)" :key="target" type="button" :label="DELIVERY_ACTION_LABELS[target]" color="neutral" variant="outline" :disabled="dirty || conflict" @click="startTransition(target, delivery.sequence)" />
+              </div>
+            </UCard>
           </div>
         </UCard>
       </div>
@@ -309,9 +392,9 @@ async function saveOrder() {
               <div v-for="slot in day.slots" :key="slot.slotType" class="space-y-3 p-4">
                 <div class="flex items-center justify-between gap-2">
                   <h4 class="text-xs font-semibold uppercase tracking-wide text-muted">{{ slotLabel(slot.slotType) }}</h4>
-                  <UButton type="button" size="xs" color="neutral" variant="ghost" icon="i-lucide-plus" aria-label="Agregar componente" @click="addComponent(slot)" />
+                  <UButton type="button" size="xs" color="neutral" variant="ghost" icon="i-lucide-plus" :disabled="!canEdit" aria-label="Agregar componente" @click="addComponent(slot)" />
                 </div>
-                <UInput v-model="slot.contenedor" variant="soft" icon="i-lucide-package" placeholder="Contenedor" class="w-full" aria-label="Contenedor" />
+                <UInput v-model="slot.contenedor" :disabled="!canEdit" variant="soft" icon="i-lucide-package" placeholder="Contenedor" class="w-full" aria-label="Contenedor" />
 
                 <div v-for="(component, componentIndex) in slot.components" :key="componentKey(slot, component, componentIndex)" class="space-y-2">
                   <div class="flex min-w-0 items-center gap-3">
@@ -323,11 +406,12 @@ async function saveOrder() {
                       <p class="truncate text-sm font-medium text-highlighted">{{ component.nombre }}</p>
                       <p class="truncate text-xs text-muted">{{ component.calorias }} kcal · {{ component.tipo }}</p>
                     </div>
-                    <UButton type="button" size="xs" icon="i-lucide-x" color="neutral" variant="ghost" class="hover:text-error" :disabled="slot.components.length === 1" aria-label="Quitar componente" @click="removeComponent(slot, componentIndex)" />
+                    <UButton type="button" size="xs" icon="i-lucide-x" color="neutral" variant="ghost" class="hover:text-error" :disabled="!canEdit || slot.components.length === 1" aria-label="Quitar componente" @click="removeComponent(slot, componentIndex)" />
                   </div>
                   <div class="grid grid-cols-2 gap-2">
-                    <USelect v-model="component.componentRole" :items="roleOptions" value-key="value" variant="soft" class="w-full" aria-label="Función" />
+                    <USelect v-model="component.componentRole" :disabled="!canEdit" :items="roleOptions" value-key="value" variant="soft" class="w-full" aria-label="Función" />
                     <USelectMenu
+                      :disabled="!canEdit"
                       :model-value="replacementSelections[componentKey(slot, component, componentIndex)]"
                       :items="catalogOptions"
                       value-key="value"
@@ -344,6 +428,20 @@ async function saveOrder() {
           </UCard>
         </div>
       </section>
+      <UCard>
+        <template #header><h2 class="font-semibold text-highlighted">Historial de estados</h2></template>
+        <UTimeline v-if="timeline.length" :items="timeline" />
+        <UEmpty v-else icon="i-lucide-history" title="Sin cambios de estado" />
+      </UCard>
     </UForm>
+    <UModal v-model:open="transitionOpen" :title="transitionTitle" :description="order && isClosedOrder(order.status) ? 'La reapertura dejará las entregas pendientes y conservará el historial anterior.' : 'El cambio se guardará con tu usuario en el historial del pedido.'" :ui="{ content: 'max-w-md' }">
+      <template #body>
+        <UFormField label="Motivo" :required="reasonRequired"><UTextarea v-model="transitionReason" :maxlength="1000" class="w-full" /></UFormField>
+      </template>
+      <template #footer>
+        <UButton label="Cancelar" color="neutral" variant="ghost" :disabled="saving" @click="transitionOpen = false" />
+        <UButton label="Confirmar cambio" :loading="saving" :disabled="reasonRequired && !transitionReason.trim()" @click="applyTransition" />
+      </template>
+    </UModal>
   </main>
 </template>

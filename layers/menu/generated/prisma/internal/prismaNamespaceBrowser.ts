@@ -63,6 +63,7 @@ export const ModelName = {
   PlanVariant: 'PlanVariant',
   Order: 'Order',
   OrderDelivery: 'OrderDelivery',
+  OrderStatusEvent: 'OrderStatusEvent',
   OrderMenuSlot: 'OrderMenuSlot',
   OrderMenuComponent: 'OrderMenuComponent',
   Expense: 'Expense',
@@ -232,6 +233,7 @@ export const OrderScalarFieldEnum = {
   cycleId: 'cycleId',
   folio: 'folio',
   status: 'status',
+  version: 'version',
   capturedAfterCutoff: 'capturedAfterCutoff',
   planTitleSnapshot: 'planTitleSnapshot',
   planVariantTitleSnapshot: 'planVariantTitleSnapshot',
@@ -259,6 +261,24 @@ export const OrderDeliveryScalarFieldEnum = {
 } as const
 
 export type OrderDeliveryScalarFieldEnum = (typeof OrderDeliveryScalarFieldEnum)[keyof typeof OrderDeliveryScalarFieldEnum]
+
+
+export const OrderStatusEventScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  version: 'version',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  deliverySequence: 'deliverySequence',
+  fromDeliveryStatus: 'fromDeliveryStatus',
+  toDeliveryStatus: 'toDeliveryStatus',
+  actorId: 'actorId',
+  actorLabel: 'actorLabel',
+  reason: 'reason',
+  createdAt: 'createdAt'
+} as const
+
+export type OrderStatusEventScalarFieldEnum = (typeof OrderStatusEventScalarFieldEnum)[keyof typeof OrderStatusEventScalarFieldEnum]
 
 
 export const OrderMenuSlotScalarFieldEnum = {
