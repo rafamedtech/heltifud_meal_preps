@@ -6,8 +6,13 @@ import {
   orderListQuerySchema,
   orderOptionsQuerySchema,
   orderUpdateInputSchema,
+  orderStatusInputSchema,
+  deliveryStatusInputSchema,
 } from '~~/layers/menu/shared/types/menuSchema';
 import type {
+  OrderActor,
+  OrderStatusInput,
+  DeliveryStatusInput,
   Customer,
   CustomerLocationNumber,
   DeliverySequence,
@@ -21,6 +26,7 @@ import type {
   OrderUpdateInput,
 } from '~~/layers/menu/shared/types/types';
 import {
+  deliveryDateOptions,
   allowedDeliveryDays,
   availableOrderDays,
   chosenDaysError,
@@ -31,6 +37,7 @@ import {
 } from '~~/layers/menu/shared/utils/orderDeliveries';
 
 import { prisma } from './prisma';
+import { ORDER_TRANSITIONS, DELIVERY_TRANSITIONS, derivedOrderStatus, isClosedOrder } from '../../shared/utils/orderWorkflow';
 
 const deliveriesInclude = { orderBy: { sequence: 'asc' as const } };
 
@@ -42,7 +49,8 @@ const orderListInclude = {
 
 const orderDetailInclude = {
   customer: true,
-  cycle: { select: { weekStart: true } },
+  cycle: true,
+  statusEvents: { orderBy: [{ version: 'desc' as const }, { createdAt: 'desc' as const }, { id: 'desc' as const }] },
   deliveries: deliveriesInclude,
   sourceWeeklyMenu: { select: { id: true, name: true } },
   menuSlots: {
@@ -281,6 +289,13 @@ export async function getOrderById(id: string): Promise<Order | null> {
   if (!record) return null;
   return {
     ...mapListItem(record),
+    version: record.version,
+    cycleStatus: record.cycle.status,
+    deliveryDateOptions: {
+      1: deliveryDateOptions(toDateString(record.cycle.weekStart), record.cycle, 1),
+      2: deliveryDateOptions(toDateString(record.cycle.weekStart), record.cycle, 2),
+    },
+    statusEvents: record.statusEvents.map(event => ({ ...event, reason: event.reason ?? '', createdAt: event.createdAt.toISOString() })),
     cycleId: record.cycleId,
     capturedAfterCutoff: record.capturedAfterCutoff,
     planVariantId: record.planVariantId,
@@ -379,7 +394,7 @@ export async function getOrderOptions(query: unknown): Promise<OrderOptions> {
   };
 }
 
-export async function createOrder(input: OrderCreateInput) {
+export async function createOrder(input: OrderCreateInput, actor?: OrderActor) {
   const parsed = orderCreateInputSchema.safeParse(input);
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'Los datos del pedido no son válidos.', data: parsed.error.flatten() });
@@ -424,6 +439,7 @@ export async function createOrder(input: OrderCreateInput) {
     // Deliveries go first: each copied meal needs the id of the one that carries it.
     const order = await tx.order.create({
       data: {
+        statusEvents: { create: { version: 1, toStatus: 'DRAFT', actorId: actor?.id, actorLabel: actor?.label, reason: 'Pedido creado' } },
         customerId: customer.id,
         planVariantId: variant.id,
         sourceWeeklyMenuId: menu.id,
@@ -470,10 +486,34 @@ export async function updateOrder(id: string, input: OrderUpdateInput) {
       include: {
         customer: true,
         deliveries: true,
-        cycle: { select: mealRuleSelect },
+        cycle: true,
+        menuSlots: true,
       },
     });
     if (!existing) throw createError({ statusCode: 404, statusMessage: 'Pedido no encontrado.' });
+
+    if (existing.version !== data.version) throw versionConflict();
+    if (existing.cycle.status !== 'OPEN') {
+      throw createError({ statusCode: 409, statusMessage: 'La semana ya no acepta cambios de contenido.' });
+    }
+    if (isClosedOrder(existing.status) || existing.deliveries.some(delivery => delivery.status !== 'PENDING')) {
+      throw createError({ statusCode: 409, statusMessage: 'El pedido está cerrado o tiene entregas en curso. Reabre o resuelve las entregas antes de editar.' });
+    }
+    const keys = new Set(existing.menuSlots.map(slot => `${slot.dayOfWeek}:${slot.slotType}:${slot.dayOrder}`));
+    if (data.menuSlots.length !== keys.size || data.menuSlots.some(slot => !keys.has(`${slot.dayOfWeek}:${slot.slotType}:${slot.dayOrder}`)
+      || !slot.components.some(component => component.componentRole === 'PLATILLO_PRINCIPAL'))) {
+      throw createError({ statusCode: 400, statusMessage: 'Conserva los días y tiempos contratados, con un platillo principal en cada tiempo.' });
+    }
+    const expectedSequences = new Set(existing.menuSlots.map(slot => deliverySequenceForDay(slot.dayOfWeek, existing.cycle)));
+    if (data.deliveries.length !== expectedSequences.size || data.deliveries.some(delivery => !expectedSequences.has(delivery.sequence))) {
+      throw createError({ statusCode: 400, statusMessage: 'Las entregas deben corresponder al reparto de comidas de la semana.' });
+    }
+    for (const delivery of data.deliveries) {
+      if (!deliveryDateOptions(toDateString(existing.cycle.weekStart), existing.cycle, delivery.sequence).includes(delivery.scheduledDate)) {
+        throw createError({ statusCode: 400, statusMessage: 'La fecha de entrega debe ser una de las permitidas para esta semana.' });
+      }
+    }
+    await claimVersion(tx, id, data.version);
 
     // Meals are rebuilt below, so deliveries dropped from the order are free to go.
     await tx.orderMenuSlot.deleteMany({ where: { orderId: id } });
@@ -510,13 +550,89 @@ export async function updateOrder(id: string, input: OrderUpdateInput) {
     await tx.order.update({
       where: { id },
       data: {
-        status: data.status,
         notes: data.notes || null,
         menuSlots: { create: buildEditableMenu(data.menuSlots, deliveryIdResolver(deliveries, existing.cycle)) },
       },
     });
   });
 
+  return getOrderById(id);
+}
+
+function versionConflict() {
+  return createError({ statusCode: 409, statusMessage: 'Otro operador modificó el pedido. Recarga la versión actual antes de continuar.', data: { code: 'ORDER_VERSION_CONFLICT' } });
+}
+
+async function claimVersion(tx: Prisma.TransactionClient, id: string, version: number) {
+  const result = await tx.order.updateMany({ where: { id, version }, data: { version: { increment: 1 } } });
+  if (result.count !== 1) throw versionConflict();
+}
+
+export async function transitionOrder(id: string, input: OrderStatusInput, actor: OrderActor) {
+  const parsed = orderStatusInputSchema.safeParse(input);
+  if (!parsed.success) throw createError({ statusCode: 400, statusMessage: 'El cambio de estado no es válido.' });
+  const data = parsed.data;
+  await prisma.$transaction(async tx => {
+    const existing = await tx.order.findUnique({ where: { id }, include: { deliveries: true } });
+    if (!existing) throw createError({ statusCode: 404, statusMessage: 'Pedido no encontrado.' });
+    if (existing.version !== data.version) throw versionConflict();
+    if (!ORDER_TRANSITIONS[existing.status].includes(data.status)) {
+      throw createError({ statusCode: 409, statusMessage: 'Ese cambio de estado no está permitido.' });
+    }
+    const reopening = isClosedOrder(existing.status);
+    if ((reopening || data.status === 'CANCELLED') && !data.reason) {
+      throw createError({ statusCode: 400, statusMessage: 'Escribe el motivo de la cancelación o reapertura.' });
+    }
+    await claimVersion(tx, id, data.version);
+    if (reopening) {
+      for (const delivery of existing.deliveries.filter(item => item.status !== 'PENDING')) {
+        await tx.orderStatusEvent.create({ data: {
+          orderId: id, version: data.version + 1, fromStatus: existing.status, toStatus: data.status,
+          deliverySequence: delivery.sequence, fromDeliveryStatus: delivery.status, toDeliveryStatus: 'PENDING',
+          actorId: actor.id, actorLabel: actor.label, reason: data.reason,
+        } });
+      }
+      await tx.orderDelivery.updateMany({ where: { orderId: id }, data: { status: 'PENDING', deliveredAt: null } });
+    }
+    await tx.order.update({ where: { id }, data: {
+      status: data.status,
+      statusEvents: { create: { version: data.version + 1, fromStatus: existing.status, toStatus: data.status,
+        actorId: actor.id, actorLabel: actor.label, reason: data.reason || null } },
+    } });
+  });
+  return getOrderById(id);
+}
+
+export async function transitionDelivery(id: string, sequence: DeliverySequence, input: DeliveryStatusInput, actor: OrderActor) {
+  const parsed = deliveryStatusInputSchema.safeParse(input);
+  if (!parsed.success) throw createError({ statusCode: 400, statusMessage: 'El cambio de entrega no es válido.' });
+  const data = parsed.data;
+  await prisma.$transaction(async tx => {
+    const existing = await tx.order.findUnique({ where: { id }, include: { deliveries: true } });
+    if (!existing) throw createError({ statusCode: 404, statusMessage: 'Pedido no encontrado.' });
+    if (existing.version !== data.version) throw versionConflict();
+    const delivery = existing.deliveries.find(item => item.sequence === sequence);
+    if (!delivery) throw createError({ statusCode: 404, statusMessage: 'Entrega no encontrada.' });
+    if (!['PREPARING', 'PARTIALLY_DELIVERED'].includes(existing.status)
+      || !DELIVERY_TRANSITIONS[delivery.status].includes(data.status)) {
+      throw createError({ statusCode: 409, statusMessage: 'Ese cambio de entrega no está permitido para el estado actual del pedido.' });
+    }
+    if (data.status === 'FAILED' && !data.reason) {
+      throw createError({ statusCode: 400, statusMessage: 'Escribe el motivo de la entrega fallida.' });
+    }
+    await claimVersion(tx, id, data.version);
+    await tx.orderDelivery.update({ where: { id: delivery.id }, data: {
+      status: data.status, deliveredAt: data.status === 'DELIVERED' ? new Date() : null,
+      ...(data.reason ? { notes: data.reason } : {}),
+    } });
+    const status = derivedOrderStatus(existing.status, existing.deliveries.map(item => item.sequence === sequence ? data.status : item.status));
+    await tx.order.update({ where: { id }, data: {
+      status,
+      statusEvents: { create: { version: data.version + 1, fromStatus: existing.status, toStatus: status,
+        deliverySequence: sequence, fromDeliveryStatus: delivery.status, toDeliveryStatus: data.status,
+        actorId: actor.id, actorLabel: actor.label, reason: data.reason || null } },
+    } });
+  });
   return getOrderById(id);
 }
 

@@ -373,11 +373,11 @@ export const orderMenuSlotInputSchema = z.object({
 });
 
 export const orderUpdateInputSchema = z.object({
-  status: z.enum(ORDER_STATUS_VALUES),
+  version: z.number().int().positive(),
   deliveries: orderDeliveriesInputSchema,
   notes: optionalTrimmedString(1000),
   menuSlots: z.array(orderMenuSlotInputSchema).min(1).max(35),
-}).superRefine((value, ctx) => {
+}).strict().superRefine((value, ctx) => {
   const slots = new Set<string>();
   value.menuSlots.forEach((slot, index) => {
     const key = `${slot.dayOfWeek}:${slot.slotType}`;
@@ -400,6 +400,18 @@ export const orderUpdateInputSchema = z.object({
     });
   });
 });
+
+export const orderStatusInputSchema = z.object({
+  version: z.number().int().positive(),
+  status: z.enum(ORDER_STATUS_VALUES),
+  reason: optionalTrimmedString(1000),
+}).strict();
+
+export const deliveryStatusInputSchema = z.object({
+  version: z.number().int().positive(),
+  status: z.enum(['PENDING', 'OUT_FOR_DELIVERY', 'DELIVERED', 'FAILED']),
+  reason: optionalTrimmedString(1000),
+}).strict();
 
 export const orderListQuerySchema = z.object({
   customerId: z.string().trim().min(1).optional(),

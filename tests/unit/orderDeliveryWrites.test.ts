@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { updateOrder } from '../../layers/menu/server/utils/orders';
 
 const tx = vi.hoisted(() => ({
-  order: { findUnique: vi.fn(), update: vi.fn() },
+  order: { findUnique: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
   orderMenuSlot: { deleteMany: vi.fn() },
   orderDelivery: { deleteMany: vi.fn(), update: vi.fn(), create: vi.fn() },
 }));
@@ -25,13 +25,14 @@ const slot = (dayOfWeek: 'LUNES' | 'JUEVES', dayOrder: number) => ({
 
 function existingOrder() {
   return {
-    id: 'order-1',
+    id: 'order-1', version: 1, status: 'CONFIRMED',
+    menuSlots: [{ dayOfWeek: 'LUNES', slotType: 'COMIDA', dayOrder: 1 }, { dayOfWeek: 'JUEVES', slotType: 'COMIDA', dayOrder: 4 }],
     customer: { ubicacion1: 'Casa nueva 123', ubicacion2: 'Oficina 456' },
     deliveries: [
-      { id: 'delivery-1', sequence: 1, locationNumber: 1, addressSnapshot: 'Casa anterior 99' },
-      { id: 'delivery-2', sequence: 2, locationNumber: 1, addressSnapshot: 'Casa anterior 99' },
+      { id: 'delivery-1', sequence: 1, status: 'PENDING', locationNumber: 1, addressSnapshot: 'Casa anterior 99' },
+      { id: 'delivery-2', sequence: 2, status: 'PENDING', locationNumber: 1, addressSnapshot: 'Casa anterior 99' },
     ],
-    cycle: { firstDeliveryMealDays: ['LUNES', 'MARTES', 'MIERCOLES'], secondDeliveryMealDays: ['JUEVES', 'VIERNES'] },
+    cycle: { status: 'OPEN', weekStart: new Date('2026-11-16'), firstDeliveryAllowedDays: ['DOMINGO', 'LUNES'], secondDeliveryAllowedDays: ['MIERCOLES', 'JUEVES'], firstDeliveryMealDays: ['LUNES', 'MARTES', 'MIERCOLES'], secondDeliveryMealDays: ['JUEVES', 'VIERNES'] },
   };
 }
 
@@ -39,6 +40,7 @@ describe('updateOrder deliveries', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     tx.order.findUnique.mockResolvedValue(existingOrder());
+    tx.order.updateMany.mockResolvedValue({ count: 1 });
     tx.orderDelivery.update.mockImplementation(({ where }: { where: { id: string } }) =>
       Promise.resolve({ id: where.id, sequence: where.id === 'delivery-1' ? 1 : 2 }));
     tx.orderDelivery.create.mockImplementation(({ data }: { data: { sequence: number } }) =>
@@ -47,7 +49,7 @@ describe('updateOrder deliveries', () => {
 
   it('keeps the frozen address unless another location is chosen, and assigns meals by day', async () => {
     await updateOrder('order-1', {
-      status: 'CONFIRMED',
+      version: 1,
       notes: '',
       deliveries: [
         { sequence: 1, scheduledDate: '2026-11-16', locationNumber: 1 },
@@ -71,16 +73,43 @@ describe('updateOrder deliveries', () => {
       .toEqual([['LUNES', 'delivery-1'], ['JUEVES', 'delivery-2']]);
   });
 
-  it('moves every meal to the remaining delivery when one is removed', async () => {
-    await updateOrder('order-1', {
-      status: 'CONFIRMED',
-      notes: '',
+  it('rejects removing a delivery that carries contracted meal days before writing', async () => {
+    await expect(updateOrder('order-1', {
+      version: 1, notes: '',
       deliveries: [{ sequence: 1, scheduledDate: '2026-11-16', locationNumber: 1 }],
       menuSlots: [slot('LUNES', 1), slot('JUEVES', 4)],
-    });
+    })).rejects.toMatchObject({ statusCode: 400 });
+    expect(tx.orderMenuSlot.deleteMany).not.toHaveBeenCalled();
+    expect(tx.order.updateMany).not.toHaveBeenCalled();
+  });
 
-    expect(tx.orderDelivery.deleteMany).toHaveBeenCalledWith({ where: { orderId: 'order-1', sequence: { notIn: [1] } } });
-    const created = tx.order.update.mock.calls[0]![0].data.menuSlots.create;
-    expect(created.every((item: { deliveryId: string }) => item.deliveryId === 'delivery-1')).toBe(true);
+  it.each(['2026-11-20', '2026-11-26'])('rejects a forbidden delivery date %s before writing', async date => {
+    await expect(updateOrder('order-1', {
+      version: 1, notes: '',
+      deliveries: [{ sequence: 1, scheduledDate: '2026-11-16', locationNumber: 1 }, { sequence: 2, scheduledDate: date, locationNumber: 1 }],
+      menuSlots: [slot('LUNES', 1), slot('JUEVES', 4)],
+    })).rejects.toMatchObject({ statusCode: 400 });
+    expect(tx.orderMenuSlot.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it('rejects a stale version before changing deliveries or menu slots', async () => {
+    await expect(updateOrder('order-1', {
+      version: 2, notes: '',
+      deliveries: [{ sequence: 1, scheduledDate: '2026-11-16', locationNumber: 1 }],
+      menuSlots: [slot('LUNES', 1)],
+    })).rejects.toMatchObject({ statusCode: 409 });
+    expect(tx.orderMenuSlot.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it('rejects editing a cycle after orders close, before claiming a version', async () => {
+    const existing = existingOrder();
+    existing.cycle.status = 'CLOSED';
+    tx.order.findUnique.mockResolvedValue(existing);
+    await expect(updateOrder('order-1', {
+      version: 1, notes: '',
+      deliveries: [{ sequence: 1, scheduledDate: '2026-11-16', locationNumber: 1 }, { sequence: 2, scheduledDate: '2026-11-19', locationNumber: 1 }],
+      menuSlots: [slot('LUNES', 1), slot('JUEVES', 4)],
+    })).rejects.toMatchObject({ statusCode: 409 });
+    expect(tx.order.updateMany).not.toHaveBeenCalled();
   });
 });

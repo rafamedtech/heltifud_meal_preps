@@ -1,4 +1,4 @@
-import type { Order, OrderCreateInput, OrderListResponse, OrderOptions, OrderUpdateInput } from '~~/layers/menu/shared/types/types';
+import type { DeliverySequence, DeliveryStatusInput, OrderStatusInput, Order, OrderCreateInput, OrderListResponse, OrderOptions, OrderUpdateInput } from '~~/layers/menu/shared/types/types';
 
 export default function useOrders() {
   const getOrders = (query: Record<string, string | number | undefined>) =>
@@ -10,5 +10,10 @@ export default function useOrders() {
   const updateOrder = (id: string, input: OrderUpdateInput) =>
     $fetch<Order>(`/api/orders/${id}`, { method: 'PUT', body: input });
 
-  return { getOrders, getOrder, getOrderOptions, createOrder, updateOrder };
+  const transitionOrder = (id: string, input: OrderStatusInput) =>
+    $fetch<Order>(`/api/orders/${id}/status`, { method: 'POST', body: input });
+  const transitionDelivery = (id: string, sequence: DeliverySequence, input: DeliveryStatusInput) =>
+    $fetch<Order>(`/api/orders/${id}/deliveries/${sequence}/status`, { method: 'POST', body: input });
+
+  return { getOrders, getOrder, getOrderOptions, createOrder, updateOrder, transitionOrder, transitionDelivery };
 }

@@ -247,7 +247,7 @@ export interface OrderMenuSlotInput {
 }
 
 export interface OrderUpdateInput {
-  status: OrderStatusValue;
+  version: number;
   deliveries: OrderDeliveryInput[];
   notes: string;
   menuSlots: OrderMenuSlotInput[];
@@ -282,6 +282,10 @@ export interface OrderListItem {
 }
 
 export interface Order extends OrderListItem {
+  version: number;
+  cycleStatus: CycleStatusValue;
+  deliveryDateOptions: Partial<Record<DeliverySequence, string[]>>;
+  statusEvents: OrderStatusEvent[];
   cycleId: string;
   capturedAfterCutoff: boolean;
   planVariantId: string | null;
@@ -291,6 +295,23 @@ export interface Order extends OrderListItem {
   updatedAt: string;
   customer: Customer;
   menuSlots: OrderMenuSlot[];
+}
+
+export interface OrderActor { id: string; label: string }
+export interface OrderStatusInput { version: number; status: OrderStatusValue; reason: string }
+export interface DeliveryStatusInput { version: number; status: DeliveryStatusValue; reason: string }
+export interface OrderStatusEvent {
+  id: string;
+  version: number;
+  fromStatus: OrderStatusValue | null;
+  toStatus: OrderStatusValue;
+  deliverySequence: number | null;
+  fromDeliveryStatus: DeliveryStatusValue | null;
+  toDeliveryStatus: DeliveryStatusValue | null;
+  actorId: string | null;
+  actorLabel: string | null;
+  reason: string;
+  createdAt: string;
 }
 
 export interface OrderSummary {

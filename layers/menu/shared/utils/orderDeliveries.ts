@@ -85,6 +85,11 @@ export function deliveryDateFor(weekStart: string, deliveryDay: DayOfWeek, mealD
   return new Date(Date.parse(`${weekStart}T00:00:00.000Z`) + offset * DAY_MS).toISOString().slice(0, 10);
 }
 
+export function deliveryDateOptions(weekStart: string, rule: DeliveryPlanRule, sequence: DeliverySequence) {
+  const mealDays = sequence === 1 ? rule.firstDeliveryMealDays : rule.secondDeliveryMealDays;
+  return allowedDeliveryDays(rule, sequence).map(day => deliveryDateFor(weekStart, day, mealDays));
+}
+
 /**
  * Deliveries an order needs for the chosen days. A delivery only exists when
  * it carries meals, so days that all fall in one half of the week give one.

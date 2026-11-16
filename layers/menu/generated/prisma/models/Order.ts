@@ -28,11 +28,13 @@ export type AggregateOrder = {
 
 export type OrderAvgAggregateOutputType = {
   folio: number | null
+  version: number | null
   priceSnapshot: runtime.Decimal | null
 }
 
 export type OrderSumAggregateOutputType = {
   folio: number | null
+  version: number | null
   priceSnapshot: runtime.Decimal | null
 }
 
@@ -44,6 +46,7 @@ export type OrderMinAggregateOutputType = {
   cycleId: string | null
   folio: number | null
   status: $Enums.OrderStatus | null
+  version: number | null
   capturedAfterCutoff: boolean | null
   planTitleSnapshot: string | null
   planVariantTitleSnapshot: string | null
@@ -61,6 +64,7 @@ export type OrderMaxAggregateOutputType = {
   cycleId: string | null
   folio: number | null
   status: $Enums.OrderStatus | null
+  version: number | null
   capturedAfterCutoff: boolean | null
   planTitleSnapshot: string | null
   planVariantTitleSnapshot: string | null
@@ -78,6 +82,7 @@ export type OrderCountAggregateOutputType = {
   cycleId: number
   folio: number
   status: number
+  version: number
   capturedAfterCutoff: number
   planTitleSnapshot: number
   planVariantTitleSnapshot: number
@@ -91,11 +96,13 @@ export type OrderCountAggregateOutputType = {
 
 export type OrderAvgAggregateInputType = {
   folio?: true
+  version?: true
   priceSnapshot?: true
 }
 
 export type OrderSumAggregateInputType = {
   folio?: true
+  version?: true
   priceSnapshot?: true
 }
 
@@ -107,6 +114,7 @@ export type OrderMinAggregateInputType = {
   cycleId?: true
   folio?: true
   status?: true
+  version?: true
   capturedAfterCutoff?: true
   planTitleSnapshot?: true
   planVariantTitleSnapshot?: true
@@ -124,6 +132,7 @@ export type OrderMaxAggregateInputType = {
   cycleId?: true
   folio?: true
   status?: true
+  version?: true
   capturedAfterCutoff?: true
   planTitleSnapshot?: true
   planVariantTitleSnapshot?: true
@@ -141,6 +150,7 @@ export type OrderCountAggregateInputType = {
   cycleId?: true
   folio?: true
   status?: true
+  version?: true
   capturedAfterCutoff?: true
   planTitleSnapshot?: true
   planVariantTitleSnapshot?: true
@@ -245,6 +255,7 @@ export type OrderGroupByOutputType = {
   cycleId: string
   folio: number
   status: $Enums.OrderStatus
+  version: number
   capturedAfterCutoff: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -285,6 +296,7 @@ export type OrderWhereInput = {
   cycleId?: Prisma.UuidFilter<"Order"> | string
   folio?: Prisma.IntFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+  version?: Prisma.IntFilter<"Order"> | number
   capturedAfterCutoff?: Prisma.BoolFilter<"Order"> | boolean
   planTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringFilter<"Order"> | string
@@ -298,6 +310,7 @@ export type OrderWhereInput = {
   cycle?: Prisma.XOR<Prisma.WeeklyCycleScalarRelationFilter, Prisma.WeeklyCycleWhereInput>
   deliveries?: Prisma.OrderDeliveryListRelationFilter
   menuSlots?: Prisma.OrderMenuSlotListRelationFilter
+  statusEvents?: Prisma.OrderStatusEventListRelationFilter
 }
 
 export type OrderOrderByWithRelationInput = {
@@ -308,6 +321,7 @@ export type OrderOrderByWithRelationInput = {
   cycleId?: Prisma.SortOrder
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
@@ -321,6 +335,7 @@ export type OrderOrderByWithRelationInput = {
   cycle?: Prisma.WeeklyCycleOrderByWithRelationInput
   deliveries?: Prisma.OrderDeliveryOrderByRelationAggregateInput
   menuSlots?: Prisma.OrderMenuSlotOrderByRelationAggregateInput
+  statusEvents?: Prisma.OrderStatusEventOrderByRelationAggregateInput
 }
 
 export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -334,6 +349,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   sourceWeeklyMenuId?: Prisma.StringNullableFilter<"Order"> | string | null
   cycleId?: Prisma.UuidFilter<"Order"> | string
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+  version?: Prisma.IntFilter<"Order"> | number
   capturedAfterCutoff?: Prisma.BoolFilter<"Order"> | boolean
   planTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringFilter<"Order"> | string
@@ -347,6 +363,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   cycle?: Prisma.XOR<Prisma.WeeklyCycleScalarRelationFilter, Prisma.WeeklyCycleWhereInput>
   deliveries?: Prisma.OrderDeliveryListRelationFilter
   menuSlots?: Prisma.OrderMenuSlotListRelationFilter
+  statusEvents?: Prisma.OrderStatusEventListRelationFilter
 }, "id" | "folio">
 
 export type OrderOrderByWithAggregationInput = {
@@ -357,6 +374,7 @@ export type OrderOrderByWithAggregationInput = {
   cycleId?: Prisma.SortOrder
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
@@ -382,6 +400,7 @@ export type OrderScalarWhereWithAggregatesInput = {
   cycleId?: Prisma.UuidWithAggregatesFilter<"Order"> | string
   folio?: Prisma.IntWithAggregatesFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
+  version?: Prisma.IntWithAggregatesFilter<"Order"> | number
   capturedAfterCutoff?: Prisma.BoolWithAggregatesFilter<"Order"> | boolean
   planTitleSnapshot?: Prisma.StringWithAggregatesFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringWithAggregatesFilter<"Order"> | string
@@ -395,6 +414,7 @@ export type OrderCreateInput = {
   id?: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -408,6 +428,7 @@ export type OrderCreateInput = {
   cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateInput = {
@@ -418,6 +439,7 @@ export type OrderUncheckedCreateInput = {
   cycleId: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -427,11 +449,13 @@ export type OrderUncheckedCreateInput = {
   updatedAt?: Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -445,6 +469,7 @@ export type OrderUpdateInput = {
   cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateInput = {
@@ -455,6 +480,7 @@ export type OrderUncheckedUpdateInput = {
   cycleId?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -464,6 +490,7 @@ export type OrderUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateManyInput = {
@@ -474,6 +501,7 @@ export type OrderCreateManyInput = {
   cycleId: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -486,6 +514,7 @@ export type OrderCreateManyInput = {
 export type OrderUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -503,6 +532,7 @@ export type OrderUncheckedUpdateManyInput = {
   cycleId?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -530,6 +560,7 @@ export type OrderCountOrderByAggregateInput = {
   cycleId?: Prisma.SortOrder
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
@@ -541,6 +572,7 @@ export type OrderCountOrderByAggregateInput = {
 
 export type OrderAvgOrderByAggregateInput = {
   folio?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
 }
 
@@ -552,6 +584,7 @@ export type OrderMaxOrderByAggregateInput = {
   cycleId?: Prisma.SortOrder
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
@@ -569,6 +602,7 @@ export type OrderMinOrderByAggregateInput = {
   cycleId?: Prisma.SortOrder
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
@@ -580,6 +614,7 @@ export type OrderMinOrderByAggregateInput = {
 
 export type OrderSumOrderByAggregateInput = {
   folio?: Prisma.SortOrder
+  version?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
 }
 
@@ -732,6 +767,20 @@ export type OrderUpdateOneRequiredWithoutDeliveriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutDeliveriesInput, Prisma.OrderUpdateWithoutDeliveriesInput>, Prisma.OrderUncheckedUpdateWithoutDeliveriesInput>
 }
 
+export type OrderCreateNestedOneWithoutStatusEventsInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutStatusEventsInput, Prisma.OrderUncheckedCreateWithoutStatusEventsInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutStatusEventsInput
+  connect?: Prisma.OrderWhereUniqueInput
+}
+
+export type OrderUpdateOneRequiredWithoutStatusEventsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutStatusEventsInput, Prisma.OrderUncheckedCreateWithoutStatusEventsInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutStatusEventsInput
+  upsert?: Prisma.OrderUpsertWithoutStatusEventsInput
+  connect?: Prisma.OrderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutStatusEventsInput, Prisma.OrderUpdateWithoutStatusEventsInput>, Prisma.OrderUncheckedUpdateWithoutStatusEventsInput>
+}
+
 export type OrderCreateNestedOneWithoutMenuSlotsInput = {
   create?: Prisma.XOR<Prisma.OrderCreateWithoutMenuSlotsInput, Prisma.OrderUncheckedCreateWithoutMenuSlotsInput>
   connectOrCreate?: Prisma.OrderCreateOrConnectWithoutMenuSlotsInput
@@ -792,6 +841,7 @@ export type OrderCreateWithoutSourceWeeklyMenuInput = {
   id?: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -804,6 +854,7 @@ export type OrderCreateWithoutSourceWeeklyMenuInput = {
   cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutSourceWeeklyMenuInput = {
@@ -813,6 +864,7 @@ export type OrderUncheckedCreateWithoutSourceWeeklyMenuInput = {
   cycleId: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -822,6 +874,7 @@ export type OrderUncheckedCreateWithoutSourceWeeklyMenuInput = {
   updatedAt?: Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutSourceWeeklyMenuInput = {
@@ -861,6 +914,7 @@ export type OrderScalarWhereInput = {
   cycleId?: Prisma.UuidFilter<"Order"> | string
   folio?: Prisma.IntFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+  version?: Prisma.IntFilter<"Order"> | number
   capturedAfterCutoff?: Prisma.BoolFilter<"Order"> | boolean
   planTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringFilter<"Order"> | string
@@ -874,6 +928,7 @@ export type OrderCreateWithoutCustomerInput = {
   id?: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -886,6 +941,7 @@ export type OrderCreateWithoutCustomerInput = {
   cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutCustomerInput = {
@@ -895,6 +951,7 @@ export type OrderUncheckedCreateWithoutCustomerInput = {
   cycleId: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -904,6 +961,7 @@ export type OrderUncheckedCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutCustomerInput = {
@@ -936,6 +994,7 @@ export type OrderCreateWithoutPlanVariantInput = {
   id?: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -948,6 +1007,7 @@ export type OrderCreateWithoutPlanVariantInput = {
   cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutPlanVariantInput = {
@@ -957,6 +1017,7 @@ export type OrderUncheckedCreateWithoutPlanVariantInput = {
   cycleId: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -966,6 +1027,7 @@ export type OrderUncheckedCreateWithoutPlanVariantInput = {
   updatedAt?: Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutPlanVariantInput = {
@@ -998,6 +1060,7 @@ export type OrderCreateWithoutDeliveriesInput = {
   id?: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1010,6 +1073,7 @@ export type OrderCreateWithoutDeliveriesInput = {
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
   cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutDeliveriesInput = {
@@ -1020,6 +1084,7 @@ export type OrderUncheckedCreateWithoutDeliveriesInput = {
   cycleId: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1028,6 +1093,7 @@ export type OrderUncheckedCreateWithoutDeliveriesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutDeliveriesInput = {
@@ -1049,6 +1115,7 @@ export type OrderUpdateToOneWithWhereWithoutDeliveriesInput = {
 export type OrderUpdateWithoutDeliveriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1061,6 +1128,7 @@ export type OrderUpdateWithoutDeliveriesInput = {
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
   cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutDeliveriesInput = {
@@ -1071,6 +1139,7 @@ export type OrderUncheckedUpdateWithoutDeliveriesInput = {
   cycleId?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1079,12 +1148,14 @@ export type OrderUncheckedUpdateWithoutDeliveriesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
 }
 
-export type OrderCreateWithoutMenuSlotsInput = {
+export type OrderCreateWithoutStatusEventsInput = {
   id?: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1097,6 +1168,102 @@ export type OrderCreateWithoutMenuSlotsInput = {
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
   cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
+  menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
+}
+
+export type OrderUncheckedCreateWithoutStatusEventsInput = {
+  id?: string
+  customerId: string
+  planVariantId?: string | null
+  sourceWeeklyMenuId?: string | null
+  cycleId: string
+  folio?: number
+  status?: $Enums.OrderStatus
+  version?: number
+  capturedAfterCutoff?: boolean
+  planTitleSnapshot: string
+  planVariantTitleSnapshot: string
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
+  menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
+}
+
+export type OrderCreateOrConnectWithoutStatusEventsInput = {
+  where: Prisma.OrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrderCreateWithoutStatusEventsInput, Prisma.OrderUncheckedCreateWithoutStatusEventsInput>
+}
+
+export type OrderUpsertWithoutStatusEventsInput = {
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutStatusEventsInput, Prisma.OrderUncheckedUpdateWithoutStatusEventsInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutStatusEventsInput, Prisma.OrderUncheckedCreateWithoutStatusEventsInput>
+  where?: Prisma.OrderWhereInput
+}
+
+export type OrderUpdateToOneWithWhereWithoutStatusEventsInput = {
+  where?: Prisma.OrderWhereInput
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutStatusEventsInput, Prisma.OrderUncheckedUpdateWithoutStatusEventsInput>
+}
+
+export type OrderUpdateWithoutStatusEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
+  planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
+  sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
+  deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
+  menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderUncheckedUpdateWithoutStatusEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cycleId?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
+  menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderCreateWithoutMenuSlotsInput = {
+  id?: string
+  folio?: number
+  status?: $Enums.OrderStatus
+  version?: number
+  capturedAfterCutoff?: boolean
+  planTitleSnapshot: string
+  planVariantTitleSnapshot: string
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
+  planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
+  sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
+  deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutMenuSlotsInput = {
@@ -1107,6 +1274,7 @@ export type OrderUncheckedCreateWithoutMenuSlotsInput = {
   cycleId: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1115,6 +1283,7 @@ export type OrderUncheckedCreateWithoutMenuSlotsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutMenuSlotsInput = {
@@ -1136,6 +1305,7 @@ export type OrderUpdateToOneWithWhereWithoutMenuSlotsInput = {
 export type OrderUpdateWithoutMenuSlotsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1148,6 +1318,7 @@ export type OrderUpdateWithoutMenuSlotsInput = {
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
   cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
@@ -1158,6 +1329,7 @@ export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
   cycleId?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1166,12 +1338,14 @@ export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutCycleInput = {
   id?: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1184,6 +1358,7 @@ export type OrderCreateWithoutCycleInput = {
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutCycleInput = {
@@ -1193,6 +1368,7 @@ export type OrderUncheckedCreateWithoutCycleInput = {
   sourceWeeklyMenuId?: string | null
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1202,6 +1378,7 @@ export type OrderUncheckedCreateWithoutCycleInput = {
   updatedAt?: Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutCycleInput = {
@@ -1237,6 +1414,7 @@ export type OrderCreateManySourceWeeklyMenuInput = {
   cycleId: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1249,6 +1427,7 @@ export type OrderCreateManySourceWeeklyMenuInput = {
 export type OrderUpdateWithoutSourceWeeklyMenuInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1261,6 +1440,7 @@ export type OrderUpdateWithoutSourceWeeklyMenuInput = {
   cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutSourceWeeklyMenuInput = {
@@ -1270,6 +1450,7 @@ export type OrderUncheckedUpdateWithoutSourceWeeklyMenuInput = {
   cycleId?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1279,6 +1460,7 @@ export type OrderUncheckedUpdateWithoutSourceWeeklyMenuInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutSourceWeeklyMenuInput = {
@@ -1288,6 +1470,7 @@ export type OrderUncheckedUpdateManyWithoutSourceWeeklyMenuInput = {
   cycleId?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1304,6 +1487,7 @@ export type OrderCreateManyCustomerInput = {
   cycleId: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1316,6 +1500,7 @@ export type OrderCreateManyCustomerInput = {
 export type OrderUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1328,6 +1513,7 @@ export type OrderUpdateWithoutCustomerInput = {
   cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutCustomerInput = {
@@ -1337,6 +1523,7 @@ export type OrderUncheckedUpdateWithoutCustomerInput = {
   cycleId?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1346,6 +1533,7 @@ export type OrderUncheckedUpdateWithoutCustomerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutCustomerInput = {
@@ -1355,6 +1543,7 @@ export type OrderUncheckedUpdateManyWithoutCustomerInput = {
   cycleId?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1371,6 +1560,7 @@ export type OrderCreateManyPlanVariantInput = {
   cycleId: string
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1383,6 +1573,7 @@ export type OrderCreateManyPlanVariantInput = {
 export type OrderUpdateWithoutPlanVariantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1395,6 +1586,7 @@ export type OrderUpdateWithoutPlanVariantInput = {
   cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutPlanVariantInput = {
@@ -1404,6 +1596,7 @@ export type OrderUncheckedUpdateWithoutPlanVariantInput = {
   cycleId?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1413,6 +1606,7 @@ export type OrderUncheckedUpdateWithoutPlanVariantInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutPlanVariantInput = {
@@ -1422,6 +1616,7 @@ export type OrderUncheckedUpdateManyWithoutPlanVariantInput = {
   cycleId?: Prisma.StringFieldUpdateOperationsInput | string
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1438,6 +1633,7 @@ export type OrderCreateManyCycleInput = {
   sourceWeeklyMenuId?: string | null
   folio?: number
   status?: $Enums.OrderStatus
+  version?: number
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1450,6 +1646,7 @@ export type OrderCreateManyCycleInput = {
 export type OrderUpdateWithoutCycleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1462,6 +1659,7 @@ export type OrderUpdateWithoutCycleInput = {
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutCycleInput = {
@@ -1471,6 +1669,7 @@ export type OrderUncheckedUpdateWithoutCycleInput = {
   sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1480,6 +1679,7 @@ export type OrderUncheckedUpdateWithoutCycleInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutCycleInput = {
@@ -1489,6 +1689,7 @@ export type OrderUncheckedUpdateManyWithoutCycleInput = {
   sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1506,11 +1707,13 @@ export type OrderUncheckedUpdateManyWithoutCycleInput = {
 export type OrderCountOutputType = {
   deliveries: number
   menuSlots: number
+  statusEvents: number
 }
 
 export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   deliveries?: boolean | OrderCountOutputTypeCountDeliveriesArgs
   menuSlots?: boolean | OrderCountOutputTypeCountMenuSlotsArgs
+  statusEvents?: boolean | OrderCountOutputTypeCountStatusEventsArgs
 }
 
 /**
@@ -1537,6 +1740,13 @@ export type OrderCountOutputTypeCountMenuSlotsArgs<ExtArgs extends runtime.Types
   where?: Prisma.OrderMenuSlotWhereInput
 }
 
+/**
+ * OrderCountOutputType without action
+ */
+export type OrderCountOutputTypeCountStatusEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrderStatusEventWhereInput
+}
+
 
 export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1546,6 +1756,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   cycleId?: boolean
   folio?: boolean
   status?: boolean
+  version?: boolean
   capturedAfterCutoff?: boolean
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
@@ -1559,6 +1770,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   cycle?: boolean | Prisma.WeeklyCycleDefaultArgs<ExtArgs>
   deliveries?: boolean | Prisma.Order$deliveriesArgs<ExtArgs>
   menuSlots?: boolean | Prisma.Order$menuSlotsArgs<ExtArgs>
+  statusEvents?: boolean | Prisma.Order$statusEventsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
@@ -1570,6 +1782,7 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   cycleId?: boolean
   folio?: boolean
   status?: boolean
+  version?: boolean
   capturedAfterCutoff?: boolean
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
@@ -1591,6 +1804,7 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   cycleId?: boolean
   folio?: boolean
   status?: boolean
+  version?: boolean
   capturedAfterCutoff?: boolean
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
@@ -1612,6 +1826,7 @@ export type OrderSelectScalar = {
   cycleId?: boolean
   folio?: boolean
   status?: boolean
+  version?: boolean
   capturedAfterCutoff?: boolean
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
@@ -1621,7 +1836,7 @@ export type OrderSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "planVariantId" | "sourceWeeklyMenuId" | "cycleId" | "folio" | "status" | "capturedAfterCutoff" | "planTitleSnapshot" | "planVariantTitleSnapshot" | "priceSnapshot" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "planVariantId" | "sourceWeeklyMenuId" | "cycleId" | "folio" | "status" | "version" | "capturedAfterCutoff" | "planTitleSnapshot" | "planVariantTitleSnapshot" | "priceSnapshot" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
@@ -1629,6 +1844,7 @@ export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   cycle?: boolean | Prisma.WeeklyCycleDefaultArgs<ExtArgs>
   deliveries?: boolean | Prisma.Order$deliveriesArgs<ExtArgs>
   menuSlots?: boolean | Prisma.Order$menuSlotsArgs<ExtArgs>
+  statusEvents?: boolean | Prisma.Order$statusEventsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1653,6 +1869,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     cycle: Prisma.$WeeklyCyclePayload<ExtArgs>
     deliveries: Prisma.$OrderDeliveryPayload<ExtArgs>[]
     menuSlots: Prisma.$OrderMenuSlotPayload<ExtArgs>[]
+    statusEvents: Prisma.$OrderStatusEventPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1662,6 +1879,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     cycleId: string
     folio: number
     status: $Enums.OrderStatus
+    version: number
     capturedAfterCutoff: boolean
     planTitleSnapshot: string
     planVariantTitleSnapshot: string
@@ -2069,6 +2287,7 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
   cycle<T extends Prisma.WeeklyCycleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WeeklyCycleDefaultArgs<ExtArgs>>): Prisma.Prisma__WeeklyCycleClient<runtime.Types.Result.GetResult<Prisma.$WeeklyCyclePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   deliveries<T extends Prisma.Order$deliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$deliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   menuSlots<T extends Prisma.Order$menuSlotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$menuSlotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderMenuSlotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  statusEvents<T extends Prisma.Order$statusEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$statusEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderStatusEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2105,6 +2324,7 @@ export interface OrderFieldRefs {
   readonly cycleId: Prisma.FieldRef<"Order", 'String'>
   readonly folio: Prisma.FieldRef<"Order", 'Int'>
   readonly status: Prisma.FieldRef<"Order", 'OrderStatus'>
+  readonly version: Prisma.FieldRef<"Order", 'Int'>
   readonly capturedAfterCutoff: Prisma.FieldRef<"Order", 'Boolean'>
   readonly planTitleSnapshot: Prisma.FieldRef<"Order", 'String'>
   readonly planVariantTitleSnapshot: Prisma.FieldRef<"Order", 'String'>
@@ -2596,6 +2816,30 @@ export type Order$menuSlotsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.OrderMenuSlotScalarFieldEnum | Prisma.OrderMenuSlotScalarFieldEnum[]
+}
+
+/**
+ * Order.statusEvents
+ */
+export type Order$statusEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OrderStatusEvent
+   */
+  select?: Prisma.OrderStatusEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OrderStatusEvent
+   */
+  omit?: Prisma.OrderStatusEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderStatusEventInclude<ExtArgs> | null
+  where?: Prisma.OrderStatusEventWhereInput
+  orderBy?: Prisma.OrderStatusEventOrderByWithRelationInput | Prisma.OrderStatusEventOrderByWithRelationInput[]
+  cursor?: Prisma.OrderStatusEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrderStatusEventScalarFieldEnum | Prisma.OrderStatusEventScalarFieldEnum[]
 }
 
 /**

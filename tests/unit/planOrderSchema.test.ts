@@ -48,7 +48,7 @@ describe('order schemas', () => {
     { sequence: 1 as const, scheduledDate: '2026-08-24', locationNumber: 1 as const },
     { sequence: 2 as const, scheduledDate: '2026-08-27', locationNumber: 2 as const },
   ];
-  const update = { status: 'CONFIRMED', notes: '', menuSlots: [] };
+  const update = { version: 1, notes: '', menuSlots: [] };
 
   it('allows a different customer location for each delivery', () => {
     const parsed = orderCreateInputSchema.parse(validOrder);
@@ -85,7 +85,7 @@ describe('order schemas', () => {
 
   it('accepts a personalized menu snapshot', () => {
     const result = orderUpdateInputSchema.safeParse({
-      status: 'CONFIRMED',
+      version: 1,
       deliveries: savedDeliveries,
       notes: 'Sin cebolla',
       menuSlots: [{

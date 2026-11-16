@@ -102,6 +102,11 @@ export type Order = Prisma.OrderModel
  */
 export type OrderDelivery = Prisma.OrderDeliveryModel
 /**
+ * Model OrderStatusEvent
+ *
+ */
+export type OrderStatusEvent = Prisma.OrderStatusEventModel
+/**
  * Model OrderMenuSlot
  * 
  */
