@@ -394,6 +394,10 @@ export type PlanUpdateslotTypesInput = {
   push?: $Enums.SlotType | $Enums.SlotType[]
 }
 
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
+}
+
 export type PlanCreateNestedOneWithoutVariantsInput = {
   create?: Prisma.XOR<Prisma.PlanCreateWithoutVariantsInput, Prisma.PlanUncheckedCreateWithoutVariantsInput>
   connectOrCreate?: Prisma.PlanCreateOrConnectWithoutVariantsInput

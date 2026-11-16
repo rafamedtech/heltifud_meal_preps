@@ -28,7 +28,6 @@ export type WeeklyMenuMinAggregateOutputType = {
   id: string | null
   name: string | null
   menuType: $Enums.MenuType | null
-  isActive: boolean | null
   startDate: Date | null
   endDate: Date | null
   createdAt: Date | null
@@ -42,7 +41,6 @@ export type WeeklyMenuMaxAggregateOutputType = {
   id: string | null
   name: string | null
   menuType: $Enums.MenuType | null
-  isActive: boolean | null
   startDate: Date | null
   endDate: Date | null
   createdAt: Date | null
@@ -56,7 +54,6 @@ export type WeeklyMenuCountAggregateOutputType = {
   id: number
   name: number
   menuType: number
-  isActive: number
   startDate: number
   endDate: number
   createdAt: number
@@ -72,7 +69,6 @@ export type WeeklyMenuMinAggregateInputType = {
   id?: true
   name?: true
   menuType?: true
-  isActive?: true
   startDate?: true
   endDate?: true
   createdAt?: true
@@ -86,7 +82,6 @@ export type WeeklyMenuMaxAggregateInputType = {
   id?: true
   name?: true
   menuType?: true
-  isActive?: true
   startDate?: true
   endDate?: true
   createdAt?: true
@@ -100,7 +95,6 @@ export type WeeklyMenuCountAggregateInputType = {
   id?: true
   name?: true
   menuType?: true
-  isActive?: true
   startDate?: true
   endDate?: true
   createdAt?: true
@@ -187,7 +181,6 @@ export type WeeklyMenuGroupByOutputType = {
   id: string
   name: string
   menuType: $Enums.MenuType
-  isActive: boolean
   startDate: Date
   endDate: Date
   createdAt: Date
@@ -222,7 +215,6 @@ export type WeeklyMenuWhereInput = {
   id?: Prisma.StringFilter<"WeeklyMenu"> | string
   name?: Prisma.StringFilter<"WeeklyMenu"> | string
   menuType?: Prisma.EnumMenuTypeFilter<"WeeklyMenu"> | $Enums.MenuType
-  isActive?: Prisma.BoolFilter<"WeeklyMenu"> | boolean
   startDate?: Prisma.DateTimeFilter<"WeeklyMenu"> | Date | string
   endDate?: Prisma.DateTimeFilter<"WeeklyMenu"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"WeeklyMenu"> | Date | string
@@ -240,7 +232,6 @@ export type WeeklyMenuOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   menuType?: Prisma.SortOrder
-  isActive?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -262,7 +253,6 @@ export type WeeklyMenuWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.WeeklyMenuWhereInput | Prisma.WeeklyMenuWhereInput[]
   name?: Prisma.StringFilter<"WeeklyMenu"> | string
   menuType?: Prisma.EnumMenuTypeFilter<"WeeklyMenu"> | $Enums.MenuType
-  isActive?: Prisma.BoolFilter<"WeeklyMenu"> | boolean
   startDate?: Prisma.DateTimeFilter<"WeeklyMenu"> | Date | string
   endDate?: Prisma.DateTimeFilter<"WeeklyMenu"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"WeeklyMenu"> | Date | string
@@ -280,7 +270,6 @@ export type WeeklyMenuOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   menuType?: Prisma.SortOrder
-  isActive?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -300,7 +289,6 @@ export type WeeklyMenuScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"WeeklyMenu"> | string
   name?: Prisma.StringWithAggregatesFilter<"WeeklyMenu"> | string
   menuType?: Prisma.EnumMenuTypeWithAggregatesFilter<"WeeklyMenu"> | $Enums.MenuType
-  isActive?: Prisma.BoolWithAggregatesFilter<"WeeklyMenu"> | boolean
   startDate?: Prisma.DateTimeWithAggregatesFilter<"WeeklyMenu"> | Date | string
   endDate?: Prisma.DateTimeWithAggregatesFilter<"WeeklyMenu"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"WeeklyMenu"> | Date | string
@@ -314,7 +302,6 @@ export type WeeklyMenuCreateInput = {
   id?: string
   name: string
   menuType?: $Enums.MenuType
-  isActive?: boolean
   startDate: Date | string
   endDate: Date | string
   createdAt?: Date | string
@@ -330,7 +317,6 @@ export type WeeklyMenuUncheckedCreateInput = {
   id?: string
   name: string
   menuType?: $Enums.MenuType
-  isActive?: boolean
   startDate: Date | string
   endDate: Date | string
   createdAt?: Date | string
@@ -346,7 +332,6 @@ export type WeeklyMenuUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   menuType?: Prisma.EnumMenuTypeFieldUpdateOperationsInput | $Enums.MenuType
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -362,7 +347,6 @@ export type WeeklyMenuUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   menuType?: Prisma.EnumMenuTypeFieldUpdateOperationsInput | $Enums.MenuType
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -378,7 +362,6 @@ export type WeeklyMenuCreateManyInput = {
   id?: string
   name: string
   menuType?: $Enums.MenuType
-  isActive?: boolean
   startDate: Date | string
   endDate: Date | string
   createdAt?: Date | string
@@ -392,7 +375,6 @@ export type WeeklyMenuUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   menuType?: Prisma.EnumMenuTypeFieldUpdateOperationsInput | $Enums.MenuType
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -404,7 +386,6 @@ export type WeeklyMenuUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   menuType?: Prisma.EnumMenuTypeFieldUpdateOperationsInput | $Enums.MenuType
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -423,7 +404,6 @@ export type WeeklyMenuCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   menuType?: Prisma.SortOrder
-  isActive?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -437,7 +417,6 @@ export type WeeklyMenuMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   menuType?: Prisma.SortOrder
-  isActive?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -451,7 +430,6 @@ export type WeeklyMenuMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   menuType?: Prisma.SortOrder
-  isActive?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -487,10 +465,6 @@ export type StringFieldUpdateOperationsInput = {
 
 export type EnumMenuTypeFieldUpdateOperationsInput = {
   set?: $Enums.MenuType
-}
-
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -619,7 +593,6 @@ export type WeeklyMenuCreateWithoutDaysInput = {
   id?: string
   name: string
   menuType?: $Enums.MenuType
-  isActive?: boolean
   startDate: Date | string
   endDate: Date | string
   createdAt?: Date | string
@@ -634,7 +607,6 @@ export type WeeklyMenuUncheckedCreateWithoutDaysInput = {
   id?: string
   name: string
   menuType?: $Enums.MenuType
-  isActive?: boolean
   startDate: Date | string
   endDate: Date | string
   createdAt?: Date | string
@@ -665,7 +637,6 @@ export type WeeklyMenuUpdateWithoutDaysInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   menuType?: Prisma.EnumMenuTypeFieldUpdateOperationsInput | $Enums.MenuType
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -680,7 +651,6 @@ export type WeeklyMenuUncheckedUpdateWithoutDaysInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   menuType?: Prisma.EnumMenuTypeFieldUpdateOperationsInput | $Enums.MenuType
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -695,7 +665,6 @@ export type WeeklyMenuCreateWithoutCustomerInput = {
   id?: string
   name: string
   menuType?: $Enums.MenuType
-  isActive?: boolean
   startDate: Date | string
   endDate: Date | string
   createdAt?: Date | string
@@ -710,7 +679,6 @@ export type WeeklyMenuUncheckedCreateWithoutCustomerInput = {
   id?: string
   name: string
   menuType?: $Enums.MenuType
-  isActive?: boolean
   startDate: Date | string
   endDate: Date | string
   createdAt?: Date | string
@@ -754,7 +722,6 @@ export type WeeklyMenuScalarWhereInput = {
   id?: Prisma.StringFilter<"WeeklyMenu"> | string
   name?: Prisma.StringFilter<"WeeklyMenu"> | string
   menuType?: Prisma.EnumMenuTypeFilter<"WeeklyMenu"> | $Enums.MenuType
-  isActive?: Prisma.BoolFilter<"WeeklyMenu"> | boolean
   startDate?: Prisma.DateTimeFilter<"WeeklyMenu"> | Date | string
   endDate?: Prisma.DateTimeFilter<"WeeklyMenu"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"WeeklyMenu"> | Date | string
@@ -768,7 +735,6 @@ export type WeeklyMenuCreateWithoutSourceOrdersInput = {
   id?: string
   name: string
   menuType?: $Enums.MenuType
-  isActive?: boolean
   startDate: Date | string
   endDate: Date | string
   createdAt?: Date | string
@@ -783,7 +749,6 @@ export type WeeklyMenuUncheckedCreateWithoutSourceOrdersInput = {
   id?: string
   name: string
   menuType?: $Enums.MenuType
-  isActive?: boolean
   startDate: Date | string
   endDate: Date | string
   createdAt?: Date | string
@@ -814,7 +779,6 @@ export type WeeklyMenuUpdateWithoutSourceOrdersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   menuType?: Prisma.EnumMenuTypeFieldUpdateOperationsInput | $Enums.MenuType
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -829,7 +793,6 @@ export type WeeklyMenuUncheckedUpdateWithoutSourceOrdersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   menuType?: Prisma.EnumMenuTypeFieldUpdateOperationsInput | $Enums.MenuType
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -844,7 +807,6 @@ export type WeeklyMenuCreateWithoutCycleInput = {
   id?: string
   name: string
   menuType?: $Enums.MenuType
-  isActive?: boolean
   startDate: Date | string
   endDate: Date | string
   createdAt?: Date | string
@@ -859,7 +821,6 @@ export type WeeklyMenuUncheckedCreateWithoutCycleInput = {
   id?: string
   name: string
   menuType?: $Enums.MenuType
-  isActive?: boolean
   startDate: Date | string
   endDate: Date | string
   createdAt?: Date | string
@@ -900,7 +861,6 @@ export type WeeklyMenuCreateManyCustomerInput = {
   id?: string
   name: string
   menuType?: $Enums.MenuType
-  isActive?: boolean
   startDate: Date | string
   endDate: Date | string
   createdAt?: Date | string
@@ -913,7 +873,6 @@ export type WeeklyMenuUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   menuType?: Prisma.EnumMenuTypeFieldUpdateOperationsInput | $Enums.MenuType
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -928,7 +887,6 @@ export type WeeklyMenuUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   menuType?: Prisma.EnumMenuTypeFieldUpdateOperationsInput | $Enums.MenuType
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -943,7 +901,6 @@ export type WeeklyMenuUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   menuType?: Prisma.EnumMenuTypeFieldUpdateOperationsInput | $Enums.MenuType
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -956,7 +913,6 @@ export type WeeklyMenuCreateManyCycleInput = {
   id?: string
   name: string
   menuType?: $Enums.MenuType
-  isActive?: boolean
   startDate: Date | string
   endDate: Date | string
   createdAt?: Date | string
@@ -969,7 +925,6 @@ export type WeeklyMenuUpdateWithoutCycleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   menuType?: Prisma.EnumMenuTypeFieldUpdateOperationsInput | $Enums.MenuType
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -984,7 +939,6 @@ export type WeeklyMenuUncheckedUpdateWithoutCycleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   menuType?: Prisma.EnumMenuTypeFieldUpdateOperationsInput | $Enums.MenuType
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -999,7 +953,6 @@ export type WeeklyMenuUncheckedUpdateManyWithoutCycleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   menuType?: Prisma.EnumMenuTypeFieldUpdateOperationsInput | $Enums.MenuType
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1052,7 +1005,6 @@ export type WeeklyMenuSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   id?: boolean
   name?: boolean
   menuType?: boolean
-  isActive?: boolean
   startDate?: boolean
   endDate?: boolean
   createdAt?: boolean
@@ -1071,7 +1023,6 @@ export type WeeklyMenuSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   name?: boolean
   menuType?: boolean
-  isActive?: boolean
   startDate?: boolean
   endDate?: boolean
   createdAt?: boolean
@@ -1087,7 +1038,6 @@ export type WeeklyMenuSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   id?: boolean
   name?: boolean
   menuType?: boolean
-  isActive?: boolean
   startDate?: boolean
   endDate?: boolean
   createdAt?: boolean
@@ -1103,7 +1053,6 @@ export type WeeklyMenuSelectScalar = {
   id?: boolean
   name?: boolean
   menuType?: boolean
-  isActive?: boolean
   startDate?: boolean
   endDate?: boolean
   createdAt?: boolean
@@ -1113,7 +1062,7 @@ export type WeeklyMenuSelectScalar = {
   cycleScope?: boolean
 }
 
-export type WeeklyMenuOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "menuType" | "isActive" | "startDate" | "endDate" | "createdAt" | "updatedAt" | "cycleId" | "customerId" | "cycleScope", ExtArgs["result"]["weeklyMenu"]>
+export type WeeklyMenuOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "menuType" | "startDate" | "endDate" | "createdAt" | "updatedAt" | "cycleId" | "customerId" | "cycleScope", ExtArgs["result"]["weeklyMenu"]>
 export type WeeklyMenuInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   days?: boolean | Prisma.WeeklyMenu$daysArgs<ExtArgs>
   sourceOrders?: boolean | Prisma.WeeklyMenu$sourceOrdersArgs<ExtArgs>
@@ -1142,7 +1091,6 @@ export type $WeeklyMenuPayload<ExtArgs extends runtime.Types.Extensions.Internal
     id: string
     name: string
     menuType: $Enums.MenuType
-    isActive: boolean
     startDate: Date
     endDate: Date
     createdAt: Date
@@ -1580,7 +1528,6 @@ export interface WeeklyMenuFieldRefs {
   readonly id: Prisma.FieldRef<"WeeklyMenu", 'String'>
   readonly name: Prisma.FieldRef<"WeeklyMenu", 'String'>
   readonly menuType: Prisma.FieldRef<"WeeklyMenu", 'MenuType'>
-  readonly isActive: Prisma.FieldRef<"WeeklyMenu", 'Boolean'>
   readonly startDate: Prisma.FieldRef<"WeeklyMenu", 'DateTime'>
   readonly endDate: Prisma.FieldRef<"WeeklyMenu", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"WeeklyMenu", 'DateTime'>

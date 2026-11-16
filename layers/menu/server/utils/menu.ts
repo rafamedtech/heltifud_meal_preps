@@ -13,7 +13,7 @@ import type {
 } from "~~/layers/menu/shared/types/types"
 import { menuCycleScope, weekStartOf } from "~~/layers/menu/shared/utils/weeklyCycle"
 
-import { ensureCycleForWeek, updateCycle } from "./cycles"
+import { ensureCycleForWeek } from "./cycles"
 import { prisma } from "./prisma"
 
 const DAY_ORDER: Record<DayOfWeek, number> = {
@@ -287,7 +287,6 @@ function mapMenu(record: WeeklyMenuRecord): WeeklyMenu {
     customerId: record.customerId,
     customerName: record.customer?.nombre ?? null,
     menuType: record.menuType,
-    isActive: record.isActive,
     startDate: record.startDate.toISOString(),
     endDate: record.endDate.toISOString(),
     createdAt: record.createdAt.toISOString(),
@@ -358,8 +357,7 @@ async function resolveCyclePlacement(payload: WeeklyMenuInputParsed) {
   return {
     cycleId: cycle.id,
     customerId,
-    cycleScope: menuCycleScope(payload.menuType, customerId),
-    isActive: cycle.status === "OPEN"
+    cycleScope: menuCycleScope(payload.menuType, customerId)
   }
 }
 
@@ -553,35 +551,4 @@ export async function deleteWeeklyMenu(id: string) {
   await prisma.weeklyMenu.delete({ where: { id } })
 
   return { id }
-}
-
-/** Opens orders for the week of this menu. Kept for the existing activate route. */
-export async function setActiveMenu(id: string) {
-  const existing = await prisma.weeklyMenu.findUnique({
-    where: { id },
-    select: { id: true, cycleId: true, cycle: { select: { status: true } } }
-  })
-
-  if (!existing) {
-    throw createError({ statusCode: 404, statusMessage: "Menú no encontrado." })
-  }
-
-  if (!existing.cycleId) {
-    throw createError({ statusCode: 409, statusMessage: "Asigna el menú a una semana antes de abrir pedidos." })
-  }
-
-  if (existing.cycle?.status !== "OPEN") {
-    await updateCycle(existing.cycleId, { status: "OPEN" })
-  }
-
-  const activeMenu = await prisma.weeklyMenu.findUnique({
-    where: { id },
-    include: menuInclude
-  })
-
-  if (!activeMenu) {
-    throw createError({ statusCode: 404, statusMessage: "Menú no encontrado." })
-  }
-
-  return mapMenu(activeMenu)
 }

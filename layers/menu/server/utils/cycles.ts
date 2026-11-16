@@ -134,11 +134,7 @@ export async function updateCycle(id: string, input: WeeklyCycleUpdateInput) {
           where: { status: CycleStatus.OPEN, id: { not: id } },
           data: { status: CycleStatus.CLOSED },
         });
-        await tx.weeklyMenu.updateMany({ where: { isActive: true, cycleId: { not: id } }, data: { isActive: false } });
       }
-      // `isActive` mirrors "this menu belongs to the week taking orders" until
-      // every reader uses the cycle status.
-      await tx.weeklyMenu.updateMany({ where: { cycleId: id }, data: { isActive: status === CycleStatus.OPEN } });
     }
 
     return tx.weeklyCycle.update({

@@ -4,10 +4,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import MenuForm from '../../layers/base/app/components/admin/MenuForm.vue';
 import { DAY_OF_WEEK_VALUES, type WeeklyMenu } from '../../layers/menu/shared/types/types';
 
-const { updateMenu, createMenu, activateMenu, toast } = vi.hoisted(() => ({
-  updateMenu: vi.fn(), createMenu: vi.fn(), activateMenu: vi.fn(), toast: vi.fn(),
+const { updateMenu, createMenu, toast } = vi.hoisted(() => ({
+  updateMenu: vi.fn(), createMenu: vi.fn(), toast: vi.fn(),
 }));
-mockNuxtImport('useMenu', () => () => ({ updateMenuOnDB: updateMenu, createMenuOnDB: createMenu, setActiveMenuOnDB: activateMenu }));
+mockNuxtImport('useMenu', () => () => ({ updateMenuOnDB: updateMenu, createMenuOnDB: createMenu }));
 mockNuxtImport('useToast', () => () => ({ add: toast }));
 
 const slot = () => ({
@@ -15,7 +15,9 @@ const slot = () => ({
   guarnicion1: null, guarnicion2: null, adicionales: [], contenedor: '',
 });
 const menu: WeeklyMenu = {
-  id: 'menu-1', name: 'Semana 3', menuType: 'ESTANDAR', isActive: true,
+  id: 'menu-1', name: 'Semana 3', menuType: 'ESTANDAR',
+  cycleId: 'cycle-1', cycleStatus: 'OPEN', weekStart: '2026-10-12', orderCutoffAt: '2026-10-10T01:00:00.000Z',
+  customerId: null, customerName: null,
   startDate: '2026-10-12', endDate: '2026-10-16', createdAt: '2026-10-01', updatedAt: '2026-10-01',
   days: DAY_OF_WEEK_VALUES.map(dayOfWeek => ({ dayOfWeek, desayuno: slot(), comida: slot(), cena: slot(), snack1: slot(), snack2: slot() })),
 };
@@ -48,6 +50,16 @@ beforeEach(() => {
 });
 
 describe('menu save confirmation', () => {
+  it('shows the week status and leaves opening orders to the week actions', async () => {
+    const wrapper = await mountSuspended(MenuForm, {
+      props: { menu, mode: 'edit', catalogItems: [] },
+      route: '/admin/menu/menu-1',
+    });
+    expect(wrapper.text()).toContain('Pedidos abiertos');
+    expect(wrapper.findAll('button').some(button => button.text() === 'Publicar')).toBe(false);
+    wrapper.unmount();
+  });
+
   it('opens confirmation without writing and closing preserves pending changes', async () => {
     const wrapper = await openConfirmation();
     expect(wrapper.get('[data-save-dialog]').text()).toContain('Guardar cambios del menú');

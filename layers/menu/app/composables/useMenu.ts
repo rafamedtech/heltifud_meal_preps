@@ -25,17 +25,10 @@ export default function useMenu() {
     });
   }
 
-  async function setActiveMenuOnDB(id: string) {
-    return $fetch<WeeklyMenu>(`/api/menu/${id}/activate`, {
-      method: 'POST',
-    });
-  }
-
   return {
     getMenuById,
     createMenuOnDB,
     updateMenuOnDB,
     deleteMenuOnDB,
-    setActiveMenuOnDB,
   };
 }

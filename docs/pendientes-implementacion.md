@@ -33,8 +33,11 @@ Referencias: [1.2](verificacion-etapa-1.2.md),
   marcarlo inactivo.
 - [x] **1.5 — Verificación:** PostgreSQL y navegador con sesión administrativa,
   el 16 de noviembre de 2026. [Evidencia](verificacion-etapa-1.5.md).
-- [ ] **1.6 — Limpieza:** retirar `WeeklyMenu.isActive` y sus usos transitorios,
-  consolidando el ciclo como fuente de vigencia; actualizar README y design system.
+- [x] **1.6 — Limpieza:** retirado `WeeklyMenu.isActive` y sus usos transitorios
+  (espejo en `updateCycle`, ruta `POST /api/menu/:id/activate`, botón «Publicar»
+  del editor); el estado de la semana es la única fuente de vigencia. README y
+  design system actualizados. Migración
+  `20261116230000_drop_weekly_menu_is_active` aplicada el 16 de noviembre de 2026.
 - [ ] **Idempotencia del alta (H13/T07):** usar una clave de idempotencia para que
   doble clic o reintento cree un solo pedido. La versión de edición ya está resuelta.
 
@@ -148,7 +151,7 @@ contenido siga sin implementar.
 
 ## Orden sugerido
 
-1. Completar remanentes de 1.1, bloque 1.5, idempotencia y limpieza 1.6.
+1. Completar idempotencia del alta.
 2. Cerrar decisiones de sustitución/acceso y completar personalización y oferta.
 3. Implementar pedido del cliente y acceso privado.
 4. Desarrollar compras, cocina y reparto; pueden avanzar desde pedidos de admin sin

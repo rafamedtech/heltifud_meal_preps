@@ -91,7 +91,6 @@ export const WeeklyMenuScalarFieldEnum = {
   id: 'id',
   name: 'name',
   menuType: 'menuType',
-  isActive: 'isActive',
   startDate: 'startDate',
   endDate: 'endDate',
   createdAt: 'createdAt',

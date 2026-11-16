@@ -17,7 +17,6 @@ model WeeklyMenu {
   id           String    @id @default(uuid())
   name         String
   menuType     MenuType  @default(ESTANDAR)
-  isActive     Boolean   @default(false)
   startDate    DateTime
   endDate      DateTime
   createdAt    DateTime  @default(now())
@@ -34,7 +33,6 @@ model WeeklyMenu {
 
   @@unique([cycleId, cycleScope], map: "weekly_menu_cycle_scope_key")
   @@index([customerId], map: "weekly_menu_customer_idx")
-  @@index([isActive])
   @@index([startDate])
   @@index([endDate])
 }

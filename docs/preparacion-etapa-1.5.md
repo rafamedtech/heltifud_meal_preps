@@ -46,3 +46,5 @@ Verificación: [verificacion-etapa-1.5.md](verificacion-etapa-1.5.md).
 `MenuForm.vue` («marcar como activo»), `types.ts` y las pruebas
 `menuType.test.ts` y `menuSaveConfirmation.test.ts`. `isActive` de planes y
 variantes es otro campo y no se toca.
+
+Hecho en 1.6: ver el avance en el [plan de etapa 1](plan-etapa-1-cimientos.md).

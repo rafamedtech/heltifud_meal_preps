@@ -30,7 +30,7 @@ function validMenu() {
 }
 
 function record(menuType: string) {
-  return { id: 'menu-1', name: 'Semana de prueba', menuType, isActive: false,
+  return { id: 'menu-1', name: 'Semana de prueba', menuType,
     startDate: new Date('2026-10-12'), endDate: new Date('2026-10-16'),
     createdAt: new Date(), updatedAt: new Date(), days: [],
   };
@@ -79,7 +79,7 @@ describe('weekly menu type', () => {
     await createWeeklyMenu(weeklyMenuInputSchema.parse({ ...validMenu(), menuType: 'VEGETARIANO' }));
     expect(db.cycle).toHaveBeenCalledWith(expect.objectContaining({ where: { weekStart: new Date('2026-10-12T00:00:00.000Z') } }));
     expect(db.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({
-      cycleId: 'cycle-1', cycleScope: 'VEGETARIANO', customerId: null, isActive: false,
+      cycleId: 'cycle-1', cycleScope: 'VEGETARIANO', customerId: null,
     }) }));
   });
   it('scopes a personalised menu by its customer', async () => {
@@ -89,11 +89,11 @@ describe('weekly menu type', () => {
       cycleScope: CUSTOMER_ID, customerId: CUSTOMER_ID,
     }) }));
   });
-  it('joins the week already taking orders as active', async () => {
+  it('takes its availability from the cycle and stores no activity flag', async () => {
     db.cycle.mockResolvedValue({ id: 'cycle-1', status: 'OPEN' });
     db.create.mockResolvedValue(record('ESTANDAR'));
     await createWeeklyMenu(weeklyMenuInputSchema.parse(validMenu()));
-    expect(db.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ isActive: true }) }));
+    expect(db.create.mock.calls[0]![0].data).not.toHaveProperty('isActive');
   });
   it('reports a second menu of the same scope in a week as a conflict', async () => {
     db.create.mockRejectedValue(Object.assign(new Error('unique'), { code: 'P2002' }));

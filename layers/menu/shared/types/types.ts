@@ -463,7 +463,6 @@ export interface WeeklyMenu {
   id: string;
   createdAt: string;
   updatedAt: string;
-  isActive: boolean;
   startDate: string;
   endDate: string;
   name: string;

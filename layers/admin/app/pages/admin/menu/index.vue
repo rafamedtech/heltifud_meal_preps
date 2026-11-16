@@ -6,6 +6,7 @@ import type { CycleStatusValue, OperationSettingsInput, WeeklyMenu } from "~~/la
 import { customerDeliveryDays } from "~~/layers/menu/shared/utils/customerDeliveryDays"
 import {
   BUSINESS_TIME_ZONE,
+  CYCLE_STATUS_COLORS,
   CYCLE_STATUS_LABELS,
   CYCLE_TRANSITIONS,
   isCutoffBeforeWeek,
@@ -71,13 +72,6 @@ const toast = useToast()
 const deletingId = ref<string | null>(null)
 const updatingCycleId = ref<string | null>(null)
 
-const cycleStatusColors = {
-  DRAFT: "neutral",
-  OPEN: "success",
-  CLOSED: "warning",
-  IN_PRODUCTION: "primary",
-  COMPLETED: "info"
-} as const
 const cycleActions: Record<CycleStatusValue, { label: string, icon: string }> = {
   DRAFT: { label: "Regresar a borrador", icon: "i-lucide-pencil-line" },
   OPEN: { label: "Abrir pedidos", icon: "i-lucide-door-open" },
@@ -455,7 +449,7 @@ useSeoMeta({
           <template #status-cell="{ row }">
             <div v-if="row.original.cycleStatus" class="flex flex-col items-center gap-1">
               <UBadge
-                :color="cycleStatusColors[row.original.cycleStatus]"
+                :color="CYCLE_STATUS_COLORS[row.original.cycleStatus]"
                 variant="subtle"
                 :label="CYCLE_STATUS_LABELS[row.original.cycleStatus]"
               />

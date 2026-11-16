@@ -431,3 +431,16 @@ Cuando el servidor rechaza el borrado con 409, el mismo modal del patrón 10
 cambia el `UAlert` a `color="warning"` con el motivo y sustituye el botón
 destructivo por la alternativa que conserva el historial («Marcar inactivo»).
 
+
+## Estado de la semana de un menú
+
+Referencias: columna de estado en `layers/admin/app/pages/admin/menu/index.vue`
+y cabecera de `layers/base/app/components/admin/MenuForm.vue`.
+
+- La vigencia de un menú es el estado de su semana (`WeeklyCycle.status`); el
+  menú no guarda un indicador propio de activo ni de publicado.
+- `UBadge variant="subtle"` con `CYCLE_STATUS_LABELS` y `CYCLE_STATUS_COLORS`
+  de `layers/menu/shared/utils/weeklyCycle.ts`. No redefinir el mapa de colores
+  en la página.
+- Abrir o cerrar pedidos se hace solo desde las acciones de la semana en
+  `admin/menu`. El editor del menú guarda contenido y no cambia el estado.
