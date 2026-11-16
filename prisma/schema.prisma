@@ -22,9 +22,18 @@ model WeeklyMenu {
   endDate      DateTime
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  cycleId      String?   @map("cycle_id") @db.Uuid
+  customerId   String?   @map("customer_id") @db.Uuid
+  // 'ESTANDAR' | 'VEGETARIANO' for shared menus, the customer id for
+  // personalised ones. Makes "one menu per scope per week" a plain unique key.
+  cycleScope   String?   @map("cycle_scope")
   days         MenuDay[]
   sourceOrders Order[]
+  cycle        WeeklyCycle? @relation(fields: [cycleId], references: [id], onDelete: Restrict)
+  customer     Customer?    @relation(fields: [customerId], references: [id], onDelete: Restrict)
 
+  @@unique([cycleId, cycleScope], map: "weekly_menu_cycle_scope_key")
+  @@index([customerId], map: "weekly_menu_customer_idx")
   @@index([isActive])
   @@index([startDate])
   @@index([endDate])
@@ -131,6 +140,7 @@ model Customer {
   firstDeliveryDay  DayOfWeek? @map("first_delivery_day")
   secondDeliveryDay DayOfWeek? @map("second_delivery_day")
   orders            Order[]
+  personalMenus     WeeklyMenu[]
 
   @@index([status, tipoCliente, nombre, id], map: "customers_status_tipo_nombre_idx")
   @@index([source], map: "customers_source_idx")
@@ -256,6 +266,45 @@ model Expense {
   @@index([expenseType, expenseDate(sort: Desc)], map: "expenses_type_date_idx")
   @@index([isInvoiced, expenseDate(sort: Desc)], map: "expenses_invoiced_date_idx")
   @@map("expenses")
+}
+
+model OperationSettings {
+  id                        Int         @id @default(1)
+  cutoffDay                 DayOfWeek   @default(VIERNES) @map("cutoff_day")
+  cutoffTime                String      @default("18:00") @map("cutoff_time")
+  firstDeliveryAllowedDays  DayOfWeek[] @default([DOMINGO, LUNES]) @map("first_delivery_allowed_days")
+  secondDeliveryAllowedDays DayOfWeek[] @default([MIERCOLES, JUEVES]) @map("second_delivery_allowed_days")
+  firstDeliveryMealDays     DayOfWeek[] @default([LUNES, MARTES, MIERCOLES]) @map("first_delivery_meal_days")
+  secondDeliveryMealDays    DayOfWeek[] @default([JUEVES, VIERNES]) @map("second_delivery_meal_days")
+  timeZone                  String      @default("America/Tijuana") @map("time_zone")
+  updatedAt                 DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@map("operation_settings")
+}
+
+model WeeklyCycle {
+  id                        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  weekStart                 DateTime    @unique(map: "weekly_cycles_week_start_key") @map("week_start") @db.Date
+  status                    CycleStatus @default(DRAFT)
+  orderCutoffAt             DateTime    @map("order_cutoff_at") @db.Timestamptz(3)
+  firstDeliveryAllowedDays  DayOfWeek[] @map("first_delivery_allowed_days")
+  secondDeliveryAllowedDays DayOfWeek[] @map("second_delivery_allowed_days")
+  firstDeliveryMealDays     DayOfWeek[] @map("first_delivery_meal_days")
+  secondDeliveryMealDays    DayOfWeek[] @map("second_delivery_meal_days")
+  createdAt                 DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt                 DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+  menus                     WeeklyMenu[]
+
+  @@index([status, weekStart(sort: Desc)], map: "weekly_cycles_status_week_idx")
+  @@map("weekly_cycles")
+}
+
+enum CycleStatus {
+  DRAFT
+  OPEN
+  CLOSED
+  IN_PRODUCTION
+  COMPLETED
 }
 
 enum DayOfWeek {

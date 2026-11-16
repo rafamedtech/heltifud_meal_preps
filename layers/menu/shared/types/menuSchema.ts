@@ -5,6 +5,7 @@ import {
   CUSTOMER_STATUS_VALUES,
   CUSTOMER_TYPE_VALUES,
   COMPONENT_ROLE_VALUES,
+  CYCLE_STATUS_VALUES,
   DAY_OF_WEEK_VALUES,
   EXPENSE_CATEGORY_VALUES,
   EXPENSE_PAYMENT_METHOD_VALUES,
@@ -78,6 +79,7 @@ export const weeklyMenuInputSchema = z
   .object({
     name: z.string().min(2, 'Nombre de menú muy corto'),
     menuType: z.enum(MENU_TYPE_VALUES).default('ESTANDAR'),
+    customerId: z.string().uuid().nullable().optional(),
     startDate: z.coerce.date(),
     endDate: z.coerce.date(),
     days: z.array(dayMenuSchema).length(7, 'El menú debe tener exactamente 7 días'),
@@ -88,6 +90,14 @@ export const weeklyMenuInputSchema = z
         code: z.ZodIssueCode.custom,
         path: ['startDate'],
         message: 'La fecha de inicio debe ser menor o igual a la fecha final',
+      });
+    }
+
+    if (value.menuType === 'PERSONALIZADO' && !value.customerId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['customerId'],
+        message: 'Selecciona el cliente de este menú personalizado',
       });
     }
 
@@ -369,4 +379,31 @@ export const orderListQuerySchema = z.object({
 }).refine((value) => !value.from || !value.to || value.from <= value.to, {
   message: 'La fecha inicial no puede ser posterior a la fecha final',
   path: ['from'],
+});
+
+const deliveryDaysSchema = z.array(z.enum(DAY_OF_WEEK_VALUES)).min(1, 'Selecciona al menos un día').max(7)
+  .refine((days) => new Set(days).size === days.length, 'No repitas días');
+
+export const operationSettingsInputSchema = z.object({
+  cutoffDay: z.enum(DAY_OF_WEEK_VALUES),
+  cutoffTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Usa el formato HH:MM'),
+  firstDeliveryAllowedDays: deliveryDaysSchema,
+  secondDeliveryAllowedDays: deliveryDaysSchema,
+  firstDeliveryMealDays: deliveryDaysSchema,
+  secondDeliveryMealDays: deliveryDaysSchema,
+}).superRefine((value, ctx) => {
+  if (value.firstDeliveryMealDays.some((day) => value.secondDeliveryMealDays.includes(day))) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['secondDeliveryMealDays'],
+      message: 'Un día de comida solo puede ir en una entrega',
+    });
+  }
+});
+
+export const weeklyCycleUpdateInputSchema = z.object({
+  status: z.enum(CYCLE_STATUS_VALUES).optional(),
+  orderCutoffAt: z.string().datetime({ offset: true }).optional(),
+}).refine((value) => value.status !== undefined || value.orderCutoffAt !== undefined, {
+  message: 'No hay cambios que guardar',
 });

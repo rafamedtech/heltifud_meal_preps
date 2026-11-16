@@ -64,7 +64,9 @@ export const ModelName = {
   Order: 'Order',
   OrderMenuSlot: 'OrderMenuSlot',
   OrderMenuComponent: 'OrderMenuComponent',
-  Expense: 'Expense'
+  Expense: 'Expense',
+  OperationSettings: 'OperationSettings',
+  WeeklyCycle: 'WeeklyCycle'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -91,7 +93,10 @@ export const WeeklyMenuScalarFieldEnum = {
   startDate: 'startDate',
   endDate: 'endDate',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  cycleId: 'cycleId',
+  customerId: 'customerId',
+  cycleScope: 'cycleScope'
 } as const
 
 export type WeeklyMenuScalarFieldEnum = (typeof WeeklyMenuScalarFieldEnum)[keyof typeof WeeklyMenuScalarFieldEnum]
@@ -287,6 +292,37 @@ export const ExpenseScalarFieldEnum = {
 } as const
 
 export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeof ExpenseScalarFieldEnum]
+
+
+export const OperationSettingsScalarFieldEnum = {
+  id: 'id',
+  cutoffDay: 'cutoffDay',
+  cutoffTime: 'cutoffTime',
+  firstDeliveryAllowedDays: 'firstDeliveryAllowedDays',
+  secondDeliveryAllowedDays: 'secondDeliveryAllowedDays',
+  firstDeliveryMealDays: 'firstDeliveryMealDays',
+  secondDeliveryMealDays: 'secondDeliveryMealDays',
+  timeZone: 'timeZone',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OperationSettingsScalarFieldEnum = (typeof OperationSettingsScalarFieldEnum)[keyof typeof OperationSettingsScalarFieldEnum]
+
+
+export const WeeklyCycleScalarFieldEnum = {
+  id: 'id',
+  weekStart: 'weekStart',
+  status: 'status',
+  orderCutoffAt: 'orderCutoffAt',
+  firstDeliveryAllowedDays: 'firstDeliveryAllowedDays',
+  secondDeliveryAllowedDays: 'secondDeliveryAllowedDays',
+  firstDeliveryMealDays: 'firstDeliveryMealDays',
+  secondDeliveryMealDays: 'secondDeliveryMealDays',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WeeklyCycleScalarFieldEnum = (typeof WeeklyCycleScalarFieldEnum)[keyof typeof WeeklyCycleScalarFieldEnum]
 
 
 export const SortOrder = {

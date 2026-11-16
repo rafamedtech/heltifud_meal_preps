@@ -111,3 +111,13 @@ export type OrderMenuComponent = Prisma.OrderMenuComponentModel
  * 
  */
 export type Expense = Prisma.ExpenseModel
+/**
+ * Model OperationSettings
+ * 
+ */
+export type OperationSettings = Prisma.OperationSettingsModel
+/**
+ * Model WeeklyCycle
+ * 
+ */
+export type WeeklyCycle = Prisma.WeeklyCycleModel

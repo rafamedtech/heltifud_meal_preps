@@ -334,7 +334,55 @@ export const MENU_TYPE_OPTIONS: { label: string; value: MenuType }[] = [
   { label: 'Personalizado', value: 'PERSONALIZADO' },
 ];
 
+export const CYCLE_STATUS_VALUES = ['DRAFT', 'OPEN', 'CLOSED', 'IN_PRODUCTION', 'COMPLETED'] as const;
+export type CycleStatusValue = (typeof CYCLE_STATUS_VALUES)[number];
+
+export interface OperationSettingsInput {
+  cutoffDay: DayOfWeek;
+  cutoffTime: string;
+  firstDeliveryAllowedDays: DayOfWeek[];
+  secondDeliveryAllowedDays: DayOfWeek[];
+  firstDeliveryMealDays: DayOfWeek[];
+  secondDeliveryMealDays: DayOfWeek[];
+}
+
+export interface OperationSettings extends OperationSettingsInput {
+  timeZone: string;
+  updatedAt: string;
+}
+
+export interface WeeklyCycleMenuSummary {
+  id: string;
+  name: string;
+  menuType: MenuType;
+  customerId: string | null;
+  customerName: string | null;
+}
+
+export interface WeeklyCycle {
+  id: string;
+  weekStart: string;
+  status: CycleStatusValue;
+  orderCutoffAt: string;
+  firstDeliveryAllowedDays: DayOfWeek[];
+  secondDeliveryAllowedDays: DayOfWeek[];
+  firstDeliveryMealDays: DayOfWeek[];
+  secondDeliveryMealDays: DayOfWeek[];
+  menus: WeeklyCycleMenuSummary[];
+}
+
+export interface WeeklyCycleUpdateInput {
+  status?: CycleStatusValue;
+  orderCutoffAt?: string;
+}
+
 export interface WeeklyMenu {
+  cycleId: string | null;
+  cycleStatus: CycleStatusValue | null;
+  weekStart: string | null;
+  orderCutoffAt: string | null;
+  customerId: string | null;
+  customerName: string | null;
   menuType: MenuType;
   id: string;
   createdAt: string;
@@ -347,6 +395,7 @@ export interface WeeklyMenu {
 }
 
 export interface WeeklyMenuInput {
+  customerId?: string | null;
   menuType: MenuType;
   name: string;
   startDate: string | Date;

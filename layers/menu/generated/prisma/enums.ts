@@ -18,6 +18,17 @@ export const MenuType = {
 export type MenuType = (typeof MenuType)[keyof typeof MenuType]
 
 
+export const CycleStatus = {
+  DRAFT: 'DRAFT',
+  OPEN: 'OPEN',
+  CLOSED: 'CLOSED',
+  IN_PRODUCTION: 'IN_PRODUCTION',
+  COMPLETED: 'COMPLETED'
+} as const
+
+export type CycleStatus = (typeof CycleStatus)[keyof typeof CycleStatus]
+
+
 export const DayOfWeek = {
   LUNES: 'LUNES',
   MARTES: 'MARTES',

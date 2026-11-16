@@ -5,6 +5,7 @@ import { weeklyMenuInputSchema } from "~~/layers/menu/shared/types/menuSchema"
 import {
   DAY_OF_WEEK_VALUES,
   MENU_TYPE_OPTIONS,
+  type CustomerListResponse,
   type DayOfWeek,
   type DayMenu,
   type FoodCatalogItem,
@@ -114,6 +115,7 @@ function createStateFromMenu(menu?: WeeklyMenu | null): WeeklyMenuInput {
     return {
       name: "",
       menuType: "ESTANDAR",
+      customerId: null,
       startDate: new Date(),
       endDate: new Date(),
       days: DAY_OF_WEEK_VALUES.map((day) => createDay(day))
@@ -125,6 +127,7 @@ function createStateFromMenu(menu?: WeeklyMenu | null): WeeklyMenuInput {
   return {
     name: menu.name,
     menuType: menu.menuType ?? "ESTANDAR",
+    customerId: menu.customerId ?? null,
     startDate: new Date(menu.startDate),
     endDate: new Date(menu.endDate),
     days: DAY_OF_WEEK_VALUES.map((dayOfWeek) => {
@@ -252,9 +255,20 @@ const cardSurfaceUi = {
 const toast = useToast()
 const { createMenuOnDB, updateMenuOnDB, setActiveMenuOnDB } = useMenu()
 const resolvedCatalogItems = computed<FoodCatalogItem[]>(() => catalogItems.value ?? [])
+// Personalised menus belong to one diet customer.
+const { data: dietCustomers, status: dietCustomersStatus } = useLazyFetch<CustomerListResponse>("/api/customers", {
+  query: { tipoCliente: "dieta", limit: 100 },
+  default: () => ({ items: [], nextCursor: null })
+})
+const dietCustomerOptions = computed(() => dietCustomers.value.items.map((customer) => ({
+  label: customer.nombre,
+  description: customer.telefono,
+  value: customer.id
+})))
 const invalidFields = reactive({
   name: false,
   menuType: false,
+  customerId: false,
   startDate: false,
   endDate: false
 })
@@ -299,6 +313,7 @@ function comparableMenuInput(input: WeeklyMenuInput) {
   return {
     name: input.name.trim(),
     menuType: input.menuType ?? "ESTANDAR",
+    customerId: input.menuType === "PERSONALIZADO" ? input.customerId ?? null : null,
     startDate: toComparableDate(input.startDate),
     endDate: toComparableDate(input.endDate),
     days: input.days.map((day) => ({
@@ -389,6 +404,7 @@ function snapshotDraftState(): WeeklyMenuInput {
   return {
     name: state.name,
     menuType: state.menuType,
+    customerId: state.customerId ?? null,
     startDate: toComparableDate(state.startDate),
     endDate: toComparableDate(state.endDate),
     days: state.days.map((day) => ({
@@ -452,6 +468,7 @@ function restorePersistedDraft() {
     Object.assign(state, {
       name: payload.state.name,
       menuType: payload.state.menuType ?? "ESTANDAR",
+      customerId: payload.state.customerId ?? null,
       startDate: new Date(payload.state.startDate),
       endDate: new Date(payload.state.endDate),
       days: payload.state.days.map((day) => ({
@@ -695,6 +712,7 @@ onMounted(async () => {
 function clearValidationHighlights() {
   invalidFields.name = false
   invalidFields.menuType = false
+  invalidFields.customerId = false
   invalidFields.startDate = false
   invalidFields.endDate = false
   invalidDays.value = new Set()
@@ -720,6 +738,11 @@ function applyValidationHighlights(issues: ZodIssue[]) {
 
     if (root === "menuType") {
       invalidFields.menuType = true
+      continue
+    }
+
+    if (root === "customerId") {
+      invalidFields.customerId = true
       continue
     }
 
@@ -939,6 +962,24 @@ async function onSubmit(exitEditor = true) {
               :items="MENU_TYPE_OPTIONS"
               value-key="value"
               icon="i-lucide-utensils"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UFormField
+            v-if="state.menuType === 'PERSONALIZADO'"
+            name="customerId"
+            label="Cliente"
+            :error="invalidFields.customerId ? 'Selecciona el cliente de este menú.' : undefined"
+            :ui="{ label: 'text-xs font-medium text-toned', container: 'mt-2' }"
+          >
+            <USelectMenu
+              v-model="state.customerId"
+              :items="dietCustomerOptions"
+              value-key="value"
+              icon="i-lucide-user-round"
+              placeholder="Cliente de dieta"
+              :loading="dietCustomersStatus === 'pending'"
               class="w-full"
             />
           </UFormField>
