@@ -1,10 +1,17 @@
 <script setup lang="ts">
 import type { DropdownMenuItem, TableColumn } from "@nuxt/ui"
-import { operationSettingsInputSchema } from "~~/layers/menu/shared/types/menuSchema"
+import { cycleCutoffFormSchema, operationSettingsInputSchema } from "~~/layers/menu/shared/types/menuSchema"
 import { MENU_TYPE_OPTIONS } from "~~/layers/menu/shared/types/types"
 import type { CycleStatusValue, OperationSettingsInput, WeeklyMenu } from "~~/layers/menu/shared/types/types"
 import { customerDeliveryDays } from "~~/layers/menu/shared/utils/customerDeliveryDays"
-import { CYCLE_STATUS_LABELS, CYCLE_TRANSITIONS } from "~~/layers/menu/shared/utils/weeklyCycle"
+import {
+  BUSINESS_TIME_ZONE,
+  CYCLE_STATUS_LABELS,
+  CYCLE_TRANSITIONS,
+  isCutoffBeforeWeek,
+  utcToZonedDateTime,
+  zonedDateTimeToUtc
+} from "~~/layers/menu/shared/utils/weeklyCycle"
 
 const {
   data: menus,
@@ -84,7 +91,7 @@ const cutoffFormatter = new Intl.DateTimeFormat("es-MX", {
   month: "short",
   hour: "numeric",
   minute: "2-digit",
-  timeZone: "America/Tijuana"
+  timeZone: BUSINESS_TIME_ZONE
 })
 
 function menuTypeLabel(menu: WeeklyMenu) {
@@ -101,7 +108,9 @@ function actionItems(menu: WeeklyMenu): DropdownMenuItem[][] {
 
   return [
     [{ label: "Editar", icon: "i-lucide-square-pen", to: `/admin/menu/${menu.id}` }],
-    ...(transitions.length ? [transitions] : []),
+    ...(menu.cycleId
+      ? [[...transitions, { label: "Editar corte", icon: "i-lucide-clock", onSelect: () => openCutoff(menu) }]]
+      : []),
     [{ label: "Eliminar", icon: "i-lucide-trash", color: "error" as const, onSelect: () => requestDelete(menu) }]
   ]
 }
@@ -154,6 +163,70 @@ async function saveSettings() {
     settingsSaving.value = false
   }
 }
+const cutoffMenu = ref<WeeklyMenu | null>(null)
+const cutoffSaving = ref(false)
+const cutoffState = reactive({ date: "", time: "" })
+const isCutoffOpen = computed({
+  get: () => Boolean(cutoffMenu.value),
+  set: (value) => {
+    if (!value && !cutoffSaving.value) cutoffMenu.value = null
+  }
+})
+const cutoffDescription = computed(() =>
+  cutoffMenu.value?.weekStart
+    ? `Semana del ${formatDate(cutoffMenu.value.weekStart)}. Aplica a todos los menús de esa semana.`
+    : undefined
+)
+const cutoffInstant = computed(() =>
+  cycleCutoffFormSchema.safeParse(cutoffState).success
+    ? zonedDateTimeToUtc(cutoffState.date, cutoffState.time, BUSINESS_TIME_ZONE)
+    : null
+)
+const cutoffOutsideWeek = computed(() =>
+  Boolean(
+    cutoffInstant.value
+    && cutoffMenu.value?.weekStart
+    && !isCutoffBeforeWeek(cutoffInstant.value, cutoffMenu.value.weekStart, BUSINESS_TIME_ZONE)
+  )
+)
+const cutoffUnchanged = computed(() =>
+  Boolean(
+    cutoffInstant.value
+    && cutoffMenu.value?.orderCutoffAt
+    && cutoffInstant.value.getTime() === new Date(cutoffMenu.value.orderCutoffAt).getTime()
+  )
+)
+
+function openCutoff(menu: WeeklyMenu) {
+  if (!menu.cycleId || !menu.orderCutoffAt) return
+  Object.assign(cutoffState, utcToZonedDateTime(menu.orderCutoffAt, BUSINESS_TIME_ZONE))
+  cutoffMenu.value = menu
+}
+
+async function saveCutoff() {
+  const menu = cutoffMenu.value
+  if (!menu?.cycleId || !cutoffInstant.value || cutoffOutsideWeek.value) return
+  cutoffSaving.value = true
+
+  try {
+    const cycle = await updateCycle(menu.cycleId, { orderCutoffAt: cutoffInstant.value.toISOString() })
+    await refresh()
+    cutoffMenu.value = null
+    toast.add({
+      title: "Corte actualizado",
+      description: `Nuevo corte: ${cutoffFormatter.format(new Date(cycle.orderCutoffAt))}.`,
+      color: "success",
+      icon: "i-lucide-circle-check"
+    })
+  } catch (error) {
+    const message = (error as { data?: { statusMessage?: string } })?.data?.statusMessage
+      ?? "Revisa la fecha y la hora e intenta de nuevo."
+    toast.add({ title: "No se pudo actualizar el corte", description: message, color: "error", icon: "i-lucide-circle-alert" })
+  } finally {
+    cutoffSaving.value = false
+  }
+}
+
 const pendingDeleteMenu = ref<WeeklyMenu | null>(null)
 const deleteModalDescription = computed(() =>
   pendingDeleteMenu.value
@@ -446,6 +519,40 @@ useSeoMeta({
           <div class="flex justify-end gap-3 border-t border-default pt-5">
             <UButton color="neutral" variant="ghost" type="button" :disabled="settingsSaving" @click="isSettingsOpen = false">Cancelar</UButton>
             <UButton type="submit" icon="i-lucide-save" :loading="settingsSaving">Guardar cambios</UButton>
+          </div>
+        </UForm>
+      </template>
+    </UModal>
+
+    <UModal
+      v-model:open="isCutoffOpen"
+      title="Editar corte de la semana"
+      :description="cutoffDescription"
+      :ui="{ content: 'max-w-3xl' }"
+    >
+      <template #body>
+        <UForm :schema="cycleCutoffFormSchema" :state="cutoffState" class="space-y-5" @submit="saveCutoff">
+          <div class="grid gap-5 md:grid-cols-2">
+            <UFormField label="Fecha de corte" name="date" required>
+              <CalendarInput v-model="cutoffState.date" label="Fecha de corte" />
+            </UFormField>
+            <UFormField label="Hora de corte" name="time" help="Hora de Tijuana." required>
+              <UInput v-model="cutoffState.time" type="time" icon="i-lucide-clock" class="w-full" />
+            </UFormField>
+          </div>
+
+          <UAlert
+            v-if="cutoffOutsideWeek"
+            color="error"
+            variant="soft"
+            icon="i-lucide-circle-alert"
+            title="Corte fuera de rango"
+            description="El corte debe ser anterior al lunes en que inicia la semana."
+          />
+
+          <div class="flex justify-end gap-3 border-t border-default pt-5">
+            <UButton color="neutral" variant="ghost" type="button" :disabled="cutoffSaving" @click="isCutoffOpen = false">Cancelar</UButton>
+            <UButton type="submit" icon="i-lucide-save" :loading="cutoffSaving" :disabled="cutoffOutsideWeek || cutoffUnchanged">Guardar cambios</UButton>
           </div>
         </UForm>
       </template>

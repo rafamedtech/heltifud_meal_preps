@@ -385,3 +385,49 @@ Referencia: `layers/admin/app/pages/admin/pedidos/[id].vue`.
   explícitamente. Las acciones de estado se deshabilitan con cambios sin guardar.
 
 Se componen componentes existentes de Nuxt UI; no se creó un control propio.
+
+## Instante con fecha y hora de negocio
+
+Referencia: modal «Editar corte de la semana» en
+`layers/admin/app/pages/admin/menu/index.vue`.
+
+- Patrón 8 (formulario en modal) con dos campos: `CalendarInput` para la fecha
+  y `UInput type="time"` con `icon="i-lucide-clock"` para la hora.
+- El estado del formulario guarda la hora de pared (`YYYY-MM-DD` y `HH:MM`) en
+  `America/Tijuana`. Convertir con `utcToZonedDateTime()` al abrir y con
+  `zonedDateTimeToUtc()` al guardar (`layers/menu/shared/utils/weeklyCycle.ts`);
+  no usar la zona horaria del navegador.
+- Una regla que cruza ambos campos se muestra con `UAlert color="error"
+  variant="soft"` y deshabilita el envío; el servidor la valida de nuevo.
+
+Se componen componentes existentes; no se creó un control propio.
+
+## Listado paginado en servidor
+
+Referencia: `layers/admin/app/pages/admin/pedidos/index.vue`.
+
+- `UPagination` con `v-model:page`, `:total` y `:items-per-page`, visible solo
+  cuando el total supera una página; `:disabled` mientras carga.
+- Cambiar cualquier filtro regresa a la página 1. El contador muestra el total
+  del filtro, no las filas de la página.
+
+## Selector con búsqueda en servidor
+
+Referencia: selector de cliente en
+`layers/admin/app/pages/admin/pedidos/crear-nuevo.vue`.
+
+- `USelectMenu` con `v-model:search-term`, `ignore-filter` y `:loading`; la
+  página consulta la API con una espera breve y descarta respuestas viejas.
+- El modelo es la opción completa (sin `value-key`) con `by="value"`, para que
+  la selección siga visible aunque ya no esté entre los resultados.
+- El slot `#empty` distingue búsqueda en curso, sin coincidencias y error.
+
+## Borrado bloqueado por historial
+
+Referencia: modal de borrado en
+`layers/admin/app/pages/admin/clientes/index.vue`.
+
+Cuando el servidor rechaza el borrado con 409, el mismo modal del patrón 10
+cambia el `UAlert` a `color="warning"` con el motivo y sustituye el botón
+destructivo por la alternativa que conserva el historial («Marcar inactivo»).
+

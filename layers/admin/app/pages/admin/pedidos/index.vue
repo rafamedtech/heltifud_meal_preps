@@ -2,7 +2,7 @@
 import type { TableColumn } from "@nuxt/ui"
 import { getLocalTimeZone, parseDate } from "@internationalized/date"
 import type { CalendarDate } from "@internationalized/date"
-import type { DeliverySequence, OrderListItem, OrderListResponse, OrderStatusValue } from "~~/layers/menu/shared/types/types"
+import type { DeliverySequence, OrderListItem, OrderListResponse, OrderStatusValue, WeeklyCycle } from "~~/layers/menu/shared/types/types"
 import { deliveryDateOf, orderFolioLabel } from "~~/layers/menu/shared/utils/orderDeliveries"
 
 definePageMeta({ layout: "admin" })
@@ -15,6 +15,9 @@ useSeoMeta({
 
 const toast = useToast()
 const { getOrders } = useOrders()
+const { getCycles } = useCycles()
+const PAGE_SIZE = 50
+const ALL_WEEKS = "todas"
 const response = ref<OrderListResponse>({
   items: [],
   summary: { total: 0, draft: 0, confirmed: 0, inProgress: 0, delivered: 0 }
@@ -23,6 +26,9 @@ const loading = ref(true)
 const loadError = ref("")
 const search = ref("")
 const selectedStatus = ref("todos")
+const selectedCycle = ref(ALL_WEEKS)
+const cycles = ref<WeeklyCycle[]>([])
+const page = ref(1)
 const from = ref("")
 const to = ref("")
 let searchTimer: ReturnType<typeof setTimeout> | undefined
@@ -39,8 +45,20 @@ const statusOptions = [
 ]
 
 const isFiltering = computed(() =>
-  Boolean(search.value.trim() || selectedStatus.value !== "todos" || from.value || to.value)
+  Boolean(search.value.trim() || selectedStatus.value !== "todos" || selectedCycle.value !== ALL_WEEKS || from.value || to.value)
 )
+// Week starts are civil dates; the year tells apart the same week of different years.
+const weekFormatter = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })
+const cycleOptions = computed(() => [
+  { label: "Todas las semanas", value: ALL_WEEKS },
+  ...cycles.value.map(cycle => ({ label: `Semana del ${weekFormatter.format(new Date(`${cycle.weekStart}T00:00:00.000Z`))}`, value: cycle.id }))
+])
+const total = computed(() => response.value.summary.total)
+const rangeLabel = computed(() => {
+  if (!total.value) return ""
+  const first = (page.value - 1) * PAGE_SIZE + 1
+  return `${first}–${first + response.value.items.length - 1} de ${total.value}`
+})
 
 const columns: TableColumn<OrderListItem>[] = [
   { accessorKey: "folio", header: "Folio" },
@@ -95,9 +113,17 @@ async function loadOrders() {
       status: selectedStatus.value === "todos" ? undefined : selectedStatus.value,
       from: from.value || undefined,
       to: to.value || undefined,
-      limit: 150
+      cycleId: selectedCycle.value === ALL_WEEKS ? undefined : selectedCycle.value,
+      limit: PAGE_SIZE,
+      offset: (page.value - 1) * PAGE_SIZE
     })
-    if (currentRequest === requestId) response.value = data
+    if (currentRequest !== requestId) return
+    // The last page can empty out when orders change elsewhere; step back to the new last page.
+    if (!data.items.length && data.summary.total && page.value > 1) {
+      page.value = Math.ceil(data.summary.total / PAGE_SIZE)
+      return
+    }
+    response.value = data
   } catch (error) {
     if (currentRequest !== requestId) return
     loadError.value = error instanceof Error ? error.message : "No se pudieron cargar los pedidos."
@@ -112,23 +138,43 @@ async function loadOrders() {
   }
 }
 
-function resetFilters() {
-  search.value = ""
-  selectedStatus.value = "todos"
-  from.value = ""
-  to.value = ""
-  loadOrders()
+// Filters always restart at the first page; a page change alone keeps them.
+function loadFirstPage() {
+  if (page.value === 1) loadOrders()
+  else page.value = 1
 }
 
-watch(selectedStatus, () => loadOrders())
+function resetFilters() {
+  clearTimeout(searchTimer)
+  search.value = ""
+  selectedStatus.value = "todos"
+  selectedCycle.value = ALL_WEEKS
+  from.value = ""
+  to.value = ""
+}
+
+async function loadCycles() {
+  try {
+    cycles.value = await getCycles()
+  } catch {
+    // The list still works without the week filter.
+    cycles.value = []
+  }
+}
+
+watch(page, () => loadOrders())
+watch([selectedStatus, selectedCycle], loadFirstPage)
 watch([from, to], () => {
-  if (!from.value || !to.value || from.value <= to.value) loadOrders()
+  if (!from.value || !to.value || from.value <= to.value) loadFirstPage()
 })
 watch(search, () => {
   clearTimeout(searchTimer)
-  searchTimer = setTimeout(loadOrders, 300)
+  searchTimer = setTimeout(loadFirstPage, 300)
 })
-onMounted(loadOrders)
+onMounted(() => {
+  loadOrders()
+  loadCycles()
+})
 onBeforeUnmount(() => clearTimeout(searchTimer))
 </script>
 
@@ -140,7 +186,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
         <div class="flex w-full flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2">
             <h2 class="font-semibold text-highlighted">Listado de pedidos</h2>
-            <UBadge v-if="!loading && !loadError" color="neutral" variant="subtle" :label="String(response.items.length)" />
+            <UBadge v-if="!loading && !loadError" color="neutral" variant="subtle" :label="String(total)" />
           </div>
           <UButton
             color="neutral"
@@ -155,12 +201,15 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
       </UDashboardToolbar>
 
       <div class="space-y-6">
-        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_auto] xl:items-end">
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1.2fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_auto] xl:items-end">
           <UFormField label="Buscar" class="sm:col-span-2 xl:col-span-1">
             <UInput v-model="search" icon="i-lucide-search" placeholder="Cliente, teléfono o plan" class="w-full" />
           </UFormField>
           <UFormField label="Estado">
             <USelect v-model="selectedStatus" :items="statusOptions" value-key="value" class="w-full" />
+          </UFormField>
+          <UFormField label="Semana">
+            <USelect v-model="selectedCycle" :items="cycleOptions" value-key="value" class="w-full" />
           </UFormField>
           <UFormField label="Desde">
             <UPopover :content="{ align: 'start' }">
@@ -303,10 +352,17 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
         </template>
       </div>
 
-      <div class="border-t border-default pt-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-default pt-4">
         <p class="text-sm text-muted" role="status">
-          {{ loading ? 'Cargando pedidos…' : loadError ? 'Pedidos no disponibles' : `${response.items.length} ${response.items.length === 1 ? 'pedido' : 'pedidos'}${isFiltering ? (response.items.length === 1 ? ' coincide con los filtros' : ' coinciden con los filtros') : ' en el listado'}` }}
+          {{ loading ? 'Cargando pedidos…' : loadError ? 'Pedidos no disponibles' : `${total} ${total === 1 ? 'pedido' : 'pedidos'}${isFiltering ? (total === 1 ? ' coincide con los filtros' : ' coinciden con los filtros') : ' en el listado'}${total > PAGE_SIZE ? ` · ${rangeLabel}` : ''}` }}
         </p>
+        <UPagination
+          v-if="!loadError && total > PAGE_SIZE"
+          v-model:page="page"
+          :total="total"
+          :items-per-page="PAGE_SIZE"
+          :disabled="loading"
+        />
       </div>
     </div>
     </div>

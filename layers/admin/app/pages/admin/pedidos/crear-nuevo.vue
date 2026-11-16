@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { orderCreateInputSchema } from "~~/layers/menu/shared/types/menuSchema"
 import type {
+  Customer,
   CustomerListResponse,
   CustomerLocationNumber,
   DayOfWeek,
@@ -24,13 +25,16 @@ useSeoMeta({
   robots: "noindex, nofollow"
 })
 
+const CUSTOMER_PAGE_SIZE = 20
+
 const [{ data: customerResponse, status: customerStatus }, { data: plans, status: planStatus }] = await Promise.all([
-  useFetch<CustomerListResponse>("/api/customers", { query: { limit: 100 }, default: () => ({ items: [], nextCursor: null }) }),
+  useFetch<CustomerListResponse>("/api/customers", { query: { limit: CUSTOMER_PAGE_SIZE }, default: () => ({ items: [], nextCursor: null }) }),
   useFetch<Plan[]>("/api/plans", { default: () => [] })
 ])
 
 const toast = useToast()
 const { createOrder, getOrderOptions } = useOrders()
+const { getCustomers } = useCustomers()
 const saving = ref(false)
 const state = reactive({
   customerId: "",
@@ -44,11 +48,51 @@ const deliveryChoices = reactive<Record<DeliverySequence, { deliveryDay: DayOfWe
   2: { deliveryDay: null, locationNumber: 1 }
 })
 
-const customerOptions = computed(() => customerResponse.value.items.map(customer => ({
+// Customers are searched on the server, so any of them can be chosen, not only the first page.
+interface CustomerOption { label: string, description: string, value: string, customer: Customer }
+
+const customerSearch = ref("")
+const customerResults = ref<Customer[] | null>(null)
+const customerSearchLoading = ref(false)
+const customerSearchError = ref(false)
+const selectedCustomerOption = ref<CustomerOption>()
+let customerSearchTimer: ReturnType<typeof setTimeout> | undefined
+let customerSearchRequest = 0
+
+const customerOptions = computed<CustomerOption[]>(() => (customerResults.value ?? customerResponse.value.items).map(customer => ({
   label: customer.nombre,
   description: customer.telefono,
-  value: customer.id
+  value: customer.id,
+  customer
 })))
+
+async function searchCustomers(term: string) {
+  const request = ++customerSearchRequest
+  customerSearchError.value = false
+  if (!term) {
+    customerResults.value = null
+    customerSearchLoading.value = false
+    return
+  }
+  customerSearchLoading.value = true
+  try {
+    const result = await getCustomers({ q: term, limit: CUSTOMER_PAGE_SIZE })
+    if (request === customerSearchRequest) customerResults.value = result.items
+  } catch {
+    if (request !== customerSearchRequest) return
+    customerResults.value = []
+    customerSearchError.value = true
+  } finally {
+    if (request === customerSearchRequest) customerSearchLoading.value = false
+  }
+}
+
+watch(customerSearch, term => {
+  clearTimeout(customerSearchTimer)
+  customerSearchTimer = setTimeout(() => searchCustomers(term.trim()), 300)
+})
+watch(selectedCustomerOption, option => { state.customerId = option?.value ?? "" })
+onBeforeUnmount(() => clearTimeout(customerSearchTimer))
 const variantOptions = computed(() => plans.value.flatMap(plan => plan.variants
   .filter(variant => variant.isActive)
   .map(variant => ({
@@ -57,7 +101,7 @@ const variantOptions = computed(() => plans.value.flatMap(plan => plan.variants
     plan,
     variant
   }))))
-const selectedCustomer = computed(() => customerResponse.value.items.find(customer => customer.id === state.customerId) ?? null)
+const selectedCustomer = computed(() => selectedCustomerOption.value?.customer ?? null)
 const selectedOption = computed(() => variantOptions.value.find(option => option.value === state.planVariantId) ?? null)
 const locationOptions = computed(() => {
   if (!selectedCustomer.value) return []
@@ -204,7 +248,21 @@ async function submitOrder() {
           <template #header><div><h2 class="font-semibold text-highlighted">Cliente y plan</h2><p class="mt-1 text-xs text-muted">El tipo de cliente define el menú; la variante, cuántos días se eligen.</p></div></template>
           <div class="grid gap-5 md:grid-cols-2">
             <UFormField label="Cliente" name="customerId" required>
-              <USelectMenu v-model="state.customerId" :items="customerOptions" value-key="value" placeholder="Buscar cliente" class="w-full" />
+              <USelectMenu
+                v-model="selectedCustomerOption"
+                v-model:search-term="customerSearch"
+                :items="customerOptions"
+                by="value"
+                ignore-filter
+                :loading="customerSearchLoading"
+                :search-input="{ placeholder: 'Nombre, teléfono o correo' }"
+                placeholder="Buscar cliente"
+                class="w-full"
+              >
+                <template #empty>
+                  {{ customerSearchError ? "No fue posible buscar clientes. Intenta de nuevo." : customerSearchLoading ? "Buscando clientes…" : "Sin coincidencias" }}
+                </template>
+              </USelectMenu>
             </UFormField>
             <UFormField label="Plan y variante" name="planVariantId" required>
               <USelectMenu v-model="state.planVariantId" :items="variantOptions" value-key="value" placeholder="Seleccionar plan" class="w-full" />

@@ -49,6 +49,21 @@ export function zonedDateTimeToUtc(date: string, time: string, timeZone: string)
   return new Date(guess.getTime() - zoneOffsetMinutes(first, timeZone) * 60_000);
 }
 
+/** Business time zone; mirrors the default of `OperationSettings.timeZone`. */
+export const BUSINESS_TIME_ZONE = 'America/Tijuana';
+
+/** Wall-clock date (YYYY-MM-DD) and time (HH:MM) of an instant in `timeZone`. */
+export function utcToZonedDateTime(instant: string | Date, timeZone: string) {
+  const value = typeof instant === 'string' ? new Date(instant) : instant;
+  const local = new Date(value.getTime() + zoneOffsetMinutes(value, timeZone) * 60_000).toISOString();
+  return { date: local.slice(0, 10), time: local.slice(11, 16) };
+}
+
+/** A cutoff must fall before the Monday the week starts, in the business time zone. */
+export function isCutoffBeforeWeek(orderCutoffAt: string | Date, weekStart: string, timeZone: string) {
+  return new Date(orderCutoffAt).getTime() < zonedDateTimeToUtc(weekStart.slice(0, 10), '00:00', timeZone).getTime();
+}
+
 /**
  * Order cutoff for a week: the last `cutoffDay` strictly before the Monday the
  * week starts, at `cutoffTime` in the business time zone.

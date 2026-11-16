@@ -415,6 +415,7 @@ export const deliveryStatusInputSchema = z.object({
 
 export const orderListQuerySchema = z.object({
   customerId: z.string().trim().min(1).optional(),
+  cycleId: z.string().trim().min(1).max(100).optional(),
   offset: z.coerce.number().int().min(0).default(0),
   q: optionalTrimmedString(100),
   status: z.enum(ORDER_STATUS_VALUES).optional(),
@@ -444,6 +445,12 @@ export const operationSettingsInputSchema = z.object({
       message: 'Un día de comida solo puede ir en una entrega',
     });
   }
+});
+
+/** Form state for editing the cutoff of one week: wall-clock date and time in the business time zone. */
+export const cycleCutoffFormSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Selecciona la fecha de corte'),
+  time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Usa el formato HH:MM'),
 });
 
 export const weeklyCycleUpdateInputSchema = z.object({

@@ -8,7 +8,7 @@ import type {
   WeeklyCycle,
   WeeklyCycleUpdateInput,
 } from '~~/layers/menu/shared/types/types';
-import { canTransitionCycle, computeOrderCutoff } from '~~/layers/menu/shared/utils/weeklyCycle';
+import { canTransitionCycle, computeOrderCutoff, isCutoffBeforeWeek } from '~~/layers/menu/shared/utils/weeklyCycle';
 
 import { prisma } from './prisma';
 
@@ -112,6 +112,13 @@ export async function updateCycle(id: string, input: WeeklyCycleUpdateInput) {
   const updated = await prisma.$transaction(async (tx) => {
     const cycle = await tx.weeklyCycle.findUnique({ where: { id }, include: { _count: { select: { menus: true } } } });
     if (!cycle) throw createError({ statusCode: 404, statusMessage: 'Semana no encontrada.' });
+
+    if (orderCutoffAt) {
+      const { timeZone } = await tx.operationSettings.upsert({ where: { id: 1 }, update: {}, create: { id: 1 }, select: { timeZone: true } });
+      if (!isCutoffBeforeWeek(orderCutoffAt, cycle.weekStart.toISOString().slice(0, 10), timeZone)) {
+        throw createError({ statusCode: 400, statusMessage: 'El corte debe ser anterior al lunes en que inicia la semana.' });
+      }
+    }
 
     const statusChanges = status !== undefined && status !== cycle.status;
     if (statusChanges) {
