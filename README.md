@@ -4,6 +4,12 @@ Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduct
 
 ## Convenciones de UI y agentes
 
+El [design system](DESIGN.md) es la fuente única de verdad de la interfaz y se
+lee antes de crear o modificar cualquier UI. Se basa en Nuxt UI y en el template
+[Nuxt UI Dashboard](https://github.com/nuxt-ui-templates/dashboard); su
+catálogo, patrones y mapa del template están en
+[docs/design-system/](docs/design-system/).
+
 Usar primero componentes de Nuxt UI y sus props documentadas. Si las props no
 bastan o complican la solución, personalizar con Tailwind mediante `class` y
 `ui`, como indica la API del componente. Conservar los radios y tamaños del
