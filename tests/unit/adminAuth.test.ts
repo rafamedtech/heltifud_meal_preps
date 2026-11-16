@@ -90,7 +90,7 @@ describe("administrative API authorization", () => {
 
   it.each([
     ["/api/menu", "POST"], ["/api/menu/all", "GET"],
-    ["/api/menu/menu-1", "GET"], ["/api/menu/menu-1/activate", "POST"],
+    ["/api/menu/menu-1", "GET"], ["/api/menu/menu-1", "PUT"],
     ["/api/menu/next", "POST"], ["/api/food-components", "GET"],
     ["/api/food-components/food-1", "PUT"], ["/api/customers", "GET"],
     ["/api/customers/customer-1", "DELETE"], ["/api/expenses", "POST"],

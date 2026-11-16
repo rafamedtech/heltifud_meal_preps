@@ -109,7 +109,7 @@ otros):
 | Pedido | Borrador `warning`, Confirmado `info`, En preparación `primary`, Entrega parcial `secondary`, Entregado `success`, Cancelado `error`. |
 | Plan | Activo `success`, Pausado `neutral`. |
 | Cliente | Prospecto `warning`, Activo `success`, Inactivo `neutral`. |
-| Semana (ciclo) | Borrador `neutral`, Pedidos abiertos `success`, Pedidos cerrados `warning`, En producción `primary`, Completada `info`. |
+| Semana (ciclo) | Borrador `neutral`, Pedidos abiertos `success`, Pedidos cerrados `warning`, En producción `primary`, Completada `info`. Mapa en `CYCLE_STATUS_COLORS` (`weeklyCycle.ts`); también rige el estado de un menú. |
 
 ### Tipografía
 

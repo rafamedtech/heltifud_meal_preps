@@ -149,6 +149,22 @@ database, and all 8 existing menus have `ESTANDAR`; RLS remains enabled.
 The deployed application still needs a code deployment to expose the new
 selector and API response field.
 
+### Weekly cycle as the source of availability
+
+A menu is available when its week (`WeeklyCycle`) has status `OPEN`; only one
+week is open at a time. Orders are opened, closed and moved to production from
+the week actions in `/admin/menu`. The public `/api/menu` reads the menu of the
+open week by type.
+
+Migration `20261116230000_drop_weekly_menu_is_active` removes the former
+`WeeklyMenu.isActive` flag, which had become a mirror of the cycle status, and
+its index. The `POST /api/menu/:id/activate` route and the menu editor's
+«Publicar» button were removed with it. **Deploy the application first, then
+apply the migration**: the new code no longer reads the column, but any running
+older build selects it and would fail once it is dropped. Applied to the shared
+database on 2026-11-16 together with this change. `isActive` on plans and
+variants is a different field and remains.
+
 Run the unit and component tests with Vitest:
 
 ```bash

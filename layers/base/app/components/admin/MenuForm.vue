@@ -15,6 +15,7 @@ import {
   type WeeklyMenu,
   type WeeklyMenuInput
 } from "~~/layers/menu/shared/types/types"
+import { CYCLE_STATUS_COLORS, CYCLE_STATUS_LABELS } from "~~/layers/menu/shared/utils/weeklyCycle"
 import type { ZodIssue } from "zod"
 
 interface Props {
@@ -150,7 +151,6 @@ const loading = ref(false)
 const saveConfirmationOpen = ref(false)
 const saveAction = ref<"stay" | "exit" | null>(null)
 const hiddenDays = new Set<DayOfWeek>()
-const markAsActive = ref(Boolean(menu.value?.isActive))
 const snacksExpanded = reactive<Record<DayOfWeek, boolean>>(
   DAY_OF_WEEK_VALUES.reduce(
     (acc, day) => {
@@ -227,11 +227,6 @@ function closeMealEditor() {
   editorOpen.value = false
 }
 
-async function publishMenu() {
-  markAsActive.value = true
-  await onSubmit()
-}
-
 const title = computed(() => {
   if (mode.value === "edit") {
     return state.name.trim() ? `Editar ${state.name}` : "Editar menú semanal"
@@ -253,7 +248,7 @@ const cardSurfaceUi = {
 }
 
 const toast = useToast()
-const { createMenuOnDB, updateMenuOnDB, setActiveMenuOnDB } = useMenu()
+const { createMenuOnDB, updateMenuOnDB } = useMenu()
 const resolvedCatalogItems = computed<FoodCatalogItem[]>(() => catalogItems.value ?? [])
 // Personalised menus belong to one diet customer.
 const { data: dietCustomers, status: dietCustomersStatus } = useLazyFetch<CustomerListResponse>("/api/customers", {
@@ -355,16 +350,14 @@ const isDirty = computed(() => {
 
   const original = comparableMenuInput(createStateFromMenu(menu.value))
   const current = comparableMenuInput(state)
-  const activeChanged = markAsActive.value !== Boolean(menu.value?.isActive)
 
-  return JSON.stringify(original) !== JSON.stringify(current) || activeChanged
+  return JSON.stringify(original) !== JSON.stringify(current)
 })
 const canSubmit = computed(() => canSubmitByValidation.value && isDirty.value && !loading.value)
 const draftStorageKey = computed(() => `admin-menu-draft:${mode.value}:${menu.value?.id ?? "create"}`)
 
 interface MenuFormDraftPayload {
   state: WeeklyMenuInput
-  markAsActive: boolean
   snacksExpanded: Record<DayOfWeek, boolean>
   activeDay?: DayOfWeek
   daySectionsExpanded?: Record<DayOfWeek, boolean>
@@ -389,7 +382,6 @@ watch(
   () => menu.value,
   (menu) => {
     Object.assign(state, createStateFromMenu(menu))
-    markAsActive.value = Boolean(menu?.isActive)
     clearValidationHighlights()
     activeDay.value = DAY_OF_WEEK_VALUES[0]!
     activeSlot.value = "comida"
@@ -435,7 +427,6 @@ function persistDraft() {
 
   const payload: MenuFormDraftPayload = {
     state: snapshotDraftState(),
-    markAsActive: markAsActive.value,
     snacksExpanded: snapshotSnacksExpanded(),
     activeDay: activeDay.value
   }
@@ -481,7 +472,6 @@ function restorePersistedDraft() {
       }))
     })
 
-    markAsActive.value = payload.markAsActive
     activeDay.value = payload.activeDay && DAY_OF_WEEK_VALUES.includes(payload.activeDay)
       ? payload.activeDay
       : DAY_OF_WEEK_VALUES.find((day) => payload.daySectionsExpanded?.[day]) ?? DAY_OF_WEEK_VALUES[0]!
@@ -863,17 +853,11 @@ async function onSubmit(exitEditor = true) {
         ? await updateMenuOnDB(menu.value.id, parsed.data)
         : await createMenuOnDB(parsed.data)
 
-    if (markAsActive.value && !savedMenu.isActive) {
-      await setActiveMenuOnDB(savedMenu.id)
-    }
-
     clearPersistedDraft()
 
     toast.add({
       title: mode.value === "edit" ? "Menú actualizado" : "Menú creado",
-      description: markAsActive.value
-        ? "La información se guardó y este menú quedó como activo."
-        : "La información se guardó correctamente.",
+      description: "La información se guardó correctamente.",
       color: "success",
       icon: "i-lucide-check-circle"
     })
@@ -903,7 +887,13 @@ async function onSubmit(exitEditor = true) {
               <div class="flex flex-wrap items-center gap-2.5">
                 <UIcon name="i-lucide-calendar-days" class="size-5 shrink-0 text-primary" />
                 <h2 class="text-base font-semibold text-highlighted">{{ title }}</h2>
-                <UBadge v-if="menu?.isActive" color="success" variant="subtle" icon="i-lucide-circle-check" size="sm">Publicado</UBadge>
+                <UBadge
+                  v-if="menu?.cycleStatus"
+                  :color="CYCLE_STATUS_COLORS[menu.cycleStatus]"
+                  variant="subtle"
+                  size="sm"
+                  :label="CYCLE_STATUS_LABELS[menu.cycleStatus]"
+                />
               </div>
               <p class="mt-1 text-sm text-muted">Nombre, tipo y periodo de disponibilidad del menú.</p>
             </div>
@@ -919,17 +909,6 @@ async function onSubmit(exitEditor = true) {
               >
                 {{ actionLabel }}
               </UButton>
-
-              <UButton
-                v-if="!menu?.isActive"
-                type="button"
-                color="primary"
-                icon="i-lucide-send"
-                size="md"
-                :loading="loading"
-                :disabled="!canSubmitByValidation || loading"
-                @click="publishMenu"
-              >Publicar</UButton>
             </div>
           </div>
         </template>

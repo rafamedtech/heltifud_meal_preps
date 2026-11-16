@@ -98,3 +98,12 @@ export const CYCLE_STATUS_LABELS: Record<CycleStatusValue, string> = {
   IN_PRODUCTION: 'En producción',
   COMPLETED: 'Completada',
 };
+
+/** Badge colour per week status, as defined in DESIGN.md. */
+export const CYCLE_STATUS_COLORS = {
+  DRAFT: 'neutral',
+  OPEN: 'success',
+  CLOSED: 'warning',
+  IN_PRODUCTION: 'primary',
+  COMPLETED: 'info',
+} as const satisfies Record<CycleStatusValue, string>;

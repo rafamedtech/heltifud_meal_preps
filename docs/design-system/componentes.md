@@ -130,7 +130,7 @@ Antes de crear un componente, comprobar esta lista. Todos componen Nuxt UI.
 | `AdminMenuContainerSelect` | `URadioGroup` / `USelect` | Selector de contenedor en tarjetas o lista. |
 | `AdminFoodCatalogTable` (+ `Skeleton`) | `UTable` | Catálogo de platillos en modo gestión o selección. |
 | `AdminFoodCatalogForm` (+ `Skeleton`), `AdminFoodItemFields`, `AdminFoodRecipeFields` | `UForm`, `UFormField`, controles | Alta y edición de platillos y recetas. |
-| `AdminMenuForm` (+ `Skeleton`), `AdminMenuSlotEditor`, `AdminMenuIndexSkeleton` | `UCard`, controles | Editor del menú semanal. Composición de negocio sin equivalente en Nuxt UI. |
+| `AdminMenuForm` (+ `Skeleton`), `AdminMenuSlotEditor`, `AdminMenuIndexSkeleton` | `UCard`, controles | Editor del menú semanal. Composición de negocio sin equivalente en Nuxt UI. Muestra el estado de la semana; no publica ni abre pedidos (ver patrón «Estado de la semana de un menú»). |
 
 ### Por capa
 
