@@ -5,7 +5,7 @@ import type { OrderListItem, OrderListResponse } from "~~/layers/menu/shared/typ
 const columns: TableColumn<OrderListItem>[] = [
   { accessorKey: "planTitle", header: "Plan" },
   { accessorKey: "status", header: "Estado" },
-  { accessorKey: "firstDeliveryDate", header: "Entregas" },
+  { id: "deliveries", header: "Entregas" },
   { accessorKey: "price", header: "Total" },
   { id: "actions", header: "Acciones" }
 ]
@@ -47,7 +47,7 @@ function dateLabel(value: string) {
     <UTable v-else :data="orders.items" :columns="columns" @select="(_event, row) => navigateTo(`/admin/pedidos/${row.original.id}`)">
       <template #planTitle-cell="{ row }"><ULink :to="`/admin/pedidos/${row.original.id}`"><UUser :name="row.original.planTitle" :description="`${row.original.planVariantTitle} · Creado: ${dateLabel(row.original.createdAt)}`" /></ULink></template>
       <template #status-cell="{ row }"><UBadge :color="row.original.status === 'CANCELLED' ? 'error' : row.original.status === 'DELIVERED' ? 'success' : 'neutral'" variant="subtle" :label="statusLabels[row.original.status]" /></template>
-      <template #firstDeliveryDate-cell="{ row }"><p>Entregas: {{ dateLabel(row.original.firstDeliveryDate) }}</p><p class="text-xs text-muted">{{ dateLabel(row.original.secondDeliveryDate) }}</p></template>
+      <template #deliveries-cell="{ row }"><p v-for="(delivery, index) in row.original.deliveries" :key="delivery.id" :class="index ? 'text-xs text-muted' : undefined">{{ index ? "" : "Entregas: " }}{{ dateLabel(delivery.scheduledDate) }}</p></template>
       <template #price-cell="{ row }">{{ transformPrice(row.original.price) }}</template>
       <template #actions-cell="{ row }"><UButton :to="`/admin/pedidos/${row.original.id}`" color="neutral" variant="ghost" size="sm" label="Ver pedido" trailing-icon="i-lucide-arrow-up-right" /></template>
     </UTable>

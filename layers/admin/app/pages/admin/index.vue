@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { TableColumn } from "@nuxt/ui"
 import type { ExpenseListResponse, OrderListItem, OrderListResponse, Plan } from "~~/layers/menu/shared/types/types"
+import { deliveryDateOf } from "~~/layers/menu/shared/utils/orderDeliveries"
 
 definePageMeta({ layout: "admin" })
 useSeoMeta({ title: "Panel de gestión | Heltifud Meal Preps", robots: "noindex, nofollow" })
@@ -17,7 +18,7 @@ const statistics = computed(() => [
 const columns: TableColumn<OrderListItem>[] = [
   { accessorKey: "customerName", header: "Cliente" },
   { accessorKey: "planTitle", header: "Plan" },
-  { accessorKey: "firstDeliveryDate", header: "Primera entrega" },
+  { id: "firstDelivery", header: "Primera entrega" },
   { accessorKey: "price", header: "Total" },
   { id: "actions", header: "Acciones" }
 ]
@@ -36,7 +37,7 @@ const columns: TableColumn<OrderListItem>[] = [
       </UEmpty>
       <UTable v-else :data="orders?.items ?? []" :columns="columns" :loading="orderStatus === 'pending'" @select="(_event, row) => navigateTo(`/admin/pedidos/${row.original.id}`)">
         <template #customerName-cell="{ row }"><UUser :name="row.original.customerName" :avatar="{ alt: row.original.customerName }" size="sm" /></template>
-        <template #firstDeliveryDate-cell="{ row }">{{ formatDate(row.original.firstDeliveryDate) }}</template>
+        <template #firstDelivery-cell="{ row }">{{ deliveryDateOf(row.original.deliveries, 1) ? formatDate(deliveryDateOf(row.original.deliveries, 1)!) : "—" }}</template>
         <template #price-cell="{ row }">{{ transformPrice(row.original.price) }}</template>
         <template #actions-cell="{ row }"><UButton :to="`/admin/pedidos/${row.original.id}`" color="neutral" variant="ghost" size="sm" icon="i-lucide-arrow-up-right" :aria-label="`Abrir pedido de ${row.original.customerName}`" /></template>
       </UTable>

@@ -62,6 +62,7 @@ export const ModelName = {
   Plan: 'Plan',
   PlanVariant: 'PlanVariant',
   Order: 'Order',
+  OrderDelivery: 'OrderDelivery',
   OrderMenuSlot: 'OrderMenuSlot',
   OrderMenuComponent: 'OrderMenuComponent',
   Expense: 'Expense',
@@ -232,12 +233,6 @@ export const OrderScalarFieldEnum = {
   planTitleSnapshot: 'planTitleSnapshot',
   planVariantTitleSnapshot: 'planVariantTitleSnapshot',
   priceSnapshot: 'priceSnapshot',
-  firstDeliveryDate: 'firstDeliveryDate',
-  firstDeliveryLocation: 'firstDeliveryLocation',
-  firstDeliveryAddress: 'firstDeliveryAddress',
-  secondDeliveryDate: 'secondDeliveryDate',
-  secondDeliveryLocation: 'secondDeliveryLocation',
-  secondDeliveryAddress: 'secondDeliveryAddress',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -246,9 +241,27 @@ export const OrderScalarFieldEnum = {
 export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
+export const OrderDeliveryScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  sequence: 'sequence',
+  scheduledDate: 'scheduledDate',
+  locationNumber: 'locationNumber',
+  addressSnapshot: 'addressSnapshot',
+  status: 'status',
+  deliveredAt: 'deliveredAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrderDeliveryScalarFieldEnum = (typeof OrderDeliveryScalarFieldEnum)[keyof typeof OrderDeliveryScalarFieldEnum]
+
+
 export const OrderMenuSlotScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
+  deliveryId: 'deliveryId',
   dayOfWeek: 'dayOfWeek',
   dayOrder: 'dayOrder',
   slotType: 'slotType',

@@ -21,7 +21,7 @@ describe('CustomerOrderHistory', () => {
 
   it('renders order details with a link and paginates older orders', async () => {
     fetchOrders.mockResolvedValue({
-      data: ref({ items: [{ id: 'order-1', planTitle: 'Plan semanal', planVariantTitle: '5 días', status: 'DELIVERED', price: 1200, createdAt: '2026-09-01T12:00:00Z', firstDeliveryDate: '2026-09-07', secondDeliveryDate: '2026-09-10' }], summary: { total: 11 } }),
+      data: ref({ items: [{ id: 'order-1', planTitle: 'Plan semanal', planVariantTitle: '5 días', status: 'DELIVERED', price: 1200, createdAt: '2026-09-01T12:00:00Z', deliveries: [{ id: 'delivery-1', sequence: 1, scheduledDate: '2026-09-07' }, { id: 'delivery-2', sequence: 2, scheduledDate: '2026-09-10' }] }], summary: { total: 11 } }),
       status: ref('success'), error: ref(null), refresh: retry
     });
     const wrapper = await mountSuspended(CustomerOrderHistory, { props: { customerId: 'customer-1' } });

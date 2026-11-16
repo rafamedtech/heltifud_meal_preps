@@ -9,6 +9,7 @@ import type {
   OrderStatusValue,
   OrderUpdateInput
 } from "~~/layers/menu/shared/types/types"
+import { DELIVERY_SEQUENCE_LABELS } from "~~/layers/menu/shared/utils/orderDeliveries"
 
 definePageMeta({ layout: "admin" })
 
@@ -33,10 +34,7 @@ const replacementSelections = reactive<Record<string, string>>({})
 function editableState(source?: Order | null): OrderUpdateInput {
   return {
     status: source?.status ?? "DRAFT",
-    firstDeliveryDate: source?.firstDeliveryDate ?? "",
-    firstDeliveryLocation: source?.firstDeliveryLocation ?? 1,
-    secondDeliveryDate: source?.secondDeliveryDate ?? "",
-    secondDeliveryLocation: source?.secondDeliveryLocation ?? 1,
+    deliveries: source?.deliveries.map(({ sequence, scheduledDate, locationNumber }) => ({ sequence, scheduledDate, locationNumber })) ?? [],
     notes: source?.notes ?? "",
     menuSlots: source?.menuSlots.map(slot => ({
       dayOfWeek: slot.dayOfWeek,
@@ -95,10 +93,27 @@ const currentStatus = computed(() => statusOptions.find(item => item.value === s
 const statusColor = computed(() =>
   state.status === "CANCELLED" ? "error" : state.status === "DELIVERED" ? "success" : state.status === "DRAFT" ? "neutral" : "primary"
 )
-const deliveries = computed(() => [
-  { number: 1, title: "Primera entrega", dateField: "firstDeliveryDate", locationField: "firstDeliveryLocation" },
-  { number: 2, title: "Segunda entrega", dateField: "secondDeliveryDate", locationField: "secondDeliveryLocation" }
-] as const)
+// Days whose meals travel in each delivery, as saved on the order.
+const deliveryDays = computed(() => {
+  const days = new Map<number, Map<number, string>>()
+  order.value?.menuSlots.forEach(slot => {
+    const group = days.get(slot.deliverySequence) ?? new Map<number, string>()
+    group.set(slot.dayOrder, slot.dayOfWeek)
+    days.set(slot.deliverySequence, group)
+  })
+  return days
+})
+
+function deliveryDaysLabel(sequence: number) {
+  const days = [...(deliveryDays.value.get(sequence)?.entries() ?? [])].sort(([a], [b]) => a - b)
+  return days.length ? days.map(([, day]) => dayLabel(day)).join(", ") : "Sin comidas asignadas"
+}
+
+// The saved address is frozen; it only changes when another location is chosen.
+function deliveryAddress(sequence: number, location: number) {
+  const saved = order.value?.deliveries.find(delivery => delivery.sequence === sequence)
+  return saved && saved.locationNumber === location ? saved.address : locationAddress(location)
+}
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("es-MX", { dateStyle: "long", timeZone: "America/Tijuana" }).format(new Date(value))
@@ -242,15 +257,18 @@ async function saveOrder() {
         <UCard class="flex flex-col" :ui="{ header: 'shrink-0', body: 'flex flex-1 flex-col' }">
           <template #header><h2 class="flex items-center gap-2 font-semibold text-highlighted"><UIcon name="i-lucide-truck" class="size-5 text-primary" />Entregas</h2></template>
           <div class="grid flex-1 gap-4 sm:grid-cols-2">
-            <section v-for="delivery in deliveries" :key="delivery.number" class="flex min-w-0 flex-col gap-3 rounded-xl border border-default bg-elevated/30 p-4">
+            <section v-for="(delivery, deliveryIndex) in state.deliveries" :key="delivery.sequence" class="flex min-w-0 flex-col gap-3 rounded-xl border border-default bg-elevated/30 p-4">
               <div class="flex items-center gap-3">
-                <span class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-semibold text-primary">{{ delivery.number }}</span>
-                <h3 class="text-sm font-semibold text-highlighted">{{ delivery.title }}</h3>
+                <span class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-semibold text-primary">{{ delivery.sequence }}</span>
+                <div class="min-w-0">
+                  <h3 class="text-sm font-semibold text-highlighted">{{ DELIVERY_SEQUENCE_LABELS[delivery.sequence] }}</h3>
+                  <p class="truncate text-xs text-muted">{{ deliveryDaysLabel(delivery.sequence) }}</p>
+                </div>
               </div>
-              <UFormField label="Fecha" :name="delivery.dateField"><UInput v-model="state[delivery.dateField]" type="date" class="w-full" /></UFormField>
-              <UFormField label="Ubicación" :name="delivery.locationField"><USelect v-model="state[delivery.locationField]" :items="locationOptions" value-key="value" class="w-full" /></UFormField>
-              <p class="whitespace-pre-line break-words text-sm leading-relaxed" :class="locationAddress(state[delivery.locationField]) ? 'text-toned' : 'text-dimmed'">
-                {{ locationAddress(state[delivery.locationField]) || "Sin dirección registrada" }}
+              <UFormField label="Fecha" :name="`deliveries.${deliveryIndex}.scheduledDate`"><UInput v-model="delivery.scheduledDate" type="date" class="w-full" /></UFormField>
+              <UFormField label="Ubicación" :name="`deliveries.${deliveryIndex}.locationNumber`"><USelect v-model="delivery.locationNumber" :items="locationOptions" value-key="value" class="w-full" /></UFormField>
+              <p class="whitespace-pre-line break-words text-sm leading-relaxed" :class="deliveryAddress(delivery.sequence, delivery.locationNumber) ? 'text-toned' : 'text-dimmed'">
+                {{ deliveryAddress(delivery.sequence, delivery.locationNumber) || "Sin dirección registrada" }}
               </p>
             </section>
           </div>

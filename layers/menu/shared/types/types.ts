@@ -162,13 +162,36 @@ export const ORDER_STATUS_VALUES = [
 export type OrderStatusValue = (typeof ORDER_STATUS_VALUES)[number];
 export type CustomerLocationNumber = 1 | 2;
 
+export const DELIVERY_STATUS_VALUES = [
+  'PENDING',
+  'OUT_FOR_DELIVERY',
+  'DELIVERED',
+  'FAILED',
+] as const;
+
+export type DeliveryStatusValue = (typeof DELIVERY_STATUS_VALUES)[number];
+export type DeliverySequence = 1 | 2;
+
+export interface OrderDeliveryInput {
+  sequence: DeliverySequence;
+  /** Civil date, `YYYY-MM-DD`. */
+  scheduledDate: string;
+  locationNumber: CustomerLocationNumber;
+}
+
+export interface OrderDelivery extends OrderDeliveryInput {
+  id: string;
+  /** Address frozen when the delivery was created or its location last changed. */
+  address: string;
+  status: DeliveryStatusValue;
+  deliveredAt: string | null;
+  notes: string;
+}
+
 export interface OrderCreateInput {
   customerId: string;
   planVariantId: string;
-  firstDeliveryDate: string;
-  firstDeliveryLocation: CustomerLocationNumber;
-  secondDeliveryDate: string;
-  secondDeliveryLocation: CustomerLocationNumber;
+  deliveries: OrderDeliveryInput[];
   notes: string;
 }
 
@@ -193,10 +216,7 @@ export interface OrderMenuSlotInput {
 
 export interface OrderUpdateInput {
   status: OrderStatusValue;
-  firstDeliveryDate: string;
-  firstDeliveryLocation: CustomerLocationNumber;
-  secondDeliveryDate: string;
-  secondDeliveryLocation: CustomerLocationNumber;
+  deliveries: OrderDeliveryInput[];
   notes: string;
   menuSlots: OrderMenuSlotInput[];
 }
@@ -207,6 +227,8 @@ export interface OrderMenuComponent extends OrderMenuComponentInput {
 
 export interface OrderMenuSlot extends Omit<OrderMenuSlotInput, 'components'> {
   id: string;
+  /** Delivery that carries this meal. */
+  deliverySequence: DeliverySequence;
   components: OrderMenuComponent[];
 }
 
@@ -219,10 +241,8 @@ export interface OrderListItem {
   planTitle: string;
   planVariantTitle: string;
   price: number;
-  firstDeliveryDate: string;
-  firstDeliveryAddress: string;
-  secondDeliveryDate: string;
-  secondDeliveryAddress: string;
+  /** Ordered by `sequence`. */
+  deliveries: OrderDelivery[];
   createdAt: string;
 }
 
@@ -230,8 +250,6 @@ export interface Order extends OrderListItem {
   planVariantId: string | null;
   sourceWeeklyMenuId: string | null;
   sourceWeeklyMenuName: string | null;
-  firstDeliveryLocation: CustomerLocationNumber;
-  secondDeliveryLocation: CustomerLocationNumber;
   notes: string;
   updatedAt: string;
   customer: Customer;

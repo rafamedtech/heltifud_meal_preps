@@ -2,7 +2,8 @@
 import type { TableColumn } from "@nuxt/ui"
 import { getLocalTimeZone, parseDate } from "@internationalized/date"
 import type { CalendarDate } from "@internationalized/date"
-import type { OrderListItem, OrderListResponse, OrderStatusValue } from "~~/layers/menu/shared/types/types"
+import type { DeliverySequence, OrderListItem, OrderListResponse, OrderStatusValue } from "~~/layers/menu/shared/types/types"
+import { deliveryDateOf } from "~~/layers/menu/shared/utils/orderDeliveries"
 
 definePageMeta({ layout: "admin" })
 
@@ -45,8 +46,8 @@ const columns: TableColumn<OrderListItem>[] = [
   { accessorKey: "customerName", header: "Cliente" },
   { accessorKey: "planTitle", header: "Plan" },
   { accessorKey: "status", header: "Estado" },
-  { accessorKey: "firstDeliveryDate", header: "Primera entrega" },
-  { accessorKey: "secondDeliveryDate", header: "Segunda entrega" },
+  { id: "firstDelivery", header: "Primera entrega" },
+  { id: "secondDelivery", header: "Segunda entrega" },
   { accessorKey: "price", header: "Total" },
   { id: "actions", header: "Acciones" }
 ]
@@ -65,6 +66,11 @@ function dateLabel(date: CalendarDate | undefined, placeholder: string) {
   return date ? dateFormatter.format(date.toDate(getLocalTimeZone())) : placeholder
 }
 const invalidDateRange = computed(() => Boolean(from.value && to.value && from.value > to.value))
+
+function deliveryLabel(order: OrderListItem, sequence: DeliverySequence) {
+  const date = deliveryDateOf(order.deliveries, sequence)
+  return date ? formatDate(date) : "—"
+}
 
 function statusAppearance(status: OrderStatusValue) {
   const values = {
@@ -236,11 +242,11 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
               <div class="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <p class="text-muted">Primera entrega</p>
-                  <p class="text-highlighted">{{ formatDate(order.firstDeliveryDate) }}</p>
+                  <p class="text-highlighted">{{ deliveryLabel(order, 1) }}</p>
                 </div>
                 <div>
                   <p class="text-muted">Segunda entrega</p>
-                  <p class="text-highlighted">{{ formatDate(order.secondDeliveryDate) }}</p>
+                  <p class="text-highlighted">{{ deliveryLabel(order, 2) }}</p>
                 </div>
               </div>
               <template #footer>
@@ -271,8 +277,8 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
             <template #status-cell="{ row }">
               <UBadge :color="statusAppearance(row.original.status).color" variant="subtle" :icon="statusAppearance(row.original.status).icon" :label="statusAppearance(row.original.status).label" />
             </template>
-            <template #firstDeliveryDate-cell="{ row }">{{ formatDate(row.original.firstDeliveryDate) }}</template>
-            <template #secondDeliveryDate-cell="{ row }">{{ formatDate(row.original.secondDeliveryDate) }}</template>
+            <template #firstDelivery-cell="{ row }">{{ deliveryLabel(row.original, 1) }}</template>
+            <template #secondDelivery-cell="{ row }">{{ deliveryLabel(row.original, 2) }}</template>
             <template #price-cell="{ row }">
               <span class="font-medium tabular-nums">{{ transformPrice(row.original.price) }}</span>
             </template>

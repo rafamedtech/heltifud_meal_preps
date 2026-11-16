@@ -37,31 +37,43 @@ describe('order schemas', () => {
   const validOrder = {
     customerId: '11111111-1111-4111-8111-111111111111',
     planVariantId: '22222222-2222-4222-8222-222222222222',
-    firstDeliveryDate: '2026-08-24',
-    firstDeliveryLocation: 1 as const,
-    secondDeliveryDate: '2026-08-27',
-    secondDeliveryLocation: 2 as const,
+    deliveries: [
+      { sequence: 1 as const, scheduledDate: '2026-08-24', locationNumber: 1 as const },
+      { sequence: 2 as const, scheduledDate: '2026-08-27', locationNumber: 2 as const },
+    ],
     notes: '',
   };
 
   it('allows a different customer location for each delivery', () => {
     const parsed = orderCreateInputSchema.parse(validOrder);
-    expect(parsed.firstDeliveryLocation).toBe(1);
-    expect(parsed.secondDeliveryLocation).toBe(2);
+    expect(parsed.deliveries.map((delivery) => delivery.locationNumber)).toEqual([1, 2]);
   });
 
   it('rejects a second delivery before the first one', () => {
-    const result = orderCreateInputSchema.safeParse({ ...validOrder, secondDeliveryDate: '2026-08-23' });
+    const result = orderCreateInputSchema.safeParse({
+      ...validOrder,
+      deliveries: [validOrder.deliveries[0], { ...validOrder.deliveries[1], scheduledDate: '2026-08-23' }],
+    });
     expect(result.success).toBe(false);
+    expect(result.error?.issues[0]?.path).toEqual(['deliveries', 1, 'scheduledDate']);
+  });
+
+  it('accepts an order with a single delivery', () => {
+    expect(orderCreateInputSchema.safeParse({ ...validOrder, deliveries: [validOrder.deliveries[1]] }).success).toBe(true);
+  });
+
+  it('rejects an order without deliveries or with a repeated one', () => {
+    expect(orderCreateInputSchema.safeParse({ ...validOrder, deliveries: [] }).success).toBe(false);
+    expect(orderCreateInputSchema.safeParse({
+      ...validOrder,
+      deliveries: [validOrder.deliveries[0], validOrder.deliveries[0]],
+    }).success).toBe(false);
   });
 
   it('accepts a personalized menu snapshot', () => {
     const result = orderUpdateInputSchema.safeParse({
       status: 'CONFIRMED',
-      firstDeliveryDate: validOrder.firstDeliveryDate,
-      firstDeliveryLocation: 1,
-      secondDeliveryDate: validOrder.secondDeliveryDate,
-      secondDeliveryLocation: 2,
+      deliveries: validOrder.deliveries,
       notes: 'Sin cebolla',
       menuSlots: [{
         dayOfWeek: 'LUNES',

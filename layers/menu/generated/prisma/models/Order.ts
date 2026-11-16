@@ -28,14 +28,10 @@ export type AggregateOrder = {
 
 export type OrderAvgAggregateOutputType = {
   priceSnapshot: runtime.Decimal | null
-  firstDeliveryLocation: number | null
-  secondDeliveryLocation: number | null
 }
 
 export type OrderSumAggregateOutputType = {
   priceSnapshot: runtime.Decimal | null
-  firstDeliveryLocation: number | null
-  secondDeliveryLocation: number | null
 }
 
 export type OrderMinAggregateOutputType = {
@@ -47,12 +43,6 @@ export type OrderMinAggregateOutputType = {
   planTitleSnapshot: string | null
   planVariantTitleSnapshot: string | null
   priceSnapshot: runtime.Decimal | null
-  firstDeliveryDate: Date | null
-  firstDeliveryLocation: number | null
-  firstDeliveryAddress: string | null
-  secondDeliveryDate: Date | null
-  secondDeliveryLocation: number | null
-  secondDeliveryAddress: string | null
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -67,12 +57,6 @@ export type OrderMaxAggregateOutputType = {
   planTitleSnapshot: string | null
   planVariantTitleSnapshot: string | null
   priceSnapshot: runtime.Decimal | null
-  firstDeliveryDate: Date | null
-  firstDeliveryLocation: number | null
-  firstDeliveryAddress: string | null
-  secondDeliveryDate: Date | null
-  secondDeliveryLocation: number | null
-  secondDeliveryAddress: string | null
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -87,12 +71,6 @@ export type OrderCountAggregateOutputType = {
   planTitleSnapshot: number
   planVariantTitleSnapshot: number
   priceSnapshot: number
-  firstDeliveryDate: number
-  firstDeliveryLocation: number
-  firstDeliveryAddress: number
-  secondDeliveryDate: number
-  secondDeliveryLocation: number
-  secondDeliveryAddress: number
   notes: number
   createdAt: number
   updatedAt: number
@@ -102,14 +80,10 @@ export type OrderCountAggregateOutputType = {
 
 export type OrderAvgAggregateInputType = {
   priceSnapshot?: true
-  firstDeliveryLocation?: true
-  secondDeliveryLocation?: true
 }
 
 export type OrderSumAggregateInputType = {
   priceSnapshot?: true
-  firstDeliveryLocation?: true
-  secondDeliveryLocation?: true
 }
 
 export type OrderMinAggregateInputType = {
@@ -121,12 +95,6 @@ export type OrderMinAggregateInputType = {
   planTitleSnapshot?: true
   planVariantTitleSnapshot?: true
   priceSnapshot?: true
-  firstDeliveryDate?: true
-  firstDeliveryLocation?: true
-  firstDeliveryAddress?: true
-  secondDeliveryDate?: true
-  secondDeliveryLocation?: true
-  secondDeliveryAddress?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -141,12 +109,6 @@ export type OrderMaxAggregateInputType = {
   planTitleSnapshot?: true
   planVariantTitleSnapshot?: true
   priceSnapshot?: true
-  firstDeliveryDate?: true
-  firstDeliveryLocation?: true
-  firstDeliveryAddress?: true
-  secondDeliveryDate?: true
-  secondDeliveryLocation?: true
-  secondDeliveryAddress?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -161,12 +123,6 @@ export type OrderCountAggregateInputType = {
   planTitleSnapshot?: true
   planVariantTitleSnapshot?: true
   priceSnapshot?: true
-  firstDeliveryDate?: true
-  firstDeliveryLocation?: true
-  firstDeliveryAddress?: true
-  secondDeliveryDate?: true
-  secondDeliveryLocation?: true
-  secondDeliveryAddress?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -268,12 +224,6 @@ export type OrderGroupByOutputType = {
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal
-  firstDeliveryDate: Date
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes: string | null
   createdAt: Date
   updatedAt: Date
@@ -311,18 +261,13 @@ export type OrderWhereInput = {
   planTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   priceSnapshot?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFilter<"Order"> | Date | string
-  firstDeliveryLocation?: Prisma.IntFilter<"Order"> | number
-  firstDeliveryAddress?: Prisma.StringFilter<"Order"> | string
-  secondDeliveryDate?: Prisma.DateTimeFilter<"Order"> | Date | string
-  secondDeliveryLocation?: Prisma.IntFilter<"Order"> | number
-  secondDeliveryAddress?: Prisma.StringFilter<"Order"> | string
   notes?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   planVariant?: Prisma.XOR<Prisma.PlanVariantNullableScalarRelationFilter, Prisma.PlanVariantWhereInput> | null
   sourceWeeklyMenu?: Prisma.XOR<Prisma.WeeklyMenuNullableScalarRelationFilter, Prisma.WeeklyMenuWhereInput> | null
+  deliveries?: Prisma.OrderDeliveryListRelationFilter
   menuSlots?: Prisma.OrderMenuSlotListRelationFilter
 }
 
@@ -335,18 +280,13 @@ export type OrderOrderByWithRelationInput = {
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
-  firstDeliveryDate?: Prisma.SortOrder
-  firstDeliveryLocation?: Prisma.SortOrder
-  firstDeliveryAddress?: Prisma.SortOrder
-  secondDeliveryDate?: Prisma.SortOrder
-  secondDeliveryLocation?: Prisma.SortOrder
-  secondDeliveryAddress?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   customer?: Prisma.CustomerOrderByWithRelationInput
   planVariant?: Prisma.PlanVariantOrderByWithRelationInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuOrderByWithRelationInput
+  deliveries?: Prisma.OrderDeliveryOrderByRelationAggregateInput
   menuSlots?: Prisma.OrderMenuSlotOrderByRelationAggregateInput
 }
 
@@ -362,18 +302,13 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   planTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   priceSnapshot?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFilter<"Order"> | Date | string
-  firstDeliveryLocation?: Prisma.IntFilter<"Order"> | number
-  firstDeliveryAddress?: Prisma.StringFilter<"Order"> | string
-  secondDeliveryDate?: Prisma.DateTimeFilter<"Order"> | Date | string
-  secondDeliveryLocation?: Prisma.IntFilter<"Order"> | number
-  secondDeliveryAddress?: Prisma.StringFilter<"Order"> | string
   notes?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   planVariant?: Prisma.XOR<Prisma.PlanVariantNullableScalarRelationFilter, Prisma.PlanVariantWhereInput> | null
   sourceWeeklyMenu?: Prisma.XOR<Prisma.WeeklyMenuNullableScalarRelationFilter, Prisma.WeeklyMenuWhereInput> | null
+  deliveries?: Prisma.OrderDeliveryListRelationFilter
   menuSlots?: Prisma.OrderMenuSlotListRelationFilter
 }, "id">
 
@@ -386,12 +321,6 @@ export type OrderOrderByWithAggregationInput = {
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
-  firstDeliveryDate?: Prisma.SortOrder
-  firstDeliveryLocation?: Prisma.SortOrder
-  firstDeliveryAddress?: Prisma.SortOrder
-  secondDeliveryDate?: Prisma.SortOrder
-  secondDeliveryLocation?: Prisma.SortOrder
-  secondDeliveryAddress?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -414,12 +343,6 @@ export type OrderScalarWhereWithAggregatesInput = {
   planTitleSnapshot?: Prisma.StringWithAggregatesFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringWithAggregatesFilter<"Order"> | string
   priceSnapshot?: Prisma.DecimalWithAggregatesFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
-  firstDeliveryLocation?: Prisma.IntWithAggregatesFilter<"Order"> | number
-  firstDeliveryAddress?: Prisma.StringWithAggregatesFilter<"Order"> | string
-  secondDeliveryDate?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
-  secondDeliveryLocation?: Prisma.IntWithAggregatesFilter<"Order"> | number
-  secondDeliveryAddress?: Prisma.StringWithAggregatesFilter<"Order"> | string
   notes?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
@@ -431,18 +354,13 @@ export type OrderCreateInput = {
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate: Date | string
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date | string
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
 }
 
@@ -455,15 +373,10 @@ export type OrderUncheckedCreateInput = {
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate: Date | string
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date | string
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
 }
 
@@ -473,18 +386,13 @@ export type OrderUpdateInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
 }
 
@@ -497,15 +405,10 @@ export type OrderUncheckedUpdateInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
 }
 
@@ -518,12 +421,6 @@ export type OrderCreateManyInput = {
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate: Date | string
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date | string
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -535,12 +432,6 @@ export type OrderUpdateManyMutationInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -555,12 +446,6 @@ export type OrderUncheckedUpdateManyInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -585,12 +470,6 @@ export type OrderCountOrderByAggregateInput = {
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
-  firstDeliveryDate?: Prisma.SortOrder
-  firstDeliveryLocation?: Prisma.SortOrder
-  firstDeliveryAddress?: Prisma.SortOrder
-  secondDeliveryDate?: Prisma.SortOrder
-  secondDeliveryLocation?: Prisma.SortOrder
-  secondDeliveryAddress?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -598,8 +477,6 @@ export type OrderCountOrderByAggregateInput = {
 
 export type OrderAvgOrderByAggregateInput = {
   priceSnapshot?: Prisma.SortOrder
-  firstDeliveryLocation?: Prisma.SortOrder
-  secondDeliveryLocation?: Prisma.SortOrder
 }
 
 export type OrderMaxOrderByAggregateInput = {
@@ -611,12 +488,6 @@ export type OrderMaxOrderByAggregateInput = {
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
-  firstDeliveryDate?: Prisma.SortOrder
-  firstDeliveryLocation?: Prisma.SortOrder
-  firstDeliveryAddress?: Prisma.SortOrder
-  secondDeliveryDate?: Prisma.SortOrder
-  secondDeliveryLocation?: Prisma.SortOrder
-  secondDeliveryAddress?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -631,12 +502,6 @@ export type OrderMinOrderByAggregateInput = {
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
-  firstDeliveryDate?: Prisma.SortOrder
-  firstDeliveryLocation?: Prisma.SortOrder
-  firstDeliveryAddress?: Prisma.SortOrder
-  secondDeliveryDate?: Prisma.SortOrder
-  secondDeliveryLocation?: Prisma.SortOrder
-  secondDeliveryAddress?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -644,8 +509,6 @@ export type OrderMinOrderByAggregateInput = {
 
 export type OrderSumOrderByAggregateInput = {
   priceSnapshot?: Prisma.SortOrder
-  firstDeliveryLocation?: Prisma.SortOrder
-  secondDeliveryLocation?: Prisma.SortOrder
 }
 
 export type OrderScalarRelationFilter = {
@@ -783,6 +646,20 @@ export type EnumOrderStatusFieldUpdateOperationsInput = {
   set?: $Enums.OrderStatus
 }
 
+export type OrderCreateNestedOneWithoutDeliveriesInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutDeliveriesInput, Prisma.OrderUncheckedCreateWithoutDeliveriesInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutDeliveriesInput
+  connect?: Prisma.OrderWhereUniqueInput
+}
+
+export type OrderUpdateOneRequiredWithoutDeliveriesNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutDeliveriesInput, Prisma.OrderUncheckedCreateWithoutDeliveriesInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutDeliveriesInput
+  upsert?: Prisma.OrderUpsertWithoutDeliveriesInput
+  connect?: Prisma.OrderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutDeliveriesInput, Prisma.OrderUpdateWithoutDeliveriesInput>, Prisma.OrderUncheckedUpdateWithoutDeliveriesInput>
+}
+
 export type OrderCreateNestedOneWithoutMenuSlotsInput = {
   create?: Prisma.XOR<Prisma.OrderCreateWithoutMenuSlotsInput, Prisma.OrderUncheckedCreateWithoutMenuSlotsInput>
   connectOrCreate?: Prisma.OrderCreateOrConnectWithoutMenuSlotsInput
@@ -803,17 +680,12 @@ export type OrderCreateWithoutSourceWeeklyMenuInput = {
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate: Date | string
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date | string
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
+  deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
 }
 
@@ -825,15 +697,10 @@ export type OrderUncheckedCreateWithoutSourceWeeklyMenuInput = {
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate: Date | string
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date | string
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
 }
 
@@ -875,12 +742,6 @@ export type OrderScalarWhereInput = {
   planTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   priceSnapshot?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFilter<"Order"> | Date | string
-  firstDeliveryLocation?: Prisma.IntFilter<"Order"> | number
-  firstDeliveryAddress?: Prisma.StringFilter<"Order"> | string
-  secondDeliveryDate?: Prisma.DateTimeFilter<"Order"> | Date | string
-  secondDeliveryLocation?: Prisma.IntFilter<"Order"> | number
-  secondDeliveryAddress?: Prisma.StringFilter<"Order"> | string
   notes?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
@@ -892,17 +753,12 @@ export type OrderCreateWithoutCustomerInput = {
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate: Date | string
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date | string
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
 }
 
@@ -914,15 +770,10 @@ export type OrderUncheckedCreateWithoutCustomerInput = {
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate: Date | string
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date | string
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
 }
 
@@ -958,17 +809,12 @@ export type OrderCreateWithoutPlanVariantInput = {
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate: Date | string
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date | string
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
 }
 
@@ -980,15 +826,10 @@ export type OrderUncheckedCreateWithoutPlanVariantInput = {
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate: Date | string
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date | string
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
 }
 
@@ -1018,24 +859,95 @@ export type OrderUpdateManyWithWhereWithoutPlanVariantInput = {
   data: Prisma.XOR<Prisma.OrderUpdateManyMutationInput, Prisma.OrderUncheckedUpdateManyWithoutPlanVariantInput>
 }
 
-export type OrderCreateWithoutMenuSlotsInput = {
+export type OrderCreateWithoutDeliveriesInput = {
   id?: string
   status?: $Enums.OrderStatus
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate: Date | string
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date | string
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
+}
+
+export type OrderUncheckedCreateWithoutDeliveriesInput = {
+  id?: string
+  customerId: string
+  planVariantId?: string | null
+  sourceWeeklyMenuId?: string | null
+  status?: $Enums.OrderStatus
+  planTitleSnapshot: string
+  planVariantTitleSnapshot: string
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
+}
+
+export type OrderCreateOrConnectWithoutDeliveriesInput = {
+  where: Prisma.OrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrderCreateWithoutDeliveriesInput, Prisma.OrderUncheckedCreateWithoutDeliveriesInput>
+}
+
+export type OrderUpsertWithoutDeliveriesInput = {
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutDeliveriesInput, Prisma.OrderUncheckedUpdateWithoutDeliveriesInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutDeliveriesInput, Prisma.OrderUncheckedCreateWithoutDeliveriesInput>
+  where?: Prisma.OrderWhereInput
+}
+
+export type OrderUpdateToOneWithWhereWithoutDeliveriesInput = {
+  where?: Prisma.OrderWhereInput
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutDeliveriesInput, Prisma.OrderUncheckedUpdateWithoutDeliveriesInput>
+}
+
+export type OrderUpdateWithoutDeliveriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
+  planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
+  sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderUncheckedUpdateWithoutDeliveriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderCreateWithoutMenuSlotsInput = {
+  id?: string
+  status?: $Enums.OrderStatus
+  planTitleSnapshot: string
+  planVariantTitleSnapshot: string
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
+  planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
+  sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutMenuSlotsInput = {
@@ -1047,15 +959,10 @@ export type OrderUncheckedCreateWithoutMenuSlotsInput = {
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate: Date | string
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date | string
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutMenuSlotsInput = {
@@ -1080,18 +987,13 @@ export type OrderUpdateWithoutMenuSlotsInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
@@ -1103,15 +1005,10 @@ export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateManySourceWeeklyMenuInput = {
@@ -1122,12 +1019,6 @@ export type OrderCreateManySourceWeeklyMenuInput = {
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate: Date | string
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date | string
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1139,17 +1030,12 @@ export type OrderUpdateWithoutSourceWeeklyMenuInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
+  deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
 }
 
@@ -1161,15 +1047,10 @@ export type OrderUncheckedUpdateWithoutSourceWeeklyMenuInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
 }
 
@@ -1181,12 +1062,6 @@ export type OrderUncheckedUpdateManyWithoutSourceWeeklyMenuInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1200,12 +1075,6 @@ export type OrderCreateManyCustomerInput = {
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate: Date | string
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date | string
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1217,17 +1086,12 @@ export type OrderUpdateWithoutCustomerInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
 }
 
@@ -1239,15 +1103,10 @@ export type OrderUncheckedUpdateWithoutCustomerInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
 }
 
@@ -1259,12 +1118,6 @@ export type OrderUncheckedUpdateManyWithoutCustomerInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1278,12 +1131,6 @@ export type OrderCreateManyPlanVariantInput = {
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate: Date | string
-  firstDeliveryLocation: number
-  firstDeliveryAddress: string
-  secondDeliveryDate: Date | string
-  secondDeliveryLocation: number
-  secondDeliveryAddress: string
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1295,17 +1142,12 @@ export type OrderUpdateWithoutPlanVariantInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
 }
 
@@ -1317,15 +1159,10 @@ export type OrderUncheckedUpdateWithoutPlanVariantInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
 }
 
@@ -1337,12 +1174,6 @@ export type OrderUncheckedUpdateManyWithoutPlanVariantInput = {
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  firstDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  firstDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  firstDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
-  secondDeliveryDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  secondDeliveryLocation?: Prisma.IntFieldUpdateOperationsInput | number
-  secondDeliveryAddress?: Prisma.StringFieldUpdateOperationsInput | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1354,10 +1185,12 @@ export type OrderUncheckedUpdateManyWithoutPlanVariantInput = {
  */
 
 export type OrderCountOutputType = {
+  deliveries: number
   menuSlots: number
 }
 
 export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  deliveries?: boolean | OrderCountOutputTypeCountDeliveriesArgs
   menuSlots?: boolean | OrderCountOutputTypeCountMenuSlotsArgs
 }
 
@@ -1369,6 +1202,13 @@ export type OrderCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
    * Select specific fields to fetch from the OrderCountOutputType
    */
   select?: Prisma.OrderCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * OrderCountOutputType without action
+ */
+export type OrderCountOutputTypeCountDeliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrderDeliveryWhereInput
 }
 
 /**
@@ -1388,18 +1228,13 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
   priceSnapshot?: boolean
-  firstDeliveryDate?: boolean
-  firstDeliveryLocation?: boolean
-  firstDeliveryAddress?: boolean
-  secondDeliveryDate?: boolean
-  secondDeliveryLocation?: boolean
-  secondDeliveryAddress?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
   sourceWeeklyMenu?: boolean | Prisma.Order$sourceWeeklyMenuArgs<ExtArgs>
+  deliveries?: boolean | Prisma.Order$deliveriesArgs<ExtArgs>
   menuSlots?: boolean | Prisma.Order$menuSlotsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
@@ -1413,12 +1248,6 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
   priceSnapshot?: boolean
-  firstDeliveryDate?: boolean
-  firstDeliveryLocation?: boolean
-  firstDeliveryAddress?: boolean
-  secondDeliveryDate?: boolean
-  secondDeliveryLocation?: boolean
-  secondDeliveryAddress?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1436,12 +1265,6 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
   priceSnapshot?: boolean
-  firstDeliveryDate?: boolean
-  firstDeliveryLocation?: boolean
-  firstDeliveryAddress?: boolean
-  secondDeliveryDate?: boolean
-  secondDeliveryLocation?: boolean
-  secondDeliveryAddress?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1459,22 +1282,17 @@ export type OrderSelectScalar = {
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
   priceSnapshot?: boolean
-  firstDeliveryDate?: boolean
-  firstDeliveryLocation?: boolean
-  firstDeliveryAddress?: boolean
-  secondDeliveryDate?: boolean
-  secondDeliveryLocation?: boolean
-  secondDeliveryAddress?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "planVariantId" | "sourceWeeklyMenuId" | "status" | "planTitleSnapshot" | "planVariantTitleSnapshot" | "priceSnapshot" | "firstDeliveryDate" | "firstDeliveryLocation" | "firstDeliveryAddress" | "secondDeliveryDate" | "secondDeliveryLocation" | "secondDeliveryAddress" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "planVariantId" | "sourceWeeklyMenuId" | "status" | "planTitleSnapshot" | "planVariantTitleSnapshot" | "priceSnapshot" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
   sourceWeeklyMenu?: boolean | Prisma.Order$sourceWeeklyMenuArgs<ExtArgs>
+  deliveries?: boolean | Prisma.Order$deliveriesArgs<ExtArgs>
   menuSlots?: boolean | Prisma.Order$menuSlotsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1495,6 +1313,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     customer: Prisma.$CustomerPayload<ExtArgs>
     planVariant: Prisma.$PlanVariantPayload<ExtArgs> | null
     sourceWeeklyMenu: Prisma.$WeeklyMenuPayload<ExtArgs> | null
+    deliveries: Prisma.$OrderDeliveryPayload<ExtArgs>[]
     menuSlots: Prisma.$OrderMenuSlotPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1506,12 +1325,6 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     planTitleSnapshot: string
     planVariantTitleSnapshot: string
     priceSnapshot: runtime.Decimal
-    firstDeliveryDate: Date
-    firstDeliveryLocation: number
-    firstDeliveryAddress: string
-    secondDeliveryDate: Date
-    secondDeliveryLocation: number
-    secondDeliveryAddress: string
     notes: string | null
     createdAt: Date
     updatedAt: Date
@@ -1912,6 +1725,7 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
   customer<T extends Prisma.CustomerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerDefaultArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   planVariant<T extends Prisma.Order$planVariantArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$planVariantArgs<ExtArgs>>): Prisma.Prisma__PlanVariantClient<runtime.Types.Result.GetResult<Prisma.$PlanVariantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   sourceWeeklyMenu<T extends Prisma.Order$sourceWeeklyMenuArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$sourceWeeklyMenuArgs<ExtArgs>>): Prisma.Prisma__WeeklyMenuClient<runtime.Types.Result.GetResult<Prisma.$WeeklyMenuPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  deliveries<T extends Prisma.Order$deliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$deliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   menuSlots<T extends Prisma.Order$menuSlotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$menuSlotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderMenuSlotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1950,12 +1764,6 @@ export interface OrderFieldRefs {
   readonly planTitleSnapshot: Prisma.FieldRef<"Order", 'String'>
   readonly planVariantTitleSnapshot: Prisma.FieldRef<"Order", 'String'>
   readonly priceSnapshot: Prisma.FieldRef<"Order", 'Decimal'>
-  readonly firstDeliveryDate: Prisma.FieldRef<"Order", 'DateTime'>
-  readonly firstDeliveryLocation: Prisma.FieldRef<"Order", 'Int'>
-  readonly firstDeliveryAddress: Prisma.FieldRef<"Order", 'String'>
-  readonly secondDeliveryDate: Prisma.FieldRef<"Order", 'DateTime'>
-  readonly secondDeliveryLocation: Prisma.FieldRef<"Order", 'Int'>
-  readonly secondDeliveryAddress: Prisma.FieldRef<"Order", 'String'>
   readonly notes: Prisma.FieldRef<"Order", 'String'>
   readonly createdAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Order", 'DateTime'>
@@ -2395,6 +2203,30 @@ export type Order$sourceWeeklyMenuArgs<ExtArgs extends runtime.Types.Extensions.
    */
   include?: Prisma.WeeklyMenuInclude<ExtArgs> | null
   where?: Prisma.WeeklyMenuWhereInput
+}
+
+/**
+ * Order.deliveries
+ */
+export type Order$deliveriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OrderDelivery
+   */
+  select?: Prisma.OrderDeliverySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OrderDelivery
+   */
+  omit?: Prisma.OrderDeliveryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderDeliveryInclude<ExtArgs> | null
+  where?: Prisma.OrderDeliveryWhereInput
+  orderBy?: Prisma.OrderDeliveryOrderByWithRelationInput | Prisma.OrderDeliveryOrderByWithRelationInput[]
+  cursor?: Prisma.OrderDeliveryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrderDeliveryScalarFieldEnum | Prisma.OrderDeliveryScalarFieldEnum[]
 }
 
 /**

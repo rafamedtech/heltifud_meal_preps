@@ -408,6 +408,7 @@ export const ModelName = {
   Plan: 'Plan',
   PlanVariant: 'PlanVariant',
   Order: 'Order',
+  OrderDelivery: 'OrderDelivery',
   OrderMenuSlot: 'OrderMenuSlot',
   OrderMenuComponent: 'OrderMenuComponent',
   Expense: 'Expense',
@@ -428,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "weeklyMenu" | "menuDay" | "daySlot" | "foodComponent" | "foodCatalogItem" | "ingredient" | "recipeIngredient" | "customer" | "plan" | "planVariant" | "order" | "orderMenuSlot" | "orderMenuComponent" | "expense" | "operationSettings" | "weeklyCycle"
+    modelProps: "weeklyMenu" | "menuDay" | "daySlot" | "foodComponent" | "foodCatalogItem" | "ingredient" | "recipeIngredient" | "customer" | "plan" | "planVariant" | "order" | "orderDelivery" | "orderMenuSlot" | "orderMenuComponent" | "expense" | "operationSettings" | "weeklyCycle"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1246,6 +1247,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    OrderDelivery: {
+      payload: Prisma.$OrderDeliveryPayload<ExtArgs>
+      fields: Prisma.OrderDeliveryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OrderDeliveryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderDeliveryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OrderDeliveryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderDeliveryPayload>
+        }
+        findFirst: {
+          args: Prisma.OrderDeliveryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderDeliveryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OrderDeliveryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderDeliveryPayload>
+        }
+        findMany: {
+          args: Prisma.OrderDeliveryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderDeliveryPayload>[]
+        }
+        create: {
+          args: Prisma.OrderDeliveryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderDeliveryPayload>
+        }
+        createMany: {
+          args: Prisma.OrderDeliveryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OrderDeliveryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderDeliveryPayload>[]
+        }
+        delete: {
+          args: Prisma.OrderDeliveryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderDeliveryPayload>
+        }
+        update: {
+          args: Prisma.OrderDeliveryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderDeliveryPayload>
+        }
+        deleteMany: {
+          args: Prisma.OrderDeliveryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OrderDeliveryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OrderDeliveryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderDeliveryPayload>[]
+        }
+        upsert: {
+          args: Prisma.OrderDeliveryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderDeliveryPayload>
+        }
+        aggregate: {
+          args: Prisma.OrderDeliveryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOrderDelivery>
+        }
+        groupBy: {
+          args: Prisma.OrderDeliveryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrderDeliveryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OrderDeliveryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrderDeliveryCountAggregateOutputType> | number
+        }
+      }
+    }
     OrderMenuSlot: {
       payload: Prisma.$OrderMenuSlotPayload<ExtArgs>
       fields: Prisma.OrderMenuSlotFieldRefs
@@ -1802,12 +1877,6 @@ export const OrderScalarFieldEnum = {
   planTitleSnapshot: 'planTitleSnapshot',
   planVariantTitleSnapshot: 'planVariantTitleSnapshot',
   priceSnapshot: 'priceSnapshot',
-  firstDeliveryDate: 'firstDeliveryDate',
-  firstDeliveryLocation: 'firstDeliveryLocation',
-  firstDeliveryAddress: 'firstDeliveryAddress',
-  secondDeliveryDate: 'secondDeliveryDate',
-  secondDeliveryLocation: 'secondDeliveryLocation',
-  secondDeliveryAddress: 'secondDeliveryAddress',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1816,9 +1885,27 @@ export const OrderScalarFieldEnum = {
 export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
 
 
+export const OrderDeliveryScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  sequence: 'sequence',
+  scheduledDate: 'scheduledDate',
+  locationNumber: 'locationNumber',
+  addressSnapshot: 'addressSnapshot',
+  status: 'status',
+  deliveredAt: 'deliveredAt',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrderDeliveryScalarFieldEnum = (typeof OrderDeliveryScalarFieldEnum)[keyof typeof OrderDeliveryScalarFieldEnum]
+
+
 export const OrderMenuSlotScalarFieldEnum = {
   id: 'id',
   orderId: 'orderId',
+  deliveryId: 'deliveryId',
   dayOfWeek: 'dayOfWeek',
   dayOrder: 'dayOrder',
   slotType: 'slotType',
@@ -2059,6 +2146,20 @@ export type ListEnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$
 
 
 /**
+ * Reference to a field of type 'DeliveryStatus'
+ */
+export type EnumDeliveryStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeliveryStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'DeliveryStatus[]'
+ */
+export type ListEnumDeliveryStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DeliveryStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'CycleStatus'
  */
 export type EnumCycleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CycleStatus'>
@@ -2247,6 +2348,7 @@ export type GlobalOmitConfig = {
   plan?: Prisma.PlanOmit
   planVariant?: Prisma.PlanVariantOmit
   order?: Prisma.OrderOmit
+  orderDelivery?: Prisma.OrderDeliveryOmit
   orderMenuSlot?: Prisma.OrderMenuSlotOmit
   orderMenuComponent?: Prisma.OrderMenuComponentOmit
   expense?: Prisma.ExpenseOmit

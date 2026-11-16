@@ -296,17 +296,44 @@ export const planInputSchema = z.object({
   });
 });
 
+export const orderDeliveryInputSchema = z.object({
+  sequence: z.union([z.literal(1), z.literal(2)]),
+  scheduledDate: isoDateSchema,
+  locationNumber: z.union([z.literal(1), z.literal(2)]),
+});
+
+/** One or two deliveries, each sequence once, the second never before the first. */
+export const orderDeliveriesInputSchema = z.array(orderDeliveryInputSchema)
+  .min(1, 'El pedido necesita al menos una entrega')
+  .max(2)
+  .superRefine((deliveries, ctx) => {
+    const firstIndex = deliveries.findIndex((delivery) => delivery.sequence === 1);
+    const secondIndex = deliveries.findIndex((delivery) => delivery.sequence === 2);
+
+    if (deliveries.length === 2 && (firstIndex === -1 || secondIndex === -1)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [1, 'sequence'],
+        message: 'No puedes repetir la misma entrega',
+      });
+      return;
+    }
+
+    if (firstIndex !== -1 && secondIndex !== -1
+      && deliveries[secondIndex]!.scheduledDate < deliveries[firstIndex]!.scheduledDate) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [secondIndex, 'scheduledDate'],
+        message: 'La segunda entrega no puede ser anterior a la primera',
+      });
+    }
+  });
+
 export const orderCreateInputSchema = z.object({
   customerId: z.string().uuid('Selecciona un cliente'),
   planVariantId: z.string().uuid('Selecciona una variante de plan'),
-  firstDeliveryDate: isoDateSchema,
-  firstDeliveryLocation: z.union([z.literal(1), z.literal(2)]),
-  secondDeliveryDate: isoDateSchema,
-  secondDeliveryLocation: z.union([z.literal(1), z.literal(2)]),
+  deliveries: orderDeliveriesInputSchema,
   notes: optionalTrimmedString(1000),
-}).refine((value) => value.secondDeliveryDate >= value.firstDeliveryDate, {
-  path: ['secondDeliveryDate'],
-  message: 'La segunda entrega no puede ser anterior a la primera',
 });
 
 export const orderMenuComponentInputSchema = z.object({
@@ -330,21 +357,10 @@ export const orderMenuSlotInputSchema = z.object({
 
 export const orderUpdateInputSchema = z.object({
   status: z.enum(ORDER_STATUS_VALUES),
-  firstDeliveryDate: isoDateSchema,
-  firstDeliveryLocation: z.union([z.literal(1), z.literal(2)]),
-  secondDeliveryDate: isoDateSchema,
-  secondDeliveryLocation: z.union([z.literal(1), z.literal(2)]),
+  deliveries: orderDeliveriesInputSchema,
   notes: optionalTrimmedString(1000),
   menuSlots: z.array(orderMenuSlotInputSchema).min(1).max(35),
 }).superRefine((value, ctx) => {
-  if (value.secondDeliveryDate < value.firstDeliveryDate) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['secondDeliveryDate'],
-      message: 'La segunda entrega no puede ser anterior a la primera',
-    });
-  }
-
   const slots = new Set<string>();
   value.menuSlots.forEach((slot, index) => {
     const key = `${slot.dayOfWeek}:${slot.slotType}`;

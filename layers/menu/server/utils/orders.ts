@@ -8,26 +8,50 @@ import {
 } from '~~/layers/menu/shared/types/menuSchema';
 import type {
   Customer,
+  CustomerLocationNumber,
+  DeliverySequence,
   Order,
   OrderCreateInput,
+  OrderDelivery,
   OrderListItem,
   OrderListResponse,
   OrderMenuSlotInput,
   OrderUpdateInput,
 } from '~~/layers/menu/shared/types/types';
+import { deliverySequenceForDay, type DeliveryMealRule } from '~~/layers/menu/shared/utils/orderDeliveries';
 
 import { prisma } from './prisma';
 
+const deliveriesInclude = { orderBy: { sequence: 'asc' as const } };
+
+const orderListInclude = {
+  customer: { select: { nombre: true, telefono: true } },
+  deliveries: deliveriesInclude,
+};
+
 const orderDetailInclude = {
   customer: true,
+  deliveries: deliveriesInclude,
   sourceWeeklyMenu: { select: { id: true, name: true } },
   menuSlots: {
     orderBy: [{ dayOrder: 'asc' as const }, { slotType: 'asc' as const }],
-    include: { components: { orderBy: [{ componentRole: 'asc' as const }, { position: 'asc' as const }] } },
+    include: {
+      delivery: { select: { sequence: true } },
+      components: { orderBy: [{ componentRole: 'asc' as const }, { position: 'asc' as const }] },
+    },
   },
 };
 
+const mealRuleSelect = { firstDeliveryMealDays: true, secondDeliveryMealDays: true };
+
+// Mirrors the defaults of `OperationSettings`, for orders whose week is gone.
+const DEFAULT_MEAL_RULE: DeliveryMealRule = {
+  firstDeliveryMealDays: ['LUNES', 'MARTES', 'MIERCOLES'],
+  secondDeliveryMealDays: ['JUEVES', 'VIERNES'],
+};
+
 const menuSourceInclude = {
+  cycle: { select: mealRuleSelect },
   days: {
     orderBy: { order: 'asc' as const },
     include: {
@@ -78,20 +102,20 @@ function mapCustomer(customer: {
   };
 }
 
-function mapListItem(order: {
-  id: string;
-  status: OrderStatus;
-  customerId: string;
-  planTitleSnapshot: string;
-  planVariantTitleSnapshot: string;
-  priceSnapshot: { toString(): string };
-  firstDeliveryDate: Date;
-  firstDeliveryAddress: string;
-  secondDeliveryDate: Date;
-  secondDeliveryAddress: string;
-  createdAt: Date;
-  customer: { nombre: string; telefono: string };
-}): OrderListItem {
+function mapDelivery(delivery: Prisma.OrderDeliveryGetPayload<object>): OrderDelivery {
+  return {
+    id: delivery.id,
+    sequence: delivery.sequence as DeliverySequence,
+    scheduledDate: toDateString(delivery.scheduledDate),
+    locationNumber: delivery.locationNumber as CustomerLocationNumber,
+    address: delivery.addressSnapshot,
+    status: delivery.status,
+    deliveredAt: delivery.deliveredAt?.toISOString() ?? null,
+    notes: delivery.notes ?? '',
+  };
+}
+
+function mapListItem(order: Prisma.OrderGetPayload<{ include: typeof orderListInclude }>): OrderListItem {
   return {
     id: order.id,
     status: order.status,
@@ -101,10 +125,7 @@ function mapListItem(order: {
     planTitle: order.planTitleSnapshot,
     planVariantTitle: order.planVariantTitleSnapshot,
     price: Number(order.priceSnapshot.toString()),
-    firstDeliveryDate: toDateString(order.firstDeliveryDate),
-    firstDeliveryAddress: order.firstDeliveryAddress,
-    secondDeliveryDate: toDateString(order.secondDeliveryDate),
-    secondDeliveryAddress: order.secondDeliveryAddress,
+    deliveries: order.deliveries.map(mapDelivery),
     createdAt: order.createdAt.toISOString(),
   };
 }
@@ -122,12 +143,25 @@ function resolveAddress(customer: { ubicacion1: string; ubicacion2: string | nul
   return address;
 }
 
-function buildMenuSlots(menu: Prisma.WeeklyMenuGetPayload<{ include: typeof menuSourceInclude }>, slotTypes: string[], daysCount: number) {
+/** Resolves the delivery row that carries the meals of a day. */
+function deliveryIdResolver(deliveries: Array<{ id: string; sequence: number }>, rule: DeliveryMealRule) {
+  const ids = new Map(deliveries.map((delivery) => [delivery.sequence as DeliverySequence, delivery.id]));
+  const available = [...ids.keys()].sort();
+  return (day: OrderMenuSlotInput['dayOfWeek']) => ids.get(deliverySequenceForDay(day, rule, available))!;
+}
+
+function buildMenuSlots(
+  menu: Prisma.WeeklyMenuGetPayload<{ include: typeof menuSourceInclude }>,
+  slotTypes: string[],
+  daysCount: number,
+  deliveryIdFor: (day: OrderMenuSlotInput['dayOfWeek']) => string,
+) {
   return menu.days.slice(0, daysCount).flatMap((day) => day.slots
     .filter((slot) => slotTypes.includes(slot.slotType))
     .map((slot) => {
       const rolePositions = new Map<string, number>();
       return {
+        deliveryId: deliveryIdFor(day.dayOfWeek),
         dayOfWeek: day.dayOfWeek,
         dayOrder: day.order,
         slotType: slot.slotType,
@@ -152,8 +186,9 @@ function buildMenuSlots(menu: Prisma.WeeklyMenuGetPayload<{ include: typeof menu
     }));
 }
 
-function buildEditableMenu(slots: OrderMenuSlotInput[]) {
+function buildEditableMenu(slots: OrderMenuSlotInput[], deliveryIdFor: (day: OrderMenuSlotInput['dayOfWeek']) => string) {
   return slots.map((slot) => ({
+    deliveryId: deliveryIdFor(slot.dayOfWeek),
     dayOfWeek: slot.dayOfWeek,
     dayOrder: slot.dayOrder,
     slotType: slot.slotType,
@@ -181,10 +216,15 @@ export async function getOrders(query: unknown): Promise<OrderListResponse> {
         { planTitleSnapshot: { contains: q, mode: 'insensitive' } },
       ],
     } : {}),
+    // An order matches when any of its deliveries falls in the range.
     ...(from || to ? {
-      firstDeliveryDate: {
-        ...(from ? { gte: toDate(from) } : {}),
-        ...(to ? { lte: toDate(to) } : {}),
+      deliveries: {
+        some: {
+          scheduledDate: {
+            ...(from ? { gte: toDate(from) } : {}),
+            ...(to ? { lte: toDate(to) } : {}),
+          },
+        },
       },
     } : {}),
   };
@@ -194,8 +234,8 @@ export async function getOrders(query: unknown): Promise<OrderListResponse> {
       where,
       take: limit,
       skip: offset,
-      orderBy: [{ firstDeliveryDate: 'desc' }, { createdAt: 'desc' }, { id: 'desc' }],
-      include: { customer: { select: { nombre: true, telefono: true } } },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      include: orderListInclude,
     }),
     prisma.order.groupBy({ by: ['status'], where, _count: { _all: true } }),
   ]);
@@ -221,13 +261,12 @@ export async function getOrderById(id: string): Promise<Order | null> {
     planVariantId: record.planVariantId,
     sourceWeeklyMenuId: record.sourceWeeklyMenuId,
     sourceWeeklyMenuName: record.sourceWeeklyMenu?.name ?? null,
-    firstDeliveryLocation: record.firstDeliveryLocation as 1 | 2,
-    secondDeliveryLocation: record.secondDeliveryLocation as 1 | 2,
     notes: record.notes ?? '',
     updatedAt: record.updatedAt.toISOString(),
     customer: mapCustomer(record.customer),
     menuSlots: record.menuSlots.map((slot) => ({
       id: slot.id,
+      deliverySequence: slot.delivery.sequence as DeliverySequence,
       dayOfWeek: slot.dayOfWeek,
       dayOrder: slot.dayOrder,
       slotType: slot.slotType,
@@ -279,12 +318,8 @@ export async function createOrder(input: OrderCreateInput) {
       throw createError({ statusCode: 409, statusMessage: `La semana con pedidos abiertos no tiene ${missing}.` });
     }
 
-    const menuSlots = buildMenuSlots(activeMenu, variant.plan.slotTypes, variant.daysCount);
-    if (!menuSlots.length) {
-      throw createError({ statusCode: 409, statusMessage: 'El menú activo no contiene tiempos compatibles con el plan.' });
-    }
-
-    return tx.order.create({
+    // Deliveries go first: each copied meal needs the id of the one that carries it.
+    const order = await tx.order.create({
       data: {
         customerId: customer.id,
         planVariantId: variant.id,
@@ -292,17 +327,31 @@ export async function createOrder(input: OrderCreateInput) {
         planTitleSnapshot: variant.plan.title,
         planVariantTitleSnapshot: variant.title,
         priceSnapshot: variant.price,
-        firstDeliveryDate: toDate(data.firstDeliveryDate),
-        firstDeliveryLocation: data.firstDeliveryLocation,
-        firstDeliveryAddress: resolveAddress(customer, data.firstDeliveryLocation),
-        secondDeliveryDate: toDate(data.secondDeliveryDate),
-        secondDeliveryLocation: data.secondDeliveryLocation,
-        secondDeliveryAddress: resolveAddress(customer, data.secondDeliveryLocation),
         notes: data.notes || null,
-        menuSlots: { create: menuSlots },
+        deliveries: {
+          create: data.deliveries.map((delivery) => ({
+            sequence: delivery.sequence,
+            scheduledDate: toDate(delivery.scheduledDate),
+            locationNumber: delivery.locationNumber,
+            addressSnapshot: resolveAddress(customer, delivery.locationNumber),
+          })),
+        },
       },
-      select: { id: true },
+      select: { id: true, deliveries: { select: { id: true, sequence: true } } },
     });
+
+    const menuSlots = buildMenuSlots(
+      activeMenu,
+      variant.plan.slotTypes,
+      variant.daysCount,
+      deliveryIdResolver(order.deliveries, activeMenu.cycle ?? DEFAULT_MEAL_RULE),
+    );
+    if (!menuSlots.length) {
+      throw createError({ statusCode: 409, statusMessage: 'El menú activo no contiene tiempos compatibles con el plan.' });
+    }
+    await tx.order.update({ where: { id: order.id }, data: { menuSlots: { create: menuSlots } } });
+
+    return order;
   });
 
   return getOrderById(created.id);
@@ -316,22 +365,55 @@ export async function updateOrder(id: string, input: OrderUpdateInput) {
   const data = parsed.data;
 
   await prisma.$transaction(async (tx) => {
-    const existing = await tx.order.findUnique({ where: { id }, include: { customer: true } });
+    const existing = await tx.order.findUnique({
+      where: { id },
+      include: {
+        customer: true,
+        deliveries: true,
+        sourceWeeklyMenu: { select: { cycle: { select: mealRuleSelect } } },
+      },
+    });
     if (!existing) throw createError({ statusCode: 404, statusMessage: 'Pedido no encontrado.' });
 
+    // Meals are rebuilt below, so deliveries dropped from the order are free to go.
     await tx.orderMenuSlot.deleteMany({ where: { orderId: id } });
+    await tx.orderDelivery.deleteMany({
+      where: { orderId: id, sequence: { notIn: data.deliveries.map((delivery) => delivery.sequence) } },
+    });
+
+    const deliveries: Array<{ id: string; sequence: number }> = [];
+    for (const delivery of data.deliveries) {
+      const current = existing.deliveries.find((item) => item.sequence === delivery.sequence);
+      // The address stays frozen unless another location is chosen on purpose.
+      const location = !current || current.locationNumber !== delivery.locationNumber
+        ? { locationNumber: delivery.locationNumber, addressSnapshot: resolveAddress(existing.customer, delivery.locationNumber) }
+        : {};
+      const scheduledDate = toDate(delivery.scheduledDate);
+      deliveries.push(current
+        ? await tx.orderDelivery.update({
+            where: { id: current.id },
+            data: { scheduledDate, ...location },
+            select: { id: true, sequence: true },
+          })
+        : await tx.orderDelivery.create({
+            data: {
+              orderId: id,
+              sequence: delivery.sequence,
+              scheduledDate,
+              locationNumber: delivery.locationNumber,
+              addressSnapshot: resolveAddress(existing.customer, delivery.locationNumber),
+            },
+            select: { id: true, sequence: true },
+          }));
+    }
+
+    const rule = existing.sourceWeeklyMenu?.cycle ?? DEFAULT_MEAL_RULE;
     await tx.order.update({
       where: { id },
       data: {
         status: data.status,
-        firstDeliveryDate: toDate(data.firstDeliveryDate),
-        firstDeliveryLocation: data.firstDeliveryLocation,
-        firstDeliveryAddress: resolveAddress(existing.customer, data.firstDeliveryLocation),
-        secondDeliveryDate: toDate(data.secondDeliveryDate),
-        secondDeliveryLocation: data.secondDeliveryLocation,
-        secondDeliveryAddress: resolveAddress(existing.customer, data.secondDeliveryLocation),
         notes: data.notes || null,
-        menuSlots: { create: buildEditableMenu(data.menuSlots) },
+        menuSlots: { create: buildEditableMenu(data.menuSlots, deliveryIdResolver(deliveries, rule)) },
       },
     });
   });

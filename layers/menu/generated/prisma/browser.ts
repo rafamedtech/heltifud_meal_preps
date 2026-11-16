@@ -73,6 +73,11 @@ export type PlanVariant = Prisma.PlanVariantModel
  */
 export type Order = Prisma.OrderModel
 /**
+ * Model OrderDelivery
+ * 
+ */
+export type OrderDelivery = Prisma.OrderDeliveryModel
+/**
  * Model OrderMenuSlot
  * 
  */

@@ -166,6 +166,7 @@ Cada bloque es un PR desplegable por sí solo.
 | Bloque | Estado |
 | --- | --- |
 | 1.1 | Código, migración `20261115190000_add_weekly_cycles` y pruebas unitarias escritos el 15 de noviembre de 2026. Migración aplicada ese día con respaldo previo en `backups/` (sin versionar); 8 menús, 56 días, 280 tiempos y 305 componentes intactos. Verificado en navegador: lista de menús, menú de acciones, modal de ajustes y campo de cliente. Sin probar contra la base real: cambio de estado de una semana, guardar ajustes y crear menú personalizado. Pendiente dentro del bloque: editar el corte de una semana desde la interfaz (la API ya lo admite). |
+| 1.2 | Código, migración `20261116120000_add_order_deliveries` y pruebas unitarias escritos el 16 de noviembre de 2026. **Migración sin aplicar**: borra todos los pedidos y requiere confirmación y respaldo previos. Las entregas son filas de `order_deliveries` (1 o 2 por pedido) y cada tiempo guarda su `delivery_id`, asignado con el reparto de días del ciclo. La API de pedidos cambia `first*`/`second*` por `deliveries[]`. La dirección queda congelada y solo cambia al elegir otra ubicación. La lista de pedidos filtra por fecha de cualquier entrega y se ordena por fecha de creación. Sin probar en navegador ni contra la base real. Queda para 1.3: crear una sola entrega cuando los días elegidos caben en una, y proponer el día desde la preferencia del cliente; para 1.4: estado por entrega en la interfaz y estado global derivado. |
 
 ## Pruebas
 
