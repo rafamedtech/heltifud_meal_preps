@@ -210,6 +210,10 @@ Formato de datos: dinero con `transformPrice()`, fechas con `formatDate()` o
 `formatShortDate()` (`layers/base/app/utils/`). Idioma de la interfaz: español
 de México. `UApp` ya recibe el locale `es`.
 
+Las fechas civiles `YYYY-MM-DD` (p. ej., entregas) conservan su día al formatearse
+con esas funciones. Los instantes con hora y los objetos `Date` se muestran en
+`America/Tijuana`; no convertir una fecha civil a `Date` antes de pasársela.
+
 ## 5. Estructura de pantallas
 
 Administración (`/admin/**`, layout `admin`):

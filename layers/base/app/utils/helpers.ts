@@ -1,5 +1,6 @@
 import { AppModal } from "#components"
 import type { NavigationMenuItem } from "@nuxt/ui"
+import { formatShortDate } from "./dateFormatting"
 
 export const menuDate = "20 Mayo - 24 Mayo"
 
@@ -113,7 +114,7 @@ export function transformPrice(item: number): string {
 }
 
 export function formatDate(date: string | Date): string {
-  return new Intl.DateTimeFormat("es-MX", shortDateOptions).format(new Date(date))
+  return formatShortDate(date)
 }
 
 export function indexName(index: number) {
