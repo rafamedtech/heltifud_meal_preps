@@ -6,7 +6,9 @@ export default function useOrders() {
   const getOrder = (id: string) => $fetch<Order>(`/api/orders/${id}`);
   const getOrderOptions = (query: { customerId: string; planVariantId: string }) =>
     $fetch<OrderOptions>('/api/orders/options', { query });
-  const createOrder = (input: OrderCreateInput) => $fetch<Order>('/api/orders', { method: 'POST', body: input });
+  // The key is reused on every retry of the same form so the server creates one order.
+  const createOrder = (input: OrderCreateInput, idempotencyKey: string) =>
+    $fetch<Order>('/api/orders', { method: 'POST', body: input, headers: { 'Idempotency-Key': idempotencyKey } });
   const updateOrder = (id: string, input: OrderUpdateInput) =>
     $fetch<Order>(`/api/orders/${id}`, { method: 'PUT', body: input });
 

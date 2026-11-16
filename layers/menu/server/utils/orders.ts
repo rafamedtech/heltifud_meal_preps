@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import { createError } from 'h3';
 
 import { ComponentRole, OrderStatus, type Prisma } from '~~/layers/menu/generated/prisma/client';
@@ -395,14 +397,59 @@ export async function getOrderOptions(query: unknown): Promise<OrderOptions> {
   };
 }
 
-export async function createOrder(input: OrderCreateInput, actor?: OrderActor) {
+const IDEMPOTENCY_KEY_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Validates the `Idempotency-Key` header the create endpoint requires. */
+export function parseIdempotencyKey(value: string | null | undefined) {
+  const key = value?.trim();
+  if (!key) throw createError({ statusCode: 400, statusMessage: 'Falta la clave de idempotencia del pedido.' });
+  if (!IDEMPOTENCY_KEY_PATTERN.test(key)) throw createError({ statusCode: 400, statusMessage: 'La clave de idempotencia del pedido no es válida.' });
+  return key.toLowerCase();
+}
+
+// Same request, same hash: day and delivery order do not change the order created.
+function createFingerprint(data: ReturnType<typeof orderCreateInputSchema.parse>) {
+  const normalized = {
+    customerId: data.customerId.toLowerCase(),
+    planVariantId: data.planVariantId.toLowerCase(),
+    days: [...data.days].sort(),
+    deliveries: [...data.deliveries]
+      .sort((a, b) => a.sequence - b.sequence)
+      .map(({ sequence, deliveryDay, locationNumber }) => ({ sequence, deliveryDay, locationNumber })),
+    notes: data.notes || null,
+  };
+  return createHash('sha256').update(JSON.stringify(normalized)).digest('hex');
+}
+
+function isUniqueViolation(error: unknown) {
+  return typeof error === 'object' && error !== null && (error as { code?: string }).code === 'P2002';
+}
+
+// Id of the order a used key created, or 422 when it came with another payload.
+async function findIdempotentOrderId(key: string, fingerprint: string) {
+  const existing = await prisma.order.findUnique({ where: { idempotencyKey: key }, select: { id: true, idempotencyFingerprint: true } });
+  if (!existing) return null;
+  if (existing.idempotencyFingerprint !== fingerprint) {
+    throw createError({ statusCode: 422, statusMessage: 'Este formulario ya creó un pedido con otros datos. Revisa el listado de pedidos antes de capturarlo de nuevo.' });
+  }
+  return existing.id;
+}
+
+export async function createOrder(input: OrderCreateInput, actor?: OrderActor, idempotencyKey?: string) {
   const parsed = orderCreateInputSchema.safeParse(input);
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'Los datos del pedido no son válidos.', data: parsed.error.flatten() });
   }
   const data = parsed.data;
+  const key = idempotencyKey === undefined ? undefined : parseIdempotencyKey(idempotencyKey);
+  const fingerprint = key ? createFingerprint(data) : undefined;
 
-  const created = await prisma.$transaction(async (tx) => {
+  if (key && fingerprint) {
+    const existingId = await findIdempotentOrderId(key, fingerprint);
+    if (existingId) return getOrderById(existingId);
+  }
+
+  const create = () => prisma.$transaction(async (tx) => {
     const { customer, variant, menu, cycle, availableDays } = await resolveOrderContext(tx, data.customerId, data.planVariantId);
 
     const daysError = chosenDaysError(data.days, availableDays, variant.daysCount);
@@ -445,6 +492,8 @@ export async function createOrder(input: OrderCreateInput, actor?: OrderActor) {
         planVariantId: variant.id,
         sourceWeeklyMenuId: menu.id,
         cycleId: cycle.id,
+        idempotencyKey: key ?? null,
+        idempotencyFingerprint: fingerprint ?? null,
         capturedAfterCutoff: Date.now() > cycle.orderCutoffAt.getTime(),
         planTitleSnapshot: variant.plan.title,
         planVariantTitleSnapshot: variant.title,
@@ -471,7 +520,18 @@ export async function createOrder(input: OrderCreateInput, actor?: OrderActor) {
     return order;
   });
 
-  return getOrderById(created.id);
+  try {
+    const created = await create();
+    return getOrderById(created.id);
+  } catch (error) {
+    // A simultaneous request with the same key won the unique index first;
+    // this one rolled back and answers with the order the winner created.
+    if (key && fingerprint && isUniqueViolation(error)) {
+      const winnerId = await findIdempotentOrderId(key, fingerprint);
+      if (winnerId) return getOrderById(winnerId);
+    }
+    throw error;
+  }
 }
 
 export async function updateOrder(id: string, input: OrderUpdateInput) {

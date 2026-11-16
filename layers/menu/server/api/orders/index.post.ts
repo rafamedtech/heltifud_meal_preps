@@ -1,5 +1,9 @@
 import type { OrderCreateInput } from '~~/layers/menu/shared/types/types';
 
-import { createOrder } from '../../utils/orders';
+import { createOrder, parseIdempotencyKey } from '../../utils/orders';
 
-export default defineEventHandler(async (event) => createOrder(await readBody<OrderCreateInput>(event), event.context.orderActor));
+// Every creation carries a client key so a double submit or a retry yields one order.
+export default defineEventHandler(async (event) => {
+  const idempotencyKey = parseIdempotencyKey(getHeader(event, 'idempotency-key'));
+  return createOrder(await readBody<OrderCreateInput>(event), event.context.orderActor, idempotencyKey);
+});
