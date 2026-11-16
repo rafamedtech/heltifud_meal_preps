@@ -205,6 +205,12 @@ export async function updateFoodCatalogItem(id: string, input: FoodCatalogItemIn
         catalogItemId: id,
       },
     }),
+    // Name, calories or recipe changed: menus that offer this dish get a new
+    // offer version (the recipe decides allergies and exclusions).
+    prisma.weeklyMenu.updateMany({
+      where: { days: { some: { slots: { some: { components: { some: { catalogItemId: id } } } } } } },
+      data: { version: { increment: 1 } },
+    }),
   ]);
 
   return mapCatalogItem(updated);

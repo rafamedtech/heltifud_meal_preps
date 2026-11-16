@@ -138,6 +138,7 @@ Antes de crear un componente, comprobar esta lista. Todos componen Nuxt UI.
 | --- | --- | --- | --- |
 | `GooglePlacesInput` | `admin` | `UInput`, `UIcon` | Autocompletado de direcciones de Google Maps. Su control externo mide 40 px y usa `--radius-md`. |
 | `CustomerOrderHistory` | `admin` | `UCard`, `UTable`, `UPagination`, `UEmpty` | Historial de pedidos de un cliente. |
+| `CustomerExclusions` | `admin` | `UCard`, `UBadge`, `UAlert`, `UModal`, `UForm`, `USelectMenu` | Alergias y exclusiones del cliente con su modal de edición. Composición de negocio: carga ingredientes y platillos al abrir y guarda la lista completa. |
 | `StartDate` | `menu` | `UPopover`, `UButton`, `UCalendar` | Fecha de inicio en el menú público. |
 | `MenuDate`, `MenuMobileCarousel` | `menu` | HTML | Piezas del menú público. |
 

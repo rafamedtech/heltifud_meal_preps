@@ -120,8 +120,10 @@ const optionsError = ref("")
 const optionsLoading = ref(false)
 let optionsRequest = 0
 
-watch(() => [state.customerId, state.planVariantId] as const, async ([customerId, planVariantId]) => {
+// `keepDays` keeps the chosen days still offered (reload after the menu changed).
+async function loadOptions(customerId: string, planVariantId: string, keepDays = false) {
   const request = ++optionsRequest
+  const previousDays = keepDays ? [...state.days] : []
   options.value = null
   optionsError.value = ""
   state.days = []
@@ -134,6 +136,7 @@ watch(() => [state.customerId, state.planVariantId] as const, async ([customerId
     options.value = result
     // Nothing to choose when the menu has exactly the days the plan sells.
     if (result.availableDays.length === result.daysCount) state.days = [...result.availableDays]
+    else state.days = previousDays.filter(day => result.availableDays.includes(day)).slice(0, result.daysCount)
   } catch (error) {
     if (request !== optionsRequest) return
     const fetchError = error as { data?: { statusMessage?: string }, statusMessage?: string }
@@ -141,7 +144,9 @@ watch(() => [state.customerId, state.planVariantId] as const, async ([customerId
   } finally {
     if (request === optionsRequest) optionsLoading.value = false
   }
-})
+}
+
+watch(() => [state.customerId, state.planVariantId] as const, ([customerId, planVariantId]) => loadOptions(customerId, planVariantId))
 
 watch(selectedCustomer, customer => {
   deliveryChoices[1].deliveryDay = null
@@ -182,7 +187,8 @@ const payload = computed<OrderCreateInput>(() => ({
     deliveryDay: delivery.deliveryDay,
     locationNumber: deliveryChoices[delivery.sequence].locationNumber
   })),
-  notes: state.notes
+  notes: state.notes,
+  offerVersion: options.value?.menu.version ?? 0
 }))
 
 const civilDateFormatter = new Intl.DateTimeFormat("es-MX", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" })
@@ -217,7 +223,9 @@ async function submitOrder() {
     })
     await navigateTo(`/admin/pedidos/${order.id}`)
   } catch (error) {
-    const fetchError = error as { data?: { statusMessage?: string } }
+    const fetchError = error as { data?: { statusMessage?: string, data?: { code?: string } } }
+    // The menu changed while the form was open: show the current offer and keep the days.
+    if (fetchError.data?.data?.code === "OFFER_VERSION_CONFLICT") await loadOptions(state.customerId, state.planVariantId, true)
     toast.add({
       title: "No se pudo crear el pedido",
       description: fetchError.data?.statusMessage ?? (error instanceof Error ? error.message : "Revisa la información e intenta nuevamente."),

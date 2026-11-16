@@ -66,6 +66,8 @@ export const ModelName = {
   OrderStatusEvent: 'OrderStatusEvent',
   OrderMenuSlot: 'OrderMenuSlot',
   OrderMenuComponent: 'OrderMenuComponent',
+  OrderMenuChange: 'OrderMenuChange',
+  CustomerExclusion: 'CustomerExclusion',
   Expense: 'Expense',
   OperationSettings: 'OperationSettings',
   WeeklyCycle: 'WeeklyCycle'
@@ -97,7 +99,8 @@ export const WeeklyMenuScalarFieldEnum = {
   updatedAt: 'updatedAt',
   cycleId: 'cycleId',
   customerId: 'customerId',
-  cycleScope: 'cycleScope'
+  cycleScope: 'cycleScope',
+  version: 'version'
 } as const
 
 export type WeeklyMenuScalarFieldEnum = (typeof WeeklyMenuScalarFieldEnum)[keyof typeof WeeklyMenuScalarFieldEnum]
@@ -233,6 +236,7 @@ export const OrderScalarFieldEnum = {
   folio: 'folio',
   status: 'status',
   version: 'version',
+  offerVersion: 'offerVersion',
   idempotencyKey: 'idempotencyKey',
   idempotencyFingerprint: 'idempotencyFingerprint',
   capturedAfterCutoff: 'capturedAfterCutoff',
@@ -312,6 +316,40 @@ export const OrderMenuComponentScalarFieldEnum = {
 } as const
 
 export type OrderMenuComponentScalarFieldEnum = (typeof OrderMenuComponentScalarFieldEnum)[keyof typeof OrderMenuComponentScalarFieldEnum]
+
+
+export const OrderMenuChangeScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  orderVersion: 'orderVersion',
+  kind: 'kind',
+  dayOfWeek: 'dayOfWeek',
+  slotType: 'slotType',
+  componentRole: 'componentRole',
+  position: 'position',
+  fromNombre: 'fromNombre',
+  toNombre: 'toNombre',
+  fromCatalogItemId: 'fromCatalogItemId',
+  toCatalogItemId: 'toCatalogItemId',
+  reason: 'reason',
+  actorId: 'actorId',
+  actorLabel: 'actorLabel',
+  createdAt: 'createdAt'
+} as const
+
+export type OrderMenuChangeScalarFieldEnum = (typeof OrderMenuChangeScalarFieldEnum)[keyof typeof OrderMenuChangeScalarFieldEnum]
+
+
+export const CustomerExclusionScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  kind: 'kind',
+  ingredientId: 'ingredientId',
+  catalogItemId: 'catalogItemId',
+  createdAt: 'createdAt'
+} as const
+
+export type CustomerExclusionScalarFieldEnum = (typeof CustomerExclusionScalarFieldEnum)[keyof typeof CustomerExclusionScalarFieldEnum]
 
 
 export const ExpenseScalarFieldEnum = {

@@ -29,12 +29,14 @@ export type AggregateOrder = {
 export type OrderAvgAggregateOutputType = {
   folio: number | null
   version: number | null
+  offerVersion: number | null
   priceSnapshot: runtime.Decimal | null
 }
 
 export type OrderSumAggregateOutputType = {
   folio: number | null
   version: number | null
+  offerVersion: number | null
   priceSnapshot: runtime.Decimal | null
 }
 
@@ -47,6 +49,7 @@ export type OrderMinAggregateOutputType = {
   folio: number | null
   status: $Enums.OrderStatus | null
   version: number | null
+  offerVersion: number | null
   idempotencyKey: string | null
   idempotencyFingerprint: string | null
   capturedAfterCutoff: boolean | null
@@ -67,6 +70,7 @@ export type OrderMaxAggregateOutputType = {
   folio: number | null
   status: $Enums.OrderStatus | null
   version: number | null
+  offerVersion: number | null
   idempotencyKey: string | null
   idempotencyFingerprint: string | null
   capturedAfterCutoff: boolean | null
@@ -87,6 +91,7 @@ export type OrderCountAggregateOutputType = {
   folio: number
   status: number
   version: number
+  offerVersion: number
   idempotencyKey: number
   idempotencyFingerprint: number
   capturedAfterCutoff: number
@@ -103,12 +108,14 @@ export type OrderCountAggregateOutputType = {
 export type OrderAvgAggregateInputType = {
   folio?: true
   version?: true
+  offerVersion?: true
   priceSnapshot?: true
 }
 
 export type OrderSumAggregateInputType = {
   folio?: true
   version?: true
+  offerVersion?: true
   priceSnapshot?: true
 }
 
@@ -121,6 +128,7 @@ export type OrderMinAggregateInputType = {
   folio?: true
   status?: true
   version?: true
+  offerVersion?: true
   idempotencyKey?: true
   idempotencyFingerprint?: true
   capturedAfterCutoff?: true
@@ -141,6 +149,7 @@ export type OrderMaxAggregateInputType = {
   folio?: true
   status?: true
   version?: true
+  offerVersion?: true
   idempotencyKey?: true
   idempotencyFingerprint?: true
   capturedAfterCutoff?: true
@@ -161,6 +170,7 @@ export type OrderCountAggregateInputType = {
   folio?: true
   status?: true
   version?: true
+  offerVersion?: true
   idempotencyKey?: true
   idempotencyFingerprint?: true
   capturedAfterCutoff?: true
@@ -268,6 +278,7 @@ export type OrderGroupByOutputType = {
   folio: number
   status: $Enums.OrderStatus
   version: number
+  offerVersion: number
   idempotencyKey: string | null
   idempotencyFingerprint: string | null
   capturedAfterCutoff: boolean
@@ -311,6 +322,7 @@ export type OrderWhereInput = {
   folio?: Prisma.IntFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   version?: Prisma.IntFilter<"Order"> | number
+  offerVersion?: Prisma.IntFilter<"Order"> | number
   idempotencyKey?: Prisma.UuidNullableFilter<"Order"> | string | null
   idempotencyFingerprint?: Prisma.StringNullableFilter<"Order"> | string | null
   capturedAfterCutoff?: Prisma.BoolFilter<"Order"> | boolean
@@ -327,6 +339,7 @@ export type OrderWhereInput = {
   deliveries?: Prisma.OrderDeliveryListRelationFilter
   menuSlots?: Prisma.OrderMenuSlotListRelationFilter
   statusEvents?: Prisma.OrderStatusEventListRelationFilter
+  menuChanges?: Prisma.OrderMenuChangeListRelationFilter
 }
 
 export type OrderOrderByWithRelationInput = {
@@ -338,6 +351,7 @@ export type OrderOrderByWithRelationInput = {
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  offerVersion?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrderInput | Prisma.SortOrder
   idempotencyFingerprint?: Prisma.SortOrderInput | Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
@@ -354,6 +368,7 @@ export type OrderOrderByWithRelationInput = {
   deliveries?: Prisma.OrderDeliveryOrderByRelationAggregateInput
   menuSlots?: Prisma.OrderMenuSlotOrderByRelationAggregateInput
   statusEvents?: Prisma.OrderStatusEventOrderByRelationAggregateInput
+  menuChanges?: Prisma.OrderMenuChangeOrderByRelationAggregateInput
 }
 
 export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -369,6 +384,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   cycleId?: Prisma.UuidFilter<"Order"> | string
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   version?: Prisma.IntFilter<"Order"> | number
+  offerVersion?: Prisma.IntFilter<"Order"> | number
   idempotencyFingerprint?: Prisma.StringNullableFilter<"Order"> | string | null
   capturedAfterCutoff?: Prisma.BoolFilter<"Order"> | boolean
   planTitleSnapshot?: Prisma.StringFilter<"Order"> | string
@@ -384,6 +400,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   deliveries?: Prisma.OrderDeliveryListRelationFilter
   menuSlots?: Prisma.OrderMenuSlotListRelationFilter
   statusEvents?: Prisma.OrderStatusEventListRelationFilter
+  menuChanges?: Prisma.OrderMenuChangeListRelationFilter
 }, "id" | "folio" | "idempotencyKey">
 
 export type OrderOrderByWithAggregationInput = {
@@ -395,6 +412,7 @@ export type OrderOrderByWithAggregationInput = {
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  offerVersion?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrderInput | Prisma.SortOrder
   idempotencyFingerprint?: Prisma.SortOrderInput | Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
@@ -423,6 +441,7 @@ export type OrderScalarWhereWithAggregatesInput = {
   folio?: Prisma.IntWithAggregatesFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
   version?: Prisma.IntWithAggregatesFilter<"Order"> | number
+  offerVersion?: Prisma.IntWithAggregatesFilter<"Order"> | number
   idempotencyKey?: Prisma.UuidNullableWithAggregatesFilter<"Order"> | string | null
   idempotencyFingerprint?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   capturedAfterCutoff?: Prisma.BoolWithAggregatesFilter<"Order"> | boolean
@@ -439,6 +458,7 @@ export type OrderCreateInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -455,6 +475,7 @@ export type OrderCreateInput = {
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateInput = {
@@ -466,6 +487,7 @@ export type OrderUncheckedCreateInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -478,12 +500,14 @@ export type OrderUncheckedCreateInput = {
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -500,6 +524,7 @@ export type OrderUpdateInput = {
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateInput = {
@@ -511,6 +536,7 @@ export type OrderUncheckedUpdateInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -523,6 +549,7 @@ export type OrderUncheckedUpdateInput = {
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateManyInput = {
@@ -534,6 +561,7 @@ export type OrderCreateManyInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -549,6 +577,7 @@ export type OrderUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -569,6 +598,7 @@ export type OrderUncheckedUpdateManyInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -599,6 +629,7 @@ export type OrderCountOrderByAggregateInput = {
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  offerVersion?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   idempotencyFingerprint?: Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
@@ -613,6 +644,7 @@ export type OrderCountOrderByAggregateInput = {
 export type OrderAvgOrderByAggregateInput = {
   folio?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  offerVersion?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
 }
 
@@ -625,6 +657,7 @@ export type OrderMaxOrderByAggregateInput = {
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  offerVersion?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   idempotencyFingerprint?: Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
@@ -645,6 +678,7 @@ export type OrderMinOrderByAggregateInput = {
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  offerVersion?: Prisma.SortOrder
   idempotencyKey?: Prisma.SortOrder
   idempotencyFingerprint?: Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
@@ -659,6 +693,7 @@ export type OrderMinOrderByAggregateInput = {
 export type OrderSumOrderByAggregateInput = {
   folio?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  offerVersion?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
 }
 
@@ -839,6 +874,20 @@ export type OrderUpdateOneRequiredWithoutMenuSlotsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutMenuSlotsInput, Prisma.OrderUpdateWithoutMenuSlotsInput>, Prisma.OrderUncheckedUpdateWithoutMenuSlotsInput>
 }
 
+export type OrderCreateNestedOneWithoutMenuChangesInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutMenuChangesInput, Prisma.OrderUncheckedCreateWithoutMenuChangesInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutMenuChangesInput
+  connect?: Prisma.OrderWhereUniqueInput
+}
+
+export type OrderUpdateOneRequiredWithoutMenuChangesNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutMenuChangesInput, Prisma.OrderUncheckedCreateWithoutMenuChangesInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutMenuChangesInput
+  upsert?: Prisma.OrderUpsertWithoutMenuChangesInput
+  connect?: Prisma.OrderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutMenuChangesInput, Prisma.OrderUpdateWithoutMenuChangesInput>, Prisma.OrderUncheckedUpdateWithoutMenuChangesInput>
+}
+
 export type OrderCreateNestedManyWithoutCycleInput = {
   create?: Prisma.XOR<Prisma.OrderCreateWithoutCycleInput, Prisma.OrderUncheckedCreateWithoutCycleInput> | Prisma.OrderCreateWithoutCycleInput[] | Prisma.OrderUncheckedCreateWithoutCycleInput[]
   connectOrCreate?: Prisma.OrderCreateOrConnectWithoutCycleInput | Prisma.OrderCreateOrConnectWithoutCycleInput[]
@@ -886,6 +935,7 @@ export type OrderCreateWithoutSourceWeeklyMenuInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -901,6 +951,7 @@ export type OrderCreateWithoutSourceWeeklyMenuInput = {
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutSourceWeeklyMenuInput = {
@@ -911,6 +962,7 @@ export type OrderUncheckedCreateWithoutSourceWeeklyMenuInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -923,6 +975,7 @@ export type OrderUncheckedCreateWithoutSourceWeeklyMenuInput = {
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutSourceWeeklyMenuInput = {
@@ -963,6 +1016,7 @@ export type OrderScalarWhereInput = {
   folio?: Prisma.IntFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   version?: Prisma.IntFilter<"Order"> | number
+  offerVersion?: Prisma.IntFilter<"Order"> | number
   idempotencyKey?: Prisma.UuidNullableFilter<"Order"> | string | null
   idempotencyFingerprint?: Prisma.StringNullableFilter<"Order"> | string | null
   capturedAfterCutoff?: Prisma.BoolFilter<"Order"> | boolean
@@ -979,6 +1033,7 @@ export type OrderCreateWithoutCustomerInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -994,6 +1049,7 @@ export type OrderCreateWithoutCustomerInput = {
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutCustomerInput = {
@@ -1004,6 +1060,7 @@ export type OrderUncheckedCreateWithoutCustomerInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1016,6 +1073,7 @@ export type OrderUncheckedCreateWithoutCustomerInput = {
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutCustomerInput = {
@@ -1049,6 +1107,7 @@ export type OrderCreateWithoutPlanVariantInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1064,6 +1123,7 @@ export type OrderCreateWithoutPlanVariantInput = {
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutPlanVariantInput = {
@@ -1074,6 +1134,7 @@ export type OrderUncheckedCreateWithoutPlanVariantInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1086,6 +1147,7 @@ export type OrderUncheckedCreateWithoutPlanVariantInput = {
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutPlanVariantInput = {
@@ -1119,6 +1181,7 @@ export type OrderCreateWithoutDeliveriesInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1134,6 +1197,7 @@ export type OrderCreateWithoutDeliveriesInput = {
   cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutDeliveriesInput = {
@@ -1145,6 +1209,7 @@ export type OrderUncheckedCreateWithoutDeliveriesInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1156,6 +1221,7 @@ export type OrderUncheckedCreateWithoutDeliveriesInput = {
   updatedAt?: Date | string
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutDeliveriesInput = {
@@ -1178,6 +1244,7 @@ export type OrderUpdateWithoutDeliveriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1193,6 +1260,7 @@ export type OrderUpdateWithoutDeliveriesInput = {
   cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutDeliveriesInput = {
@@ -1204,6 +1272,7 @@ export type OrderUncheckedUpdateWithoutDeliveriesInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1215,6 +1284,7 @@ export type OrderUncheckedUpdateWithoutDeliveriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutStatusEventsInput = {
@@ -1222,6 +1292,7 @@ export type OrderCreateWithoutStatusEventsInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1237,6 +1308,7 @@ export type OrderCreateWithoutStatusEventsInput = {
   cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutStatusEventsInput = {
@@ -1248,6 +1320,7 @@ export type OrderUncheckedCreateWithoutStatusEventsInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1259,6 +1332,7 @@ export type OrderUncheckedCreateWithoutStatusEventsInput = {
   updatedAt?: Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutStatusEventsInput = {
@@ -1281,6 +1355,7 @@ export type OrderUpdateWithoutStatusEventsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1296,6 +1371,7 @@ export type OrderUpdateWithoutStatusEventsInput = {
   cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutStatusEventsInput = {
@@ -1307,6 +1383,7 @@ export type OrderUncheckedUpdateWithoutStatusEventsInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1318,6 +1395,7 @@ export type OrderUncheckedUpdateWithoutStatusEventsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutMenuSlotsInput = {
@@ -1325,6 +1403,7 @@ export type OrderCreateWithoutMenuSlotsInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1340,6 +1419,7 @@ export type OrderCreateWithoutMenuSlotsInput = {
   cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutMenuSlotsInput = {
@@ -1351,6 +1431,7 @@ export type OrderUncheckedCreateWithoutMenuSlotsInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1362,6 +1443,7 @@ export type OrderUncheckedCreateWithoutMenuSlotsInput = {
   updatedAt?: Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutMenuSlotsInput = {
@@ -1384,6 +1466,7 @@ export type OrderUpdateWithoutMenuSlotsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1399,6 +1482,7 @@ export type OrderUpdateWithoutMenuSlotsInput = {
   cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
@@ -1410,6 +1494,7 @@ export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1421,6 +1506,118 @@ export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderCreateWithoutMenuChangesInput = {
+  id?: string
+  folio?: number
+  status?: $Enums.OrderStatus
+  version?: number
+  offerVersion?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
+  capturedAfterCutoff?: boolean
+  planTitleSnapshot: string
+  planVariantTitleSnapshot: string
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
+  planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
+  sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
+  deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
+  menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
+}
+
+export type OrderUncheckedCreateWithoutMenuChangesInput = {
+  id?: string
+  customerId: string
+  planVariantId?: string | null
+  sourceWeeklyMenuId?: string | null
+  cycleId: string
+  folio?: number
+  status?: $Enums.OrderStatus
+  version?: number
+  offerVersion?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
+  capturedAfterCutoff?: boolean
+  planTitleSnapshot: string
+  planVariantTitleSnapshot: string
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
+  menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
+}
+
+export type OrderCreateOrConnectWithoutMenuChangesInput = {
+  where: Prisma.OrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrderCreateWithoutMenuChangesInput, Prisma.OrderUncheckedCreateWithoutMenuChangesInput>
+}
+
+export type OrderUpsertWithoutMenuChangesInput = {
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutMenuChangesInput, Prisma.OrderUncheckedUpdateWithoutMenuChangesInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutMenuChangesInput, Prisma.OrderUncheckedCreateWithoutMenuChangesInput>
+  where?: Prisma.OrderWhereInput
+}
+
+export type OrderUpdateToOneWithWhereWithoutMenuChangesInput = {
+  where?: Prisma.OrderWhereInput
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutMenuChangesInput, Prisma.OrderUncheckedUpdateWithoutMenuChangesInput>
+}
+
+export type OrderUpdateWithoutMenuChangesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
+  planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
+  sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
+  deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
+  menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderUncheckedUpdateWithoutMenuChangesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cycleId?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
+  menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutCycleInput = {
@@ -1428,6 +1625,7 @@ export type OrderCreateWithoutCycleInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1443,6 +1641,7 @@ export type OrderCreateWithoutCycleInput = {
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutCycleInput = {
@@ -1453,6 +1652,7 @@ export type OrderUncheckedCreateWithoutCycleInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1465,6 +1665,7 @@ export type OrderUncheckedCreateWithoutCycleInput = {
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutCycleInput = {
@@ -1501,6 +1702,7 @@ export type OrderCreateManySourceWeeklyMenuInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1516,6 +1718,7 @@ export type OrderUpdateWithoutSourceWeeklyMenuInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1531,6 +1734,7 @@ export type OrderUpdateWithoutSourceWeeklyMenuInput = {
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutSourceWeeklyMenuInput = {
@@ -1541,6 +1745,7 @@ export type OrderUncheckedUpdateWithoutSourceWeeklyMenuInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1553,6 +1758,7 @@ export type OrderUncheckedUpdateWithoutSourceWeeklyMenuInput = {
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutSourceWeeklyMenuInput = {
@@ -1563,6 +1769,7 @@ export type OrderUncheckedUpdateManyWithoutSourceWeeklyMenuInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1582,6 +1789,7 @@ export type OrderCreateManyCustomerInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1597,6 +1805,7 @@ export type OrderUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1612,6 +1821,7 @@ export type OrderUpdateWithoutCustomerInput = {
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutCustomerInput = {
@@ -1622,6 +1832,7 @@ export type OrderUncheckedUpdateWithoutCustomerInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1634,6 +1845,7 @@ export type OrderUncheckedUpdateWithoutCustomerInput = {
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutCustomerInput = {
@@ -1644,6 +1856,7 @@ export type OrderUncheckedUpdateManyWithoutCustomerInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1663,6 +1876,7 @@ export type OrderCreateManyPlanVariantInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1678,6 +1892,7 @@ export type OrderUpdateWithoutPlanVariantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1693,6 +1908,7 @@ export type OrderUpdateWithoutPlanVariantInput = {
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutPlanVariantInput = {
@@ -1703,6 +1919,7 @@ export type OrderUncheckedUpdateWithoutPlanVariantInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1715,6 +1932,7 @@ export type OrderUncheckedUpdateWithoutPlanVariantInput = {
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutPlanVariantInput = {
@@ -1725,6 +1943,7 @@ export type OrderUncheckedUpdateManyWithoutPlanVariantInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1744,6 +1963,7 @@ export type OrderCreateManyCycleInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  offerVersion?: number
   idempotencyKey?: string | null
   idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
@@ -1759,6 +1979,7 @@ export type OrderUpdateWithoutCycleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1774,6 +1995,7 @@ export type OrderUpdateWithoutCycleInput = {
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutCycleInput = {
@@ -1784,6 +2006,7 @@ export type OrderUncheckedUpdateWithoutCycleInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1796,6 +2019,7 @@ export type OrderUncheckedUpdateWithoutCycleInput = {
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutCycleInput = {
@@ -1806,6 +2030,7 @@ export type OrderUncheckedUpdateManyWithoutCycleInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
   idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1826,12 +2051,14 @@ export type OrderCountOutputType = {
   deliveries: number
   menuSlots: number
   statusEvents: number
+  menuChanges: number
 }
 
 export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   deliveries?: boolean | OrderCountOutputTypeCountDeliveriesArgs
   menuSlots?: boolean | OrderCountOutputTypeCountMenuSlotsArgs
   statusEvents?: boolean | OrderCountOutputTypeCountStatusEventsArgs
+  menuChanges?: boolean | OrderCountOutputTypeCountMenuChangesArgs
 }
 
 /**
@@ -1865,6 +2092,13 @@ export type OrderCountOutputTypeCountStatusEventsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.OrderStatusEventWhereInput
 }
 
+/**
+ * OrderCountOutputType without action
+ */
+export type OrderCountOutputTypeCountMenuChangesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrderMenuChangeWhereInput
+}
+
 
 export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1875,6 +2109,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   folio?: boolean
   status?: boolean
   version?: boolean
+  offerVersion?: boolean
   idempotencyKey?: boolean
   idempotencyFingerprint?: boolean
   capturedAfterCutoff?: boolean
@@ -1891,6 +2126,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   deliveries?: boolean | Prisma.Order$deliveriesArgs<ExtArgs>
   menuSlots?: boolean | Prisma.Order$menuSlotsArgs<ExtArgs>
   statusEvents?: boolean | Prisma.Order$statusEventsArgs<ExtArgs>
+  menuChanges?: boolean | Prisma.Order$menuChangesArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
@@ -1903,6 +2139,7 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   folio?: boolean
   status?: boolean
   version?: boolean
+  offerVersion?: boolean
   idempotencyKey?: boolean
   idempotencyFingerprint?: boolean
   capturedAfterCutoff?: boolean
@@ -1927,6 +2164,7 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   folio?: boolean
   status?: boolean
   version?: boolean
+  offerVersion?: boolean
   idempotencyKey?: boolean
   idempotencyFingerprint?: boolean
   capturedAfterCutoff?: boolean
@@ -1951,6 +2189,7 @@ export type OrderSelectScalar = {
   folio?: boolean
   status?: boolean
   version?: boolean
+  offerVersion?: boolean
   idempotencyKey?: boolean
   idempotencyFingerprint?: boolean
   capturedAfterCutoff?: boolean
@@ -1962,7 +2201,7 @@ export type OrderSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "planVariantId" | "sourceWeeklyMenuId" | "cycleId" | "folio" | "status" | "version" | "idempotencyKey" | "idempotencyFingerprint" | "capturedAfterCutoff" | "planTitleSnapshot" | "planVariantTitleSnapshot" | "priceSnapshot" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "planVariantId" | "sourceWeeklyMenuId" | "cycleId" | "folio" | "status" | "version" | "offerVersion" | "idempotencyKey" | "idempotencyFingerprint" | "capturedAfterCutoff" | "planTitleSnapshot" | "planVariantTitleSnapshot" | "priceSnapshot" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
@@ -1971,6 +2210,7 @@ export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   deliveries?: boolean | Prisma.Order$deliveriesArgs<ExtArgs>
   menuSlots?: boolean | Prisma.Order$menuSlotsArgs<ExtArgs>
   statusEvents?: boolean | Prisma.Order$statusEventsArgs<ExtArgs>
+  menuChanges?: boolean | Prisma.Order$menuChangesArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1996,6 +2236,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     deliveries: Prisma.$OrderDeliveryPayload<ExtArgs>[]
     menuSlots: Prisma.$OrderMenuSlotPayload<ExtArgs>[]
     statusEvents: Prisma.$OrderStatusEventPayload<ExtArgs>[]
+    menuChanges: Prisma.$OrderMenuChangePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2006,6 +2247,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     folio: number
     status: $Enums.OrderStatus
     version: number
+    offerVersion: number
     idempotencyKey: string | null
     idempotencyFingerprint: string | null
     capturedAfterCutoff: boolean
@@ -2416,6 +2658,7 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
   deliveries<T extends Prisma.Order$deliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$deliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   menuSlots<T extends Prisma.Order$menuSlotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$menuSlotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderMenuSlotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   statusEvents<T extends Prisma.Order$statusEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$statusEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderStatusEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  menuChanges<T extends Prisma.Order$menuChangesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$menuChangesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderMenuChangePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2453,6 +2696,7 @@ export interface OrderFieldRefs {
   readonly folio: Prisma.FieldRef<"Order", 'Int'>
   readonly status: Prisma.FieldRef<"Order", 'OrderStatus'>
   readonly version: Prisma.FieldRef<"Order", 'Int'>
+  readonly offerVersion: Prisma.FieldRef<"Order", 'Int'>
   readonly idempotencyKey: Prisma.FieldRef<"Order", 'String'>
   readonly idempotencyFingerprint: Prisma.FieldRef<"Order", 'String'>
   readonly capturedAfterCutoff: Prisma.FieldRef<"Order", 'Boolean'>
@@ -2970,6 +3214,30 @@ export type Order$statusEventsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.OrderStatusEventScalarFieldEnum | Prisma.OrderStatusEventScalarFieldEnum[]
+}
+
+/**
+ * Order.menuChanges
+ */
+export type Order$menuChangesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OrderMenuChange
+   */
+  select?: Prisma.OrderMenuChangeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OrderMenuChange
+   */
+  omit?: Prisma.OrderMenuChangeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderMenuChangeInclude<ExtArgs> | null
+  where?: Prisma.OrderMenuChangeWhereInput
+  orderBy?: Prisma.OrderMenuChangeOrderByWithRelationInput | Prisma.OrderMenuChangeOrderByWithRelationInput[]
+  cursor?: Prisma.OrderMenuChangeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrderMenuChangeScalarFieldEnum | Prisma.OrderMenuChangeScalarFieldEnum[]
 }
 
 /**

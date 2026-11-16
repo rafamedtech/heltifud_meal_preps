@@ -7,6 +7,9 @@ const tx = vi.hoisted(() => ({
   planVariant: { findUnique: vi.fn() },
   weeklyMenu: { findFirst: vi.fn() },
   order: { create: vi.fn(), update: vi.fn(), findUnique: vi.fn() },
+  customerExclusion: { findMany: vi.fn() },
+  recipeIngredient: { findMany: vi.fn() },
+  $queryRaw: vi.fn(),
 }));
 vi.mock('../../layers/menu/server/utils/prisma', () => ({
   prisma: { ...tx, $transaction: (run: (client: typeof tx) => unknown) => run(tx) },
@@ -16,7 +19,7 @@ const CUSTOMER = '11111111-1111-4111-8111-111111111111';
 const VARIANT = '22222222-2222-4222-8222-222222222222';
 
 const dish = (componentRole: string, nombre: string) => ({
-  catalogItemId: null, componentRole, nombre, descripcion: '', calorias: 400, imagen: '', tipo: 'comida',
+  id: `component-${nombre}`, catalogItemId: `item-${nombre}`, componentRole, nombre, descripcion: '', calorias: 400, imagen: '', tipo: 'comida',
 });
 const menuDay = (dayOfWeek: string, order: number, complete = true) => ({
   dayOfWeek,
@@ -39,6 +42,7 @@ function mockContext(overrides: { daysCount?: number; cutoff?: string; tipoClien
   tx.weeklyMenu.findFirst.mockResolvedValue({
     id: 'menu-1',
     name: 'Semana 47',
+    version: 1,
     cycle: {
       id: 'cycle-1',
       weekStart: new Date('2026-11-16T00:00:00.000Z'),
@@ -56,10 +60,13 @@ function mockContext(overrides: { daysCount?: number; cutoff?: string; tipoClien
   tx.order.create.mockImplementation(({ data }: { data: { deliveries: { create: Array<{ sequence: number }> } } }) =>
     Promise.resolve({ id: 'order-1', deliveries: data.deliveries.create.map((item) => ({ id: `delivery-${item.sequence}`, sequence: item.sequence })) }));
   tx.order.findUnique.mockResolvedValue(null);
+  tx.customerExclusion.findMany.mockResolvedValue([]);
+  tx.recipeIngredient.findMany.mockResolvedValue([]);
+  tx.$queryRaw.mockResolvedValue([{ version: 1 }]);
 }
 
 const input = (days: string[], deliveries: unknown[] = []) =>
-  ({ customerId: CUSTOMER, planVariantId: VARIANT, days, deliveries, notes: '' }) as Parameters<typeof createOrder>[0];
+  ({ customerId: CUSTOMER, planVariantId: VARIANT, days, deliveries, notes: '', offerVersion: 1 }) as Parameters<typeof createOrder>[0];
 
 describe('createOrder', () => {
   beforeEach(() => {
@@ -129,6 +136,63 @@ describe('createOrder', () => {
   it('answers 409 when the open week has no menu for the customer type', async () => {
     tx.weeklyMenu.findFirst.mockResolvedValue(null);
     await expect(createOrder(input(['LUNES', 'MARTES', 'JUEVES']))).rejects.toMatchObject({ statusCode: 409 });
+  });
+
+  it('stores the offer version and rejects one that changed while configuring', async () => {
+    await createOrder(input(['LUNES', 'MARTES', 'JUEVES']));
+    expect(tx.order.create.mock.calls[0]![0].data.offerVersion).toBe(1);
+
+    vi.clearAllMocks();
+    mockContext();
+    await expect(createOrder({ ...input(['LUNES', 'MARTES', 'JUEVES']), offerVersion: 2 }))
+      .rejects.toMatchObject({ statusCode: 409, data: { code: 'OFFER_VERSION_CONFLICT' } });
+    // The menu was saved after it was read: the locked version is newer.
+    tx.$queryRaw.mockResolvedValue([{ version: 2 }]);
+    await expect(createOrder(input(['LUNES', 'MARTES', 'JUEVES'])))
+      .rejects.toMatchObject({ statusCode: 409, data: { code: 'OFFER_VERSION_CONFLICT' } });
+    expect(tx.order.create).not.toHaveBeenCalled();
+  });
+
+  it('swaps an excluded dish for the closest compatible one and records it', async () => {
+    tx.customerExclusion.findMany.mockResolvedValue([
+      { id: 'ex-1', kind: 'ALERGIA', ingredientId: 'cacahuate', catalogItemId: null, ingredient: { nombre: 'Cacahuate' }, catalogItem: null },
+    ]);
+    // Monday's lunch has peanut; every other dish has a recipe without it.
+    tx.recipeIngredient.findMany.mockImplementation(({ where }: { where: { foodCatalogItemId: { in: string[] } } }) =>
+      Promise.resolve(where.foodCatalogItemId.in.map((id) => ({ foodCatalogItemId: id, ingredientId: id === 'item-Comida LUNES' ? 'cacahuate' : 'pollo' }))));
+
+    await createOrder(input(['LUNES', 'MARTES', 'JUEVES']), { id: '44444444-4444-4444-8444-444444444444', label: 'admin@heltifud' });
+
+    const { menuSlots, menuChanges } = tx.order.update.mock.calls[0]![0].data;
+    // Same meal time, nearest day of the menu: Tuesday's lunch.
+    expect(menuSlots.create[0].components.create[0]).toMatchObject({
+      componentRole: 'PLATILLO_PRINCIPAL', position: 0, nombre: 'Comida MARTES', sourceDayOfWeek: 'MARTES', sourceSlotType: 'COMIDA', isSubstitution: true,
+    });
+    expect(menuSlots.create[1].components.create[0]).toMatchObject({ nombre: 'Comida MARTES', isSubstitution: false });
+    expect(menuChanges.create).toEqual([expect.objectContaining({
+      orderVersion: 1, kind: 'AUTOMATICA', dayOfWeek: 'LUNES', slotType: 'COMIDA', fromNombre: 'Comida LUNES', toNombre: 'Comida MARTES',
+      reason: 'Alergia: Cacahuate', actorLabel: 'admin@heltifud',
+    })]);
+  });
+
+  it('rejects the order when the menu has no compatible dish for an exclusion', async () => {
+    tx.customerExclusion.findMany.mockResolvedValue([
+      { id: 'ex-1', kind: 'INGREDIENTE', ingredientId: 'pollo', catalogItemId: null, ingredient: { nombre: 'Pollo' }, catalogItem: null },
+    ]);
+    tx.recipeIngredient.findMany.mockImplementation(({ where }: { where: { foodCatalogItemId: { in: string[] } } }) =>
+      Promise.resolve(where.foodCatalogItemId.in.map((id) => ({ foodCatalogItemId: id, ingredientId: id.includes('Comida') ? 'pollo' : 'res' }))));
+
+    await expect(createOrder(input(['LUNES', 'MARTES', 'JUEVES']))).rejects.toMatchObject({ statusCode: 409, data: { code: 'NO_COMPATIBLE_DISH' } });
+  });
+
+  it('keeps a dish without recipe and leaves it to review when the customer has allergies', async () => {
+    tx.customerExclusion.findMany.mockResolvedValue([
+      { id: 'ex-1', kind: 'ALERGIA', ingredientId: 'cacahuate', catalogItemId: null, ingredient: { nombre: 'Cacahuate' }, catalogItem: null },
+    ]);
+    await createOrder(input(['LUNES', 'MARTES', 'JUEVES']));
+    const { menuSlots, menuChanges } = tx.order.update.mock.calls[0]![0].data;
+    expect(menuSlots.create[0].components.create[0]).toMatchObject({ nombre: 'Comida LUNES', isSubstitution: false });
+    expect(menuChanges.create).toEqual([]);
   });
 
   it('marks orders captured after the cutoff', async () => {

@@ -43,6 +43,7 @@ describe('order schemas', () => {
       { sequence: 2 as const, deliveryDay: 'JUEVES' as const, locationNumber: 2 as const },
     ],
     notes: '',
+    offerVersion: 1,
   };
   const savedDeliveries = [
     { sequence: 1 as const, scheduledDate: '2026-08-24', locationNumber: 1 as const },
@@ -83,9 +84,10 @@ describe('order schemas', () => {
     expect(paths([savedDeliveries[0], savedDeliveries[0]])).toContain('deliveries');
   });
 
-  it('accepts a personalized menu snapshot', () => {
-    const result = orderUpdateInputSchema.safeParse({
+  it('accepts places that keep a saved dish or take one from the menu, never both', () => {
+    const parse = (component: Record<string, unknown>) => orderUpdateInputSchema.safeParse({
       version: 1,
+      offerVersion: 3,
       deliveries: savedDeliveries,
       notes: 'Sin cebolla',
       menuSlots: [{
@@ -93,19 +95,19 @@ describe('order schemas', () => {
         dayOrder: 1,
         slotType: 'COMIDA',
         contenedor: 'Rectangular',
-        components: [{
-          catalogItemId: null,
-          componentRole: 'PLATILLO_PRINCIPAL',
-          position: 0,
-          nombre: 'Pechuga a la plancha',
-          descripcion: '',
-          calorias: 476,
-          imagen: '',
-          tipo: 'comida',
-        }],
+        components: [{ componentRole: 'PLATILLO_PRINCIPAL', position: 0, ...component }],
       }],
     });
+    const saved = '11111111-1111-4111-8111-111111111111';
+    const option = '22222222-2222-4222-8222-222222222222';
 
+    expect(parse({ orderComponentId: saved }).success).toBe(true);
+    expect(parse({ menuComponentId: option }).success).toBe(true);
+    expect(parse({ orderComponentId: saved, menuComponentId: option }).success).toBe(false);
+    expect(parse({}).success).toBe(false);
+    // Dish data from the browser is not accepted.
+    expect(parse({ menuComponentId: option, nombre: 'Inventado', calorias: 1 }).data?.menuSlots[0]!.components[0]).not.toHaveProperty('nombre');
+    const result = parse({ orderComponentId: saved });
     expect(result.success).toBe(true);
   });
 });

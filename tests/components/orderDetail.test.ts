@@ -18,7 +18,11 @@ const order = {
     { id: 'delivery-2', sequence: 2, scheduledDate: '2026-09-17', locationNumber: 1, address: 'Zona Río, Tijuana', status: 'PENDING', deliveredAt: null, notes: '' },
   ],
   createdAt: '2026-09-10T12:00:00Z', updatedAt: '2026-09-10T12:00:00Z',
-  planVariantId: 'variant-1', sourceWeeklyMenuId: 'menu-1', sourceWeeklyMenuName: 'Semana 37', notes: '',
+  planVariantId: 'variant-1', sourceWeeklyMenuId: 'menu-1', sourceWeeklyMenuName: 'Semana 37', notes: '', offerVersion: 3,
+  menuChanges: [{
+    id: 'change-1', orderVersion: 1, kind: 'AUTOMATICA', dayOfWeek: 'LUNES', slotType: 'COMIDA', componentRole: 'PLATILLO_PRINCIPAL', position: 0,
+    fromNombre: 'Camarones', toNombre: 'Pollo al limón', reason: 'Alergia: Camarón', actorLabel: 'admin@heltifud', createdAt: '2026-09-10T12:00:00Z'
+  }],
   customer: {
     id: 'customer-1', nombre: 'Ana López', telefono: '6641234567', correoElectronico: '',
     ubicacion1: 'Zona Río, Tijuana', ubicacion2: '', source: 'whatsapp', status: 'activo', tipoCliente: 'menu',
@@ -27,16 +31,33 @@ const order = {
   menuSlots: [{
     id: 'slot-1', deliverySequence: 1, dayOfWeek: 'LUNES', dayOrder: 1, slotType: 'COMIDA', contenedor: '',
     components: [{
-      id: 'component-1', catalogItemId: '11111111-1111-4111-8111-111111111111', componentRole: 'PLATILLO_PRINCIPAL', position: 0,
+      id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', catalogItemId: '11111111-1111-4111-8111-111111111111', componentRole: 'PLATILLO_PRINCIPAL', position: 0,
       nombre: 'Pollo al limón', descripcion: '', calorias: 420, imagen: '', tipo: 'proteina'
     }]
   }]
 };
 
+const option = (id: string, componentRole: string, dayOfWeek: string, nombre: string, conflict: Record<string, unknown> = { status: 'ok' }) => ({
+  id, componentRole, dayOfWeek, slotType: 'COMIDA', catalogItemId: `item-${id}`, nombre, descripcion: '', calorias: 400, imagen: '', tipo: 'proteina', conflict
+});
+const personalization = {
+  menu: { id: 'menu-1', name: 'Semana 37', version: 3 },
+  menuChanged: false,
+  options: [
+    { ...option('10000000-0000-4000-8000-000000000001', 'PLATILLO_PRINCIPAL', 'LUNES', 'Pollo al limón'), catalogItemId: '11111111-1111-4111-8111-111111111111' },
+    option('20000000-0000-4000-8000-000000000002', 'PLATILLO_PRINCIPAL', 'MARTES', 'Salmón'),
+    option('30000000-0000-4000-8000-000000000003', 'PLATILLO_PRINCIPAL', 'MIERCOLES', 'Camarones', { status: 'excluded', reasons: ['Alergia: Camarón'] }),
+    option('40000000-0000-4000-8000-000000000004', 'GUARNICION_1', 'LUNES', 'Arroz')
+  ],
+  originals: { 'LUNES:COMIDA:PLATILLO_PRINCIPAL:0': '10000000-0000-4000-8000-000000000001' },
+  componentConflicts: { 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa': { status: 'ok' } },
+  exclusions: [{ id: 'ex-1', kind: 'ALERGIA', ingredientId: 'shrimp', catalogItemId: null, label: 'Camarón' }]
+};
+
 function mockFetch(orderResult: Record<string, unknown>) {
   fetchData.mockImplementation((url: string) => Promise.resolve(
-    url === '/api/food-components'
-      ? { data: ref([]), status: ref('success'), error: ref(null), refresh: vi.fn() }
+    url.endsWith('/personalization')
+      ? { data: ref(personalization), status: ref('success'), error: ref(null), refresh: vi.fn() }
       : { refresh: retry, ...orderResult }
   ));
 }
@@ -93,6 +114,37 @@ describe('OrderDetail', () => {
     expect(wrapper.text()).toContain('Día 1 · 1 tiempo');
     expect(wrapper.text()).toContain('Pollo al limón');
     expect(wrapper.find('a[href="/admin/pedidos"]').exists()).toBe(true);
+    wrapper.unmount();
+  });
+
+  it('swaps a dish only for menu options of its family, sends ids and can restore it', async () => {
+    save.mockImplementation(() => new Promise(() => {}));
+    const wrapper = await mountSuspended(OrderDetail, { global: { stubs: { UTooltip: { template: '<div><slot /></div>' } } } });
+    expect(wrapper.text()).toContain('Alergia: Camarón');
+    expect(wrapper.text()).toContain('Cambios en el menú');
+    expect(wrapper.text()).toContain('Camarones → Pollo al limón');
+
+    const select = wrapper.findAllComponents({ name: 'USelectMenu' }).at(-1)!;
+    const items = select.props('items') as Array<{ label: string, value: string, disabled: boolean }>;
+    expect(items.map(item => item.label)).toEqual(['Pollo al limón', 'Salmón', 'Camarones']);
+    expect(items.find(item => item.value === '30000000-0000-4000-8000-000000000003')!.disabled).toBe(true);
+
+    select.vm.$emit('update:modelValue', '20000000-0000-4000-8000-000000000002');
+    await flushPromises();
+    expect(wrapper.text()).toContain('Salmón');
+    expect(wrapper.text()).toContain('Sustituido · del martes');
+    expect(wrapper.find('button[aria-label="Restaurar platillo del menú"]').exists()).toBe(true);
+
+    await wrapper.get('form').trigger('submit');
+    await vi.waitFor(() => expect(save).toHaveBeenCalledOnce());
+    expect(save.mock.calls[0]![1]).toMatchObject({
+      offerVersion: 3,
+      menuSlots: [{ components: [{ componentRole: 'PLATILLO_PRINCIPAL', position: 0, menuComponentId: '20000000-0000-4000-8000-000000000002' }] }]
+    });
+    expect(save.mock.calls[0]![1].menuSlots[0].components[0]).not.toHaveProperty('nombre');
+
+    await wrapper.get('button[aria-label="Restaurar platillo del menú"]').trigger('click');
+    expect(wrapper.text()).not.toContain('Sustituido');
     wrapper.unmount();
   });
 

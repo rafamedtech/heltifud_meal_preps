@@ -343,6 +343,7 @@ export const orderCreateInputSchema = z.object({
   deliveries: z.array(orderCreateDeliveryInputSchema).max(2)
     .refine((deliveries) => new Set(deliveries.map((delivery) => delivery.sequence)).size === deliveries.length, 'No puedes repetir la misma entrega'),
   notes: optionalTrimmedString(1000),
+  offerVersion: z.number().int().positive(),
 });
 
 export const orderOptionsQuerySchema = z.object({
@@ -350,19 +351,13 @@ export const orderOptionsQuerySchema = z.object({
   planVariantId: z.string().uuid(),
 });
 
+// Exactly one source: the saved dish or an option of the week's menu.
 export const orderMenuComponentInputSchema = z.object({
-  catalogItemId: z.string().uuid().nullable(),
   componentRole: z.enum(COMPONENT_ROLE_VALUES),
   position: z.number().int().min(0),
-  nombre: z.string().trim().min(1, 'El nombre del platillo es obligatorio').max(160),
-  descripcion: z.string().trim().max(1000),
-  calorias: z.number().int().min(0).max(10000),
-  imagen: z.string().trim().max(500),
-  tipo: z.string().trim().min(1, 'El tipo es obligatorio').max(80),
-  sourceDayOfWeek: z.enum(DAY_OF_WEEK_VALUES).nullable().default(null),
-  sourceSlotType: z.enum(SLOT_TYPE_VALUES).nullable().default(null),
-  isSubstitution: z.boolean().default(false),
-});
+  orderComponentId: z.string().uuid().optional(),
+  menuComponentId: z.string().uuid().optional(),
+}).refine((value) => Boolean(value.orderComponentId) !== Boolean(value.menuComponentId), 'Elige un platillo para este lugar');
 
 export const orderMenuSlotInputSchema = z.object({
   dayOfWeek: z.enum(DAY_OF_WEEK_VALUES),
@@ -377,6 +372,7 @@ export const orderUpdateInputSchema = z.object({
   deliveries: orderDeliveriesInputSchema,
   notes: optionalTrimmedString(1000),
   menuSlots: z.array(orderMenuSlotInputSchema).min(1).max(35),
+  offerVersion: z.number().int().positive(),
 }).strict().superRefine((value, ctx) => {
   const slots = new Set<string>();
   value.menuSlots.forEach((slot, index) => {
@@ -459,3 +455,15 @@ export const weeklyCycleUpdateInputSchema = z.object({
 }).refine((value) => value.status !== undefined || value.orderCutoffAt !== undefined, {
   message: 'No hay cambios que guardar',
 });
+
+const idListSchema = z.array(z.string().trim().min(1).max(64)).max(100)
+  .refine((ids) => new Set(ids).size === ids.length, 'No repitas elementos');
+
+export const customerExclusionsInputSchema = z.object({
+  allergyIngredientIds: idListSchema,
+  ingredientIds: idListSchema,
+  catalogItemIds: idListSchema,
+}).strict().refine(
+  (value) => !value.allergyIngredientIds.some((id) => value.ingredientIds.includes(id)),
+  { path: ['ingredientIds'], message: 'Un ingrediente con alergia ya está excluido' },
+);

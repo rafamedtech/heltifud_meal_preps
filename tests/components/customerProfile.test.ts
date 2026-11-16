@@ -7,6 +7,7 @@ import CustomerProfile from '../../layers/admin/app/pages/admin/clientes/[id].vu
 const { fetchProfile, retry } = vi.hoisted(() => ({ fetchProfile: vi.fn(), retry: vi.fn() }));
 mockNuxtImport('useFetch', () => fetchProfile);
 mockComponent('CustomerOrderHistory', () => ({ template: '<div />' }));
+mockComponent('CustomerExclusions', () => ({ template: '<div />' }));
 mockNuxtImport('useRoute', () => () => ({ params: { id: 'customer-1' } }));
 
 const customer = {
