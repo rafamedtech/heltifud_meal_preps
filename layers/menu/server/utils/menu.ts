@@ -6,11 +6,14 @@ import type {
   DayMenu,
   FoodItemDetail,
   MenuSlot,
+  MenuType,
   SlotKey,
   WeeklyMenu,
   WeeklyMenuInput
 } from "~~/layers/menu/shared/types/types"
+import { menuCycleScope, weekStartOf } from "~~/layers/menu/shared/utils/weeklyCycle"
 
+import { ensureCycleForWeek, updateCycle } from "./cycles"
 import { prisma } from "./prisma"
 
 const DAY_ORDER: Record<DayOfWeek, number> = {
@@ -40,6 +43,8 @@ const ENUM_TO_SLOT: Record<SlotType, SlotKey> = {
 }
 
 const menuInclude = {
+  cycle: { select: { status: true, weekStart: true, orderCutoffAt: true } },
+  customer: { select: { nombre: true } },
   days: {
     orderBy: { order: "asc" as const },
     include: {
@@ -275,6 +280,12 @@ function mapMenu(record: WeeklyMenuRecord): WeeklyMenu {
   return {
     id: record.id,
     name: record.name,
+    cycleId: record.cycleId,
+    cycleStatus: record.cycle?.status ?? null,
+    weekStart: record.cycle?.weekStart.toISOString().slice(0, 10) ?? null,
+    orderCutoffAt: record.cycle?.orderCutoffAt.toISOString() ?? null,
+    customerId: record.customerId,
+    customerName: record.customer?.nombre ?? null,
     menuType: record.menuType,
     isActive: record.isActive,
     startDate: record.startDate.toISOString(),
@@ -312,38 +323,75 @@ function validatePayload(input: WeeklyMenuInput) {
   return normalizePayload(parsed.data)
 }
 
-async function assertNoOverlap(startDate: Date, endDate: Date, excludeId?: string) {
-  const overlap = await prisma.weeklyMenu.findFirst({
-    where: {
-      ...(excludeId ? { id: { not: excludeId } } : {}),
-      AND: [{ startDate: { lte: endDate } }, { endDate: { gte: startDate } }]
-    },
-    select: { id: true }
-  })
+const DAY_MS = 86_400_000
 
-  if (overlap) {
+function isUniqueViolation(error: unknown) {
+  return typeof error === "object" && error !== null && (error as { code?: string }).code === "P2002"
+}
+
+/**
+ * Resolves the week a menu belongs to and the key that keeps it unique there:
+ * one standard and one vegetarian menu per week, one personalised per customer.
+ */
+async function resolveCyclePlacement(payload: WeeklyMenuInputParsed) {
+  const weekStart = weekStartOf(payload.startDate)
+  const weekEnd = new Date(new Date(`${weekStart}T00:00:00.000Z`).getTime() + 7 * DAY_MS)
+
+  if (payload.endDate >= weekEnd) {
     throw createError({
-      statusCode: 409,
-      statusMessage: "El rango de fechas del menú se traslapa con otro menú existente."
+      statusCode: 400,
+      statusMessage: "El menú debe empezar y terminar dentro de la misma semana."
     })
+  }
+
+  const customerId = payload.menuType === "PERSONALIZADO" ? payload.customerId ?? null : null
+
+  if (customerId) {
+    const customer = await prisma.customer.findUnique({ where: { id: customerId }, select: { id: true } })
+    if (!customer) {
+      throw createError({ statusCode: 400, statusMessage: "El cliente del menú personalizado no existe." })
+    }
+  }
+
+  const cycle = await ensureCycleForWeek(weekStart)
+
+  return {
+    cycleId: cycle.id,
+    customerId,
+    cycleScope: menuCycleScope(payload.menuType, customerId),
+    isActive: cycle.status === "OPEN"
   }
 }
 
-export async function getActiveMenu() {
+function scopeConflict() {
+  return createError({
+    statusCode: 409,
+    statusMessage: "Ya existe un menú de ese tipo (o para ese cliente) en esa semana."
+  })
+}
+
+/** Personalised menus are private to their customer and never served publicly. */
+export function publicMenuType(value: unknown): Exclude<MenuType, "PERSONALIZADO"> {
+  return value === "VEGETARIANO" ? "VEGETARIANO" : "ESTANDAR"
+}
+
+/** Menu of the week that is currently taking orders. */
+export async function getActiveMenu(menuType: Exclude<MenuType, "PERSONALIZADO"> = "ESTANDAR") {
   const menu = await prisma.weeklyMenu.findFirst({
-    where: { isActive: true },
-    orderBy: { updatedAt: "desc" },
+    where: { menuType, cycle: { status: "OPEN" } },
+    orderBy: { startDate: "desc" },
     include: menuInclude
   })
 
   return menu ? mapMenu(menu) : null
 }
 
-export async function getNextMenu() {
+export async function getNextMenu(menuType: Exclude<MenuType, "PERSONALIZADO"> = "ESTANDAR") {
   const now = new Date()
 
   const menu = await prisma.weeklyMenu.findFirst({
     where: {
+      menuType,
       startDate: { gt: now }
     },
     orderBy: { startDate: "asc" },
@@ -378,41 +426,47 @@ export async function getMenuById(id: string) {
 export async function createWeeklyMenu(input: WeeklyMenuInput) {
   const payload = validatePayload(input)
 
-  await assertNoOverlap(payload.startDate, payload.endDate)
+  const placement = await resolveCyclePlacement(payload)
 
-  const hasActiveMenu = await prisma.weeklyMenu.count({
-    where: { isActive: true }
-  })
+  try {
+    const created = await prisma.weeklyMenu.create({
+      data: {
+        name: payload.name,
+        menuType: payload.menuType,
+        ...placement,
+        startDate: payload.startDate,
+        endDate: payload.endDate,
+        days: {
+          create: buildDays(payload.days)
+        }
+      },
+      include: menuInclude
+    })
 
-  const created = await prisma.weeklyMenu.create({
-    data: {
-      name: payload.name,
-      menuType: payload.menuType,
-      isActive: hasActiveMenu === 0,
-      startDate: payload.startDate,
-      endDate: payload.endDate,
-      days: {
-        create: buildDays(payload.days)
-      }
-    },
-    include: menuInclude
-  })
-
-  return mapMenu(created)
+    return mapMenu(created)
+  } catch (error) {
+    if (isUniqueViolation(error)) throw scopeConflict()
+    throw error
+  }
 }
 
 export async function updateWeeklyMenu(id: string, input: WeeklyMenuInput) {
   const existing = await prisma.weeklyMenu.findUnique({
     where: { id },
-    select: { id: true, menuType: true }
+    select: { id: true, menuType: true, customerId: true }
   })
 
   if (!existing) {
     throw createError({ statusCode: 404, statusMessage: "Menú no encontrado." })
   }
 
-  const payload = validatePayload({ ...input, menuType: input.menuType === undefined ? existing.menuType : input.menuType })
-  await assertNoOverlap(payload.startDate, payload.endDate, id)
+  // Older clients omit these fields; keep what the menu already has.
+  const payload = validatePayload({
+    ...input,
+    menuType: input.menuType === undefined ? existing.menuType : input.menuType,
+    customerId: input.customerId === undefined ? existing.customerId : input.customerId
+  })
+  const placement = await resolveCyclePlacement(payload)
 
   const existingDays = await prisma.menuDay.findMany({
     where: { weeklyMenuId: id },
@@ -436,6 +490,7 @@ export async function updateWeeklyMenu(id: string, input: WeeklyMenuInput) {
       data: {
         name: payload.name,
         menuType: payload.menuType,
+        ...placement,
         startDate: payload.startDate,
         endDate: payload.endDate
       }
@@ -473,41 +528,18 @@ export async function updateWeeklyMenu(id: string, input: WeeklyMenuInput) {
     })
   )
 
-  const results = await prisma.$transaction(operations)
-  const updated = results[results.length - 1] as WeeklyMenuRecord
+  try {
+    const results = await prisma.$transaction(operations)
+    const updated = results[results.length - 1] as WeeklyMenuRecord
 
-  return mapMenu(updated)
+    return mapMenu(updated)
+  } catch (error) {
+    if (isUniqueViolation(error)) throw scopeConflict()
+    throw error
+  }
 }
 
 export async function deleteWeeklyMenu(id: string) {
-  const existing = await prisma.weeklyMenu.findUnique({
-    where: { id },
-    select: { id: true, isActive: true }
-  })
-
-  if (!existing) {
-    throw createError({ statusCode: 404, statusMessage: "Menú no encontrado." })
-  }
-
-  await prisma.weeklyMenu.delete({ where: { id } })
-
-  if (existing.isActive) {
-    const fallbackMenu = await prisma.weeklyMenu.findFirst({
-      orderBy: [{ startDate: "desc" }, { createdAt: "desc" }]
-    })
-
-    if (fallbackMenu) {
-      await prisma.weeklyMenu.update({
-        where: { id: fallbackMenu.id },
-        data: { isActive: true }
-      })
-    }
-  }
-
-  return { id }
-}
-
-export async function setActiveMenu(id: string) {
   const existing = await prisma.weeklyMenu.findUnique({
     where: { id },
     select: { id: true }
@@ -517,16 +549,30 @@ export async function setActiveMenu(id: string) {
     throw createError({ statusCode: 404, statusMessage: "Menú no encontrado." })
   }
 
-  await prisma.$transaction([
-    prisma.weeklyMenu.updateMany({
-      where: { isActive: true },
-      data: { isActive: false }
-    }),
-    prisma.weeklyMenu.update({
-      where: { id },
-      data: { isActive: true }
-    })
-  ])
+  // The week keeps its status; no other menu is promoted in its place.
+  await prisma.weeklyMenu.delete({ where: { id } })
+
+  return { id }
+}
+
+/** Opens orders for the week of this menu. Kept for the existing activate route. */
+export async function setActiveMenu(id: string) {
+  const existing = await prisma.weeklyMenu.findUnique({
+    where: { id },
+    select: { id: true, cycleId: true, cycle: { select: { status: true } } }
+  })
+
+  if (!existing) {
+    throw createError({ statusCode: 404, statusMessage: "Menú no encontrado." })
+  }
+
+  if (!existing.cycleId) {
+    throw createError({ statusCode: 409, statusMessage: "Asigna el menú a una semana antes de abrir pedidos." })
+  }
+
+  if (existing.cycle?.status !== "OPEN") {
+    await updateCycle(existing.cycleId, { status: "OPEN" })
+  }
 
   const activeMenu = await prisma.weeklyMenu.findUnique({
     where: { id },

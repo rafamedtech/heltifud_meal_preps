@@ -97,6 +97,8 @@ describe("administrative API authorization", () => {
     ["/api/expenses/vendors", "GET"], ["/api/plans", "POST"],
     ["/api/plans/all", "GET"], ["/api/plans/plan-1", "PUT"],
     ["/api/orders", "GET"], ["/api/orders/order-1", "PUT"],
+    ["/api/cycles", "GET"], ["/api/cycles/cycle-1", "PUT"],
+    ["/api/operation-settings", "GET"], ["/api/operation-settings", "PUT"],
     ["/api/ingredients", "GET"], ["/api/ingredients", "POST"],
     ["/api/ingredients/", "GET"], ["/api/ingredients/?categoria=proteina", "POST"],
     ["/api/ingredients/ingredient-1", "PUT"], ["/api/ingredients/ingredient-1", "DELETE"]

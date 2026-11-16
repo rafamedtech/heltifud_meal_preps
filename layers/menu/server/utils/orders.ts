@@ -255,16 +255,29 @@ export async function createOrder(input: OrderCreateInput) {
   const data = parsed.data;
 
   const created = await prisma.$transaction(async (tx) => {
-    const [customer, variant, activeMenu] = await Promise.all([
+    const [customer, variant] = await Promise.all([
       tx.customer.findUnique({ where: { id: data.customerId } }),
       tx.planVariant.findUnique({ where: { id: data.planVariantId }, include: { plan: true } }),
-      tx.weeklyMenu.findFirst({ where: { isActive: true }, orderBy: { updatedAt: 'desc' }, include: menuSourceInclude }),
     ]);
     if (!customer) throw createError({ statusCode: 404, statusMessage: 'Cliente no encontrado.' });
+    // Each customer type orders from its own menu of the week taking orders.
+    const cycleScope = customer.tipoCliente === 'dieta'
+      ? customer.id
+      : customer.tipoCliente === 'vegetariano' ? 'VEGETARIANO' : 'ESTANDAR';
+    const activeMenu = await tx.weeklyMenu.findFirst({
+      where: { cycleScope, cycle: { status: 'OPEN' } },
+      orderBy: { startDate: 'desc' },
+      include: menuSourceInclude,
+    });
     if (!variant || !variant.isActive || !variant.plan.isActive) {
       throw createError({ statusCode: 404, statusMessage: 'La variante de plan no está disponible.' });
     }
-    if (!activeMenu) throw createError({ statusCode: 409, statusMessage: 'No existe un menú activo para crear el pedido.' });
+    if (!activeMenu) {
+      const missing = customer.tipoCliente === 'dieta'
+        ? 'un menú personalizado para este cliente'
+        : customer.tipoCliente === 'vegetariano' ? 'un menú vegetariano' : 'un menú estándar';
+      throw createError({ statusCode: 409, statusMessage: `La semana con pedidos abiertos no tiene ${missing}.` });
+    }
 
     const menuSlots = buildMenuSlots(activeMenu, variant.plan.slotTypes, variant.daysCount);
     if (!menuSlots.length) {

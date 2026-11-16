@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import type { TableColumn } from "@nuxt/ui"
-import type { WeeklyMenu } from "~~/layers/menu/shared/types/types"
+import type { DropdownMenuItem, TableColumn } from "@nuxt/ui"
+import { operationSettingsInputSchema } from "~~/layers/menu/shared/types/menuSchema"
+import { MENU_TYPE_OPTIONS } from "~~/layers/menu/shared/types/types"
+import type { CycleStatusValue, OperationSettingsInput, WeeklyMenu } from "~~/layers/menu/shared/types/types"
+import { customerDeliveryDays } from "~~/layers/menu/shared/utils/customerDeliveryDays"
+import { CYCLE_STATUS_LABELS, CYCLE_TRANSITIONS } from "~~/layers/menu/shared/utils/weeklyCycle"
 
 const {
   data: menus,
@@ -11,7 +15,8 @@ const {
 })
 
 const isLoading = computed(() => status.value === "pending")
-const activeMenu = computed(() => menus.value.find((menu) => menu.isActive) ?? null)
+const openMenus = computed(() => menus.value.filter((menu) => menu.cycleStatus === "OPEN"))
+const activeMenu = computed(() => openMenus.value.find((menu) => menu.menuType === "ESTANDAR") ?? openMenus.value[0] ?? null)
 const nextMenu = computed(() => {
   const now = Date.now()
 
@@ -33,7 +38,7 @@ const menuTableColumns: TableColumn<WeeklyMenu>[] = [
   },
   {
     id: "status",
-    header: "Estado",
+    header: "Semana",
     meta: {
       class: {
         th: "text-center",
@@ -53,10 +58,102 @@ const menuTableColumns: TableColumn<WeeklyMenu>[] = [
   }
 ]
 
-const { deleteMenuOnDB, setActiveMenuOnDB } = useMenu()
+const { deleteMenuOnDB } = useMenu()
+const { updateCycle, getOperationSettings, updateOperationSettings } = useCycles()
 const toast = useToast()
 const deletingId = ref<string | null>(null)
-const activatingId = ref<string | null>(null)
+const updatingCycleId = ref<string | null>(null)
+
+const cycleStatusColors = {
+  DRAFT: "neutral",
+  OPEN: "success",
+  CLOSED: "warning",
+  IN_PRODUCTION: "primary",
+  COMPLETED: "info"
+} as const
+const cycleActions: Record<CycleStatusValue, { label: string, icon: string }> = {
+  DRAFT: { label: "Regresar a borrador", icon: "i-lucide-pencil-line" },
+  OPEN: { label: "Abrir pedidos", icon: "i-lucide-door-open" },
+  CLOSED: { label: "Cerrar pedidos", icon: "i-lucide-lock" },
+  IN_PRODUCTION: { label: "Pasar a producción", icon: "i-lucide-chef-hat" },
+  COMPLETED: { label: "Marcar completada", icon: "i-lucide-circle-check" }
+}
+const cutoffFormatter = new Intl.DateTimeFormat("es-MX", {
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+  hour: "numeric",
+  minute: "2-digit",
+  timeZone: "America/Tijuana"
+})
+
+function menuTypeLabel(menu: WeeklyMenu) {
+  return MENU_TYPE_OPTIONS.find((option) => option.value === menu.menuType)?.label ?? menu.menuType
+}
+
+function actionItems(menu: WeeklyMenu): DropdownMenuItem[][] {
+  const transitions = menu.cycleId && menu.cycleStatus
+    ? CYCLE_TRANSITIONS[menu.cycleStatus].map((status) => ({
+        ...cycleActions[status],
+        onSelect: () => onCycleStatus(menu, status)
+      }))
+    : []
+
+  return [
+    [{ label: "Editar", icon: "i-lucide-square-pen", to: `/admin/menu/${menu.id}` }],
+    ...(transitions.length ? [transitions] : []),
+    [{ label: "Eliminar", icon: "i-lucide-trash", color: "error" as const, onSelect: () => requestDelete(menu) }]
+  ]
+}
+
+const dayOptions = customerDeliveryDays.filter((day) => day.value !== "sin_definir")
+const isSettingsOpen = ref(false)
+const settingsLoading = ref(false)
+const settingsSaving = ref(false)
+const settingsState = reactive<OperationSettingsInput>({
+  cutoffDay: "VIERNES",
+  cutoffTime: "18:00",
+  firstDeliveryAllowedDays: [],
+  secondDeliveryAllowedDays: [],
+  firstDeliveryMealDays: [],
+  secondDeliveryMealDays: []
+})
+
+async function openSettings() {
+  isSettingsOpen.value = true
+  settingsLoading.value = true
+
+  try {
+    const { timeZone: _timeZone, updatedAt: _updatedAt, ...settings } = await getOperationSettings()
+    Object.assign(settingsState, settings)
+  } catch (error) {
+    isSettingsOpen.value = false
+    const message = error instanceof Error ? error.message : "No se pudieron cargar los ajustes"
+    toast.add({ title: "Error", description: message, color: "error", icon: "i-lucide-circle-alert" })
+  } finally {
+    settingsLoading.value = false
+  }
+}
+
+async function saveSettings() {
+  settingsSaving.value = true
+
+  try {
+    await updateOperationSettings(settingsState)
+    isSettingsOpen.value = false
+    toast.add({
+      title: "Ajustes guardados",
+      description: "Se aplicarán a las semanas que se creen a partir de ahora.",
+      color: "success",
+      icon: "i-lucide-circle-check"
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "No se pudieron guardar los ajustes"
+    toast.add({ title: "Error al guardar", description: message, color: "error", icon: "i-lucide-circle-alert" })
+  } finally {
+    settingsSaving.value = false
+  }
+}
 const pendingDeleteMenu = ref<WeeklyMenu | null>(null)
 const deleteModalDescription = computed(() =>
   pendingDeleteMenu.value
@@ -92,18 +189,24 @@ async function onDelete(id: string) {
   }
 }
 
-async function onSetActive(id: string) {
-  activatingId.value = id
+async function onCycleStatus(menu: WeeklyMenu, status: CycleStatusValue) {
+  if (!menu.cycleId) return
+  updatingCycleId.value = menu.cycleId
 
   try {
-    await setActiveMenuOnDB(id)
+    await updateCycle(menu.cycleId, { status })
     await refresh()
-    toast.add({ title: "Menú activo actualizado", color: "success", icon: "i-lucide-check-circle" })
+    toast.add({
+      title: "Semana actualizada",
+      description: `Estado: ${CYCLE_STATUS_LABELS[status]}.`,
+      color: "success",
+      icon: "i-lucide-circle-check"
+    })
   } catch (error) {
-    const message = error instanceof Error ? error.message : "No se pudo actualizar el menú activo"
+    const message = error instanceof Error ? error.message : "No se pudo actualizar la semana"
     toast.add({ title: "Error", description: message, color: "error", icon: "i-lucide-circle-alert" })
   } finally {
-    activatingId.value = null
+    updatingCycleId.value = null
   }
 }
 
@@ -130,16 +233,16 @@ useSeoMeta({
         <UCard>
           <div class="flex items-start justify-between gap-4">
             <div class="min-w-0">
-              <p class="text-xs uppercase tracking-[0.18em] text-muted">Menú activo</p>
+              <p class="text-xs uppercase tracking-[0.18em] text-muted">Pedidos abiertos</p>
               <div class="mt-3 space-y-1">
                 <p class="line-clamp-1 text-base font-semibold text-highlighted">
-                  {{ activeMenu?.name ?? "Sin menú activo" }}
+                  {{ activeMenu?.name ?? "Ninguna semana abierta" }}
                 </p>
                 <p class="text-sm text-muted">
                   {{
                     activeMenu
                       ? `${formatDate(activeMenu.startDate)} - ${formatDate(activeMenu.endDate)}`
-                      : "Activa uno desde la lista inferior."
+                      : "Abre pedidos de una semana desde la lista inferior."
                   }}
                 </p>
               </div>
@@ -229,6 +332,16 @@ useSeoMeta({
         icon="i-lucide-notebook-tabs"
       />
 
+      <div v-if="!isLoading" class="flex justify-end">
+        <UButton
+          color="neutral"
+          variant="outline"
+          icon="i-lucide-settings-2"
+          label="Ajustes de operación"
+          @click="openSettings"
+        />
+      </div>
+
       <section
         v-if="!isLoading && menus.length"
         class="overflow-hidden"
@@ -238,7 +351,7 @@ useSeoMeta({
           :columns="menuTableColumns"
           :meta="{
             class: {
-              tr: (row) => row.original.isActive ? 'bg-primary/10' : ''
+              tr: (row) => row.original.cycleStatus === 'OPEN' ? 'bg-primary/10' : ''
             }
           }"
           :ui="{
@@ -247,12 +360,17 @@ useSeoMeta({
           }"
         >
           <template #name-cell="{ row }">
-            <span
-              class="font-semibold"
-              :class="row.original.isActive ? 'text-primary' : 'text-highlighted'"
-            >
-              {{ row.original.name }}
-            </span>
+            <div class="flex flex-wrap items-center gap-2">
+              <ULink
+                :to="`/admin/menu/${row.original.id}`"
+                class="font-semibold"
+                :class="row.original.cycleStatus === 'OPEN' ? 'text-primary' : 'text-highlighted'"
+              >
+                {{ row.original.name }}
+              </ULink>
+              <UBadge color="neutral" variant="subtle" :label="menuTypeLabel(row.original)" />
+              <span v-if="row.original.customerName" class="text-sm text-muted">{{ row.original.customerName }}</span>
+            </div>
           </template>
 
           <template #dates-cell="{ row }">
@@ -262,46 +380,76 @@ useSeoMeta({
           </template>
 
           <template #status-cell="{ row }">
-            <UButton
-              size="sm"
-              :variant="row.original.isActive ? 'solid' : 'soft'"
-              :color="row.original.isActive ? 'success' : 'primary'"
-              icon="i-lucide-badge-check"
-              :loading="activatingId === row.original.id"
-              :disabled="row.original.isActive"
-              :class="row.original.isActive ? 'text-white dark:text-black' : ''"
-              @click="onSetActive(row.original.id)"
-            >
-              {{ row.original.isActive ? "Activo" : "Activar" }}
-            </UButton>
+            <div v-if="row.original.cycleStatus" class="flex flex-col items-center gap-1">
+              <UBadge
+                :color="cycleStatusColors[row.original.cycleStatus]"
+                variant="subtle"
+                :label="CYCLE_STATUS_LABELS[row.original.cycleStatus]"
+              />
+              <span v-if="row.original.orderCutoffAt" class="text-xs text-muted">
+                Corte: {{ cutoffFormatter.format(new Date(row.original.orderCutoffAt)) }}
+              </span>
+            </div>
+            <UBadge v-else color="warning" variant="subtle" label="Sin semana asignada" />
           </template>
 
           <template #actions-cell="{ row }">
-            <div class="flex items-center justify-center gap-1">
+            <UDropdownMenu :items="actionItems(row.original)" :content="{ align: 'end' }">
               <UButton
-                :to="`/admin/menu/${row.original.id}`"
-                size="sm"
-                variant="ghost"
+                icon="i-lucide-ellipsis-vertical"
                 color="neutral"
-                icon="i-lucide-square-pen"
-              >
-                Editar
-              </UButton>
-              <UButton
-                size="sm"
-                color="error"
                 variant="ghost"
-                icon="i-lucide-trash"
-                :loading="deletingId === row.original.id"
-                @click="requestDelete(row.original)"
-              >
-                Eliminar
-              </UButton>
-            </div>
+                size="sm"
+                :loading="deletingId === row.original.id || (!!row.original.cycleId && updatingCycleId === row.original.cycleId)"
+                :aria-label="`Acciones de ${row.original.name}`"
+              />
+            </UDropdownMenu>
           </template>
         </UTable>
       </section>
     </section>
+
+    <UModal
+      v-model:open="isSettingsOpen"
+      title="Ajustes de operación"
+      description="Valores por defecto para las semanas nuevas. Las semanas ya creadas conservan los suyos."
+      :ui="{ content: 'max-w-3xl' }"
+    >
+      <template #body>
+        <div v-if="settingsLoading" role="status" aria-live="polite" class="grid gap-5 md:grid-cols-2">
+          <span class="sr-only">Cargando ajustes</span>
+          <USkeleton v-for="index in 6" :key="index" class="h-10" />
+        </div>
+
+        <UForm v-else :schema="operationSettingsInputSchema" :state="settingsState" class="space-y-5" @submit="saveSettings">
+          <div class="grid gap-5 md:grid-cols-2">
+            <UFormField label="Día de corte" name="cutoffDay" required>
+              <USelect v-model="settingsState.cutoffDay" :items="dayOptions" value-key="value" class="w-full" />
+            </UFormField>
+            <UFormField label="Hora de corte" name="cutoffTime" required>
+              <UInput v-model="settingsState.cutoffTime" type="time" icon="i-lucide-clock" class="w-full" />
+            </UFormField>
+            <UFormField label="Días de la primera entrega" name="firstDeliveryAllowedDays" required>
+              <USelectMenu v-model="settingsState.firstDeliveryAllowedDays" :items="dayOptions" value-key="value" multiple class="w-full" />
+            </UFormField>
+            <UFormField label="Comidas de la primera entrega" name="firstDeliveryMealDays" required>
+              <USelectMenu v-model="settingsState.firstDeliveryMealDays" :items="dayOptions" value-key="value" multiple class="w-full" />
+            </UFormField>
+            <UFormField label="Días de la segunda entrega" name="secondDeliveryAllowedDays" required>
+              <USelectMenu v-model="settingsState.secondDeliveryAllowedDays" :items="dayOptions" value-key="value" multiple class="w-full" />
+            </UFormField>
+            <UFormField label="Comidas de la segunda entrega" name="secondDeliveryMealDays" required>
+              <USelectMenu v-model="settingsState.secondDeliveryMealDays" :items="dayOptions" value-key="value" multiple class="w-full" />
+            </UFormField>
+          </div>
+
+          <div class="flex justify-end gap-3 border-t border-default pt-5">
+            <UButton color="neutral" variant="ghost" type="button" :disabled="settingsSaving" @click="isSettingsOpen = false">Cancelar</UButton>
+            <UButton type="submit" icon="i-lucide-save" :loading="settingsSaving">Guardar cambios</UButton>
+          </div>
+        </UForm>
+      </template>
+    </UModal>
 
     <UModal
       v-model:open="isDeleteModalOpen"

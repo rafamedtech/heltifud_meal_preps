@@ -1,5 +1,7 @@
-import { getNextMenu } from '../../utils/menu';
+import { getQuery } from 'h3';
 
-export default defineEventHandler(async () => {
-  return await getNextMenu();
+import { getNextMenu, publicMenuType } from '../../utils/menu';
+
+export default defineEventHandler(async (event) => {
+  return await getNextMenu(publicMenuType(getQuery(event).type));
 });

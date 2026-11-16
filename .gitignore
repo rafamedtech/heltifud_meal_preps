@@ -36,3 +36,6 @@ logs
 *.swp
 *.swo
 *~
+
+# Local database backups
+backups

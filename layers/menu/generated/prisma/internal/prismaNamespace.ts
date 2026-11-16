@@ -410,7 +410,9 @@ export const ModelName = {
   Order: 'Order',
   OrderMenuSlot: 'OrderMenuSlot',
   OrderMenuComponent: 'OrderMenuComponent',
-  Expense: 'Expense'
+  Expense: 'Expense',
+  OperationSettings: 'OperationSettings',
+  WeeklyCycle: 'WeeklyCycle'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -426,7 +428,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "weeklyMenu" | "menuDay" | "daySlot" | "foodComponent" | "foodCatalogItem" | "ingredient" | "recipeIngredient" | "customer" | "plan" | "planVariant" | "order" | "orderMenuSlot" | "orderMenuComponent" | "expense"
+    modelProps: "weeklyMenu" | "menuDay" | "daySlot" | "foodComponent" | "foodCatalogItem" | "ingredient" | "recipeIngredient" | "customer" | "plan" | "planVariant" | "order" | "orderMenuSlot" | "orderMenuComponent" | "expense" | "operationSettings" | "weeklyCycle"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1466,6 +1468,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    OperationSettings: {
+      payload: Prisma.$OperationSettingsPayload<ExtArgs>
+      fields: Prisma.OperationSettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OperationSettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationSettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OperationSettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationSettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.OperationSettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationSettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OperationSettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationSettingsPayload>
+        }
+        findMany: {
+          args: Prisma.OperationSettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationSettingsPayload>[]
+        }
+        create: {
+          args: Prisma.OperationSettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationSettingsPayload>
+        }
+        createMany: {
+          args: Prisma.OperationSettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OperationSettingsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationSettingsPayload>[]
+        }
+        delete: {
+          args: Prisma.OperationSettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationSettingsPayload>
+        }
+        update: {
+          args: Prisma.OperationSettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationSettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.OperationSettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OperationSettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OperationSettingsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationSettingsPayload>[]
+        }
+        upsert: {
+          args: Prisma.OperationSettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OperationSettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.OperationSettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOperationSettings>
+        }
+        groupBy: {
+          args: Prisma.OperationSettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OperationSettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OperationSettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OperationSettingsCountAggregateOutputType> | number
+        }
+      }
+    }
+    WeeklyCycle: {
+      payload: Prisma.$WeeklyCyclePayload<ExtArgs>
+      fields: Prisma.WeeklyCycleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WeeklyCycleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyCyclePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WeeklyCycleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyCyclePayload>
+        }
+        findFirst: {
+          args: Prisma.WeeklyCycleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyCyclePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WeeklyCycleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyCyclePayload>
+        }
+        findMany: {
+          args: Prisma.WeeklyCycleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyCyclePayload>[]
+        }
+        create: {
+          args: Prisma.WeeklyCycleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyCyclePayload>
+        }
+        createMany: {
+          args: Prisma.WeeklyCycleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WeeklyCycleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyCyclePayload>[]
+        }
+        delete: {
+          args: Prisma.WeeklyCycleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyCyclePayload>
+        }
+        update: {
+          args: Prisma.WeeklyCycleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyCyclePayload>
+        }
+        deleteMany: {
+          args: Prisma.WeeklyCycleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WeeklyCycleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WeeklyCycleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyCyclePayload>[]
+        }
+        upsert: {
+          args: Prisma.WeeklyCycleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeeklyCyclePayload>
+        }
+        aggregate: {
+          args: Prisma.WeeklyCycleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWeeklyCycle>
+        }
+        groupBy: {
+          args: Prisma.WeeklyCycleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WeeklyCycleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WeeklyCycleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WeeklyCycleCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1513,7 +1663,10 @@ export const WeeklyMenuScalarFieldEnum = {
   startDate: 'startDate',
   endDate: 'endDate',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  cycleId: 'cycleId',
+  customerId: 'customerId',
+  cycleScope: 'cycleScope'
 } as const
 
 export type WeeklyMenuScalarFieldEnum = (typeof WeeklyMenuScalarFieldEnum)[keyof typeof WeeklyMenuScalarFieldEnum]
@@ -1711,6 +1864,37 @@ export const ExpenseScalarFieldEnum = {
 export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeof ExpenseScalarFieldEnum]
 
 
+export const OperationSettingsScalarFieldEnum = {
+  id: 'id',
+  cutoffDay: 'cutoffDay',
+  cutoffTime: 'cutoffTime',
+  firstDeliveryAllowedDays: 'firstDeliveryAllowedDays',
+  secondDeliveryAllowedDays: 'secondDeliveryAllowedDays',
+  firstDeliveryMealDays: 'firstDeliveryMealDays',
+  secondDeliveryMealDays: 'secondDeliveryMealDays',
+  timeZone: 'timeZone',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OperationSettingsScalarFieldEnum = (typeof OperationSettingsScalarFieldEnum)[keyof typeof OperationSettingsScalarFieldEnum]
+
+
+export const WeeklyCycleScalarFieldEnum = {
+  id: 'id',
+  weekStart: 'weekStart',
+  status: 'status',
+  orderCutoffAt: 'orderCutoffAt',
+  firstDeliveryAllowedDays: 'firstDeliveryAllowedDays',
+  secondDeliveryAllowedDays: 'secondDeliveryAllowedDays',
+  firstDeliveryMealDays: 'firstDeliveryMealDays',
+  secondDeliveryMealDays: 'secondDeliveryMealDays',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WeeklyCycleScalarFieldEnum = (typeof WeeklyCycleScalarFieldEnum)[keyof typeof WeeklyCycleScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1871,6 +2055,20 @@ export type EnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
  * Reference to a field of type 'OrderStatus[]'
  */
 export type ListEnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'CycleStatus'
+ */
+export type EnumCycleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CycleStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'CycleStatus[]'
+ */
+export type ListEnumCycleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CycleStatus[]'>
     
 
 
@@ -2052,6 +2250,8 @@ export type GlobalOmitConfig = {
   orderMenuSlot?: Prisma.OrderMenuSlotOmit
   orderMenuComponent?: Prisma.OrderMenuComponentOmit
   expense?: Prisma.ExpenseOmit
+  operationSettings?: Prisma.OperationSettingsOmit
+  weeklyCycle?: Prisma.WeeklyCycleOmit
 }
 
 /* Types for Logging */

@@ -359,10 +359,6 @@ export type EnumSlotTypeFieldUpdateOperationsInput = {
   set?: $Enums.SlotType
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type DaySlotCreateNestedOneWithoutComponentsInput = {
   create?: Prisma.XOR<Prisma.DaySlotCreateWithoutComponentsInput, Prisma.DaySlotUncheckedCreateWithoutComponentsInput>
   connectOrCreate?: Prisma.DaySlotCreateOrConnectWithoutComponentsInput
