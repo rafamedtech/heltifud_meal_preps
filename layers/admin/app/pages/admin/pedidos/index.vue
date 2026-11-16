@@ -3,7 +3,7 @@ import type { TableColumn } from "@nuxt/ui"
 import { getLocalTimeZone, parseDate } from "@internationalized/date"
 import type { CalendarDate } from "@internationalized/date"
 import type { DeliverySequence, OrderListItem, OrderListResponse, OrderStatusValue } from "~~/layers/menu/shared/types/types"
-import { deliveryDateOf } from "~~/layers/menu/shared/utils/orderDeliveries"
+import { deliveryDateOf, orderFolioLabel } from "~~/layers/menu/shared/utils/orderDeliveries"
 
 definePageMeta({ layout: "admin" })
 
@@ -43,6 +43,7 @@ const isFiltering = computed(() =>
 )
 
 const columns: TableColumn<OrderListItem>[] = [
+  { accessorKey: "folio", header: "Folio" },
   { accessorKey: "customerName", header: "Cliente" },
   { accessorKey: "planTitle", header: "Plan" },
   { accessorKey: "status", header: "Estado" },
@@ -233,7 +234,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
               v-for="order in loading ? [] : response.items"
               :key="order.id"
               :title="order.customerName"
-              :description="`${order.planTitle} · ${order.planVariantTitle}`"
+              :description="`${orderFolioLabel(order.folio)} · ${order.planTitle} · ${order.planVariantTitle}`"
               :to="`/admin/pedidos/${order.id}`"
             >
               <template #header>
@@ -266,6 +267,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
             aria-label="Listado de pedidos"
             @select="(_event, row) => navigateTo(`/admin/pedidos/${row.original.id}`)"
           >
+            <template #folio-cell="{ row }"><span class="tabular-nums text-muted">{{ orderFolioLabel(row.original.folio) }}</span></template>
             <template #customerName-cell="{ row }">
               <ULink :to="`/admin/pedidos/${row.original.id}`" class="font-medium">
                 {{ row.original.customerName }}

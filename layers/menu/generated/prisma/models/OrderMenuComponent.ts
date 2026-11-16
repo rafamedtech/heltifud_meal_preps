@@ -47,6 +47,9 @@ export type OrderMenuComponentMinAggregateOutputType = {
   calorias: number | null
   imagen: string | null
   tipo: string | null
+  sourceDayOfWeek: $Enums.DayOfWeek | null
+  sourceSlotType: $Enums.SlotType | null
+  isSubstitution: boolean | null
 }
 
 export type OrderMenuComponentMaxAggregateOutputType = {
@@ -60,6 +63,9 @@ export type OrderMenuComponentMaxAggregateOutputType = {
   calorias: number | null
   imagen: string | null
   tipo: string | null
+  sourceDayOfWeek: $Enums.DayOfWeek | null
+  sourceSlotType: $Enums.SlotType | null
+  isSubstitution: boolean | null
 }
 
 export type OrderMenuComponentCountAggregateOutputType = {
@@ -73,6 +79,9 @@ export type OrderMenuComponentCountAggregateOutputType = {
   calorias: number
   imagen: number
   tipo: number
+  sourceDayOfWeek: number
+  sourceSlotType: number
+  isSubstitution: number
   _all: number
 }
 
@@ -98,6 +107,9 @@ export type OrderMenuComponentMinAggregateInputType = {
   calorias?: true
   imagen?: true
   tipo?: true
+  sourceDayOfWeek?: true
+  sourceSlotType?: true
+  isSubstitution?: true
 }
 
 export type OrderMenuComponentMaxAggregateInputType = {
@@ -111,6 +123,9 @@ export type OrderMenuComponentMaxAggregateInputType = {
   calorias?: true
   imagen?: true
   tipo?: true
+  sourceDayOfWeek?: true
+  sourceSlotType?: true
+  isSubstitution?: true
 }
 
 export type OrderMenuComponentCountAggregateInputType = {
@@ -124,6 +139,9 @@ export type OrderMenuComponentCountAggregateInputType = {
   calorias?: true
   imagen?: true
   tipo?: true
+  sourceDayOfWeek?: true
+  sourceSlotType?: true
+  isSubstitution?: true
   _all?: true
 }
 
@@ -224,6 +242,9 @@ export type OrderMenuComponentGroupByOutputType = {
   calorias: number
   imagen: string
   tipo: string
+  sourceDayOfWeek: $Enums.DayOfWeek | null
+  sourceSlotType: $Enums.SlotType | null
+  isSubstitution: boolean
   _count: OrderMenuComponentCountAggregateOutputType | null
   _avg: OrderMenuComponentAvgAggregateOutputType | null
   _sum: OrderMenuComponentSumAggregateOutputType | null
@@ -260,6 +281,9 @@ export type OrderMenuComponentWhereInput = {
   calorias?: Prisma.IntFilter<"OrderMenuComponent"> | number
   imagen?: Prisma.StringFilter<"OrderMenuComponent"> | string
   tipo?: Prisma.StringFilter<"OrderMenuComponent"> | string
+  sourceDayOfWeek?: Prisma.EnumDayOfWeekNullableFilter<"OrderMenuComponent"> | $Enums.DayOfWeek | null
+  sourceSlotType?: Prisma.EnumSlotTypeNullableFilter<"OrderMenuComponent"> | $Enums.SlotType | null
+  isSubstitution?: Prisma.BoolFilter<"OrderMenuComponent"> | boolean
   orderMenuSlot?: Prisma.XOR<Prisma.OrderMenuSlotScalarRelationFilter, Prisma.OrderMenuSlotWhereInput>
   catalogItem?: Prisma.XOR<Prisma.FoodCatalogItemNullableScalarRelationFilter, Prisma.FoodCatalogItemWhereInput> | null
 }
@@ -275,6 +299,9 @@ export type OrderMenuComponentOrderByWithRelationInput = {
   calorias?: Prisma.SortOrder
   imagen?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
+  sourceDayOfWeek?: Prisma.SortOrderInput | Prisma.SortOrder
+  sourceSlotType?: Prisma.SortOrderInput | Prisma.SortOrder
+  isSubstitution?: Prisma.SortOrder
   orderMenuSlot?: Prisma.OrderMenuSlotOrderByWithRelationInput
   catalogItem?: Prisma.FoodCatalogItemOrderByWithRelationInput
 }
@@ -294,6 +321,9 @@ export type OrderMenuComponentWhereUniqueInput = Prisma.AtLeast<{
   calorias?: Prisma.IntFilter<"OrderMenuComponent"> | number
   imagen?: Prisma.StringFilter<"OrderMenuComponent"> | string
   tipo?: Prisma.StringFilter<"OrderMenuComponent"> | string
+  sourceDayOfWeek?: Prisma.EnumDayOfWeekNullableFilter<"OrderMenuComponent"> | $Enums.DayOfWeek | null
+  sourceSlotType?: Prisma.EnumSlotTypeNullableFilter<"OrderMenuComponent"> | $Enums.SlotType | null
+  isSubstitution?: Prisma.BoolFilter<"OrderMenuComponent"> | boolean
   orderMenuSlot?: Prisma.XOR<Prisma.OrderMenuSlotScalarRelationFilter, Prisma.OrderMenuSlotWhereInput>
   catalogItem?: Prisma.XOR<Prisma.FoodCatalogItemNullableScalarRelationFilter, Prisma.FoodCatalogItemWhereInput> | null
 }, "id" | "orderMenuSlotId_componentRole_position">
@@ -309,6 +339,9 @@ export type OrderMenuComponentOrderByWithAggregationInput = {
   calorias?: Prisma.SortOrder
   imagen?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
+  sourceDayOfWeek?: Prisma.SortOrderInput | Prisma.SortOrder
+  sourceSlotType?: Prisma.SortOrderInput | Prisma.SortOrder
+  isSubstitution?: Prisma.SortOrder
   _count?: Prisma.OrderMenuComponentCountOrderByAggregateInput
   _avg?: Prisma.OrderMenuComponentAvgOrderByAggregateInput
   _max?: Prisma.OrderMenuComponentMaxOrderByAggregateInput
@@ -330,6 +363,9 @@ export type OrderMenuComponentScalarWhereWithAggregatesInput = {
   calorias?: Prisma.IntWithAggregatesFilter<"OrderMenuComponent"> | number
   imagen?: Prisma.StringWithAggregatesFilter<"OrderMenuComponent"> | string
   tipo?: Prisma.StringWithAggregatesFilter<"OrderMenuComponent"> | string
+  sourceDayOfWeek?: Prisma.EnumDayOfWeekNullableWithAggregatesFilter<"OrderMenuComponent"> | $Enums.DayOfWeek | null
+  sourceSlotType?: Prisma.EnumSlotTypeNullableWithAggregatesFilter<"OrderMenuComponent"> | $Enums.SlotType | null
+  isSubstitution?: Prisma.BoolWithAggregatesFilter<"OrderMenuComponent"> | boolean
 }
 
 export type OrderMenuComponentCreateInput = {
@@ -341,6 +377,9 @@ export type OrderMenuComponentCreateInput = {
   calorias: number
   imagen: string
   tipo: string
+  sourceDayOfWeek?: $Enums.DayOfWeek | null
+  sourceSlotType?: $Enums.SlotType | null
+  isSubstitution?: boolean
   orderMenuSlot: Prisma.OrderMenuSlotCreateNestedOneWithoutComponentsInput
   catalogItem?: Prisma.FoodCatalogItemCreateNestedOneWithoutOrderComponentsInput
 }
@@ -356,6 +395,9 @@ export type OrderMenuComponentUncheckedCreateInput = {
   calorias: number
   imagen: string
   tipo: string
+  sourceDayOfWeek?: $Enums.DayOfWeek | null
+  sourceSlotType?: $Enums.SlotType | null
+  isSubstitution?: boolean
 }
 
 export type OrderMenuComponentUpdateInput = {
@@ -367,6 +409,9 @@ export type OrderMenuComponentUpdateInput = {
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceDayOfWeek?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  sourceSlotType?: Prisma.NullableEnumSlotTypeFieldUpdateOperationsInput | $Enums.SlotType | null
+  isSubstitution?: Prisma.BoolFieldUpdateOperationsInput | boolean
   orderMenuSlot?: Prisma.OrderMenuSlotUpdateOneRequiredWithoutComponentsNestedInput
   catalogItem?: Prisma.FoodCatalogItemUpdateOneWithoutOrderComponentsNestedInput
 }
@@ -382,6 +427,9 @@ export type OrderMenuComponentUncheckedUpdateInput = {
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceDayOfWeek?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  sourceSlotType?: Prisma.NullableEnumSlotTypeFieldUpdateOperationsInput | $Enums.SlotType | null
+  isSubstitution?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type OrderMenuComponentCreateManyInput = {
@@ -395,6 +443,9 @@ export type OrderMenuComponentCreateManyInput = {
   calorias: number
   imagen: string
   tipo: string
+  sourceDayOfWeek?: $Enums.DayOfWeek | null
+  sourceSlotType?: $Enums.SlotType | null
+  isSubstitution?: boolean
 }
 
 export type OrderMenuComponentUpdateManyMutationInput = {
@@ -406,6 +457,9 @@ export type OrderMenuComponentUpdateManyMutationInput = {
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceDayOfWeek?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  sourceSlotType?: Prisma.NullableEnumSlotTypeFieldUpdateOperationsInput | $Enums.SlotType | null
+  isSubstitution?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type OrderMenuComponentUncheckedUpdateManyInput = {
@@ -419,6 +473,9 @@ export type OrderMenuComponentUncheckedUpdateManyInput = {
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceDayOfWeek?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  sourceSlotType?: Prisma.NullableEnumSlotTypeFieldUpdateOperationsInput | $Enums.SlotType | null
+  isSubstitution?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type OrderMenuComponentListRelationFilter = {
@@ -448,6 +505,9 @@ export type OrderMenuComponentCountOrderByAggregateInput = {
   calorias?: Prisma.SortOrder
   imagen?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
+  sourceDayOfWeek?: Prisma.SortOrder
+  sourceSlotType?: Prisma.SortOrder
+  isSubstitution?: Prisma.SortOrder
 }
 
 export type OrderMenuComponentAvgOrderByAggregateInput = {
@@ -466,6 +526,9 @@ export type OrderMenuComponentMaxOrderByAggregateInput = {
   calorias?: Prisma.SortOrder
   imagen?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
+  sourceDayOfWeek?: Prisma.SortOrder
+  sourceSlotType?: Prisma.SortOrder
+  isSubstitution?: Prisma.SortOrder
 }
 
 export type OrderMenuComponentMinOrderByAggregateInput = {
@@ -479,6 +542,9 @@ export type OrderMenuComponentMinOrderByAggregateInput = {
   calorias?: Prisma.SortOrder
   imagen?: Prisma.SortOrder
   tipo?: Prisma.SortOrder
+  sourceDayOfWeek?: Prisma.SortOrder
+  sourceSlotType?: Prisma.SortOrder
+  isSubstitution?: Prisma.SortOrder
 }
 
 export type OrderMenuComponentSumOrderByAggregateInput = {
@@ -570,6 +636,10 @@ export type OrderMenuComponentUncheckedUpdateManyWithoutOrderMenuSlotNestedInput
   deleteMany?: Prisma.OrderMenuComponentScalarWhereInput | Prisma.OrderMenuComponentScalarWhereInput[]
 }
 
+export type NullableEnumSlotTypeFieldUpdateOperationsInput = {
+  set?: $Enums.SlotType | null
+}
+
 export type OrderMenuComponentCreateWithoutCatalogItemInput = {
   id?: string
   componentRole: $Enums.ComponentRole
@@ -579,6 +649,9 @@ export type OrderMenuComponentCreateWithoutCatalogItemInput = {
   calorias: number
   imagen: string
   tipo: string
+  sourceDayOfWeek?: $Enums.DayOfWeek | null
+  sourceSlotType?: $Enums.SlotType | null
+  isSubstitution?: boolean
   orderMenuSlot: Prisma.OrderMenuSlotCreateNestedOneWithoutComponentsInput
 }
 
@@ -592,6 +665,9 @@ export type OrderMenuComponentUncheckedCreateWithoutCatalogItemInput = {
   calorias: number
   imagen: string
   tipo: string
+  sourceDayOfWeek?: $Enums.DayOfWeek | null
+  sourceSlotType?: $Enums.SlotType | null
+  isSubstitution?: boolean
 }
 
 export type OrderMenuComponentCreateOrConnectWithoutCatalogItemInput = {
@@ -634,6 +710,9 @@ export type OrderMenuComponentScalarWhereInput = {
   calorias?: Prisma.IntFilter<"OrderMenuComponent"> | number
   imagen?: Prisma.StringFilter<"OrderMenuComponent"> | string
   tipo?: Prisma.StringFilter<"OrderMenuComponent"> | string
+  sourceDayOfWeek?: Prisma.EnumDayOfWeekNullableFilter<"OrderMenuComponent"> | $Enums.DayOfWeek | null
+  sourceSlotType?: Prisma.EnumSlotTypeNullableFilter<"OrderMenuComponent"> | $Enums.SlotType | null
+  isSubstitution?: Prisma.BoolFilter<"OrderMenuComponent"> | boolean
 }
 
 export type OrderMenuComponentCreateWithoutOrderMenuSlotInput = {
@@ -645,6 +724,9 @@ export type OrderMenuComponentCreateWithoutOrderMenuSlotInput = {
   calorias: number
   imagen: string
   tipo: string
+  sourceDayOfWeek?: $Enums.DayOfWeek | null
+  sourceSlotType?: $Enums.SlotType | null
+  isSubstitution?: boolean
   catalogItem?: Prisma.FoodCatalogItemCreateNestedOneWithoutOrderComponentsInput
 }
 
@@ -658,6 +740,9 @@ export type OrderMenuComponentUncheckedCreateWithoutOrderMenuSlotInput = {
   calorias: number
   imagen: string
   tipo: string
+  sourceDayOfWeek?: $Enums.DayOfWeek | null
+  sourceSlotType?: $Enums.SlotType | null
+  isSubstitution?: boolean
 }
 
 export type OrderMenuComponentCreateOrConnectWithoutOrderMenuSlotInput = {
@@ -696,6 +781,9 @@ export type OrderMenuComponentCreateManyCatalogItemInput = {
   calorias: number
   imagen: string
   tipo: string
+  sourceDayOfWeek?: $Enums.DayOfWeek | null
+  sourceSlotType?: $Enums.SlotType | null
+  isSubstitution?: boolean
 }
 
 export type OrderMenuComponentUpdateWithoutCatalogItemInput = {
@@ -707,6 +795,9 @@ export type OrderMenuComponentUpdateWithoutCatalogItemInput = {
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceDayOfWeek?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  sourceSlotType?: Prisma.NullableEnumSlotTypeFieldUpdateOperationsInput | $Enums.SlotType | null
+  isSubstitution?: Prisma.BoolFieldUpdateOperationsInput | boolean
   orderMenuSlot?: Prisma.OrderMenuSlotUpdateOneRequiredWithoutComponentsNestedInput
 }
 
@@ -720,6 +811,9 @@ export type OrderMenuComponentUncheckedUpdateWithoutCatalogItemInput = {
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceDayOfWeek?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  sourceSlotType?: Prisma.NullableEnumSlotTypeFieldUpdateOperationsInput | $Enums.SlotType | null
+  isSubstitution?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type OrderMenuComponentUncheckedUpdateManyWithoutCatalogItemInput = {
@@ -732,6 +826,9 @@ export type OrderMenuComponentUncheckedUpdateManyWithoutCatalogItemInput = {
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceDayOfWeek?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  sourceSlotType?: Prisma.NullableEnumSlotTypeFieldUpdateOperationsInput | $Enums.SlotType | null
+  isSubstitution?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type OrderMenuComponentCreateManyOrderMenuSlotInput = {
@@ -744,6 +841,9 @@ export type OrderMenuComponentCreateManyOrderMenuSlotInput = {
   calorias: number
   imagen: string
   tipo: string
+  sourceDayOfWeek?: $Enums.DayOfWeek | null
+  sourceSlotType?: $Enums.SlotType | null
+  isSubstitution?: boolean
 }
 
 export type OrderMenuComponentUpdateWithoutOrderMenuSlotInput = {
@@ -755,6 +855,9 @@ export type OrderMenuComponentUpdateWithoutOrderMenuSlotInput = {
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceDayOfWeek?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  sourceSlotType?: Prisma.NullableEnumSlotTypeFieldUpdateOperationsInput | $Enums.SlotType | null
+  isSubstitution?: Prisma.BoolFieldUpdateOperationsInput | boolean
   catalogItem?: Prisma.FoodCatalogItemUpdateOneWithoutOrderComponentsNestedInput
 }
 
@@ -768,6 +871,9 @@ export type OrderMenuComponentUncheckedUpdateWithoutOrderMenuSlotInput = {
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceDayOfWeek?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  sourceSlotType?: Prisma.NullableEnumSlotTypeFieldUpdateOperationsInput | $Enums.SlotType | null
+  isSubstitution?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type OrderMenuComponentUncheckedUpdateManyWithoutOrderMenuSlotInput = {
@@ -780,6 +886,9 @@ export type OrderMenuComponentUncheckedUpdateManyWithoutOrderMenuSlotInput = {
   calorias?: Prisma.IntFieldUpdateOperationsInput | number
   imagen?: Prisma.StringFieldUpdateOperationsInput | string
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceDayOfWeek?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  sourceSlotType?: Prisma.NullableEnumSlotTypeFieldUpdateOperationsInput | $Enums.SlotType | null
+  isSubstitution?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -795,6 +904,9 @@ export type OrderMenuComponentSelect<ExtArgs extends runtime.Types.Extensions.In
   calorias?: boolean
   imagen?: boolean
   tipo?: boolean
+  sourceDayOfWeek?: boolean
+  sourceSlotType?: boolean
+  isSubstitution?: boolean
   orderMenuSlot?: boolean | Prisma.OrderMenuSlotDefaultArgs<ExtArgs>
   catalogItem?: boolean | Prisma.OrderMenuComponent$catalogItemArgs<ExtArgs>
 }, ExtArgs["result"]["orderMenuComponent"]>
@@ -810,6 +922,9 @@ export type OrderMenuComponentSelectCreateManyAndReturn<ExtArgs extends runtime.
   calorias?: boolean
   imagen?: boolean
   tipo?: boolean
+  sourceDayOfWeek?: boolean
+  sourceSlotType?: boolean
+  isSubstitution?: boolean
   orderMenuSlot?: boolean | Prisma.OrderMenuSlotDefaultArgs<ExtArgs>
   catalogItem?: boolean | Prisma.OrderMenuComponent$catalogItemArgs<ExtArgs>
 }, ExtArgs["result"]["orderMenuComponent"]>
@@ -825,6 +940,9 @@ export type OrderMenuComponentSelectUpdateManyAndReturn<ExtArgs extends runtime.
   calorias?: boolean
   imagen?: boolean
   tipo?: boolean
+  sourceDayOfWeek?: boolean
+  sourceSlotType?: boolean
+  isSubstitution?: boolean
   orderMenuSlot?: boolean | Prisma.OrderMenuSlotDefaultArgs<ExtArgs>
   catalogItem?: boolean | Prisma.OrderMenuComponent$catalogItemArgs<ExtArgs>
 }, ExtArgs["result"]["orderMenuComponent"]>
@@ -840,9 +958,12 @@ export type OrderMenuComponentSelectScalar = {
   calorias?: boolean
   imagen?: boolean
   tipo?: boolean
+  sourceDayOfWeek?: boolean
+  sourceSlotType?: boolean
+  isSubstitution?: boolean
 }
 
-export type OrderMenuComponentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderMenuSlotId" | "catalogItemId" | "componentRole" | "position" | "nombre" | "descripcion" | "calorias" | "imagen" | "tipo", ExtArgs["result"]["orderMenuComponent"]>
+export type OrderMenuComponentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderMenuSlotId" | "catalogItemId" | "componentRole" | "position" | "nombre" | "descripcion" | "calorias" | "imagen" | "tipo" | "sourceDayOfWeek" | "sourceSlotType" | "isSubstitution", ExtArgs["result"]["orderMenuComponent"]>
 export type OrderMenuComponentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   orderMenuSlot?: boolean | Prisma.OrderMenuSlotDefaultArgs<ExtArgs>
   catalogItem?: boolean | Prisma.OrderMenuComponent$catalogItemArgs<ExtArgs>
@@ -873,6 +994,9 @@ export type $OrderMenuComponentPayload<ExtArgs extends runtime.Types.Extensions.
     calorias: number
     imagen: string
     tipo: string
+    sourceDayOfWeek: $Enums.DayOfWeek | null
+    sourceSlotType: $Enums.SlotType | null
+    isSubstitution: boolean
   }, ExtArgs["result"]["orderMenuComponent"]>
   composites: {}
 }
@@ -1308,6 +1432,9 @@ export interface OrderMenuComponentFieldRefs {
   readonly calorias: Prisma.FieldRef<"OrderMenuComponent", 'Int'>
   readonly imagen: Prisma.FieldRef<"OrderMenuComponent", 'String'>
   readonly tipo: Prisma.FieldRef<"OrderMenuComponent", 'String'>
+  readonly sourceDayOfWeek: Prisma.FieldRef<"OrderMenuComponent", 'DayOfWeek'>
+  readonly sourceSlotType: Prisma.FieldRef<"OrderMenuComponent", 'SlotType'>
+  readonly isSubstitution: Prisma.FieldRef<"OrderMenuComponent", 'Boolean'>
 }
     
 

@@ -27,10 +27,12 @@ export type AggregateOrder = {
 }
 
 export type OrderAvgAggregateOutputType = {
+  folio: number | null
   priceSnapshot: runtime.Decimal | null
 }
 
 export type OrderSumAggregateOutputType = {
+  folio: number | null
   priceSnapshot: runtime.Decimal | null
 }
 
@@ -39,7 +41,10 @@ export type OrderMinAggregateOutputType = {
   customerId: string | null
   planVariantId: string | null
   sourceWeeklyMenuId: string | null
+  cycleId: string | null
+  folio: number | null
   status: $Enums.OrderStatus | null
+  capturedAfterCutoff: boolean | null
   planTitleSnapshot: string | null
   planVariantTitleSnapshot: string | null
   priceSnapshot: runtime.Decimal | null
@@ -53,7 +58,10 @@ export type OrderMaxAggregateOutputType = {
   customerId: string | null
   planVariantId: string | null
   sourceWeeklyMenuId: string | null
+  cycleId: string | null
+  folio: number | null
   status: $Enums.OrderStatus | null
+  capturedAfterCutoff: boolean | null
   planTitleSnapshot: string | null
   planVariantTitleSnapshot: string | null
   priceSnapshot: runtime.Decimal | null
@@ -67,7 +75,10 @@ export type OrderCountAggregateOutputType = {
   customerId: number
   planVariantId: number
   sourceWeeklyMenuId: number
+  cycleId: number
+  folio: number
   status: number
+  capturedAfterCutoff: number
   planTitleSnapshot: number
   planVariantTitleSnapshot: number
   priceSnapshot: number
@@ -79,10 +90,12 @@ export type OrderCountAggregateOutputType = {
 
 
 export type OrderAvgAggregateInputType = {
+  folio?: true
   priceSnapshot?: true
 }
 
 export type OrderSumAggregateInputType = {
+  folio?: true
   priceSnapshot?: true
 }
 
@@ -91,7 +104,10 @@ export type OrderMinAggregateInputType = {
   customerId?: true
   planVariantId?: true
   sourceWeeklyMenuId?: true
+  cycleId?: true
+  folio?: true
   status?: true
+  capturedAfterCutoff?: true
   planTitleSnapshot?: true
   planVariantTitleSnapshot?: true
   priceSnapshot?: true
@@ -105,7 +121,10 @@ export type OrderMaxAggregateInputType = {
   customerId?: true
   planVariantId?: true
   sourceWeeklyMenuId?: true
+  cycleId?: true
+  folio?: true
   status?: true
+  capturedAfterCutoff?: true
   planTitleSnapshot?: true
   planVariantTitleSnapshot?: true
   priceSnapshot?: true
@@ -119,7 +138,10 @@ export type OrderCountAggregateInputType = {
   customerId?: true
   planVariantId?: true
   sourceWeeklyMenuId?: true
+  cycleId?: true
+  folio?: true
   status?: true
+  capturedAfterCutoff?: true
   planTitleSnapshot?: true
   planVariantTitleSnapshot?: true
   priceSnapshot?: true
@@ -220,7 +242,10 @@ export type OrderGroupByOutputType = {
   customerId: string
   planVariantId: string | null
   sourceWeeklyMenuId: string | null
+  cycleId: string
+  folio: number
   status: $Enums.OrderStatus
+  capturedAfterCutoff: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal
@@ -257,7 +282,10 @@ export type OrderWhereInput = {
   customerId?: Prisma.UuidFilter<"Order"> | string
   planVariantId?: Prisma.UuidNullableFilter<"Order"> | string | null
   sourceWeeklyMenuId?: Prisma.StringNullableFilter<"Order"> | string | null
+  cycleId?: Prisma.UuidFilter<"Order"> | string
+  folio?: Prisma.IntFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFilter<"Order"> | boolean
   planTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   priceSnapshot?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -267,6 +295,7 @@ export type OrderWhereInput = {
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   planVariant?: Prisma.XOR<Prisma.PlanVariantNullableScalarRelationFilter, Prisma.PlanVariantWhereInput> | null
   sourceWeeklyMenu?: Prisma.XOR<Prisma.WeeklyMenuNullableScalarRelationFilter, Prisma.WeeklyMenuWhereInput> | null
+  cycle?: Prisma.XOR<Prisma.WeeklyCycleScalarRelationFilter, Prisma.WeeklyCycleWhereInput>
   deliveries?: Prisma.OrderDeliveryListRelationFilter
   menuSlots?: Prisma.OrderMenuSlotListRelationFilter
 }
@@ -276,7 +305,10 @@ export type OrderOrderByWithRelationInput = {
   customerId?: Prisma.SortOrder
   planVariantId?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceWeeklyMenuId?: Prisma.SortOrderInput | Prisma.SortOrder
+  cycleId?: Prisma.SortOrder
+  folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
@@ -286,19 +318,23 @@ export type OrderOrderByWithRelationInput = {
   customer?: Prisma.CustomerOrderByWithRelationInput
   planVariant?: Prisma.PlanVariantOrderByWithRelationInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuOrderByWithRelationInput
+  cycle?: Prisma.WeeklyCycleOrderByWithRelationInput
   deliveries?: Prisma.OrderDeliveryOrderByRelationAggregateInput
   menuSlots?: Prisma.OrderMenuSlotOrderByRelationAggregateInput
 }
 
 export type OrderWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  folio?: number
   AND?: Prisma.OrderWhereInput | Prisma.OrderWhereInput[]
   OR?: Prisma.OrderWhereInput[]
   NOT?: Prisma.OrderWhereInput | Prisma.OrderWhereInput[]
   customerId?: Prisma.UuidFilter<"Order"> | string
   planVariantId?: Prisma.UuidNullableFilter<"Order"> | string | null
   sourceWeeklyMenuId?: Prisma.StringNullableFilter<"Order"> | string | null
+  cycleId?: Prisma.UuidFilter<"Order"> | string
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFilter<"Order"> | boolean
   planTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   priceSnapshot?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -308,16 +344,20 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   planVariant?: Prisma.XOR<Prisma.PlanVariantNullableScalarRelationFilter, Prisma.PlanVariantWhereInput> | null
   sourceWeeklyMenu?: Prisma.XOR<Prisma.WeeklyMenuNullableScalarRelationFilter, Prisma.WeeklyMenuWhereInput> | null
+  cycle?: Prisma.XOR<Prisma.WeeklyCycleScalarRelationFilter, Prisma.WeeklyCycleWhereInput>
   deliveries?: Prisma.OrderDeliveryListRelationFilter
   menuSlots?: Prisma.OrderMenuSlotListRelationFilter
-}, "id">
+}, "id" | "folio">
 
 export type OrderOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   planVariantId?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceWeeklyMenuId?: Prisma.SortOrderInput | Prisma.SortOrder
+  cycleId?: Prisma.SortOrder
+  folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
@@ -339,7 +379,10 @@ export type OrderScalarWhereWithAggregatesInput = {
   customerId?: Prisma.UuidWithAggregatesFilter<"Order"> | string
   planVariantId?: Prisma.UuidNullableWithAggregatesFilter<"Order"> | string | null
   sourceWeeklyMenuId?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
+  cycleId?: Prisma.UuidWithAggregatesFilter<"Order"> | string
+  folio?: Prisma.IntWithAggregatesFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolWithAggregatesFilter<"Order"> | boolean
   planTitleSnapshot?: Prisma.StringWithAggregatesFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringWithAggregatesFilter<"Order"> | string
   priceSnapshot?: Prisma.DecimalWithAggregatesFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -350,7 +393,9 @@ export type OrderScalarWhereWithAggregatesInput = {
 
 export type OrderCreateInput = {
   id?: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -360,6 +405,7 @@ export type OrderCreateInput = {
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
 }
@@ -369,7 +415,10 @@ export type OrderUncheckedCreateInput = {
   customerId: string
   planVariantId?: string | null
   sourceWeeklyMenuId?: string | null
+  cycleId: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -383,6 +432,7 @@ export type OrderUncheckedCreateInput = {
 export type OrderUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -392,6 +442,7 @@ export type OrderUpdateInput = {
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
 }
@@ -401,7 +452,10 @@ export type OrderUncheckedUpdateInput = {
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cycleId?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -417,7 +471,10 @@ export type OrderCreateManyInput = {
   customerId: string
   planVariantId?: string | null
   sourceWeeklyMenuId?: string | null
+  cycleId: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -429,6 +486,7 @@ export type OrderCreateManyInput = {
 export type OrderUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -442,7 +500,10 @@ export type OrderUncheckedUpdateManyInput = {
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cycleId?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -466,7 +527,10 @@ export type OrderCountOrderByAggregateInput = {
   customerId?: Prisma.SortOrder
   planVariantId?: Prisma.SortOrder
   sourceWeeklyMenuId?: Prisma.SortOrder
+  cycleId?: Prisma.SortOrder
+  folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
@@ -476,6 +540,7 @@ export type OrderCountOrderByAggregateInput = {
 }
 
 export type OrderAvgOrderByAggregateInput = {
+  folio?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
 }
 
@@ -484,7 +549,10 @@ export type OrderMaxOrderByAggregateInput = {
   customerId?: Prisma.SortOrder
   planVariantId?: Prisma.SortOrder
   sourceWeeklyMenuId?: Prisma.SortOrder
+  cycleId?: Prisma.SortOrder
+  folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
@@ -498,7 +566,10 @@ export type OrderMinOrderByAggregateInput = {
   customerId?: Prisma.SortOrder
   planVariantId?: Prisma.SortOrder
   sourceWeeklyMenuId?: Prisma.SortOrder
+  cycleId?: Prisma.SortOrder
+  folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
@@ -508,6 +579,7 @@ export type OrderMinOrderByAggregateInput = {
 }
 
 export type OrderSumOrderByAggregateInput = {
+  folio?: Prisma.SortOrder
   priceSnapshot?: Prisma.SortOrder
 }
 
@@ -674,9 +746,53 @@ export type OrderUpdateOneRequiredWithoutMenuSlotsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutMenuSlotsInput, Prisma.OrderUpdateWithoutMenuSlotsInput>, Prisma.OrderUncheckedUpdateWithoutMenuSlotsInput>
 }
 
+export type OrderCreateNestedManyWithoutCycleInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutCycleInput, Prisma.OrderUncheckedCreateWithoutCycleInput> | Prisma.OrderCreateWithoutCycleInput[] | Prisma.OrderUncheckedCreateWithoutCycleInput[]
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutCycleInput | Prisma.OrderCreateOrConnectWithoutCycleInput[]
+  createMany?: Prisma.OrderCreateManyCycleInputEnvelope
+  connect?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+}
+
+export type OrderUncheckedCreateNestedManyWithoutCycleInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutCycleInput, Prisma.OrderUncheckedCreateWithoutCycleInput> | Prisma.OrderCreateWithoutCycleInput[] | Prisma.OrderUncheckedCreateWithoutCycleInput[]
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutCycleInput | Prisma.OrderCreateOrConnectWithoutCycleInput[]
+  createMany?: Prisma.OrderCreateManyCycleInputEnvelope
+  connect?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+}
+
+export type OrderUpdateManyWithoutCycleNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutCycleInput, Prisma.OrderUncheckedCreateWithoutCycleInput> | Prisma.OrderCreateWithoutCycleInput[] | Prisma.OrderUncheckedCreateWithoutCycleInput[]
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutCycleInput | Prisma.OrderCreateOrConnectWithoutCycleInput[]
+  upsert?: Prisma.OrderUpsertWithWhereUniqueWithoutCycleInput | Prisma.OrderUpsertWithWhereUniqueWithoutCycleInput[]
+  createMany?: Prisma.OrderCreateManyCycleInputEnvelope
+  set?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  disconnect?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  delete?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  connect?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  update?: Prisma.OrderUpdateWithWhereUniqueWithoutCycleInput | Prisma.OrderUpdateWithWhereUniqueWithoutCycleInput[]
+  updateMany?: Prisma.OrderUpdateManyWithWhereWithoutCycleInput | Prisma.OrderUpdateManyWithWhereWithoutCycleInput[]
+  deleteMany?: Prisma.OrderScalarWhereInput | Prisma.OrderScalarWhereInput[]
+}
+
+export type OrderUncheckedUpdateManyWithoutCycleNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutCycleInput, Prisma.OrderUncheckedCreateWithoutCycleInput> | Prisma.OrderCreateWithoutCycleInput[] | Prisma.OrderUncheckedCreateWithoutCycleInput[]
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutCycleInput | Prisma.OrderCreateOrConnectWithoutCycleInput[]
+  upsert?: Prisma.OrderUpsertWithWhereUniqueWithoutCycleInput | Prisma.OrderUpsertWithWhereUniqueWithoutCycleInput[]
+  createMany?: Prisma.OrderCreateManyCycleInputEnvelope
+  set?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  disconnect?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  delete?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  connect?: Prisma.OrderWhereUniqueInput | Prisma.OrderWhereUniqueInput[]
+  update?: Prisma.OrderUpdateWithWhereUniqueWithoutCycleInput | Prisma.OrderUpdateWithWhereUniqueWithoutCycleInput[]
+  updateMany?: Prisma.OrderUpdateManyWithWhereWithoutCycleInput | Prisma.OrderUpdateManyWithWhereWithoutCycleInput[]
+  deleteMany?: Prisma.OrderScalarWhereInput | Prisma.OrderScalarWhereInput[]
+}
+
 export type OrderCreateWithoutSourceWeeklyMenuInput = {
   id?: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -685,6 +801,7 @@ export type OrderCreateWithoutSourceWeeklyMenuInput = {
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
+  cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
 }
@@ -693,7 +810,10 @@ export type OrderUncheckedCreateWithoutSourceWeeklyMenuInput = {
   id?: string
   customerId: string
   planVariantId?: string | null
+  cycleId: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -738,7 +858,10 @@ export type OrderScalarWhereInput = {
   customerId?: Prisma.UuidFilter<"Order"> | string
   planVariantId?: Prisma.UuidNullableFilter<"Order"> | string | null
   sourceWeeklyMenuId?: Prisma.StringNullableFilter<"Order"> | string | null
+  cycleId?: Prisma.UuidFilter<"Order"> | string
+  folio?: Prisma.IntFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFilter<"Order"> | boolean
   planTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   priceSnapshot?: Prisma.DecimalFilter<"Order"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -749,7 +872,9 @@ export type OrderScalarWhereInput = {
 
 export type OrderCreateWithoutCustomerInput = {
   id?: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -758,6 +883,7 @@ export type OrderCreateWithoutCustomerInput = {
   updatedAt?: Date | string
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
 }
@@ -766,7 +892,10 @@ export type OrderUncheckedCreateWithoutCustomerInput = {
   id?: string
   planVariantId?: string | null
   sourceWeeklyMenuId?: string | null
+  cycleId: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -805,7 +934,9 @@ export type OrderUpdateManyWithWhereWithoutCustomerInput = {
 
 export type OrderCreateWithoutPlanVariantInput = {
   id?: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -814,6 +945,7 @@ export type OrderCreateWithoutPlanVariantInput = {
   updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
 }
@@ -822,7 +954,10 @@ export type OrderUncheckedCreateWithoutPlanVariantInput = {
   id?: string
   customerId: string
   sourceWeeklyMenuId?: string | null
+  cycleId: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -861,7 +996,9 @@ export type OrderUpdateManyWithWhereWithoutPlanVariantInput = {
 
 export type OrderCreateWithoutDeliveriesInput = {
   id?: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -871,6 +1008,7 @@ export type OrderCreateWithoutDeliveriesInput = {
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
 }
 
@@ -879,7 +1017,10 @@ export type OrderUncheckedCreateWithoutDeliveriesInput = {
   customerId: string
   planVariantId?: string | null
   sourceWeeklyMenuId?: string | null
+  cycleId: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -908,6 +1049,7 @@ export type OrderUpdateToOneWithWhereWithoutDeliveriesInput = {
 export type OrderUpdateWithoutDeliveriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -917,6 +1059,7 @@ export type OrderUpdateWithoutDeliveriesInput = {
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
 }
 
@@ -925,7 +1068,10 @@ export type OrderUncheckedUpdateWithoutDeliveriesInput = {
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cycleId?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -937,7 +1083,9 @@ export type OrderUncheckedUpdateWithoutDeliveriesInput = {
 
 export type OrderCreateWithoutMenuSlotsInput = {
   id?: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -947,6 +1095,7 @@ export type OrderCreateWithoutMenuSlotsInput = {
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
 }
 
@@ -955,7 +1104,10 @@ export type OrderUncheckedCreateWithoutMenuSlotsInput = {
   customerId: string
   planVariantId?: string | null
   sourceWeeklyMenuId?: string | null
+  cycleId: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -984,6 +1136,7 @@ export type OrderUpdateToOneWithWhereWithoutMenuSlotsInput = {
 export type OrderUpdateWithoutMenuSlotsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -993,6 +1146,7 @@ export type OrderUpdateWithoutMenuSlotsInput = {
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
 }
 
@@ -1001,7 +1155,10 @@ export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cycleId?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1011,11 +1168,76 @@ export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
 }
 
+export type OrderCreateWithoutCycleInput = {
+  id?: string
+  folio?: number
+  status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
+  planTitleSnapshot: string
+  planVariantTitleSnapshot: string
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
+  planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
+  sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
+  menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
+}
+
+export type OrderUncheckedCreateWithoutCycleInput = {
+  id?: string
+  customerId: string
+  planVariantId?: string | null
+  sourceWeeklyMenuId?: string | null
+  folio?: number
+  status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
+  planTitleSnapshot: string
+  planVariantTitleSnapshot: string
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
+  menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
+}
+
+export type OrderCreateOrConnectWithoutCycleInput = {
+  where: Prisma.OrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrderCreateWithoutCycleInput, Prisma.OrderUncheckedCreateWithoutCycleInput>
+}
+
+export type OrderCreateManyCycleInputEnvelope = {
+  data: Prisma.OrderCreateManyCycleInput | Prisma.OrderCreateManyCycleInput[]
+  skipDuplicates?: boolean
+}
+
+export type OrderUpsertWithWhereUniqueWithoutCycleInput = {
+  where: Prisma.OrderWhereUniqueInput
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutCycleInput, Prisma.OrderUncheckedUpdateWithoutCycleInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutCycleInput, Prisma.OrderUncheckedCreateWithoutCycleInput>
+}
+
+export type OrderUpdateWithWhereUniqueWithoutCycleInput = {
+  where: Prisma.OrderWhereUniqueInput
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutCycleInput, Prisma.OrderUncheckedUpdateWithoutCycleInput>
+}
+
+export type OrderUpdateManyWithWhereWithoutCycleInput = {
+  where: Prisma.OrderScalarWhereInput
+  data: Prisma.XOR<Prisma.OrderUpdateManyMutationInput, Prisma.OrderUncheckedUpdateManyWithoutCycleInput>
+}
+
 export type OrderCreateManySourceWeeklyMenuInput = {
   id?: string
   customerId: string
   planVariantId?: string | null
+  cycleId: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1027,6 +1249,7 @@ export type OrderCreateManySourceWeeklyMenuInput = {
 export type OrderUpdateWithoutSourceWeeklyMenuInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1035,6 +1258,7 @@ export type OrderUpdateWithoutSourceWeeklyMenuInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
+  cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
 }
@@ -1043,7 +1267,10 @@ export type OrderUncheckedUpdateWithoutSourceWeeklyMenuInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cycleId?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1058,7 +1285,10 @@ export type OrderUncheckedUpdateManyWithoutSourceWeeklyMenuInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cycleId?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1071,7 +1301,10 @@ export type OrderCreateManyCustomerInput = {
   id?: string
   planVariantId?: string | null
   sourceWeeklyMenuId?: string | null
+  cycleId: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1083,6 +1316,7 @@ export type OrderCreateManyCustomerInput = {
 export type OrderUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1091,6 +1325,7 @@ export type OrderUpdateWithoutCustomerInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
 }
@@ -1099,7 +1334,10 @@ export type OrderUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cycleId?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1114,7 +1352,10 @@ export type OrderUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cycleId?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1127,7 +1368,10 @@ export type OrderCreateManyPlanVariantInput = {
   id?: string
   customerId: string
   sourceWeeklyMenuId?: string | null
+  cycleId: string
+  folio?: number
   status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1139,6 +1383,7 @@ export type OrderCreateManyPlanVariantInput = {
 export type OrderUpdateWithoutPlanVariantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1147,6 +1392,7 @@ export type OrderUpdateWithoutPlanVariantInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
 }
@@ -1155,7 +1401,10 @@ export type OrderUncheckedUpdateWithoutPlanVariantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cycleId?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1170,7 +1419,77 @@ export type OrderUncheckedUpdateManyWithoutPlanVariantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cycleId?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type OrderCreateManyCycleInput = {
+  id?: string
+  customerId: string
+  planVariantId?: string | null
+  sourceWeeklyMenuId?: string | null
+  folio?: number
+  status?: $Enums.OrderStatus
+  capturedAfterCutoff?: boolean
+  planTitleSnapshot: string
+  planVariantTitleSnapshot: string
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type OrderUpdateWithoutCycleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
+  planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
+  sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
+  menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderUncheckedUpdateWithoutCycleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
+  menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderUncheckedUpdateManyWithoutCycleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1224,7 +1543,10 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   customerId?: boolean
   planVariantId?: boolean
   sourceWeeklyMenuId?: boolean
+  cycleId?: boolean
+  folio?: boolean
   status?: boolean
+  capturedAfterCutoff?: boolean
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
   priceSnapshot?: boolean
@@ -1234,6 +1556,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
   sourceWeeklyMenu?: boolean | Prisma.Order$sourceWeeklyMenuArgs<ExtArgs>
+  cycle?: boolean | Prisma.WeeklyCycleDefaultArgs<ExtArgs>
   deliveries?: boolean | Prisma.Order$deliveriesArgs<ExtArgs>
   menuSlots?: boolean | Prisma.Order$menuSlotsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -1244,7 +1567,10 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   customerId?: boolean
   planVariantId?: boolean
   sourceWeeklyMenuId?: boolean
+  cycleId?: boolean
+  folio?: boolean
   status?: boolean
+  capturedAfterCutoff?: boolean
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
   priceSnapshot?: boolean
@@ -1254,6 +1580,7 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
   sourceWeeklyMenu?: boolean | Prisma.Order$sourceWeeklyMenuArgs<ExtArgs>
+  cycle?: boolean | Prisma.WeeklyCycleDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
 export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1261,7 +1588,10 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   customerId?: boolean
   planVariantId?: boolean
   sourceWeeklyMenuId?: boolean
+  cycleId?: boolean
+  folio?: boolean
   status?: boolean
+  capturedAfterCutoff?: boolean
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
   priceSnapshot?: boolean
@@ -1271,6 +1601,7 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
   sourceWeeklyMenu?: boolean | Prisma.Order$sourceWeeklyMenuArgs<ExtArgs>
+  cycle?: boolean | Prisma.WeeklyCycleDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
 export type OrderSelectScalar = {
@@ -1278,7 +1609,10 @@ export type OrderSelectScalar = {
   customerId?: boolean
   planVariantId?: boolean
   sourceWeeklyMenuId?: boolean
+  cycleId?: boolean
+  folio?: boolean
   status?: boolean
+  capturedAfterCutoff?: boolean
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
   priceSnapshot?: boolean
@@ -1287,11 +1621,12 @@ export type OrderSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "planVariantId" | "sourceWeeklyMenuId" | "status" | "planTitleSnapshot" | "planVariantTitleSnapshot" | "priceSnapshot" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "planVariantId" | "sourceWeeklyMenuId" | "cycleId" | "folio" | "status" | "capturedAfterCutoff" | "planTitleSnapshot" | "planVariantTitleSnapshot" | "priceSnapshot" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
   sourceWeeklyMenu?: boolean | Prisma.Order$sourceWeeklyMenuArgs<ExtArgs>
+  cycle?: boolean | Prisma.WeeklyCycleDefaultArgs<ExtArgs>
   deliveries?: boolean | Prisma.Order$deliveriesArgs<ExtArgs>
   menuSlots?: boolean | Prisma.Order$menuSlotsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
@@ -1300,11 +1635,13 @@ export type OrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
   sourceWeeklyMenu?: boolean | Prisma.Order$sourceWeeklyMenuArgs<ExtArgs>
+  cycle?: boolean | Prisma.WeeklyCycleDefaultArgs<ExtArgs>
 }
 export type OrderIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
   sourceWeeklyMenu?: boolean | Prisma.Order$sourceWeeklyMenuArgs<ExtArgs>
+  cycle?: boolean | Prisma.WeeklyCycleDefaultArgs<ExtArgs>
 }
 
 export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1313,6 +1650,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     customer: Prisma.$CustomerPayload<ExtArgs>
     planVariant: Prisma.$PlanVariantPayload<ExtArgs> | null
     sourceWeeklyMenu: Prisma.$WeeklyMenuPayload<ExtArgs> | null
+    cycle: Prisma.$WeeklyCyclePayload<ExtArgs>
     deliveries: Prisma.$OrderDeliveryPayload<ExtArgs>[]
     menuSlots: Prisma.$OrderMenuSlotPayload<ExtArgs>[]
   }
@@ -1321,7 +1659,10 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     customerId: string
     planVariantId: string | null
     sourceWeeklyMenuId: string | null
+    cycleId: string
+    folio: number
     status: $Enums.OrderStatus
+    capturedAfterCutoff: boolean
     planTitleSnapshot: string
     planVariantTitleSnapshot: string
     priceSnapshot: runtime.Decimal
@@ -1725,6 +2066,7 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
   customer<T extends Prisma.CustomerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerDefaultArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   planVariant<T extends Prisma.Order$planVariantArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$planVariantArgs<ExtArgs>>): Prisma.Prisma__PlanVariantClient<runtime.Types.Result.GetResult<Prisma.$PlanVariantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   sourceWeeklyMenu<T extends Prisma.Order$sourceWeeklyMenuArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$sourceWeeklyMenuArgs<ExtArgs>>): Prisma.Prisma__WeeklyMenuClient<runtime.Types.Result.GetResult<Prisma.$WeeklyMenuPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  cycle<T extends Prisma.WeeklyCycleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WeeklyCycleDefaultArgs<ExtArgs>>): Prisma.Prisma__WeeklyCycleClient<runtime.Types.Result.GetResult<Prisma.$WeeklyCyclePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   deliveries<T extends Prisma.Order$deliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$deliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   menuSlots<T extends Prisma.Order$menuSlotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$menuSlotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderMenuSlotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1760,7 +2102,10 @@ export interface OrderFieldRefs {
   readonly customerId: Prisma.FieldRef<"Order", 'String'>
   readonly planVariantId: Prisma.FieldRef<"Order", 'String'>
   readonly sourceWeeklyMenuId: Prisma.FieldRef<"Order", 'String'>
+  readonly cycleId: Prisma.FieldRef<"Order", 'String'>
+  readonly folio: Prisma.FieldRef<"Order", 'Int'>
   readonly status: Prisma.FieldRef<"Order", 'OrderStatus'>
+  readonly capturedAfterCutoff: Prisma.FieldRef<"Order", 'Boolean'>
   readonly planTitleSnapshot: Prisma.FieldRef<"Order", 'String'>
   readonly planVariantTitleSnapshot: Prisma.FieldRef<"Order", 'String'>
   readonly priceSnapshot: Prisma.FieldRef<"Order", 'Decimal'>

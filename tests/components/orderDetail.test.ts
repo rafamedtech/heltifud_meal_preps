@@ -11,7 +11,7 @@ mockNuxtImport('useRoute', () => () => ({ params: { id: 'order-1' } }));
 mockNuxtImport('useOrders', () => () => ({ updateOrder: vi.fn() }));
 
 const order = {
-  id: 'order-1', status: 'CONFIRMED', customerId: 'customer-1', customerName: 'Ana López', customerPhone: '6641234567',
+  id: 'order-1', folio: 12, weekStart: '2026-09-14', cycleId: 'cycle-1', capturedAfterCutoff: true, status: 'CONFIRMED', customerId: 'customer-1', customerName: 'Ana López', customerPhone: '6641234567',
   planTitle: 'Plan Balance', planVariantTitle: '5 días · 3 tiempos', price: 1450,
   deliveries: [
     { id: 'delivery-1', sequence: 1, scheduledDate: '2026-09-14', locationNumber: 1, address: 'Zona Río, Tijuana', status: 'PENDING', deliveredAt: null, notes: '' },
@@ -52,6 +52,8 @@ describe('OrderDetail', () => {
     expect(fetchData.mock.calls.some(([url]) => url === '/api/orders/order-1')).toBe(true);
     expect(wrapper.get('h1').text()).toBe(order.planTitle);
     expect(wrapper.text()).toContain('Confirmado');
+    expect(wrapper.text()).toContain('Pedido #0012');
+    expect(wrapper.text()).toContain('Fuera de corte');
     expect(wrapper.text()).toContain('Creado el');
     expect(wrapper.get('a[href="/admin/clientes/customer-1"]').text()).toBe(order.customerName);
     expect(wrapper.find('a[href="tel:6641234567"]').exists()).toBe(true);

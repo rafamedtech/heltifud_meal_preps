@@ -1873,7 +1873,10 @@ export const OrderScalarFieldEnum = {
   customerId: 'customerId',
   planVariantId: 'planVariantId',
   sourceWeeklyMenuId: 'sourceWeeklyMenuId',
+  cycleId: 'cycleId',
+  folio: 'folio',
   status: 'status',
+  capturedAfterCutoff: 'capturedAfterCutoff',
   planTitleSnapshot: 'planTitleSnapshot',
   planVariantTitleSnapshot: 'planVariantTitleSnapshot',
   priceSnapshot: 'priceSnapshot',
@@ -1925,7 +1928,10 @@ export const OrderMenuComponentScalarFieldEnum = {
   descripcion: 'descripcion',
   calorias: 'calorias',
   imagen: 'imagen',
-  tipo: 'tipo'
+  tipo: 'tipo',
+  sourceDayOfWeek: 'sourceDayOfWeek',
+  sourceSlotType: 'sourceSlotType',
+  isSubstitution: 'isSubstitution'
 } as const
 
 export type OrderMenuComponentScalarFieldEnum = (typeof OrderMenuComponentScalarFieldEnum)[keyof typeof OrderMenuComponentScalarFieldEnum]

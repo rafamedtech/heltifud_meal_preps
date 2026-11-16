@@ -185,7 +185,13 @@ model Order {
   customerId               String          @map("customer_id") @db.Uuid
   planVariantId            String?         @map("plan_variant_id") @db.Uuid
   sourceWeeklyMenuId       String?         @map("source_weekly_menu_id")
+  // Week of service the order belongs to.
+  cycleId                  String          @map("cycle_id") @db.Uuid
+  // Human-readable consecutive number.
+  folio                    Int             @unique(map: "orders_folio_key") @default(autoincrement())
   status                   OrderStatus     @default(DRAFT)
+  // True when the order was captured once the customer cutoff had passed.
+  capturedAfterCutoff      Boolean         @default(false) @map("captured_after_cutoff")
   planTitleSnapshot        String          @map("plan_title_snapshot")
   planVariantTitleSnapshot String          @map("plan_variant_title_snapshot")
   priceSnapshot            Decimal         @map("price_snapshot") @db.Decimal(10, 2)
@@ -195,6 +201,7 @@ model Order {
   customer                 Customer        @relation(fields: [customerId], references: [id], onDelete: Restrict)
   planVariant              PlanVariant?    @relation(fields: [planVariantId], references: [id], onDelete: SetNull)
   sourceWeeklyMenu         WeeklyMenu?     @relation(fields: [sourceWeeklyMenuId], references: [id], onDelete: SetNull)
+  cycle                    WeeklyCycle     @relation(fields: [cycleId], references: [id], onDelete: Restrict)
   deliveries               OrderDelivery[]
   menuSlots                OrderMenuSlot[]
 
@@ -202,6 +209,7 @@ model Order {
   @@index([status, createdAt(sort: Desc)], map: "orders_status_created_idx")
   @@index([planVariantId], map: "orders_plan_variant_idx")
   @@index([sourceWeeklyMenuId], map: "orders_source_menu_idx")
+  @@index([cycleId, status], map: "orders_cycle_status_idx")
   @@map("orders")
 }
 
@@ -257,6 +265,10 @@ model OrderMenuComponent {
   calorias        Int
   imagen          String
   tipo            String
+  // Where the dish sits in the week's menu; null for dishes added by hand.
+  sourceDayOfWeek DayOfWeek?       @map("source_day_of_week")
+  sourceSlotType  SlotType?        @map("source_slot_type")
+  isSubstitution  Boolean          @default(false) @map("is_substitution")
   orderMenuSlot   OrderMenuSlot    @relation(fields: [orderMenuSlotId], references: [id], onDelete: Cascade)
   catalogItem     FoodCatalogItem? @relation(fields: [catalogItemId], references: [id], onDelete: SetNull)
 
@@ -314,6 +326,7 @@ model WeeklyCycle {
   createdAt                 DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt                 DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
   menus                     WeeklyMenu[]
+  orders                    Order[]
 
   @@index([status, weekStart(sort: Desc)], map: "weekly_cycles_status_week_idx")
   @@map("weekly_cycles")

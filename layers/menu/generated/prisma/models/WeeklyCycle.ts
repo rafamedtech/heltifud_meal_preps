@@ -207,6 +207,7 @@ export type WeeklyCycleWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"WeeklyCycle"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WeeklyCycle"> | Date | string
   menus?: Prisma.WeeklyMenuListRelationFilter
+  orders?: Prisma.OrderListRelationFilter
 }
 
 export type WeeklyCycleOrderByWithRelationInput = {
@@ -221,6 +222,7 @@ export type WeeklyCycleOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   menus?: Prisma.WeeklyMenuOrderByRelationAggregateInput
+  orders?: Prisma.OrderOrderByRelationAggregateInput
 }
 
 export type WeeklyCycleWhereUniqueInput = Prisma.AtLeast<{
@@ -238,6 +240,7 @@ export type WeeklyCycleWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"WeeklyCycle"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"WeeklyCycle"> | Date | string
   menus?: Prisma.WeeklyMenuListRelationFilter
+  orders?: Prisma.OrderListRelationFilter
 }, "id" | "weekStart">
 
 export type WeeklyCycleOrderByWithAggregationInput = {
@@ -284,6 +287,7 @@ export type WeeklyCycleCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   menus?: Prisma.WeeklyMenuCreateNestedManyWithoutCycleInput
+  orders?: Prisma.OrderCreateNestedManyWithoutCycleInput
 }
 
 export type WeeklyCycleUncheckedCreateInput = {
@@ -298,6 +302,7 @@ export type WeeklyCycleUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   menus?: Prisma.WeeklyMenuUncheckedCreateNestedManyWithoutCycleInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCycleInput
 }
 
 export type WeeklyCycleUpdateInput = {
@@ -312,6 +317,7 @@ export type WeeklyCycleUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   menus?: Prisma.WeeklyMenuUpdateManyWithoutCycleNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutCycleNestedInput
 }
 
 export type WeeklyCycleUncheckedUpdateInput = {
@@ -326,6 +332,7 @@ export type WeeklyCycleUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   menus?: Prisma.WeeklyMenuUncheckedUpdateManyWithoutCycleNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutCycleNestedInput
 }
 
 export type WeeklyCycleCreateManyInput = {
@@ -370,6 +377,11 @@ export type WeeklyCycleUncheckedUpdateManyInput = {
 export type WeeklyCycleNullableScalarRelationFilter = {
   is?: Prisma.WeeklyCycleWhereInput | null
   isNot?: Prisma.WeeklyCycleWhereInput | null
+}
+
+export type WeeklyCycleScalarRelationFilter = {
+  is?: Prisma.WeeklyCycleWhereInput
+  isNot?: Prisma.WeeklyCycleWhereInput
 }
 
 export type WeeklyCycleCountOrderByAggregateInput = {
@@ -417,6 +429,20 @@ export type WeeklyCycleUpdateOneWithoutMenusNestedInput = {
   delete?: Prisma.WeeklyCycleWhereInput | boolean
   connect?: Prisma.WeeklyCycleWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.WeeklyCycleUpdateToOneWithWhereWithoutMenusInput, Prisma.WeeklyCycleUpdateWithoutMenusInput>, Prisma.WeeklyCycleUncheckedUpdateWithoutMenusInput>
+}
+
+export type WeeklyCycleCreateNestedOneWithoutOrdersInput = {
+  create?: Prisma.XOR<Prisma.WeeklyCycleCreateWithoutOrdersInput, Prisma.WeeklyCycleUncheckedCreateWithoutOrdersInput>
+  connectOrCreate?: Prisma.WeeklyCycleCreateOrConnectWithoutOrdersInput
+  connect?: Prisma.WeeklyCycleWhereUniqueInput
+}
+
+export type WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput = {
+  create?: Prisma.XOR<Prisma.WeeklyCycleCreateWithoutOrdersInput, Prisma.WeeklyCycleUncheckedCreateWithoutOrdersInput>
+  connectOrCreate?: Prisma.WeeklyCycleCreateOrConnectWithoutOrdersInput
+  upsert?: Prisma.WeeklyCycleUpsertWithoutOrdersInput
+  connect?: Prisma.WeeklyCycleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WeeklyCycleUpdateToOneWithWhereWithoutOrdersInput, Prisma.WeeklyCycleUpdateWithoutOrdersInput>, Prisma.WeeklyCycleUncheckedUpdateWithoutOrdersInput>
 }
 
 export type WeeklyCycleCreatefirstDeliveryAllowedDaysInput = {
@@ -470,6 +496,7 @@ export type WeeklyCycleCreateWithoutMenusInput = {
   secondDeliveryMealDays?: Prisma.WeeklyCycleCreatesecondDeliveryMealDaysInput | $Enums.DayOfWeek[]
   createdAt?: Date | string
   updatedAt?: Date | string
+  orders?: Prisma.OrderCreateNestedManyWithoutCycleInput
 }
 
 export type WeeklyCycleUncheckedCreateWithoutMenusInput = {
@@ -483,6 +510,7 @@ export type WeeklyCycleUncheckedCreateWithoutMenusInput = {
   secondDeliveryMealDays?: Prisma.WeeklyCycleCreatesecondDeliveryMealDaysInput | $Enums.DayOfWeek[]
   createdAt?: Date | string
   updatedAt?: Date | string
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCycleInput
 }
 
 export type WeeklyCycleCreateOrConnectWithoutMenusInput = {
@@ -512,6 +540,7 @@ export type WeeklyCycleUpdateWithoutMenusInput = {
   secondDeliveryMealDays?: Prisma.WeeklyCycleUpdatesecondDeliveryMealDaysInput | $Enums.DayOfWeek[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  orders?: Prisma.OrderUpdateManyWithoutCycleNestedInput
 }
 
 export type WeeklyCycleUncheckedUpdateWithoutMenusInput = {
@@ -525,6 +554,79 @@ export type WeeklyCycleUncheckedUpdateWithoutMenusInput = {
   secondDeliveryMealDays?: Prisma.WeeklyCycleUpdatesecondDeliveryMealDaysInput | $Enums.DayOfWeek[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutCycleNestedInput
+}
+
+export type WeeklyCycleCreateWithoutOrdersInput = {
+  id?: string
+  weekStart: Date | string
+  status?: $Enums.CycleStatus
+  orderCutoffAt: Date | string
+  firstDeliveryAllowedDays?: Prisma.WeeklyCycleCreatefirstDeliveryAllowedDaysInput | $Enums.DayOfWeek[]
+  secondDeliveryAllowedDays?: Prisma.WeeklyCycleCreatesecondDeliveryAllowedDaysInput | $Enums.DayOfWeek[]
+  firstDeliveryMealDays?: Prisma.WeeklyCycleCreatefirstDeliveryMealDaysInput | $Enums.DayOfWeek[]
+  secondDeliveryMealDays?: Prisma.WeeklyCycleCreatesecondDeliveryMealDaysInput | $Enums.DayOfWeek[]
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  menus?: Prisma.WeeklyMenuCreateNestedManyWithoutCycleInput
+}
+
+export type WeeklyCycleUncheckedCreateWithoutOrdersInput = {
+  id?: string
+  weekStart: Date | string
+  status?: $Enums.CycleStatus
+  orderCutoffAt: Date | string
+  firstDeliveryAllowedDays?: Prisma.WeeklyCycleCreatefirstDeliveryAllowedDaysInput | $Enums.DayOfWeek[]
+  secondDeliveryAllowedDays?: Prisma.WeeklyCycleCreatesecondDeliveryAllowedDaysInput | $Enums.DayOfWeek[]
+  firstDeliveryMealDays?: Prisma.WeeklyCycleCreatefirstDeliveryMealDaysInput | $Enums.DayOfWeek[]
+  secondDeliveryMealDays?: Prisma.WeeklyCycleCreatesecondDeliveryMealDaysInput | $Enums.DayOfWeek[]
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  menus?: Prisma.WeeklyMenuUncheckedCreateNestedManyWithoutCycleInput
+}
+
+export type WeeklyCycleCreateOrConnectWithoutOrdersInput = {
+  where: Prisma.WeeklyCycleWhereUniqueInput
+  create: Prisma.XOR<Prisma.WeeklyCycleCreateWithoutOrdersInput, Prisma.WeeklyCycleUncheckedCreateWithoutOrdersInput>
+}
+
+export type WeeklyCycleUpsertWithoutOrdersInput = {
+  update: Prisma.XOR<Prisma.WeeklyCycleUpdateWithoutOrdersInput, Prisma.WeeklyCycleUncheckedUpdateWithoutOrdersInput>
+  create: Prisma.XOR<Prisma.WeeklyCycleCreateWithoutOrdersInput, Prisma.WeeklyCycleUncheckedCreateWithoutOrdersInput>
+  where?: Prisma.WeeklyCycleWhereInput
+}
+
+export type WeeklyCycleUpdateToOneWithWhereWithoutOrdersInput = {
+  where?: Prisma.WeeklyCycleWhereInput
+  data: Prisma.XOR<Prisma.WeeklyCycleUpdateWithoutOrdersInput, Prisma.WeeklyCycleUncheckedUpdateWithoutOrdersInput>
+}
+
+export type WeeklyCycleUpdateWithoutOrdersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  weekStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumCycleStatusFieldUpdateOperationsInput | $Enums.CycleStatus
+  orderCutoffAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstDeliveryAllowedDays?: Prisma.WeeklyCycleUpdatefirstDeliveryAllowedDaysInput | $Enums.DayOfWeek[]
+  secondDeliveryAllowedDays?: Prisma.WeeklyCycleUpdatesecondDeliveryAllowedDaysInput | $Enums.DayOfWeek[]
+  firstDeliveryMealDays?: Prisma.WeeklyCycleUpdatefirstDeliveryMealDaysInput | $Enums.DayOfWeek[]
+  secondDeliveryMealDays?: Prisma.WeeklyCycleUpdatesecondDeliveryMealDaysInput | $Enums.DayOfWeek[]
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  menus?: Prisma.WeeklyMenuUpdateManyWithoutCycleNestedInput
+}
+
+export type WeeklyCycleUncheckedUpdateWithoutOrdersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  weekStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumCycleStatusFieldUpdateOperationsInput | $Enums.CycleStatus
+  orderCutoffAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstDeliveryAllowedDays?: Prisma.WeeklyCycleUpdatefirstDeliveryAllowedDaysInput | $Enums.DayOfWeek[]
+  secondDeliveryAllowedDays?: Prisma.WeeklyCycleUpdatesecondDeliveryAllowedDaysInput | $Enums.DayOfWeek[]
+  firstDeliveryMealDays?: Prisma.WeeklyCycleUpdatefirstDeliveryMealDaysInput | $Enums.DayOfWeek[]
+  secondDeliveryMealDays?: Prisma.WeeklyCycleUpdatesecondDeliveryMealDaysInput | $Enums.DayOfWeek[]
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  menus?: Prisma.WeeklyMenuUncheckedUpdateManyWithoutCycleNestedInput
 }
 
 
@@ -534,10 +636,12 @@ export type WeeklyCycleUncheckedUpdateWithoutMenusInput = {
 
 export type WeeklyCycleCountOutputType = {
   menus: number
+  orders: number
 }
 
 export type WeeklyCycleCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   menus?: boolean | WeeklyCycleCountOutputTypeCountMenusArgs
+  orders?: boolean | WeeklyCycleCountOutputTypeCountOrdersArgs
 }
 
 /**
@@ -557,6 +661,13 @@ export type WeeklyCycleCountOutputTypeCountMenusArgs<ExtArgs extends runtime.Typ
   where?: Prisma.WeeklyMenuWhereInput
 }
 
+/**
+ * WeeklyCycleCountOutputType without action
+ */
+export type WeeklyCycleCountOutputTypeCountOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrderWhereInput
+}
+
 
 export type WeeklyCycleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -570,6 +681,7 @@ export type WeeklyCycleSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   createdAt?: boolean
   updatedAt?: boolean
   menus?: boolean | Prisma.WeeklyCycle$menusArgs<ExtArgs>
+  orders?: boolean | Prisma.WeeklyCycle$ordersArgs<ExtArgs>
   _count?: boolean | Prisma.WeeklyCycleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["weeklyCycle"]>
 
@@ -615,6 +727,7 @@ export type WeeklyCycleSelectScalar = {
 export type WeeklyCycleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "weekStart" | "status" | "orderCutoffAt" | "firstDeliveryAllowedDays" | "secondDeliveryAllowedDays" | "firstDeliveryMealDays" | "secondDeliveryMealDays" | "createdAt" | "updatedAt", ExtArgs["result"]["weeklyCycle"]>
 export type WeeklyCycleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   menus?: boolean | Prisma.WeeklyCycle$menusArgs<ExtArgs>
+  orders?: boolean | Prisma.WeeklyCycle$ordersArgs<ExtArgs>
   _count?: boolean | Prisma.WeeklyCycleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type WeeklyCycleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -624,6 +737,7 @@ export type $WeeklyCyclePayload<ExtArgs extends runtime.Types.Extensions.Interna
   name: "WeeklyCycle"
   objects: {
     menus: Prisma.$WeeklyMenuPayload<ExtArgs>[]
+    orders: Prisma.$OrderPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1031,6 +1145,7 @@ readonly fields: WeeklyCycleFieldRefs;
 export interface Prisma__WeeklyCycleClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   menus<T extends Prisma.WeeklyCycle$menusArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WeeklyCycle$menusArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WeeklyMenuPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  orders<T extends Prisma.WeeklyCycle$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WeeklyCycle$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1484,6 +1599,30 @@ export type WeeklyCycle$menusArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.WeeklyMenuScalarFieldEnum | Prisma.WeeklyMenuScalarFieldEnum[]
+}
+
+/**
+ * WeeklyCycle.orders
+ */
+export type WeeklyCycle$ordersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Order
+   */
+  select?: Prisma.OrderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Order
+   */
+  omit?: Prisma.OrderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderInclude<ExtArgs> | null
+  where?: Prisma.OrderWhereInput
+  orderBy?: Prisma.OrderOrderByWithRelationInput | Prisma.OrderOrderByWithRelationInput[]
+  cursor?: Prisma.OrderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrderScalarFieldEnum | Prisma.OrderScalarFieldEnum[]
 }
 
 /**
