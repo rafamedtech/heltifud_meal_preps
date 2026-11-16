@@ -1,5 +1,42 @@
 # Instrucciones para agentes
 
+## Design system: leer primero, siempre
+
+**Antes de crear o modificar cualquier interfaz, leer [DESIGN.md](DESIGN.md).**
+Es la fuente única de verdad de UI del proyecto y este paso es obligatorio
+para toda tarea que toque componentes, páginas, layouts, estilos, temas o
+iconos, por pequeña que sea. No escribir ni editar código de interfaz sin
+haberlo leído en la sesión actual.
+
+El design system se basa en Nuxt UI y en el template oficial
+[Nuxt UI Dashboard](https://github.com/nuxt-ui-templates/dashboard). Sus
+documentos:
+
+- [DESIGN.md](DESIGN.md): flujo obligatorio, fundamentos, reglas y checklist.
+- [docs/design-system/componentes.md](docs/design-system/componentes.md): qué
+  componente usar para cada necesidad e inventario de componentes propios.
+- [docs/design-system/patrones.md](docs/design-system/patrones.md): recetas de
+  pantallas y piezas recurrentes.
+- [docs/design-system/template-dashboard.md](docs/design-system/template-dashboard.md):
+  mapa del template y sus adaptaciones.
+
+Orden de búsqueda para resolver cualquier necesidad de UI:
+
+1. El design system (catálogo y patrones).
+2. Los componentes de Nuxt UI y su API documentada.
+3. El template Nuxt UI Dashboard.
+4. Un componente propio, **solo** si no existe en ninguno de los anteriores ni
+   en el proyecto, y siempre construido componiendo componentes de Nuxt UI.
+
+Todo componente o patrón nuevo se registra en el design system en el mismo
+cambio. Si una petición del usuario contradice el design system, seguir la
+petición, indicarlo al comunicar el cambio y actualizar el design system si la
+decisión es permanente.
+
+Las secciones siguientes resumen las reglas de mayor impacto; `DESIGN.md` las
+desarrolla. Estas reglas prevalecen sobre los ejemplos genéricos de cualquier
+otra skill de diseño, incluida `frontend-design`.
+
 ## UI: Nuxt UI primero, props antes que Tailwind
 
 En cualquier interfaz nueva o modificada, buscar y usar primero los componentes
@@ -20,9 +57,11 @@ Seguir este orden:
    para el elemento raíz y `ui` para los slots de estilo del componente.
    Consultar el tema generado en `.nuxt/ui/<componente>.ts` y los tipos
    instalados antes de definir overrides; no inventar props ni nombres de slots.
-4. Crear un componente o control propio solo cuando Nuxt UI no ofrezca una
-   solución adecuada mediante esa composición y su API. Explicar brevemente
-   esa limitación al comunicar el cambio y conservar la accesibilidad.
+4. Crear un componente o control propio solo cuando ni Nuxt UI, mediante esa
+   composición y su API, ni el template Dashboard ofrezcan una solución
+   adecuada. Construirlo con componentes de Nuxt UI, seguir la sección «Crear
+   un componente propio» de `DESIGN.md`, explicar brevemente esa limitación al
+   comunicar el cambio y conservar la accesibilidad.
 
 Usar utilidades semánticas como `text-default`, `bg-elevated` y `border-default`.
 Para personalizaciones compartidas, utilizar la configuración documentada de
