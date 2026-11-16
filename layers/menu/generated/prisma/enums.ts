@@ -63,6 +63,16 @@ export const ComponentRole = {
 export type ComponentRole = (typeof ComponentRole)[keyof typeof ComponentRole]
 
 
+export const DeliveryStatus = {
+  PENDING: 'PENDING',
+  OUT_FOR_DELIVERY: 'OUT_FOR_DELIVERY',
+  DELIVERED: 'DELIVERED',
+  FAILED: 'FAILED'
+} as const
+
+export type DeliveryStatus = (typeof DeliveryStatus)[keyof typeof DeliveryStatus]
+
+
 export const OrderStatus = {
   DRAFT: 'DRAFT',
   CONFIRMED: 'CONFIRMED',

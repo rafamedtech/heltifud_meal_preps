@@ -189,39 +189,59 @@ model Order {
   planTitleSnapshot        String          @map("plan_title_snapshot")
   planVariantTitleSnapshot String          @map("plan_variant_title_snapshot")
   priceSnapshot            Decimal         @map("price_snapshot") @db.Decimal(10, 2)
-  firstDeliveryDate        DateTime        @map("first_delivery_date") @db.Date
-  firstDeliveryLocation    Int             @map("first_delivery_location")
-  firstDeliveryAddress     String          @map("first_delivery_address")
-  secondDeliveryDate       DateTime        @map("second_delivery_date") @db.Date
-  secondDeliveryLocation   Int             @map("second_delivery_location")
-  secondDeliveryAddress    String          @map("second_delivery_address")
   notes                    String?
   createdAt                DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt                DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
   customer                 Customer        @relation(fields: [customerId], references: [id], onDelete: Restrict)
   planVariant              PlanVariant?    @relation(fields: [planVariantId], references: [id], onDelete: SetNull)
   sourceWeeklyMenu         WeeklyMenu?     @relation(fields: [sourceWeeklyMenuId], references: [id], onDelete: SetNull)
+  deliveries               OrderDelivery[]
   menuSlots                OrderMenuSlot[]
 
   @@index([customerId, createdAt(sort: Desc)], map: "orders_customer_created_idx")
-  @@index([status, firstDeliveryDate], map: "orders_status_first_delivery_idx")
-  @@index([status, secondDeliveryDate], map: "orders_status_second_delivery_idx")
+  @@index([status, createdAt(sort: Desc)], map: "orders_status_created_idx")
   @@index([planVariantId], map: "orders_plan_variant_idx")
   @@index([sourceWeeklyMenuId], map: "orders_source_menu_idx")
   @@map("orders")
 }
 
+model OrderDelivery {
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId         String          @map("order_id") @db.Uuid
+  sequence        Int
+  scheduledDate   DateTime        @map("scheduled_date") @db.Date
+  locationNumber  Int             @map("location_number")
+  // Frozen when the delivery is created; later edits to the customer do not move it.
+  addressSnapshot String          @map("address_snapshot")
+  status          DeliveryStatus  @default(PENDING)
+  deliveredAt     DateTime?       @map("delivered_at") @db.Timestamptz(3)
+  notes           String?
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
+  order           Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuSlots       OrderMenuSlot[]
+
+  @@unique([orderId, sequence], map: "order_deliveries_order_sequence_key")
+  @@index([scheduledDate, status], map: "order_deliveries_date_status_idx")
+  @@map("order_deliveries")
+}
+
 model OrderMenuSlot {
   id         String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   orderId    String               @map("order_id") @db.Uuid
+  deliveryId String               @map("delivery_id") @db.Uuid
   dayOfWeek  DayOfWeek            @map("day_of_week")
   dayOrder   Int                  @map("day_order")
   slotType   SlotType             @map("slot_type")
   contenedor String?
   order      Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  // NoAction (checked at end of statement) lets an order delete cascade to both
+  // tables, while a delivery that still has meals cannot be removed on its own.
+  delivery   OrderDelivery        @relation(fields: [deliveryId], references: [id], onDelete: NoAction)
   components OrderMenuComponent[]
 
   @@unique([orderId, dayOfWeek, slotType], map: "order_menu_slots_order_day_slot_key")
+  @@index([deliveryId], map: "order_menu_slots_delivery_idx")
   @@index([orderId, dayOrder, slotType], map: "order_menu_slots_order_sequence_idx")
   @@map("order_menu_slots")
 }
@@ -330,6 +350,13 @@ enum ComponentRole {
   GUARNICION_1
   GUARNICION_2
   ADICIONAL
+}
+
+enum DeliveryStatus {
+  PENDING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  FAILED
 }
 
 enum OrderStatus {

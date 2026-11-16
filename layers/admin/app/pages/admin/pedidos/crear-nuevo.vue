@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { orderCreateInputSchema } from "~~/layers/menu/shared/types/menuSchema"
 import type { CustomerListResponse, OrderCreateInput, Plan } from "~~/layers/menu/shared/types/types"
+import { DELIVERY_SEQUENCE_LABELS } from "~~/layers/menu/shared/utils/orderDeliveries"
 
 definePageMeta({ layout: "admin" })
 
@@ -27,10 +28,10 @@ const saving = ref(false)
 const state = reactive<OrderCreateInput>({
   customerId: "",
   planVariantId: "",
-  firstDeliveryDate: isoDateOffset(1),
-  firstDeliveryLocation: 1,
-  secondDeliveryDate: isoDateOffset(4),
-  secondDeliveryLocation: 1,
+  deliveries: [
+    { sequence: 1, scheduledDate: isoDateOffset(1), locationNumber: 1 },
+    { sequence: 2, scheduledDate: isoDateOffset(4), locationNumber: 1 }
+  ],
   notes: ""
 })
 
@@ -62,8 +63,7 @@ const isLoading = computed(() => customerStatus.value === "pending" || planStatu
 
 watch(selectedCustomer, customer => {
   if (!customer?.ubicacion2) {
-    state.firstDeliveryLocation = 1
-    state.secondDeliveryLocation = 1
+    state.deliveries.forEach(delivery => { delivery.locationNumber = 1 })
   }
 })
 
@@ -138,21 +138,12 @@ async function submitOrder() {
         <UCard class="shadow-sm">
           <template #header><div><h2 class="font-semibold text-highlighted">Entregas</h2><p class="mt-1 text-xs text-muted">Cada parte puede enviarse a una dirección diferente del cliente.</p></div></template>
           <div class="grid gap-5 xl:grid-cols-2">
-            <section class="rounded-2xl border border-default bg-elevated/30 p-4">
-              <div class="mb-4 flex items-center gap-3"><span class="flex size-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-inverted">1</span><div><h3 class="font-semibold text-highlighted">Primera entrega</h3><p class="text-xs text-muted">Primera parte del pedido</p></div></div>
+            <section v-for="(delivery, deliveryIndex) in state.deliveries" :key="delivery.sequence" class="rounded-2xl border border-default bg-elevated/30 p-4">
+              <div class="mb-4 flex items-center gap-3"><span class="flex size-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-inverted">{{ delivery.sequence }}</span><div><h3 class="font-semibold text-highlighted">{{ DELIVERY_SEQUENCE_LABELS[delivery.sequence] }}</h3><p class="text-xs text-muted">{{ delivery.sequence === 1 ? "Primera parte del pedido" : "Segunda parte del pedido" }}</p></div></div>
               <div class="space-y-4">
-                <UFormField label="Fecha" name="firstDeliveryDate" required><UInput v-model="state.firstDeliveryDate" type="date" class="w-full" /></UFormField>
-                <UFormField label="Ubicación" name="firstDeliveryLocation" required><USelect v-model="state.firstDeliveryLocation" :items="locationOptions" value-key="value" class="w-full" :disabled="!selectedCustomer" /></UFormField>
-                <p class="rounded-xl bg-default px-3 py-2 text-xs leading-5 text-muted"><UIcon name="i-lucide-map-pin" class="mr-1 inline size-3.5" />{{ selectedAddress(state.firstDeliveryLocation) }}</p>
-              </div>
-            </section>
-
-            <section class="rounded-2xl border border-default bg-elevated/30 p-4">
-              <div class="mb-4 flex items-center gap-3"><span class="flex size-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-inverted">2</span><div><h3 class="font-semibold text-highlighted">Segunda entrega</h3><p class="text-xs text-muted">Segunda parte del pedido</p></div></div>
-              <div class="space-y-4">
-                <UFormField label="Fecha" name="secondDeliveryDate" required><UInput v-model="state.secondDeliveryDate" type="date" class="w-full" /></UFormField>
-                <UFormField label="Ubicación" name="secondDeliveryLocation" required><USelect v-model="state.secondDeliveryLocation" :items="locationOptions" value-key="value" class="w-full" :disabled="!selectedCustomer" /></UFormField>
-                <p class="rounded-xl bg-default px-3 py-2 text-xs leading-5 text-muted"><UIcon name="i-lucide-map-pin" class="mr-1 inline size-3.5" />{{ selectedAddress(state.secondDeliveryLocation) }}</p>
+                <UFormField label="Fecha" :name="`deliveries.${deliveryIndex}.scheduledDate`" required><UInput v-model="delivery.scheduledDate" type="date" class="w-full" /></UFormField>
+                <UFormField label="Ubicación" :name="`deliveries.${deliveryIndex}.locationNumber`" required><USelect v-model="delivery.locationNumber" :items="locationOptions" value-key="value" class="w-full" :disabled="!selectedCustomer" /></UFormField>
+                <p class="rounded-xl bg-default px-3 py-2 text-xs leading-5 text-muted"><UIcon name="i-lucide-map-pin" class="mr-1 inline size-3.5" />{{ selectedAddress(delivery.locationNumber) }}</p>
               </div>
             </section>
           </div>

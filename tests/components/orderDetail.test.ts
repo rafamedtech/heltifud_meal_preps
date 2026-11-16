@@ -13,8 +13,10 @@ mockNuxtImport('useOrders', () => () => ({ updateOrder: vi.fn() }));
 const order = {
   id: 'order-1', status: 'CONFIRMED', customerId: 'customer-1', customerName: 'Ana López', customerPhone: '6641234567',
   planTitle: 'Plan Balance', planVariantTitle: '5 días · 3 tiempos', price: 1450,
-  firstDeliveryDate: '2026-09-14', firstDeliveryAddress: 'Zona Río, Tijuana', firstDeliveryLocation: 1,
-  secondDeliveryDate: '2026-09-17', secondDeliveryAddress: 'Zona Río, Tijuana', secondDeliveryLocation: 1,
+  deliveries: [
+    { id: 'delivery-1', sequence: 1, scheduledDate: '2026-09-14', locationNumber: 1, address: 'Zona Río, Tijuana', status: 'PENDING', deliveredAt: null, notes: '' },
+    { id: 'delivery-2', sequence: 2, scheduledDate: '2026-09-17', locationNumber: 1, address: 'Zona Río, Tijuana', status: 'PENDING', deliveredAt: null, notes: '' },
+  ],
   createdAt: '2026-09-10T12:00:00Z', updatedAt: '2026-09-10T12:00:00Z',
   planVariantId: 'variant-1', sourceWeeklyMenuId: 'menu-1', sourceWeeklyMenuName: 'Semana 37', notes: '',
   customer: {
@@ -23,7 +25,7 @@ const order = {
     firstDeliveryDay: 'LUNES', secondDeliveryDay: 'JUEVES', createdAt: '2026-08-01T12:00:00Z', updatedAt: '2026-08-01T12:00:00Z'
   },
   menuSlots: [{
-    id: 'slot-1', dayOfWeek: 'LUNES', dayOrder: 1, slotType: 'COMIDA', contenedor: '',
+    id: 'slot-1', deliverySequence: 1, dayOfWeek: 'LUNES', dayOrder: 1, slotType: 'COMIDA', contenedor: '',
     components: [{
       id: 'component-1', catalogItemId: 'food-1', componentRole: 'PLATILLO_PRINCIPAL', position: 0,
       nombre: 'Pollo al limón', descripcion: '', calorias: 420, imagen: '', tipo: 'proteina'
@@ -55,6 +57,10 @@ describe('OrderDetail', () => {
     expect(wrapper.find('a[href="tel:6641234567"]').exists()).toBe(true);
     expect(wrapper.text()).toContain('Semana 37');
     expect(wrapper.text()).toContain('Zona Río, Tijuana');
+    expect(wrapper.text()).toContain('Primera entrega');
+    expect(wrapper.text()).toContain('Segunda entrega');
+    expect(wrapper.text()).toContain('Sin comidas asignadas');
+    expect(wrapper.findAll('input[type="date"]').map((input) => (input.element as HTMLInputElement).value)).toEqual(['2026-09-14', '2026-09-17']);
     expect(wrapper.text()).toContain('Lunes');
     expect(wrapper.text()).toContain('Día 1 · 1 tiempo');
     expect(wrapper.text()).toContain('Pollo al limón');
@@ -94,7 +100,7 @@ describe('OrderDetail', () => {
     await flushPromises();
 
     expect(wrapper.get('h1').text()).toBe(order.planTitle);
-    expect((wrapper.get('input[type="date"]').element as HTMLInputElement).value).toBe(order.firstDeliveryDate);
+    expect((wrapper.get('input[type="date"]').element as HTMLInputElement).value).toBe(order.deliveries[0]!.scheduledDate);
     expect(wrapper.text()).toContain('Día 1 · 1 tiempo');
     expect(wrapper.text()).toContain('Pollo al limón');
     wrapper.unmount();
