@@ -189,6 +189,11 @@ model Order {
   folio                    Int             @unique(map: "orders_folio_key") @default(autoincrement())
   status                   OrderStatus     @default(DRAFT)
   version                  Int             @default(1)
+  // Client-generated key of the create request: a retry with the same key
+  // returns the order it already created instead of a second one.
+  idempotencyKey           String?         @unique(map: "orders_idempotency_key_key") @map("idempotency_key") @db.Uuid
+  // SHA-256 of the normalized create payload; a reused key with another payload is rejected.
+  idempotencyFingerprint   String?         @map("idempotency_fingerprint")
   // True when the order was captured once the customer cutoff had passed.
   capturedAfterCutoff      Boolean         @default(false) @map("captured_after_cutoff")
   planTitleSnapshot        String          @map("plan_title_snapshot")

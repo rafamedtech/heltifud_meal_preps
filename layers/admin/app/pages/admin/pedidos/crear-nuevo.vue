@@ -197,10 +197,18 @@ function selectedAddress(location: CustomerLocationNumber) {
   return location === 1 ? selectedCustomer.value.ubicacion1 : selectedCustomer.value.ubicacion2
 }
 
+// One key for this form: a retry after a lost response returns the order the
+// server already created, and a retry with edited data is rejected instead of
+// creating a second order. Nothing is stored when an attempt fails, so the
+// same key also serves the corrected attempt.
+let idempotencyKey: string | undefined
+
 async function submitOrder() {
+  if (saving.value) return
   saving.value = true
   try {
-    const order = await createOrder(payload.value)
+    idempotencyKey ??= crypto.randomUUID()
+    const order = await createOrder(payload.value, idempotencyKey)
     toast.add({
       title: "Pedido creado",
       description: "Los días elegidos quedaron copiados y listos para personalizar.",

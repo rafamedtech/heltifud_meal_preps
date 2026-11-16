@@ -38,8 +38,10 @@ Referencias: [1.2](verificacion-etapa-1.2.md),
   del editor); el estado de la semana es la única fuente de vigencia. README y
   design system actualizados. Migración
   `20261116230000_drop_weekly_menu_is_active` aplicada el 16 de noviembre de 2026.
-- [ ] **Idempotencia del alta (H13/T07):** usar una clave de idempotencia para que
-  doble clic o reintento cree un solo pedido. La versión de edición ya está resuelta.
+- [x] **Idempotencia del alta (H13/T07):** header `Idempotency-Key` obligatorio
+  con índice único y huella del payload; doble clic, reintento o envíos
+  simultáneos crean un solo pedido. Verificado en PostgreSQL el 16 de noviembre
+  de 2026. [Evidencia](verificacion-idempotencia-alta.md).
 
 Detalle de 1.5: [preparación y resultado](preparacion-etapa-1.5.md).
 
@@ -151,11 +153,10 @@ contenido siga sin implementar.
 
 ## Orden sugerido
 
-1. Completar idempotencia del alta.
-2. Cerrar decisiones de sustitución/acceso y completar personalización y oferta.
-3. Implementar pedido del cliente y acceso privado.
-4. Desarrollar compras, cocina y reparto; pueden avanzar desde pedidos de admin sin
+1. Cerrar decisiones de sustitución/acceso y completar personalización y oferta.
+2. Implementar pedido del cliente y acceso privado.
+3. Desarrollar compras, cocina y reparto; pueden avanzar desde pedidos de admin sin
    esperar el autoservicio del cliente.
-5. Completar cobros, dashboard operativo y verificación de lanzamiento.
+4. Completar cobros, dashboard operativo y verificación de lanzamiento.
 
 En todos los bloques se deben conservar los menús y platillos existentes.

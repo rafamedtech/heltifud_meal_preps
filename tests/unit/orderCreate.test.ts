@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createOrder, getOrderOptions } from '../../layers/menu/server/utils/orders';
+import { createOrder, getOrderOptions, parseIdempotencyKey } from '../../layers/menu/server/utils/orders';
 
 const tx = vi.hoisted(() => ({
   customer: { findUnique: vi.fn() },
@@ -135,6 +135,68 @@ describe('createOrder', () => {
     mockContext({ cutoff: '2020-01-01T00:00:00.000Z' });
     await createOrder(input(['LUNES', 'MARTES', 'JUEVES']));
     expect(tx.order.create.mock.calls[0]![0].data.capturedAfterCutoff).toBe(true);
+  });
+});
+
+describe('createOrder idempotency', () => {
+  const KEY = '33333333-3333-4333-8333-333333333333';
+  const days = ['LUNES', 'MARTES', 'JUEVES'];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockContext();
+  });
+
+  async function storedFingerprint() {
+    await createOrder(input(days), undefined, KEY);
+    const data = tx.order.create.mock.calls[0]![0].data;
+    vi.clearAllMocks();
+    mockContext();
+    return data.idempotencyFingerprint as string;
+  }
+
+  it('stores the key and a payload fingerprint with the new order', async () => {
+    await createOrder(input(days), undefined, KEY.toUpperCase());
+    const data = tx.order.create.mock.calls[0]![0].data;
+    expect(data.idempotencyKey).toBe(KEY);
+    expect(data.idempotencyFingerprint).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it('returns the existing order for a repeated key without creating another', async () => {
+    const fingerprint = await storedFingerprint();
+    tx.order.findUnique.mockResolvedValueOnce({ id: 'order-1', idempotencyFingerprint: fingerprint });
+    await createOrder(input(['JUEVES', 'LUNES', 'MARTES']), undefined, KEY);
+    expect(tx.order.findUnique.mock.calls[0]![0].where).toEqual({ idempotencyKey: KEY });
+    expect(tx.order.findUnique.mock.calls[1]![0].where).toEqual({ id: 'order-1' });
+    expect(tx.order.create).not.toHaveBeenCalled();
+  });
+
+  it('rejects a repeated key that carries different data', async () => {
+    const fingerprint = await storedFingerprint();
+    tx.order.findUnique.mockResolvedValueOnce({ id: 'order-1', idempotencyFingerprint: fingerprint });
+    await expect(createOrder({ ...input(days), notes: 'Otra nota' }, undefined, KEY)).rejects.toMatchObject({ statusCode: 422 });
+    expect(tx.order.create).not.toHaveBeenCalled();
+  });
+
+  it('answers with the winning order when a simultaneous request takes the key first', async () => {
+    const fingerprint = await storedFingerprint();
+    tx.order.create.mockRejectedValueOnce(Object.assign(new Error('Unique constraint failed'), { code: 'P2002' }));
+    tx.order.findUnique
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ id: 'order-winner', idempotencyFingerprint: fingerprint });
+    await expect(createOrder(input(days), undefined, KEY)).resolves.toBeNull();
+    expect(tx.order.findUnique.mock.calls[2]![0].where).toEqual({ id: 'order-winner' });
+  });
+
+  it('rethrows a unique violation that is not about the key', async () => {
+    tx.order.create.mockRejectedValueOnce(Object.assign(new Error('Unique constraint failed'), { code: 'P2002' }));
+    await expect(createOrder(input(days), undefined, KEY)).rejects.toMatchObject({ code: 'P2002' });
+  });
+
+  it('requires a UUID key', () => {
+    expect(() => parseIdempotencyKey(undefined)).toThrow(expect.objectContaining({ statusCode: 400 }));
+    expect(() => parseIdempotencyKey('pedido-1')).toThrow(expect.objectContaining({ statusCode: 400 }));
+    expect(parseIdempotencyKey(` ${KEY.toUpperCase()} `)).toBe(KEY);
   });
 });
 

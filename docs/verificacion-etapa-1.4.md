@@ -127,6 +127,7 @@ preexistentes en `FoodCatalogForm.vue` (`.value` en plantillas) y `MenuForm.vue`
 proyecto no tiene instalado un comprobador para `nuxt typecheck`; se utilizó
 `pnpm dlx vue-tsc --noEmit --project .nuxt/tsconfig.json` sin cambiar dependencias.
 
-La idempotencia del alta de pedidos de H13 continúa pendiente; 1.4 resuelve su
-control de edición concurrente. Intercambios, tablero operativo de entregas y
+La idempotencia del alta de pedidos de H13 se resolvió después de 1.4
+([verificación](verificacion-idempotencia-alta.md)); 1.4 resuelve su control de
+edición concurrente. Intercambios, tablero operativo de entregas y
 autoservicio conservan sus etapas respectivas.

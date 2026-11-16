@@ -47,6 +47,8 @@ export type OrderMinAggregateOutputType = {
   folio: number | null
   status: $Enums.OrderStatus | null
   version: number | null
+  idempotencyKey: string | null
+  idempotencyFingerprint: string | null
   capturedAfterCutoff: boolean | null
   planTitleSnapshot: string | null
   planVariantTitleSnapshot: string | null
@@ -65,6 +67,8 @@ export type OrderMaxAggregateOutputType = {
   folio: number | null
   status: $Enums.OrderStatus | null
   version: number | null
+  idempotencyKey: string | null
+  idempotencyFingerprint: string | null
   capturedAfterCutoff: boolean | null
   planTitleSnapshot: string | null
   planVariantTitleSnapshot: string | null
@@ -83,6 +87,8 @@ export type OrderCountAggregateOutputType = {
   folio: number
   status: number
   version: number
+  idempotencyKey: number
+  idempotencyFingerprint: number
   capturedAfterCutoff: number
   planTitleSnapshot: number
   planVariantTitleSnapshot: number
@@ -115,6 +121,8 @@ export type OrderMinAggregateInputType = {
   folio?: true
   status?: true
   version?: true
+  idempotencyKey?: true
+  idempotencyFingerprint?: true
   capturedAfterCutoff?: true
   planTitleSnapshot?: true
   planVariantTitleSnapshot?: true
@@ -133,6 +141,8 @@ export type OrderMaxAggregateInputType = {
   folio?: true
   status?: true
   version?: true
+  idempotencyKey?: true
+  idempotencyFingerprint?: true
   capturedAfterCutoff?: true
   planTitleSnapshot?: true
   planVariantTitleSnapshot?: true
@@ -151,6 +161,8 @@ export type OrderCountAggregateInputType = {
   folio?: true
   status?: true
   version?: true
+  idempotencyKey?: true
+  idempotencyFingerprint?: true
   capturedAfterCutoff?: true
   planTitleSnapshot?: true
   planVariantTitleSnapshot?: true
@@ -256,6 +268,8 @@ export type OrderGroupByOutputType = {
   folio: number
   status: $Enums.OrderStatus
   version: number
+  idempotencyKey: string | null
+  idempotencyFingerprint: string | null
   capturedAfterCutoff: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -297,6 +311,8 @@ export type OrderWhereInput = {
   folio?: Prisma.IntFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   version?: Prisma.IntFilter<"Order"> | number
+  idempotencyKey?: Prisma.UuidNullableFilter<"Order"> | string | null
+  idempotencyFingerprint?: Prisma.StringNullableFilter<"Order"> | string | null
   capturedAfterCutoff?: Prisma.BoolFilter<"Order"> | boolean
   planTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringFilter<"Order"> | string
@@ -322,6 +338,8 @@ export type OrderOrderByWithRelationInput = {
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  idempotencyFingerprint?: Prisma.SortOrderInput | Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
@@ -341,6 +359,7 @@ export type OrderOrderByWithRelationInput = {
 export type OrderWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   folio?: number
+  idempotencyKey?: string
   AND?: Prisma.OrderWhereInput | Prisma.OrderWhereInput[]
   OR?: Prisma.OrderWhereInput[]
   NOT?: Prisma.OrderWhereInput | Prisma.OrderWhereInput[]
@@ -350,6 +369,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   cycleId?: Prisma.UuidFilter<"Order"> | string
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   version?: Prisma.IntFilter<"Order"> | number
+  idempotencyFingerprint?: Prisma.StringNullableFilter<"Order"> | string | null
   capturedAfterCutoff?: Prisma.BoolFilter<"Order"> | boolean
   planTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringFilter<"Order"> | string
@@ -364,7 +384,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   deliveries?: Prisma.OrderDeliveryListRelationFilter
   menuSlots?: Prisma.OrderMenuSlotListRelationFilter
   statusEvents?: Prisma.OrderStatusEventListRelationFilter
-}, "id" | "folio">
+}, "id" | "folio" | "idempotencyKey">
 
 export type OrderOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -375,6 +395,8 @@ export type OrderOrderByWithAggregationInput = {
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  idempotencyFingerprint?: Prisma.SortOrderInput | Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
@@ -401,6 +423,8 @@ export type OrderScalarWhereWithAggregatesInput = {
   folio?: Prisma.IntWithAggregatesFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
   version?: Prisma.IntWithAggregatesFilter<"Order"> | number
+  idempotencyKey?: Prisma.UuidNullableWithAggregatesFilter<"Order"> | string | null
+  idempotencyFingerprint?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   capturedAfterCutoff?: Prisma.BoolWithAggregatesFilter<"Order"> | boolean
   planTitleSnapshot?: Prisma.StringWithAggregatesFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringWithAggregatesFilter<"Order"> | string
@@ -415,6 +439,8 @@ export type OrderCreateInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -440,6 +466,8 @@ export type OrderUncheckedCreateInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -456,6 +484,8 @@ export type OrderUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -481,6 +511,8 @@ export type OrderUncheckedUpdateInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -502,6 +534,8 @@ export type OrderCreateManyInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -515,6 +549,8 @@ export type OrderUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -533,6 +569,8 @@ export type OrderUncheckedUpdateManyInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -561,6 +599,8 @@ export type OrderCountOrderByAggregateInput = {
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrder
+  idempotencyFingerprint?: Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
@@ -585,6 +625,8 @@ export type OrderMaxOrderByAggregateInput = {
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrder
+  idempotencyFingerprint?: Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
@@ -603,6 +645,8 @@ export type OrderMinOrderByAggregateInput = {
   folio?: Prisma.SortOrder
   status?: Prisma.SortOrder
   version?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrder
+  idempotencyFingerprint?: Prisma.SortOrder
   capturedAfterCutoff?: Prisma.SortOrder
   planTitleSnapshot?: Prisma.SortOrder
   planVariantTitleSnapshot?: Prisma.SortOrder
@@ -842,6 +886,8 @@ export type OrderCreateWithoutSourceWeeklyMenuInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -865,6 +911,8 @@ export type OrderUncheckedCreateWithoutSourceWeeklyMenuInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -915,6 +963,8 @@ export type OrderScalarWhereInput = {
   folio?: Prisma.IntFilter<"Order"> | number
   status?: Prisma.EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
   version?: Prisma.IntFilter<"Order"> | number
+  idempotencyKey?: Prisma.UuidNullableFilter<"Order"> | string | null
+  idempotencyFingerprint?: Prisma.StringNullableFilter<"Order"> | string | null
   capturedAfterCutoff?: Prisma.BoolFilter<"Order"> | boolean
   planTitleSnapshot?: Prisma.StringFilter<"Order"> | string
   planVariantTitleSnapshot?: Prisma.StringFilter<"Order"> | string
@@ -929,6 +979,8 @@ export type OrderCreateWithoutCustomerInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -952,6 +1004,8 @@ export type OrderUncheckedCreateWithoutCustomerInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -995,6 +1049,8 @@ export type OrderCreateWithoutPlanVariantInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1018,6 +1074,8 @@ export type OrderUncheckedCreateWithoutPlanVariantInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1061,6 +1119,8 @@ export type OrderCreateWithoutDeliveriesInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1085,6 +1145,8 @@ export type OrderUncheckedCreateWithoutDeliveriesInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1116,6 +1178,8 @@ export type OrderUpdateWithoutDeliveriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1140,6 +1204,8 @@ export type OrderUncheckedUpdateWithoutDeliveriesInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1156,6 +1222,8 @@ export type OrderCreateWithoutStatusEventsInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1180,6 +1248,8 @@ export type OrderUncheckedCreateWithoutStatusEventsInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1211,6 +1281,8 @@ export type OrderUpdateWithoutStatusEventsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1235,6 +1307,8 @@ export type OrderUncheckedUpdateWithoutStatusEventsInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1251,6 +1325,8 @@ export type OrderCreateWithoutMenuSlotsInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1275,6 +1351,8 @@ export type OrderUncheckedCreateWithoutMenuSlotsInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1306,6 +1384,8 @@ export type OrderUpdateWithoutMenuSlotsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1330,6 +1410,8 @@ export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1346,6 +1428,8 @@ export type OrderCreateWithoutCycleInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1369,6 +1453,8 @@ export type OrderUncheckedCreateWithoutCycleInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1415,6 +1501,8 @@ export type OrderCreateManySourceWeeklyMenuInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1428,6 +1516,8 @@ export type OrderUpdateWithoutSourceWeeklyMenuInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1451,6 +1541,8 @@ export type OrderUncheckedUpdateWithoutSourceWeeklyMenuInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1471,6 +1563,8 @@ export type OrderUncheckedUpdateManyWithoutSourceWeeklyMenuInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1488,6 +1582,8 @@ export type OrderCreateManyCustomerInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1501,6 +1597,8 @@ export type OrderUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1524,6 +1622,8 @@ export type OrderUncheckedUpdateWithoutCustomerInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1544,6 +1644,8 @@ export type OrderUncheckedUpdateManyWithoutCustomerInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1561,6 +1663,8 @@ export type OrderCreateManyPlanVariantInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1574,6 +1678,8 @@ export type OrderUpdateWithoutPlanVariantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1597,6 +1703,8 @@ export type OrderUncheckedUpdateWithoutPlanVariantInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1617,6 +1725,8 @@ export type OrderUncheckedUpdateManyWithoutPlanVariantInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1634,6 +1744,8 @@ export type OrderCreateManyCycleInput = {
   folio?: number
   status?: $Enums.OrderStatus
   version?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
   capturedAfterCutoff?: boolean
   planTitleSnapshot: string
   planVariantTitleSnapshot: string
@@ -1647,6 +1759,8 @@ export type OrderUpdateWithoutCycleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1670,6 +1784,8 @@ export type OrderUncheckedUpdateWithoutCycleInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1690,6 +1806,8 @@ export type OrderUncheckedUpdateManyWithoutCycleInput = {
   folio?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
   version?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
   planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1757,6 +1875,8 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   folio?: boolean
   status?: boolean
   version?: boolean
+  idempotencyKey?: boolean
+  idempotencyFingerprint?: boolean
   capturedAfterCutoff?: boolean
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
@@ -1783,6 +1903,8 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   folio?: boolean
   status?: boolean
   version?: boolean
+  idempotencyKey?: boolean
+  idempotencyFingerprint?: boolean
   capturedAfterCutoff?: boolean
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
@@ -1805,6 +1927,8 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   folio?: boolean
   status?: boolean
   version?: boolean
+  idempotencyKey?: boolean
+  idempotencyFingerprint?: boolean
   capturedAfterCutoff?: boolean
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
@@ -1827,6 +1951,8 @@ export type OrderSelectScalar = {
   folio?: boolean
   status?: boolean
   version?: boolean
+  idempotencyKey?: boolean
+  idempotencyFingerprint?: boolean
   capturedAfterCutoff?: boolean
   planTitleSnapshot?: boolean
   planVariantTitleSnapshot?: boolean
@@ -1836,7 +1962,7 @@ export type OrderSelectScalar = {
   updatedAt?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "planVariantId" | "sourceWeeklyMenuId" | "cycleId" | "folio" | "status" | "version" | "capturedAfterCutoff" | "planTitleSnapshot" | "planVariantTitleSnapshot" | "priceSnapshot" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "planVariantId" | "sourceWeeklyMenuId" | "cycleId" | "folio" | "status" | "version" | "idempotencyKey" | "idempotencyFingerprint" | "capturedAfterCutoff" | "planTitleSnapshot" | "planVariantTitleSnapshot" | "priceSnapshot" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
@@ -1880,6 +2006,8 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     folio: number
     status: $Enums.OrderStatus
     version: number
+    idempotencyKey: string | null
+    idempotencyFingerprint: string | null
     capturedAfterCutoff: boolean
     planTitleSnapshot: string
     planVariantTitleSnapshot: string
@@ -2325,6 +2453,8 @@ export interface OrderFieldRefs {
   readonly folio: Prisma.FieldRef<"Order", 'Int'>
   readonly status: Prisma.FieldRef<"Order", 'OrderStatus'>
   readonly version: Prisma.FieldRef<"Order", 'Int'>
+  readonly idempotencyKey: Prisma.FieldRef<"Order", 'String'>
+  readonly idempotencyFingerprint: Prisma.FieldRef<"Order", 'String'>
   readonly capturedAfterCutoff: Prisma.FieldRef<"Order", 'Boolean'>
   readonly planTitleSnapshot: Prisma.FieldRef<"Order", 'String'>
   readonly planVariantTitleSnapshot: Prisma.FieldRef<"Order", 'String'>

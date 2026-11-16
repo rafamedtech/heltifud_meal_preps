@@ -1951,6 +1951,8 @@ export const OrderScalarFieldEnum = {
   folio: 'folio',
   status: 'status',
   version: 'version',
+  idempotencyKey: 'idempotencyKey',
+  idempotencyFingerprint: 'idempotencyFingerprint',
   capturedAfterCutoff: 'capturedAfterCutoff',
   planTitleSnapshot: 'planTitleSnapshot',
   planVariantTitleSnapshot: 'planVariantTitleSnapshot',
