@@ -4,6 +4,7 @@ import { ComponentRole, OrderStatus, type Prisma } from '~~/layers/menu/generate
 import {
   orderCreateInputSchema,
   orderListQuerySchema,
+  orderOptionsQuerySchema,
   orderUpdateInputSchema,
 } from '~~/layers/menu/shared/types/menuSchema';
 import type {
@@ -16,9 +17,18 @@ import type {
   OrderListItem,
   OrderListResponse,
   OrderMenuSlotInput,
+  OrderOptions,
   OrderUpdateInput,
 } from '~~/layers/menu/shared/types/types';
-import { deliverySequenceForDay, type DeliveryMealRule } from '~~/layers/menu/shared/utils/orderDeliveries';
+import {
+  allowedDeliveryDays,
+  availableOrderDays,
+  chosenDaysError,
+  DELIVERY_SEQUENCE_LABELS,
+  deliverySequenceForDay,
+  planOrderDeliveries,
+  type DeliveryMealRule,
+} from '~~/layers/menu/shared/utils/orderDeliveries';
 
 import { prisma } from './prisma';
 
@@ -26,11 +36,13 @@ const deliveriesInclude = { orderBy: { sequence: 'asc' as const } };
 
 const orderListInclude = {
   customer: { select: { nombre: true, telefono: true } },
+  cycle: { select: { weekStart: true } },
   deliveries: deliveriesInclude,
 };
 
 const orderDetailInclude = {
   customer: true,
+  cycle: { select: { weekStart: true } },
   deliveries: deliveriesInclude,
   sourceWeeklyMenu: { select: { id: true, name: true } },
   menuSlots: {
@@ -44,14 +56,17 @@ const orderDetailInclude = {
 
 const mealRuleSelect = { firstDeliveryMealDays: true, secondDeliveryMealDays: true };
 
-// Mirrors the defaults of `OperationSettings`, for orders whose week is gone.
-const DEFAULT_MEAL_RULE: DeliveryMealRule = {
-  firstDeliveryMealDays: ['LUNES', 'MARTES', 'MIERCOLES'],
-  secondDeliveryMealDays: ['JUEVES', 'VIERNES'],
-};
-
 const menuSourceInclude = {
-  cycle: { select: mealRuleSelect },
+  cycle: {
+    select: {
+      id: true,
+      weekStart: true,
+      orderCutoffAt: true,
+      firstDeliveryAllowedDays: true,
+      secondDeliveryAllowedDays: true,
+      ...mealRuleSelect,
+    },
+  },
   days: {
     orderBy: { order: 'asc' as const },
     include: {
@@ -118,6 +133,8 @@ function mapDelivery(delivery: Prisma.OrderDeliveryGetPayload<object>): OrderDel
 function mapListItem(order: Prisma.OrderGetPayload<{ include: typeof orderListInclude }>): OrderListItem {
   return {
     id: order.id,
+    folio: order.folio,
+    weekStart: toDateString(order.cycle.weekStart),
     status: order.status,
     customerId: order.customerId,
     customerName: order.customer.nombre,
@@ -150,13 +167,16 @@ function deliveryIdResolver(deliveries: Array<{ id: string; sequence: number }>,
   return (day: OrderMenuSlotInput['dayOfWeek']) => ids.get(deliverySequenceForDay(day, rule, available))!;
 }
 
+type SourceMenu = Prisma.WeeklyMenuGetPayload<{ include: typeof menuSourceInclude }>;
+
+/** Copies the chosen days of the menu, only the meal times the plan sells. */
 function buildMenuSlots(
-  menu: Prisma.WeeklyMenuGetPayload<{ include: typeof menuSourceInclude }>,
+  menu: SourceMenu,
   slotTypes: string[],
-  daysCount: number,
+  days: ReadonlyArray<OrderMenuSlotInput['dayOfWeek']>,
   deliveryIdFor: (day: OrderMenuSlotInput['dayOfWeek']) => string,
 ) {
-  return menu.days.slice(0, daysCount).flatMap((day) => day.slots
+  return menu.days.filter((day) => days.includes(day.dayOfWeek)).flatMap((day) => day.slots
     .filter((slot) => slotTypes.includes(slot.slotType))
     .map((slot) => {
       const rolePositions = new Map<string, number>();
@@ -179,6 +199,8 @@ function buildMenuSlots(
               calorias: component.calorias,
               imagen: component.imagen,
               tipo: component.tipo,
+              sourceDayOfWeek: day.dayOfWeek,
+              sourceSlotType: slot.slotType,
             };
           }),
         },
@@ -211,6 +233,7 @@ export async function getOrders(query: unknown): Promise<OrderListResponse> {
     ...(status ? { status } : {}),
     ...(q ? {
       OR: [
+        ...(/^#?\d{1,9}$/.test(q) ? [{ folio: Number(q.replace('#', '')) }] : []),
         { customer: { nombre: { contains: q, mode: 'insensitive' } } },
         { customer: { telefono: { contains: q, mode: 'insensitive' } } },
         { planTitleSnapshot: { contains: q, mode: 'insensitive' } },
@@ -258,6 +281,8 @@ export async function getOrderById(id: string): Promise<Order | null> {
   if (!record) return null;
   return {
     ...mapListItem(record),
+    cycleId: record.cycleId,
+    capturedAfterCutoff: record.capturedAfterCutoff,
     planVariantId: record.planVariantId,
     sourceWeeklyMenuId: record.sourceWeeklyMenuId,
     sourceWeeklyMenuName: record.sourceWeeklyMenu?.name ?? null,
@@ -281,8 +306,76 @@ export async function getOrderById(id: string): Promise<Order | null> {
         calorias: component.calorias,
         imagen: component.imagen,
         tipo: component.tipo,
+        sourceDayOfWeek: component.sourceDayOfWeek,
+        sourceSlotType: component.sourceSlotType,
+        isSubstitution: component.isSubstitution,
       })),
     })),
+  };
+}
+
+type OrderReader = Pick<Prisma.TransactionClient, 'customer' | 'planVariant' | 'weeklyMenu'>;
+
+/**
+ * Customer, plan variant and the menu that customer orders from in the week
+ * taking orders, with the days that can be ordered for the plan.
+ */
+async function resolveOrderContext(client: OrderReader, customerId: string, planVariantId: string) {
+  const [customer, variant] = await Promise.all([
+    client.customer.findUnique({ where: { id: customerId } }),
+    client.planVariant.findUnique({ where: { id: planVariantId }, include: { plan: true } }),
+  ]);
+  if (!customer) throw createError({ statusCode: 404, statusMessage: 'Cliente no encontrado.' });
+  if (!variant || !variant.isActive || !variant.plan.isActive) {
+    throw createError({ statusCode: 404, statusMessage: 'La variante de plan no está disponible.' });
+  }
+
+  // Each customer type orders from its own menu of the week taking orders.
+  const cycleScope = customer.tipoCliente === 'dieta'
+    ? customer.id
+    : customer.tipoCliente === 'vegetariano' ? 'VEGETARIANO' : 'ESTANDAR';
+  const menu = await client.weeklyMenu.findFirst({
+    where: { cycleScope, cycle: { status: 'OPEN' } },
+    orderBy: { startDate: 'desc' },
+    include: menuSourceInclude,
+  });
+  if (!menu?.cycle) {
+    const missing = customer.tipoCliente === 'dieta'
+      ? 'un menú personalizado para este cliente'
+      : customer.tipoCliente === 'vegetariano' ? 'un menú vegetariano' : 'un menú estándar';
+    throw createError({ statusCode: 409, statusMessage: `La semana con pedidos abiertos no tiene ${missing}.` });
+  }
+
+  const availableDays = availableOrderDays(menu.days, variant.plan.slotTypes);
+  if (availableDays.length < variant.daysCount) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: `El menú «${menu.name}» solo tiene ${availableDays.length} ${availableDays.length === 1 ? 'día completo' : 'días completos'} para este plan y la variante necesita ${variant.daysCount}.`,
+    });
+  }
+
+  return { customer, variant, menu, cycle: menu.cycle, availableDays };
+}
+
+export async function getOrderOptions(query: unknown): Promise<OrderOptions> {
+  const parsed = orderOptionsQuerySchema.safeParse(query);
+  if (!parsed.success) throw createError({ statusCode: 400, statusMessage: 'Selecciona un cliente y una variante de plan.' });
+
+  const { variant, menu, cycle, availableDays } = await resolveOrderContext(prisma, parsed.data.customerId, parsed.data.planVariantId);
+  return {
+    cycle: {
+      id: cycle.id,
+      weekStart: toDateString(cycle.weekStart),
+      orderCutoffAt: cycle.orderCutoffAt.toISOString(),
+      pastCutoff: Date.now() > cycle.orderCutoffAt.getTime(),
+      firstDeliveryAllowedDays: cycle.firstDeliveryAllowedDays,
+      secondDeliveryAllowedDays: cycle.secondDeliveryAllowedDays,
+      firstDeliveryMealDays: cycle.firstDeliveryMealDays,
+      secondDeliveryMealDays: cycle.secondDeliveryMealDays,
+    },
+    menu: { id: menu.id, name: menu.name },
+    daysCount: variant.daysCount,
+    availableDays,
   };
 }
 
@@ -294,28 +387,38 @@ export async function createOrder(input: OrderCreateInput) {
   const data = parsed.data;
 
   const created = await prisma.$transaction(async (tx) => {
-    const [customer, variant] = await Promise.all([
-      tx.customer.findUnique({ where: { id: data.customerId } }),
-      tx.planVariant.findUnique({ where: { id: data.planVariantId }, include: { plan: true } }),
-    ]);
-    if (!customer) throw createError({ statusCode: 404, statusMessage: 'Cliente no encontrado.' });
-    // Each customer type orders from its own menu of the week taking orders.
-    const cycleScope = customer.tipoCliente === 'dieta'
-      ? customer.id
-      : customer.tipoCliente === 'vegetariano' ? 'VEGETARIANO' : 'ESTANDAR';
-    const activeMenu = await tx.weeklyMenu.findFirst({
-      where: { cycleScope, cycle: { status: 'OPEN' } },
-      orderBy: { startDate: 'desc' },
-      include: menuSourceInclude,
-    });
-    if (!variant || !variant.isActive || !variant.plan.isActive) {
-      throw createError({ statusCode: 404, statusMessage: 'La variante de plan no está disponible.' });
+    const { customer, variant, menu, cycle, availableDays } = await resolveOrderContext(tx, data.customerId, data.planVariantId);
+
+    const daysError = chosenDaysError(data.days, availableDays, variant.daysCount);
+    if (daysError) throw createError({ statusCode: 400, statusMessage: daysError });
+
+    // A day chosen for this order must be one the week allows; it never
+    // changes the preference saved on the customer.
+    const choices = new Map(data.deliveries.map((delivery) => [delivery.sequence, delivery]));
+    for (const choice of data.deliveries) {
+      if (!allowedDeliveryDays(cycle, choice.sequence).includes(choice.deliveryDay)) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: `El día elegido para la ${DELIVERY_SEQUENCE_LABELS[choice.sequence].toLowerCase()} no está permitido esta semana.`,
+        });
+      }
     }
-    if (!activeMenu) {
-      const missing = customer.tipoCliente === 'dieta'
-        ? 'un menú personalizado para este cliente'
-        : customer.tipoCliente === 'vegetariano' ? 'un menú vegetariano' : 'un menú estándar';
-      throw createError({ statusCode: 409, statusMessage: `La semana con pedidos abiertos no tiene ${missing}.` });
+
+    const planned = planOrderDeliveries({
+      weekStart: toDateString(cycle.weekStart),
+      days: data.days,
+      rule: cycle,
+      preferred: {
+        1: choices.get(1)?.deliveryDay ?? customer.firstDeliveryDay,
+        2: choices.get(2)?.deliveryDay ?? customer.secondDeliveryDay,
+      },
+    });
+    const carried = new Set(planned.flatMap((delivery) => delivery.mealDays));
+    if (!planned.length || data.days.some((day) => !carried.has(day))) {
+      throw createError({ statusCode: 409, statusMessage: 'La semana no tiene días de entrega configurados para los días elegidos.' });
+    }
+    if (planned.length === 2 && planned[1]!.scheduledDate < planned[0]!.scheduledDate) {
+      throw createError({ statusCode: 409, statusMessage: 'La segunda entrega quedaría antes que la primera. Revisa los días de entrega de la semana.' });
     }
 
     // Deliveries go first: each copied meal needs the id of the one that carries it.
@@ -323,32 +426,29 @@ export async function createOrder(input: OrderCreateInput) {
       data: {
         customerId: customer.id,
         planVariantId: variant.id,
-        sourceWeeklyMenuId: activeMenu.id,
+        sourceWeeklyMenuId: menu.id,
+        cycleId: cycle.id,
+        capturedAfterCutoff: Date.now() > cycle.orderCutoffAt.getTime(),
         planTitleSnapshot: variant.plan.title,
         planVariantTitleSnapshot: variant.title,
         priceSnapshot: variant.price,
         notes: data.notes || null,
         deliveries: {
-          create: data.deliveries.map((delivery) => ({
-            sequence: delivery.sequence,
-            scheduledDate: toDate(delivery.scheduledDate),
-            locationNumber: delivery.locationNumber,
-            addressSnapshot: resolveAddress(customer, delivery.locationNumber),
-          })),
+          create: planned.map((delivery) => {
+            const locationNumber = choices.get(delivery.sequence)?.locationNumber ?? 1;
+            return {
+              sequence: delivery.sequence,
+              scheduledDate: toDate(delivery.scheduledDate),
+              locationNumber,
+              addressSnapshot: resolveAddress(customer, locationNumber),
+            };
+          }),
         },
       },
       select: { id: true, deliveries: { select: { id: true, sequence: true } } },
     });
 
-    const menuSlots = buildMenuSlots(
-      activeMenu,
-      variant.plan.slotTypes,
-      variant.daysCount,
-      deliveryIdResolver(order.deliveries, activeMenu.cycle ?? DEFAULT_MEAL_RULE),
-    );
-    if (!menuSlots.length) {
-      throw createError({ statusCode: 409, statusMessage: 'El menú activo no contiene tiempos compatibles con el plan.' });
-    }
+    const menuSlots = buildMenuSlots(menu, variant.plan.slotTypes, data.days, deliveryIdResolver(order.deliveries, cycle));
     await tx.order.update({ where: { id: order.id }, data: { menuSlots: { create: menuSlots } } });
 
     return order;
@@ -370,7 +470,7 @@ export async function updateOrder(id: string, input: OrderUpdateInput) {
       include: {
         customer: true,
         deliveries: true,
-        sourceWeeklyMenu: { select: { cycle: { select: mealRuleSelect } } },
+        cycle: { select: mealRuleSelect },
       },
     });
     if (!existing) throw createError({ statusCode: 404, statusMessage: 'Pedido no encontrado.' });
@@ -407,13 +507,12 @@ export async function updateOrder(id: string, input: OrderUpdateInput) {
           }));
     }
 
-    const rule = existing.sourceWeeklyMenu?.cycle ?? DEFAULT_MEAL_RULE;
     await tx.order.update({
       where: { id },
       data: {
         status: data.status,
         notes: data.notes || null,
-        menuSlots: { create: buildEditableMenu(data.menuSlots, deliveryIdResolver(deliveries, rule)) },
+        menuSlots: { create: buildEditableMenu(data.menuSlots, deliveryIdResolver(deliveries, existing.cycle)) },
       },
     });
   });

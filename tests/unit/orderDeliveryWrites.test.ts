@@ -31,7 +31,7 @@ function existingOrder() {
       { id: 'delivery-1', sequence: 1, locationNumber: 1, addressSnapshot: 'Casa anterior 99' },
       { id: 'delivery-2', sequence: 2, locationNumber: 1, addressSnapshot: 'Casa anterior 99' },
     ],
-    sourceWeeklyMenu: { cycle: { firstDeliveryMealDays: ['LUNES', 'MARTES', 'MIERCOLES'], secondDeliveryMealDays: ['JUEVES', 'VIERNES'] } },
+    cycle: { firstDeliveryMealDays: ['LUNES', 'MARTES', 'MIERCOLES'], secondDeliveryMealDays: ['JUEVES', 'VIERNES'] },
   };
 }
 

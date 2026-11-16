@@ -9,7 +9,7 @@ import type {
   OrderStatusValue,
   OrderUpdateInput
 } from "~~/layers/menu/shared/types/types"
-import { DELIVERY_SEQUENCE_LABELS } from "~~/layers/menu/shared/utils/orderDeliveries"
+import { DELIVERY_SEQUENCE_LABELS, orderFolioLabel } from "~~/layers/menu/shared/utils/orderDeliveries"
 
 definePageMeta({ layout: "admin" })
 
@@ -22,7 +22,7 @@ const [{ data: order, status, error, refresh }, { data: catalog }] = await Promi
 const notFound = computed(() => error.value?.statusCode === 404)
 
 useSeoMeta({
-  title: computed(() => order.value ? `${order.value.planTitle} · ${order.value.customerName} | Heltifud` : "Pedido | Heltifud"),
+  title: computed(() => order.value ? `Pedido ${orderFolioLabel(order.value.folio)} · ${order.value.customerName} | Heltifud` : "Pedido | Heltifud"),
   robots: "noindex, nofollow"
 })
 
@@ -146,7 +146,8 @@ function replaceComponent(component: OrderMenuComponentInput, itemId: string | u
     descripcion: item.descripcion,
     calorias: item.calorias,
     imagen: item.imagen,
-    tipo: item.tipo
+    tipo: item.tipo,
+    isSubstitution: true
   })
   replacementSelections[key] = ""
 }
@@ -223,7 +224,13 @@ async function saveOrder() {
 
     <UForm v-else :schema="orderUpdateInputSchema" :state="state" class="space-y-6" @submit="saveOrder">
       <UPageHeader :title="order.planTitle" :description="`${order.planVariantTitle} · Creado el ${formatDate(order.createdAt)}`">
-        <template #headline><UBadge :color="statusColor" variant="subtle" :icon="currentStatus?.icon" :label="currentStatus?.label" /></template>
+        <template #headline>
+          <div class="flex flex-wrap items-center gap-2">
+            <UBadge color="neutral" variant="outline" icon="i-lucide-hash" :label="`Pedido ${orderFolioLabel(order.folio)}`" />
+            <UBadge :color="statusColor" variant="subtle" :icon="currentStatus?.icon" :label="currentStatus?.label" />
+            <UBadge v-if="order.capturedAfterCutoff" color="warning" variant="subtle" icon="i-lucide-clock-alert" label="Fuera de corte" />
+          </div>
+        </template>
         <template #links><UButton type="submit" icon="i-lucide-save" :loading="saving" label="Guardar cambios" /></template>
       </UPageHeader>
 

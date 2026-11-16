@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { TableColumn } from "@nuxt/ui"
 import type { OrderListItem, OrderListResponse } from "~~/layers/menu/shared/types/types"
+import { orderFolioLabel } from "~~/layers/menu/shared/utils/orderDeliveries"
 
 const columns: TableColumn<OrderListItem>[] = [
   { accessorKey: "planTitle", header: "Plan" },
@@ -45,7 +46,7 @@ function dateLabel(value: string) {
     </UEmpty>
     <UEmpty v-else-if="!orders?.items.length" icon="i-lucide-shopping-bag" title="Sin pedidos registrados" description="Los pedidos de este cliente aparecerán aquí." />
     <UTable v-else :data="orders.items" :columns="columns" @select="(_event, row) => navigateTo(`/admin/pedidos/${row.original.id}`)">
-      <template #planTitle-cell="{ row }"><ULink :to="`/admin/pedidos/${row.original.id}`"><UUser :name="row.original.planTitle" :description="`${row.original.planVariantTitle} · Creado: ${dateLabel(row.original.createdAt)}`" /></ULink></template>
+      <template #planTitle-cell="{ row }"><ULink :to="`/admin/pedidos/${row.original.id}`"><UUser :name="row.original.planTitle" :description="`${orderFolioLabel(row.original.folio)} · ${row.original.planVariantTitle} · Creado: ${dateLabel(row.original.createdAt)}`" /></ULink></template>
       <template #status-cell="{ row }"><UBadge :color="row.original.status === 'CANCELLED' ? 'error' : row.original.status === 'DELIVERED' ? 'success' : 'neutral'" variant="subtle" :label="statusLabels[row.original.status]" /></template>
       <template #deliveries-cell="{ row }"><p v-for="(delivery, index) in row.original.deliveries" :key="delivery.id" :class="index ? 'text-xs text-muted' : undefined">{{ index ? "" : "Entregas: " }}{{ dateLabel(delivery.scheduledDate) }}</p></template>
       <template #price-cell="{ row }">{{ transformPrice(row.original.price) }}</template>

@@ -329,11 +329,25 @@ export const orderDeliveriesInputSchema = z.array(orderDeliveryInputSchema)
     }
   });
 
+export const orderCreateDeliveryInputSchema = z.object({
+  sequence: z.union([z.literal(1), z.literal(2)]),
+  deliveryDay: z.enum(DAY_OF_WEEK_VALUES),
+  locationNumber: z.union([z.literal(1), z.literal(2)]),
+});
+
 export const orderCreateInputSchema = z.object({
   customerId: z.string().uuid('Selecciona un cliente'),
   planVariantId: z.string().uuid('Selecciona una variante de plan'),
-  deliveries: orderDeliveriesInputSchema,
+  days: z.array(z.enum(DAY_OF_WEEK_VALUES)).min(1, 'Selecciona los días del pedido').max(7)
+    .refine((days) => new Set(days).size === days.length, 'No repitas días'),
+  deliveries: z.array(orderCreateDeliveryInputSchema).max(2)
+    .refine((deliveries) => new Set(deliveries.map((delivery) => delivery.sequence)).size === deliveries.length, 'No puedes repetir la misma entrega'),
   notes: optionalTrimmedString(1000),
+});
+
+export const orderOptionsQuerySchema = z.object({
+  customerId: z.string().uuid(),
+  planVariantId: z.string().uuid(),
 });
 
 export const orderMenuComponentInputSchema = z.object({
@@ -345,6 +359,9 @@ export const orderMenuComponentInputSchema = z.object({
   calorias: z.number().int().min(0).max(10000),
   imagen: z.string().trim().max(500),
   tipo: z.string().trim().min(1, 'El tipo es obligatorio').max(80),
+  sourceDayOfWeek: z.enum(DAY_OF_WEEK_VALUES).nullable().default(null),
+  sourceSlotType: z.enum(SLOT_TYPE_VALUES).nullable().default(null),
+  isSubstitution: z.boolean().default(false),
 });
 
 export const orderMenuSlotInputSchema = z.object({

@@ -188,11 +188,39 @@ export interface OrderDelivery extends OrderDeliveryInput {
   notes: string;
 }
 
+/** Choice for one delivery when creating an order; the date comes from the week. */
+export interface OrderCreateDeliveryInput {
+  sequence: DeliverySequence;
+  deliveryDay: DayOfWeek;
+  locationNumber: CustomerLocationNumber;
+}
+
 export interface OrderCreateInput {
   customerId: string;
   planVariantId: string;
-  deliveries: OrderDeliveryInput[];
+  /** Days of the week ordered; as many as the plan variant sells. */
+  days: DayOfWeek[];
+  /** Optional per delivery: the customer's preference and main address apply otherwise. */
+  deliveries: OrderCreateDeliveryInput[];
   notes: string;
+}
+
+/** What can be ordered for a customer and plan in the week taking orders. */
+export interface OrderOptions {
+  cycle: {
+    id: string;
+    weekStart: string;
+    orderCutoffAt: string;
+    pastCutoff: boolean;
+    firstDeliveryAllowedDays: DayOfWeek[];
+    secondDeliveryAllowedDays: DayOfWeek[];
+    firstDeliveryMealDays: DayOfWeek[];
+    secondDeliveryMealDays: DayOfWeek[];
+  };
+  menu: { id: string; name: string };
+  daysCount: number;
+  /** Days with a main dish in every meal time of the plan. */
+  availableDays: DayOfWeek[];
 }
 
 export interface OrderMenuComponentInput {
@@ -204,6 +232,10 @@ export interface OrderMenuComponentInput {
   calorias: number;
   imagen: string;
   tipo: string;
+  /** Place of the dish in the week's menu; null when added by hand. */
+  sourceDayOfWeek?: DayOfWeek | null;
+  sourceSlotType?: SlotTypeValue | null;
+  isSubstitution?: boolean;
 }
 
 export interface OrderMenuSlotInput {
@@ -234,6 +266,9 @@ export interface OrderMenuSlot extends Omit<OrderMenuSlotInput, 'components'> {
 
 export interface OrderListItem {
   id: string;
+  folio: number;
+  /** Monday (`YYYY-MM-DD`) of the week of service. */
+  weekStart: string;
   status: OrderStatusValue;
   customerId: string;
   customerName: string;
@@ -247,6 +282,8 @@ export interface OrderListItem {
 }
 
 export interface Order extends OrderListItem {
+  cycleId: string;
+  capturedAfterCutoff: boolean;
   planVariantId: string | null;
   sourceWeeklyMenuId: string | null;
   sourceWeeklyMenuName: string | null;
