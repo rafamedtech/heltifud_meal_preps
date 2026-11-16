@@ -490,7 +490,9 @@ export async function updateWeeklyMenu(id: string, input: WeeklyMenuInput) {
         menuType: payload.menuType,
         ...placement,
         startDate: payload.startDate,
-        endDate: payload.endDate
+        endDate: payload.endDate,
+        // New offer version: orders configured against the old one get a 409.
+        version: { increment: 1 }
       }
     })
   ]

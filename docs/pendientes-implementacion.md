@@ -50,13 +50,23 @@ Fuente: [plan de etapa 1](plan-etapa-1-cimientos.md) y H13–H16 del
 
 ## 2. Personalización e integridad de la oferta
 
-- [ ] Implementar sustituciones limitadas a opciones del menú semanal y tiempos
-  permitidos, con reglas de cantidad y precio validadas por servidor.
-- [ ] Registrar procedencia y cambios de sustitución, aplicar preferencias del
-  cliente y permitir restaurar el menú original. Los campos de origen ya se llenan
-  al copiar el pedido; falta el flujo de intercambio.
-- [ ] Versionar la oferta y comprobar su versión/disponibilidad al confirmar para
-  detectar cambios de catálogo o menú durante la configuración (H19/T05).
+- [x] Sustituciones limitadas al menú de origen: cada lugar del pedido (día,
+  tiempo, función, posición) es fijo y solo cambia su platillo por otro del menú
+  de la misma familia (principal, guarnición, adicional), de cualquier día y de
+  los tiempos que vende el plan. Repetir platillo es libre. El servidor copia los
+  datos del platillo; el navegador solo envía ids. Precio sin cambios.
+- [x] Procedencia (`sourceDayOfWeek`/`sourceSlotType`/`isSubstitution`), bitácora
+  `order_menu_changes` (sustitución, restauración, cambio automático, con usuario),
+  restaurar el platillo original de cada lugar y exclusiones del cliente
+  (alergias e ingredientes por receta, platillos) aplicadas por el sistema.
+- [x] Versión de oferta: `WeeklyMenu.version` sube al editar el menú o un platillo
+  que ofrece; el pedido guarda `offerVersion`. Alta y edición con versión vieja
+  responden 409 `OFFER_VERSION_CONFLICT`; la transacción bloquea la fila del menú
+  (`FOR SHARE`) hasta escribir el pedido.
+- Verificado el 16 de noviembre de 2026 en PostgreSQL y navegador.
+  [Evidencia](verificacion-etapa-2-personalizacion.md).
+- Límite conocido: 154 de 183 platillos no tienen receta; con alergias se marcan
+  «Revisar alergias» y no se sustituyen solos. Capturar recetas mejora la cobertura.
 - [ ] Completar las garantías de vigencia y concurrencia de publicación de menús por
   ciclo, tipo y cliente personalizado. Contrastar T05/H17/H18 con lo implementado en
   1.1 antes de determinar qué restricciones u operaciones faltan.
@@ -134,7 +144,9 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
 Estas decisiones condicionan las implementaciones correspondientes:
 
 - [ ] Hora exacta del corte del viernes.
-- [ ] Si el cliente puede repetir un platillo durante la semana y con qué límites.
+- [x] Repetir platillo: libre; el mismo platillo puede ocupar todos los lugares
+  contratados (16 nov 2026).
+- [x] Preferencias: exclusiones y alergias que el sistema aplica solo (16 nov 2026).
 - [ ] Acceso del cliente mediante enlace privado o cuenta propia.
 - [ ] Cobro manual inicial o pago en línea; reglas de anticipos y devoluciones.
 - [ ] Zonas, recargos, extras y políticas de cambios/cancelaciones del autoservicio.
@@ -153,7 +165,7 @@ contenido siga sin implementar.
 
 ## Orden sugerido
 
-1. Cerrar decisiones de sustitución/acceso y completar personalización y oferta.
+1. Cerrar la decisión de acceso y las garantías de publicación restantes del bloque 2.
 2. Implementar pedido del cliente y acceso privado.
 3. Desarrollar compras, cocina y reparto; pueden avanzar desde pedidos de admin sin
    esperar el autoservicio del cliente.

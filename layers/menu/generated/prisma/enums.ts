@@ -83,3 +83,21 @@ export const OrderStatus = {
 } as const
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
+
+
+export const MenuChangeKind = {
+  SUSTITUCION: 'SUSTITUCION',
+  RESTAURACION: 'RESTAURACION',
+  AUTOMATICA: 'AUTOMATICA'
+} as const
+
+export type MenuChangeKind = (typeof MenuChangeKind)[keyof typeof MenuChangeKind]
+
+
+export const ExclusionKind = {
+  ALERGIA: 'ALERGIA',
+  INGREDIENTE: 'INGREDIENTE',
+  PLATILLO: 'PLATILLO'
+} as const
+
+export type ExclusionKind = (typeof ExclusionKind)[keyof typeof ExclusionKind]

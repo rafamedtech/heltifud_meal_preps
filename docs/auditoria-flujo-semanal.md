@@ -133,12 +133,14 @@ hacia adelante y toda la operación (súper, cocina, entregas).
 | # | Decisión |
 | --- | --- |
 | 1 | Mismo precio: el plan vende N comidas por semana; cambiar entre tiempos dentro del menú de la semana no altera el total. |
+| 2 | Repetición libre: el cliente puede poner el mismo platillo en todos sus lugares (16 nov 2026). Preferencias = exclusiones y alergias que el sistema aplica solo. |
 | 4 | Corte fijo semanal: mismo día y hora cada semana; después solo admin edita. Corte del cliente el viernes (hora por definir); admin acepta confirmaciones tardías, p. ej. sábado antes de mediodía. |
 | 5 | Reparto fijo: una regla por ciclo define qué días de comida lleva cada entrega. Entrega 1 domingo o lunes con lunes a miércoles; entrega 2 miércoles o jueves con jueves y viernes. El cliente elige el día y puede cambiarlo por pedido. |
 | 7 | Vegetariano en paralelo: un menú activo por tipo en la misma semana; el pedido toma el menú según el tipo de cliente. Cliente `dieta` usa menú personalizado propio. |
 
-Pendientes: 2 (repetir platillo), 3 (acceso del cliente) y 6 (cobro). No bloquean la
-etapa 1; ver [plan-etapa-1-cimientos.md](plan-etapa-1-cimientos.md).
+
+Pendientes: 3 (acceso del cliente) y 6 (cobro). Etapa 2 implementada; ver
+[verificacion-etapa-2-personalizacion.md](verificacion-etapa-2-personalizacion.md).
 
 ## Etapas propuestas
 

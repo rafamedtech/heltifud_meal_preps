@@ -93,6 +93,17 @@ export type OrderMenuSlot = Prisma.OrderMenuSlotModel
  */
 export type OrderMenuComponent = Prisma.OrderMenuComponentModel
 /**
+ * Model OrderMenuChange
+ * A dish swap on an order, kept for the record; names are snapshots.
+ */
+export type OrderMenuChange = Prisma.OrderMenuChangeModel
+/**
+ * Model CustomerExclusion
+ * Something a customer must not receive. The system applies it on its own:
+ * ALERGIA and INGREDIENTE point to an ingredient, PLATILLO to a catalogue dish.
+ */
+export type CustomerExclusion = Prisma.CustomerExclusionModel
+/**
  * Model Expense
  * 
  */

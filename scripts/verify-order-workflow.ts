@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import { prisma } from '../layers/menu/server/utils/prisma';
-import { createOrder, getOrderById, transitionDelivery, transitionOrder, updateOrder } from '../layers/menu/server/utils/orders';
+import { createOrder, getOrderById, getOrderOptions, transitionDelivery, transitionOrder, updateOrder } from '../layers/menu/server/utils/orders';
 import type { Order, OrderUpdateInput } from '../layers/menu/shared/types/types';
 
 const actor = { id: randomUUID(), label: 'Verificación 1.4' };
@@ -15,10 +15,10 @@ const customerId = randomUUID();
 const checks: string[] = [];
 let orderId: string | undefined;
 const editable = (order: Order): OrderUpdateInput => ({
-  version: order.version, notes: order.notes,
+  version: order.version, offerVersion: order.offerVersion, notes: order.notes,
   deliveries: order.deliveries.map(({ sequence, scheduledDate, locationNumber }) => ({ sequence, scheduledDate, locationNumber })),
   menuSlots: order.menuSlots.map(({ dayOfWeek, dayOrder, slotType, contenedor, components }) => ({
-    dayOfWeek, dayOrder, slotType, contenedor, components: components.map(({ id: _id, ...component }) => component),
+    dayOfWeek, dayOrder, slotType, contenedor, components: components.map(({ id, componentRole, position }) => ({ componentRole, position, orderComponentId: id })),
   })),
 });
 const sql = new pg.Client({ connectionString: process.env.DIRECT_URL ?? process.env.DATABASE_URL });
@@ -29,7 +29,8 @@ try {
     ubicacion1: 'Casa anterior 123', ubicacion2: 'Oficina 456', firstDeliveryDay: 'LUNES', secondDeliveryDay: 'JUEVES',
   } });
   const variant = await prisma.planVariant.findFirstOrThrow({ where: { daysCount: 3, isActive: true, plan: { isActive: true, slotTypes: { equals: ['COMIDA'] } } } });
-  let order = (await createOrder({ customerId, planVariantId: variant.id, days: ['LUNES', 'MARTES', 'JUEVES'], deliveries: [], notes: 'Temporal 1.4' }, actor))!;
+  const { menu } = await getOrderOptions({ customerId, planVariantId: variant.id });
+  let order = (await createOrder({ customerId, planVariantId: variant.id, days: ['LUNES', 'MARTES', 'JUEVES'], deliveries: [], notes: 'Temporal 1.4', offerVersion: menu.version }, actor))!;
   orderId = order.id;
   assert.equal(order.version, 1);
   assert.equal(order.statusEvents[0]?.actorId, actor.id);

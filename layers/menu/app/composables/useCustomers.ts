@@ -1,4 +1,4 @@
-import type { Customer, CustomerInput, CustomerListResponse } from '~~/layers/menu/shared/types/types';
+import type { Customer, CustomerExclusion, CustomerExclusionsInput, CustomerInput, CustomerListResponse } from '~~/layers/menu/shared/types/types';
 
 export default function useCustomers() {
   const createCustomer = (input: CustomerInput) =>
@@ -13,5 +13,9 @@ export default function useCustomers() {
   const getCustomers = (query: Record<string, string | number | undefined>) =>
     $fetch<CustomerListResponse>('/api/customers', { query });
 
-  return { createCustomer, updateCustomer, deleteCustomer, getCustomers };
+  // Allergies and exclusions the system applies on its own to the customer's orders.
+  const updateCustomerExclusions = (id: string, input: CustomerExclusionsInput) =>
+    $fetch<CustomerExclusion[]>(`/api/customers/${id}/exclusions`, { method: 'PUT', body: input });
+
+  return { createCustomer, updateCustomer, deleteCustomer, getCustomers, updateCustomerExclusions };
 }

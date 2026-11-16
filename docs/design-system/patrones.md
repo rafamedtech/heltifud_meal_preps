@@ -444,3 +444,30 @@ y cabecera de `layers/base/app/components/admin/MenuForm.vue`.
   en la página.
 - Abrir o cerrar pedidos se hace solo desde las acciones de la semana en
   `admin/menu`. El editor del menú guarda contenido y no cambia el estado.
+
+## Personalización del menú de un pedido
+
+Referencia: sección «Menú personalizado» de
+`layers/admin/app/pages/admin/pedidos/[id].vue`.
+
+- Cada lugar del pedido es fijo; no hay botones para agregar, quitar ni cambiar
+  la función de un platillo.
+- `USelectMenu` con `placeholder` «Sustituir por otro del menú...» lista solo
+  opciones del menú de la misma familia, la más cercana primero y una entrada
+  por platillo. Una opción excluida va `disabled` con el motivo en
+  `description` e icono `i-lucide-ban`; una sin receta para revisar alergias usa
+  `i-lucide-triangle-alert`.
+- `UBadge variant="subtle"`: «Sustituido» `info` con `i-lucide-replace`;
+  «Excluido para el cliente» `error`; «Revisar alergias» `warning`. El motivo va
+  en `UTooltip`.
+- Restaurar: `UButton` de icono `i-lucide-undo-2` dentro de `UTooltip` con el
+  nombre del original; solo aparece si el original no está excluido.
+- `UAlert variant="soft"` arriba de los días: menú de origen inexistente o
+  cambiado (`info`), platillos excluidos (`error`), sin receta (`warning`).
+- Un 409 `OFFER_VERSION_CONFLICT` usa el mismo aviso de recarga que el
+  conflicto de versión del pedido.
+- La bitácora va en una `UCard` «Cambios en el menú» con `UTimeline`, separada
+  del historial de estados.
+
+Se componen componentes existentes; no se creó un control propio.
+

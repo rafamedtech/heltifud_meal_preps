@@ -73,7 +73,7 @@ try {
     }
     const input = (index: number, chosen: DayOfWeek[] = ['LUNES', 'MARTES', 'JUEVES']): OrderCreateInput => ({
       customerId: customers[index]!.id, planVariantId: variant(chosen.length).id, days: chosen,
-      deliveries: [], notes: 'Verificación transaccional 1.3',
+      deliveries: [], notes: 'Verificación transaccional 1.3', offerVersion: 1,
     });
 
     const folios: number[] = [];

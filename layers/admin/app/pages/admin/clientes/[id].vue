@@ -168,6 +168,7 @@ function formatDate(value: string) {
           </div>
         </UCard>
       </div>
+      <CustomerExclusions :key="`exclusions-${customer.id}`" :customer-id="customer.id" />
       <CustomerOrderHistory :key="customer.id" :customer-id="customer.id" />
     </template>
   </main>

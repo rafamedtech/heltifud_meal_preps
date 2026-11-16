@@ -26,6 +26,9 @@ model WeeklyMenu {
   // 'ESTANDAR' | 'VEGETARIANO' for shared menus, the customer id for
   // personalised ones. Makes "one menu per scope per week" a plain unique key.
   cycleScope   String?   @map("cycle_scope")
+  // Offer version: grows on every change to the menu or to one of its dishes.
+  // Orders store the version they were configured against.
+  version      Int       @default(1)
   days         MenuDay[]
   sourceOrders Order[]
   cycle        WeeklyCycle? @relation(fields: [cycleId], references: [id], onDelete: Restrict)
@@ -90,6 +93,7 @@ model FoodCatalogItem {
   components        FoodComponent[]
   orderComponents   OrderMenuComponent[]
   recipeIngredients RecipeIngredient[]
+  exclusions        CustomerExclusion[]
 
   @@index([nombre])
   @@index([tipo])
@@ -103,6 +107,7 @@ model Ingredient {
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   recipeIngredients RecipeIngredient[]
+  exclusions        CustomerExclusion[]
 
   @@index([categoria])
   @@index([nombre])
@@ -139,6 +144,7 @@ model Customer {
   secondDeliveryDay DayOfWeek? @map("second_delivery_day")
   orders            Order[]
   personalMenus     WeeklyMenu[]
+  exclusions        CustomerExclusion[]
 
   @@index([status, tipoCliente, nombre, id], map: "customers_status_tipo_nombre_idx")
   @@index([source], map: "customers_source_idx")
@@ -189,6 +195,8 @@ model Order {
   folio                    Int             @unique(map: "orders_folio_key") @default(autoincrement())
   status                   OrderStatus     @default(DRAFT)
   version                  Int             @default(1)
+  // WeeklyMenu.version the meals were last configured against.
+  offerVersion             Int             @default(1) @map("offer_version")
   // Client-generated key of the create request: a retry with the same key
   // returns the order it already created instead of a second one.
   idempotencyKey           String?         @unique(map: "orders_idempotency_key_key") @map("idempotency_key") @db.Uuid
@@ -209,6 +217,7 @@ model Order {
   deliveries               OrderDelivery[]
   menuSlots                OrderMenuSlot[]
   statusEvents             OrderStatusEvent[]
+  menuChanges              OrderMenuChange[]
 
   @@index([customerId, createdAt(sort: Desc)], map: "orders_customer_created_idx")
   @@index([status, createdAt(sort: Desc)], map: "orders_status_created_idx")
@@ -289,7 +298,8 @@ model OrderMenuComponent {
   calorias        Int
   imagen          String
   tipo            String
-  // Where the dish sits in the week's menu; null for dishes added by hand.
+  // Where the current dish sits in the week's menu; null for dishes added by hand.
+  // isSubstitution: the dish differs from the one the menu puts in this place.
   sourceDayOfWeek DayOfWeek?       @map("source_day_of_week")
   sourceSlotType  SlotType?        @map("source_slot_type")
   isSubstitution  Boolean          @default(false) @map("is_substitution")
@@ -299,6 +309,51 @@ model OrderMenuComponent {
   @@unique([orderMenuSlotId, componentRole, position], map: "order_menu_components_slot_role_position_key")
   @@index([catalogItemId], map: "order_menu_components_catalog_item_idx")
   @@map("order_menu_components")
+}
+
+/// A dish swap on an order, kept for the record; names are snapshots.
+model OrderMenuChange {
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId           String         @map("order_id") @db.Uuid
+  orderVersion      Int            @map("order_version")
+  kind              MenuChangeKind
+  dayOfWeek         DayOfWeek      @map("day_of_week")
+  slotType          SlotType       @map("slot_type")
+  componentRole     ComponentRole  @map("component_role")
+  position          Int
+  fromNombre        String         @map("from_nombre")
+  toNombre          String         @map("to_nombre")
+  fromCatalogItemId String?        @map("from_catalog_item_id")
+  toCatalogItemId   String?        @map("to_catalog_item_id")
+  reason            String?
+  actorId           String?        @map("actor_id") @db.Uuid
+  actorLabel        String?        @map("actor_label")
+  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  order             Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt], map: "order_menu_changes_order_created_idx")
+  @@map("order_menu_changes")
+}
+
+/// Something a customer must not receive. The system applies it on its own:
+/// ALERGIA and INGREDIENTE point to an ingredient, PLATILLO to a catalogue dish.
+model CustomerExclusion {
+  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  customerId    String           @map("customer_id") @db.Uuid
+  kind          ExclusionKind
+  ingredientId  String?          @map("ingredient_id")
+  catalogItemId String?          @map("catalog_item_id")
+  createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(3)
+  customer      Customer         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  // Restrict: an allergy never disappears silently with its ingredient.
+  ingredient    Ingredient?      @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+  catalogItem   FoodCatalogItem? @relation(fields: [catalogItemId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, ingredientId], map: "customer_exclusions_customer_ingredient_key")
+  @@unique([customerId, catalogItemId], map: "customer_exclusions_customer_item_key")
+  @@index([ingredientId], map: "customer_exclusions_ingredient_idx")
+  @@index([catalogItemId], map: "customer_exclusions_item_idx")
+  @@map("customer_exclusions")
 }
 
 model Expense {
@@ -403,4 +458,16 @@ enum OrderStatus {
   PARTIALLY_DELIVERED
   DELIVERED
   CANCELLED
+}
+
+enum MenuChangeKind {
+  SUSTITUCION
+  RESTAURACION
+  AUTOMATICA
+}
+
+enum ExclusionKind {
+  ALERGIA
+  INGREDIENTE
+  PLATILLO
 }

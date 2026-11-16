@@ -28,6 +28,13 @@ import type {
   OrderUpdateInput,
 } from '~~/layers/menu/shared/types/types';
 import {
+  orderPlaceKey,
+  pickCompatibleOption,
+  roleFamily,
+  withRolePositions,
+  type OrderPlace,
+} from '~~/layers/menu/shared/utils/orderPersonalization';
+import {
   deliveryDateOptions,
   allowedDeliveryDays,
   availableOrderDays,
@@ -38,6 +45,15 @@ import {
   type DeliveryMealRule,
 } from '~~/layers/menu/shared/utils/orderDeliveries';
 
+import {
+  buildMenuOptions,
+  conflictOf,
+  loadExclusionRules,
+  loadRecipeFacts,
+  menuCatalogItemIds,
+  menuOriginals,
+  personalizationMenuInclude,
+} from './orderPersonalization';
 import { prisma } from './prisma';
 import { ORDER_TRANSITIONS, DELIVERY_TRANSITIONS, derivedOrderStatus, isClosedOrder } from '../../shared/utils/orderWorkflow';
 
@@ -55,6 +71,7 @@ const orderDetailInclude = {
   statusEvents: { orderBy: [{ version: 'desc' as const }, { createdAt: 'desc' as const }, { id: 'desc' as const }] },
   deliveries: deliveriesInclude,
   sourceWeeklyMenu: { select: { id: true, name: true } },
+  menuChanges: { orderBy: [{ createdAt: 'desc' as const }, { id: 'desc' as const }] },
   menuSlots: {
     orderBy: [{ dayOrder: 'asc' as const }, { slotType: 'asc' as const }],
     include: {
@@ -77,14 +94,7 @@ const menuSourceInclude = {
       ...mealRuleSelect,
     },
   },
-  days: {
-    orderBy: { order: 'asc' as const },
-    include: {
-      slots: {
-        include: { components: true },
-      },
-    },
-  },
+  ...personalizationMenuInclude,
 };
 
 function toDate(value: string) {
@@ -179,59 +189,82 @@ function deliveryIdResolver(deliveries: Array<{ id: string; sequence: number }>,
 
 type SourceMenu = Prisma.WeeklyMenuGetPayload<{ include: typeof menuSourceInclude }>;
 
-/** Copies the chosen days of the menu, only the meal times the plan sells. */
+/** Dish data saved on an order place, copied from the menu on the server. */
+interface PlaceDish {
+  catalogItemId: string | null;
+  nombre: string;
+  descripcion: string;
+  calorias: number;
+  imagen: string;
+  tipo: string;
+}
+
+function placeDish(source: PlaceDish, dayOfWeek: OrderPlace['dayOfWeek'], slotType: OrderPlace['slotType'], isSubstitution: boolean) {
+  return {
+    catalogItemId: source.catalogItemId,
+    nombre: source.nombre,
+    descripcion: source.descripcion,
+    calorias: source.calorias,
+    imagen: source.imagen,
+    tipo: source.tipo,
+    sourceDayOfWeek: dayOfWeek,
+    sourceSlotType: slotType,
+    isSubstitution,
+  };
+}
+
+/**
+ * Copies the chosen days of the menu, only the meal times the plan sells.
+ * `dishFor` decides the dish of each place (the menu one, or a replacement).
+ */
 function buildMenuSlots(
   menu: SourceMenu,
   slotTypes: string[],
   days: ReadonlyArray<OrderMenuSlotInput['dayOfWeek']>,
   deliveryIdFor: (day: OrderMenuSlotInput['dayOfWeek']) => string,
+  dishFor: (place: OrderPlace, component: PlaceDish) => ReturnType<typeof placeDish>,
 ) {
   return menu.days.filter((day) => days.includes(day.dayOfWeek)).flatMap((day) => day.slots
     .filter((slot) => slotTypes.includes(slot.slotType))
-    .map((slot) => {
-      const rolePositions = new Map<string, number>();
-      return {
-        deliveryId: deliveryIdFor(day.dayOfWeek),
-        dayOfWeek: day.dayOfWeek,
-        dayOrder: day.order,
-        slotType: slot.slotType,
-        contenedor: slot.contenedor,
-        components: {
-          create: slot.components.map((component) => {
-            const position = rolePositions.get(component.componentRole) ?? 0;
-            rolePositions.set(component.componentRole, position + 1);
-            return {
-              catalogItemId: component.catalogItemId,
-              componentRole: component.componentRole,
-              position,
-              nombre: component.nombre,
-              descripcion: component.descripcion,
-              calorias: component.calorias,
-              imagen: component.imagen,
-              tipo: component.tipo,
-              sourceDayOfWeek: day.dayOfWeek,
-              sourceSlotType: slot.slotType,
-            };
-          }),
-        },
-      };
-    }));
+    .map((slot) => ({
+      deliveryId: deliveryIdFor(day.dayOfWeek),
+      dayOfWeek: day.dayOfWeek,
+      dayOrder: day.order,
+      slotType: slot.slotType,
+      contenedor: slot.contenedor,
+      components: {
+        create: withRolePositions(slot.components).map(({ component, position }) => ({
+          componentRole: component.componentRole,
+          position,
+          ...dishFor({ dayOfWeek: day.dayOfWeek, slotType: slot.slotType, componentRole: component.componentRole, position }, component),
+        })),
+      },
+    })));
 }
 
-function buildEditableMenu(slots: OrderMenuSlotInput[], deliveryIdFor: (day: OrderMenuSlotInput['dayOfWeek']) => string) {
-  return slots.map((slot) => ({
-    deliveryId: deliveryIdFor(slot.dayOfWeek),
-    dayOfWeek: slot.dayOfWeek,
-    dayOrder: slot.dayOrder,
-    slotType: slot.slotType,
-    contenedor: slot.contenedor || null,
-    components: {
-      create: slot.components.map((component) => ({
-        ...component,
-        catalogItemId: component.catalogItemId || null,
-      })),
-    },
-  }));
+function offerConflict() {
+  return createError({
+    statusCode: 409,
+    statusMessage: 'El menú de la semana cambió mientras se configuraba el pedido. Recarga las opciones y revisa los platillos.',
+    data: { code: 'OFFER_VERSION_CONFLICT' },
+  });
+}
+
+/**
+ * Current offer version of a menu, holding it until the transaction ends so
+ * the menu cannot change between this check and the order write.
+ */
+async function lockOfferVersion(tx: Prisma.TransactionClient, menuId: string) {
+  const rows = await tx.$queryRaw<Array<{ version: number }>>`SELECT "version" FROM "WeeklyMenu" WHERE "id" = ${menuId} FOR SHARE`;
+  return rows[0]?.version;
+}
+
+function excludedError(nombre: string, reasons: string[]) {
+  return createError({
+    statusCode: 409,
+    statusMessage: `«${nombre}» no es compatible con las exclusiones del cliente (${reasons.join(', ')}). Elige otro platillo.`,
+    data: { code: 'EXCLUDED_DISH' },
+  });
 }
 
 export async function getOrders(query: unknown): Promise<OrderListResponse> {
@@ -304,6 +337,21 @@ export async function getOrderById(id: string): Promise<Order | null> {
     planVariantId: record.planVariantId,
     sourceWeeklyMenuId: record.sourceWeeklyMenuId,
     sourceWeeklyMenuName: record.sourceWeeklyMenu?.name ?? null,
+    offerVersion: record.offerVersion,
+    menuChanges: record.menuChanges.map((change) => ({
+      id: change.id,
+      orderVersion: change.orderVersion,
+      kind: change.kind,
+      dayOfWeek: change.dayOfWeek,
+      slotType: change.slotType,
+      componentRole: change.componentRole,
+      position: change.position,
+      fromNombre: change.fromNombre,
+      toNombre: change.toNombre,
+      reason: change.reason ?? '',
+      actorLabel: change.actorLabel,
+      createdAt: change.createdAt.toISOString(),
+    })),
     notes: record.notes ?? '',
     updatedAt: record.updatedAt.toISOString(),
     customer: mapCustomer(record.customer),
@@ -391,7 +439,7 @@ export async function getOrderOptions(query: unknown): Promise<OrderOptions> {
       firstDeliveryMealDays: cycle.firstDeliveryMealDays,
       secondDeliveryMealDays: cycle.secondDeliveryMealDays,
     },
-    menu: { id: menu.id, name: menu.name },
+    menu: { id: menu.id, name: menu.name, version: menu.version },
     daysCount: variant.daysCount,
     availableDays,
   };
@@ -452,6 +500,9 @@ export async function createOrder(input: OrderCreateInput, actor?: OrderActor, i
   const create = () => prisma.$transaction(async (tx) => {
     const { customer, variant, menu, cycle, availableDays } = await resolveOrderContext(tx, data.customerId, data.planVariantId);
 
+    const lockedVersion = await lockOfferVersion(tx, menu.id);
+    if (lockedVersion !== menu.version || data.offerVersion !== menu.version) throw offerConflict();
+
     const daysError = chosenDaysError(data.days, availableDays, variant.daysCount);
     if (daysError) throw createError({ statusCode: 400, statusMessage: daysError });
 
@@ -491,6 +542,7 @@ export async function createOrder(input: OrderCreateInput, actor?: OrderActor, i
         customerId: customer.id,
         planVariantId: variant.id,
         sourceWeeklyMenuId: menu.id,
+        offerVersion: menu.version,
         cycleId: cycle.id,
         idempotencyKey: key ?? null,
         idempotencyFingerprint: fingerprint ?? null,
@@ -514,8 +566,32 @@ export async function createOrder(input: OrderCreateInput, actor?: OrderActor, i
       select: { id: true, deliveries: { select: { id: true, sequence: true } } },
     });
 
-    const menuSlots = buildMenuSlots(menu, variant.plan.slotTypes, data.days, deliveryIdResolver(order.deliveries, cycle));
-    await tx.order.update({ where: { id: order.id }, data: { menuSlots: { create: menuSlots } } });
+    // The customer's allergies and exclusions apply on their own: an excluded
+    // dish is swapped for the closest compatible one of the week's menu.
+    const rules = await loadExclusionRules(tx, customer.id);
+    const facts = await loadRecipeFacts(tx, menuCatalogItemIds(menu));
+    const options = buildMenuOptions(menu, new Set(variant.plan.slotTypes), rules, facts);
+    const menuChanges: Prisma.OrderMenuChangeCreateWithoutOrderInput[] = [];
+    const menuSlots = buildMenuSlots(menu, variant.plan.slotTypes, data.days, deliveryIdResolver(order.deliveries, cycle), (place, component) => {
+      const conflict = conflictOf(component.catalogItemId, facts, rules);
+      if (conflict.status !== 'excluded') return placeDish(component, place.dayOfWeek, place.slotType, false);
+      const option = pickCompatibleOption(place, options);
+      if (!option) {
+        throw createError({
+          statusCode: 409,
+          statusMessage: `El menú no tiene una alternativa compatible para «${component.nombre}» (${conflict.reasons.join(', ')}). Revisa las exclusiones del cliente o el menú.`,
+          data: { code: 'NO_COMPATIBLE_DISH' },
+        });
+      }
+      menuChanges.push({
+        orderVersion: 1, kind: 'AUTOMATICA', ...place,
+        fromNombre: component.nombre, toNombre: option.nombre,
+        fromCatalogItemId: component.catalogItemId, toCatalogItemId: option.catalogItemId,
+        reason: conflict.reasons.join('; '), actorId: actor?.id, actorLabel: actor?.label,
+      });
+      return placeDish(option, option.dayOfWeek, option.slotType, true);
+    });
+    await tx.order.update({ where: { id: order.id }, data: { menuSlots: { create: menuSlots }, menuChanges: { create: menuChanges } } });
 
     return order;
   });
@@ -534,7 +610,14 @@ export async function createOrder(input: OrderCreateInput, actor?: OrderActor, i
   }
 }
 
-export async function updateOrder(id: string, input: OrderUpdateInput) {
+type SavedComponent = Prisma.OrderMenuComponentGetPayload<object>;
+
+const sameDish = (a: { catalogItemId: string | null; nombre: string; sourceDayOfWeek: string | null; sourceSlotType: string | null },
+  b: { catalogItemId: string | null; nombre: string; sourceDayOfWeek?: string | null; sourceSlotType?: string | null }) =>
+  a.catalogItemId === b.catalogItemId && a.nombre === b.nombre
+  && a.sourceDayOfWeek === (b.sourceDayOfWeek ?? null) && a.sourceSlotType === (b.sourceSlotType ?? null);
+
+export async function updateOrder(id: string, input: OrderUpdateInput, actor?: OrderActor) {
   const parsed = orderUpdateInputSchema.safeParse(input);
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'Los cambios del pedido no son válidos.', data: parsed.error.flatten() });
@@ -548,7 +631,7 @@ export async function updateOrder(id: string, input: OrderUpdateInput) {
         customer: true,
         deliveries: true,
         cycle: true,
-        menuSlots: true,
+        menuSlots: { include: { components: true } },
       },
     });
     if (!existing) throw createError({ statusCode: 404, statusMessage: 'Pedido no encontrado.' });
@@ -560,11 +643,19 @@ export async function updateOrder(id: string, input: OrderUpdateInput) {
     if (isClosedOrder(existing.status) || existing.deliveries.some(delivery => delivery.status !== 'PENDING')) {
       throw createError({ statusCode: 409, statusMessage: 'El pedido está cerrado o tiene entregas en curso. Reabre o resuelve las entregas antes de editar.' });
     }
-    const keys = new Set(existing.menuSlots.map(slot => `${slot.dayOfWeek}:${slot.slotType}:${slot.dayOrder}`));
-    if (data.menuSlots.length !== keys.size || data.menuSlots.some(slot => !keys.has(`${slot.dayOfWeek}:${slot.slotType}:${slot.dayOrder}`)
-      || !slot.components.some(component => component.componentRole === 'PLATILLO_PRINCIPAL'))) {
-      throw createError({ statusCode: 400, statusMessage: 'Conserva los días y tiempos contratados, con un platillo principal en cada tiempo.' });
+
+    // The plan fixes the places: same days, meal times and dishes per role.
+    const savedByPlace = new Map<string, SavedComponent>();
+    existing.menuSlots.forEach((slot) => slot.components.forEach((component) => {
+      savedByPlace.set(orderPlaceKey({ dayOfWeek: slot.dayOfWeek, slotType: slot.slotType, componentRole: component.componentRole, position: component.position }), component);
+    }));
+    const slotKeys = new Set(existing.menuSlots.map(slot => `${slot.dayOfWeek}:${slot.slotType}:${slot.dayOrder}`));
+    const placeKeys = data.menuSlots.flatMap((slot) => slot.components.map((component) => orderPlaceKey({ ...slot, ...component })));
+    if (data.menuSlots.length !== slotKeys.size || data.menuSlots.some(slot => !slotKeys.has(`${slot.dayOfWeek}:${slot.slotType}:${slot.dayOrder}`))
+      || placeKeys.length !== savedByPlace.size || placeKeys.some((key) => !savedByPlace.has(key))) {
+      throw createError({ statusCode: 400, statusMessage: 'Conserva los días, tiempos y platillos contratados; solo se puede cambiar qué platillo ocupa cada lugar.' });
     }
+
     const expectedSequences = new Set(existing.menuSlots.map(slot => deliverySequenceForDay(slot.dayOfWeek, existing.cycle)));
     if (data.deliveries.length !== expectedSequences.size || data.deliveries.some(delivery => !expectedSequences.has(delivery.sequence))) {
       throw createError({ statusCode: 400, statusMessage: 'Las entregas deben corresponder al reparto de comidas de la semana.' });
@@ -574,6 +665,67 @@ export async function updateOrder(id: string, input: OrderUpdateInput) {
         throw createError({ statusCode: 400, statusMessage: 'La fecha de entrega debe ser una de las permitidas para esta semana.' });
       }
     }
+
+    // Options come from the source menu at the version the editor was given.
+    const menu = existing.sourceWeeklyMenuId
+      ? await tx.weeklyMenu.findUnique({ where: { id: existing.sourceWeeklyMenuId }, include: personalizationMenuInclude })
+      : null;
+    if (menu) {
+      const lockedVersion = await lockOfferVersion(tx, menu.id);
+      if (lockedVersion !== menu.version || data.offerVersion !== menu.version) throw offerConflict();
+    }
+    const rules = await loadExclusionRules(tx, existing.customerId);
+    const facts = await loadRecipeFacts(tx, [
+      ...(menu ? menuCatalogItemIds(menu) : []),
+      ...[...savedByPlace.values()].map((component) => component.catalogItemId),
+    ]);
+    const sold = new Set<string>(existing.menuSlots.map((slot) => slot.slotType));
+    const options = new Map((menu ? buildMenuOptions(menu, sold, rules, facts) : []).map((option) => [option.id, option]));
+    const originals = menu ? menuOriginals(menu) : new Map<string, string>();
+    const nextVersion = data.version + 1;
+    const menuChanges: Prisma.OrderMenuChangeCreateWithoutOrderInput[] = [];
+
+    const resolvedSlots = data.menuSlots.map((slot) => ({
+      ...slot,
+      components: slot.components.map((component) => {
+        const place: OrderPlace = { dayOfWeek: slot.dayOfWeek, slotType: slot.slotType, componentRole: component.componentRole, position: component.position };
+        const key = orderPlaceKey(place);
+        const saved = savedByPlace.get(key)!;
+
+        if (component.orderComponentId) {
+          if (component.orderComponentId !== saved.id) {
+            throw createError({ statusCode: 400, statusMessage: 'Un platillo guardado no corresponde a su lugar en el pedido. Recarga el pedido.' });
+          }
+          const conflict = conflictOf(saved.catalogItemId, facts, rules);
+          if (conflict.status === 'excluded') throw excludedError(saved.nombre, conflict.reasons);
+          const { id: _id, orderMenuSlotId: _slot, ...dish } = saved;
+          return dish;
+        }
+
+        if (!menu) {
+          throw createError({ statusCode: 409, statusMessage: 'El menú de origen del pedido ya no existe; solo se pueden conservar los platillos guardados.' });
+        }
+        const option = options.get(component.menuComponentId!);
+        if (!option) throw offerConflict();
+        if (roleFamily(option.componentRole) !== roleFamily(place.componentRole)) {
+          throw createError({ statusCode: 400, statusMessage: `«${option.nombre}» no puede ocupar ese lugar: un principal solo cambia por otro principal, y lo mismo con guarniciones y adicionales.` });
+        }
+        if (option.conflict.status === 'excluded') throw excludedError(option.nombre, option.conflict.reasons);
+
+        const isSubstitution = originals.get(key) !== option.id;
+        const dish = { componentRole: place.componentRole, position: place.position, ...placeDish(option, option.dayOfWeek, option.slotType, isSubstitution) };
+        if (!sameDish(saved, dish)) {
+          menuChanges.push({
+            orderVersion: nextVersion, kind: isSubstitution ? 'SUSTITUCION' : 'RESTAURACION', ...place,
+            fromNombre: saved.nombre, toNombre: option.nombre,
+            fromCatalogItemId: saved.catalogItemId, toCatalogItemId: option.catalogItemId,
+            actorId: actor?.id, actorLabel: actor?.label,
+          });
+        }
+        return dish;
+      }),
+    }));
+
     await claimVersion(tx, id, data.version);
 
     // Meals are rebuilt below, so deliveries dropped from the order are free to go.
@@ -608,11 +760,23 @@ export async function updateOrder(id: string, input: OrderUpdateInput) {
           }));
     }
 
+    const deliveryIdFor = deliveryIdResolver(deliveries, existing.cycle);
     await tx.order.update({
       where: { id },
       data: {
         notes: data.notes || null,
-        menuSlots: { create: buildEditableMenu(data.menuSlots, deliveryIdResolver(deliveries, existing.cycle)) },
+        offerVersion: menu?.version ?? existing.offerVersion,
+        menuChanges: { create: menuChanges },
+        menuSlots: {
+          create: resolvedSlots.map((slot) => ({
+            deliveryId: deliveryIdFor(slot.dayOfWeek),
+            dayOfWeek: slot.dayOfWeek,
+            dayOrder: slot.dayOrder,
+            slotType: slot.slotType,
+            contenedor: slot.contenedor || null,
+            components: { create: slot.components },
+          })),
+        },
       },
     });
   });

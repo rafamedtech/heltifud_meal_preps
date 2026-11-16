@@ -409,14 +409,6 @@ export type EnumDayOfWeekFieldUpdateOperationsInput = {
   set?: $Enums.DayOfWeek
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type MenuDayCreateNestedOneWithoutSlotsInput = {
   create?: Prisma.XOR<Prisma.MenuDayCreateWithoutSlotsInput, Prisma.MenuDayUncheckedCreateWithoutSlotsInput>
   connectOrCreate?: Prisma.MenuDayCreateOrConnectWithoutSlotsInput

@@ -203,6 +203,8 @@ export interface OrderCreateInput {
   /** Optional per delivery: the customer's preference and main address apply otherwise. */
   deliveries: OrderCreateDeliveryInput[];
   notes: string;
+  /** Menu version shown while configuring; a newer one is rejected with 409. */
+  offerVersion: number;
 }
 
 /** What can be ordered for a customer and plan in the week taking orders. */
@@ -217,13 +219,15 @@ export interface OrderOptions {
     firstDeliveryMealDays: DayOfWeek[];
     secondDeliveryMealDays: DayOfWeek[];
   };
-  menu: { id: string; name: string };
+  /** `version` is the offer version the order must be sent with. */
+  menu: { id: string; name: string; version: number };
   daysCount: number;
   /** Days with a main dish in every meal time of the plan. */
   availableDays: DayOfWeek[];
 }
 
-export interface OrderMenuComponentInput {
+/** Saved dish of an order meal. */
+export interface OrderMenuComponentData {
   catalogItemId: string | null;
   componentRole: ComponentRoleValue;
   position: number;
@@ -232,10 +236,23 @@ export interface OrderMenuComponentInput {
   calorias: number;
   imagen: string;
   tipo: string;
-  /** Place of the dish in the week's menu; null when added by hand. */
+  /** Place of the current dish in the week's menu; null when added by hand. */
   sourceDayOfWeek?: DayOfWeek | null;
   sourceSlotType?: SlotTypeValue | null;
+  /** The dish differs from the one the menu puts in this place. */
   isSubstitution?: boolean;
+}
+
+/**
+ * One place of a meal on update. The place (role and position) is fixed; the
+ * dish is either the one already saved (`orderComponentId`) or an option of
+ * the week's menu (`menuComponentId`). The server copies the dish data.
+ */
+export interface OrderMenuComponentInput {
+  componentRole: ComponentRoleValue;
+  position: number;
+  orderComponentId?: string;
+  menuComponentId?: string;
 }
 
 export interface OrderMenuSlotInput {
@@ -251,9 +268,11 @@ export interface OrderUpdateInput {
   deliveries: OrderDeliveryInput[];
   notes: string;
   menuSlots: OrderMenuSlotInput[];
+  /** Menu version of the options used; a newer one is rejected with 409. */
+  offerVersion: number;
 }
 
-export interface OrderMenuComponent extends OrderMenuComponentInput {
+export interface OrderMenuComponent extends OrderMenuComponentData {
   id: string;
 }
 
@@ -295,6 +314,84 @@ export interface Order extends OrderListItem {
   updatedAt: string;
   customer: Customer;
   menuSlots: OrderMenuSlot[];
+  offerVersion: number;
+  menuChanges: OrderMenuChange[];
+}
+
+export const MENU_CHANGE_KIND_VALUES = ['SUSTITUCION', 'RESTAURACION', 'AUTOMATICA'] as const;
+export type MenuChangeKindValue = (typeof MENU_CHANGE_KIND_VALUES)[number];
+
+/** A dish swap recorded on an order. */
+export interface OrderMenuChange {
+  id: string;
+  orderVersion: number;
+  kind: MenuChangeKindValue;
+  dayOfWeek: DayOfWeek;
+  slotType: SlotTypeValue;
+  componentRole: ComponentRoleValue;
+  position: number;
+  fromNombre: string;
+  toNombre: string;
+  reason: string;
+  actorLabel: string | null;
+  createdAt: string;
+}
+
+export const EXCLUSION_KIND_VALUES = ['ALERGIA', 'INGREDIENTE', 'PLATILLO'] as const;
+export type ExclusionKindValue = (typeof EXCLUSION_KIND_VALUES)[number];
+
+/** Allergy or exclusion the system applies on its own to the customer's orders. */
+export interface CustomerExclusion {
+  id: string;
+  kind: ExclusionKindValue;
+  ingredientId: string | null;
+  catalogItemId: string | null;
+  /** Ingredient or dish name. */
+  label: string;
+}
+
+export interface CustomerExclusionsInput {
+  allergyIngredientIds: string[];
+  ingredientIds: string[];
+  catalogItemIds: string[];
+}
+
+/**
+ * How a dish fits the customer's exclusions. `unverified`: the customer has
+ * allergies and the dish has no recipe to check them against.
+ */
+export type DishConflict =
+  | { status: 'ok' }
+  | { status: 'excluded' | 'unverified'; reasons: string[] };
+
+/** A dish of the week's menu that can take a place of the order. */
+export interface OrderMenuOption {
+  /** Menu component id; valid for `OrderPersonalization.menu.version`. */
+  id: string;
+  componentRole: ComponentRoleValue;
+  dayOfWeek: DayOfWeek;
+  slotType: SlotTypeValue;
+  catalogItemId: string | null;
+  nombre: string;
+  descripcion: string;
+  calorias: number;
+  imagen: string;
+  tipo: string;
+  conflict: DishConflict;
+}
+
+/** What the order editor needs to swap and restore dishes. */
+export interface OrderPersonalization {
+  /** Null when the source menu no longer exists: dishes can only be kept. */
+  menu: { id: string; name: string; version: number } | null;
+  /** The menu changed since the order meals were last saved. */
+  menuChanged: boolean;
+  options: OrderMenuOption[];
+  /** Place key (`orderPlaceKey`) → option the menu puts there. */
+  originals: Record<string, string>;
+  /** Saved order component id → fit with the exclusions. */
+  componentConflicts: Record<string, DishConflict>;
+  exclusions: CustomerExclusion[];
 }
 
 export interface OrderActor { id: string; label: string }

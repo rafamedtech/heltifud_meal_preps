@@ -6,7 +6,7 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { prisma } from '../layers/menu/server/utils/prisma';
-import { createOrder } from '../layers/menu/server/utils/orders';
+import { createOrder, getOrderOptions } from '../layers/menu/server/utils/orders';
 import type { OrderCreateInput } from '../layers/menu/shared/types/types';
 
 const actor = { id: randomUUID(), label: 'Verificación idempotencia' };
@@ -19,7 +19,8 @@ try {
     ubicacion1: 'Casa 123', ubicacion2: 'Oficina 456', firstDeliveryDay: 'LUNES', secondDeliveryDay: 'JUEVES',
   } });
   const variant = await prisma.planVariant.findFirstOrThrow({ where: { daysCount: 3, isActive: true, plan: { isActive: true, slotTypes: { equals: ['COMIDA'] } } } });
-  const input: OrderCreateInput = { customerId, planVariantId: variant.id, days: ['LUNES', 'MARTES', 'JUEVES'], deliveries: [], notes: 'Temporal idempotencia' };
+  const { menu } = await getOrderOptions({ customerId, planVariantId: variant.id });
+  const input: OrderCreateInput = { customerId, planVariantId: variant.id, days: ['LUNES', 'MARTES', 'JUEVES'], deliveries: [], notes: 'Temporal idempotencia', offerVersion: menu.version };
   const count = () => prisma.order.count({ where: { customerId } });
 
   // Several simultaneous submissions with one key: the unique index lets one
