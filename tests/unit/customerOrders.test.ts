@@ -12,6 +12,13 @@ describe('customer order history', () => {
     expect(groupBy).toHaveBeenCalledWith(expect.objectContaining({ where: { customerId: 'customer-1' } }));
   });
 
+  it('filters results and totals by week', async () => {
+    transaction.mockResolvedValue([[], []]);
+    await getOrders({ cycleId: 'cycle-1', limit: 50, offset: 100 });
+    expect(findMany).toHaveBeenLastCalledWith(expect.objectContaining({ where: { cycleId: 'cycle-1' }, take: 50, skip: 100 }));
+    expect(groupBy).toHaveBeenLastCalledWith(expect.objectContaining({ where: { cycleId: 'cycle-1' } }));
+  });
+
   it('rejects invalid pagination before querying orders', async () => {
     await expect(getOrders({ customerId: 'customer-1', offset: -1 })).rejects.toMatchObject({ statusCode: 400 });
   });

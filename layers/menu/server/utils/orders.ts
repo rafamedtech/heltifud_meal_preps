@@ -235,9 +235,10 @@ function buildEditableMenu(slots: OrderMenuSlotInput[], deliveryIdFor: (day: Ord
 export async function getOrders(query: unknown): Promise<OrderListResponse> {
   const parsed = orderListQuerySchema.safeParse(query);
   if (!parsed.success) throw createError({ statusCode: 400, statusMessage: 'Los filtros no son válidos.' });
-  const { q, status, from, to, limit, customerId, offset } = parsed.data;
+  const { q, status, from, to, limit, customerId, cycleId, offset } = parsed.data;
   const where: Prisma.OrderWhereInput = {
     ...(customerId ? { customerId } : {}),
+    ...(cycleId ? { cycleId } : {}),
     ...(status ? { status } : {}),
     ...(q ? {
       OR: [

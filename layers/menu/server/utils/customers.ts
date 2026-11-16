@@ -138,6 +138,20 @@ export async function updateCustomer(id: string, input: CustomerInput) {
   return mapCustomer(await prisma.customer.update({ where: { id }, data: validateInput(input) }));
 }
 
+function customerHasHistory(orders: number, menus: number) {
+  const parts = [
+    ...(orders ? [`${orders} ${orders === 1 ? 'pedido' : 'pedidos'}`] : []),
+    ...(menus ? [`${menus} ${menus === 1 ? 'menú personalizado' : 'menús personalizados'}`] : []),
+  ];
+  return createError({
+    statusCode: 409,
+    statusMessage: parts.length
+      ? `El cliente tiene ${parts.join(' y ')} y no se puede eliminar.`
+      : 'El cliente tiene registros asociados y no se puede eliminar.',
+    data: { code: 'CUSTOMER_HAS_HISTORY', orders, menus },
+  });
+}
+
 export async function deleteCustomer(id: string) {
   const existing = await prisma.customer.findUnique({ where: { id }, select: { id: true } });
 
@@ -145,6 +159,20 @@ export async function deleteCustomer(id: string) {
     throw createError({ statusCode: 404, statusMessage: 'Cliente no encontrado.' });
   }
 
-  await prisma.customer.delete({ where: { id } });
+  // Orders and personalised menus keep the customer as their owner; deleting
+  // would erase that history, so the caller is offered to deactivate instead.
+  const [orders, menus] = await Promise.all([
+    prisma.order.count({ where: { customerId: id } }),
+    prisma.weeklyMenu.count({ where: { customerId: id } }),
+  ]);
+  if (orders || menus) throw customerHasHistory(orders, menus);
+
+  try {
+    await prisma.customer.delete({ where: { id } });
+  } catch (error) {
+    // A record created between the count and the delete still blocks it.
+    if ((error as { code?: string }).code === 'P2003') throw customerHasHistory(orders, menus);
+    throw error;
+  }
   return { id };
 }

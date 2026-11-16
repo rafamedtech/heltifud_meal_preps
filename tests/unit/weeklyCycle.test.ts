@@ -3,8 +3,11 @@ import { operationSettingsInputSchema, weeklyCycleUpdateInputSchema } from '../.
 import {
   canTransitionCycle,
   computeOrderCutoff,
+  isCutoffBeforeWeek,
   menuCycleScope,
+  utcToZonedDateTime,
   weekStartOf,
+  zonedDateTimeToUtc,
 } from '../../layers/menu/shared/utils/weeklyCycle';
 
 describe('weekStartOf', () => {
@@ -44,6 +47,24 @@ describe('computeOrderCutoff', () => {
   it('never lands inside the week it closes', () => {
     expect(computeOrderCutoff('2026-11-16', 'LUNES', '09:00', 'America/Tijuana').toISOString())
       .toBe('2026-11-09T17:00:00.000Z');
+  });
+});
+
+describe('editing the cutoff of a week', () => {
+  it('reads an instant as wall-clock date and time in the business zone', () => {
+    expect(utcToZonedDateTime('2026-11-14T02:00:00.000Z', 'America/Tijuana')).toEqual({ date: '2026-11-13', time: '18:00' });
+    expect(utcToZonedDateTime(new Date('2026-07-04T01:00:00.000Z'), 'America/Tijuana')).toEqual({ date: '2026-07-03', time: '18:00' });
+  });
+
+  it('round-trips through zonedDateTimeToUtc', () => {
+    const { date, time } = utcToZonedDateTime('2026-11-14T20:00:00.000Z', 'America/Tijuana');
+    expect(zonedDateTimeToUtc(date, time, 'America/Tijuana').toISOString()).toBe('2026-11-14T20:00:00.000Z');
+  });
+
+  it('accepts a cutoff up to the last minute of the Sunday before the week', () => {
+    expect(isCutoffBeforeWeek('2026-11-16T07:59:00.000Z', '2026-11-16', 'America/Tijuana')).toBe(true);
+    expect(isCutoffBeforeWeek('2026-11-16T08:00:00.000Z', '2026-11-16', 'America/Tijuana')).toBe(false);
+    expect(isCutoffBeforeWeek('2026-11-18T02:00:00.000Z', '2026-11-16', 'America/Tijuana')).toBe(false);
   });
 });
 

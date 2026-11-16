@@ -6,6 +6,10 @@ import type {
 } from '~~/layers/menu/shared/types/types';
 
 export default function useCycles() {
+  async function getCycles() {
+    return $fetch<WeeklyCycle[]>('/api/cycles');
+  }
+
   async function updateCycle(id: string, input: WeeklyCycleUpdateInput) {
     return $fetch<WeeklyCycle>(`/api/cycles/${id}`, { method: 'PUT', body: input });
   }
@@ -18,5 +22,5 @@ export default function useCycles() {
     return $fetch<OperationSettings>('/api/operation-settings', { method: 'PUT', body: input });
   }
 
-  return { updateCycle, getOperationSettings, updateOperationSettings };
+  return { getCycles, updateCycle, getOperationSettings, updateOperationSettings };
 }

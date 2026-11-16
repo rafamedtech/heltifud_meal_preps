@@ -97,15 +97,22 @@ const formTitle = computed(() => editingCustomer.value ? "Editar cliente" : "Nue
 const formDescription = computed(() => editingCustomer.value
   ? "Actualiza su información de contacto y seguimiento."
   : "Registra sus datos para comenzar a darle seguimiento.")
-const deleteDescription = computed(() => pendingDelete.value
-  ? `Se eliminará a ${pendingDelete.value.nombre}. Esta acción no se puede deshacer.`
-  : undefined)
+// Set when the server refuses the delete because the customer has orders or menus.
+const deleteConflict = ref("")
+const deactivating = ref(false)
+const deleteDescription = computed(() => {
+  if (!pendingDelete.value) return undefined
+  return deleteConflict.value
+    ? `${pendingDelete.value.nombre} conserva su historial.`
+    : `Se eliminará a ${pendingDelete.value.nombre}. Esta acción no se puede deshacer.`
+})
 const isDeleteOpen = computed({
   get: () => Boolean(pendingDelete.value),
   set: (open) => {
-    if (!open) pendingDelete.value = null
+    if (!open && !deleting.value && !deactivating.value) pendingDelete.value = null
   }
 })
+watch(pendingDelete, () => { deleteConflict.value = "" })
 
 function currentQuery(cursor?: string | null) {
   return {
@@ -223,10 +230,55 @@ async function confirmDelete() {
     toast.add({ title: "Cliente eliminado", description: `${deletedName} fue eliminado.`, color: "success", icon: "i-lucide-check-circle" })
     await loadCustomers()
   } catch (error) {
-    const message = error instanceof Error ? error.message : "No se pudo eliminar el cliente."
+    const failure = error as { data?: { statusMessage?: string, data?: { code?: string } } }
+    const message = failure.data?.statusMessage ?? "No se pudo eliminar el cliente. Intenta de nuevo."
+    if (failure.data?.data?.code === "CUSTOMER_HAS_HISTORY") {
+      deleteConflict.value = message
+      return
+    }
     toast.add({ title: "Error al eliminar", description: message, color: "error", icon: "i-lucide-circle-alert" })
   } finally {
     deleting.value = false
+  }
+}
+
+async function deactivatePending() {
+  const customer = pendingDelete.value
+  if (!customer) return
+
+  deactivating.value = true
+
+  try {
+    await updateCustomer(customer.id, {
+      firstDeliveryDay: customer.firstDeliveryDay ?? null,
+      secondDeliveryDay: customer.secondDeliveryDay ?? null,
+      nombre: customer.nombre,
+      telefono: customer.telefono,
+      ubicacion1: customer.ubicacion1,
+      ubicacion2: customer.ubicacion2,
+      correoElectronico: customer.correoElectronico,
+      source: customer.source,
+      tipoCliente: customer.tipoCliente,
+      status: "inactivo"
+    })
+    pendingDelete.value = null
+    toast.add({
+      title: "Cliente marcado como inactivo",
+      description: `${customer.nombre} conserva sus pedidos e historial.`,
+      color: "success",
+      icon: "i-lucide-circle-check"
+    })
+    await loadCustomers()
+  } catch (error) {
+    const failure = error as { data?: { statusMessage?: string } }
+    toast.add({
+      title: "No se pudo marcar como inactivo",
+      description: failure.data?.statusMessage ?? "Intenta de nuevo.",
+      color: "error",
+      icon: "i-lucide-circle-alert"
+    })
+  } finally {
+    deactivating.value = false
   }
 }
 
@@ -397,12 +449,23 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
 
     <UModal v-model:open="isDeleteOpen" title="Eliminar cliente" :description="deleteDescription" :ui="{ content: 'max-w-md' }">
       <template #body>
-        <UAlert color="error" variant="soft" icon="i-lucide-triangle-alert" title="Confirma esta acción" description="El registro y sus datos de contacto se eliminarán permanentemente." />
+        <UAlert
+          v-if="deleteConflict"
+          color="warning"
+          variant="soft"
+          icon="i-lucide-triangle-alert"
+          title="No se puede eliminar"
+          :description="pendingDelete?.status === 'inactivo'
+            ? `${deleteConflict} Ya está marcado como inactivo.`
+            : `${deleteConflict} Márcalo como inactivo para conservar su historial.`"
+        />
+        <UAlert v-else color="error" variant="soft" icon="i-lucide-triangle-alert" title="Confirma esta acción" description="El registro y sus datos de contacto se eliminarán permanentemente." />
       </template>
       <template #footer>
         <div class="flex w-full justify-end gap-3">
-          <UButton color="neutral" variant="ghost" :disabled="deleting" @click="cancelDelete">Cancelar</UButton>
-          <UButton color="error" icon="i-lucide-trash" :loading="deleting" @click="confirmDelete">Eliminar cliente</UButton>
+          <UButton color="neutral" variant="ghost" :disabled="deleting || deactivating" @click="cancelDelete">{{ deleteConflict ? "Cerrar" : "Cancelar" }}</UButton>
+          <UButton v-if="!deleteConflict" color="error" icon="i-lucide-trash" :loading="deleting" @click="confirmDelete">Eliminar cliente</UButton>
+          <UButton v-else-if="pendingDelete?.status !== 'inactivo'" icon="i-lucide-circle-pause" :loading="deactivating" @click="deactivatePending">Marcar inactivo</UButton>
         </div>
       </template>
     </UModal>
