@@ -64,3 +64,18 @@ suma cargos.
   `TSX_TSCONFIG_PATH=.nuxt/tsconfig.server.json node --env-file=.env --import tsx scripts/verify-operations.ts`
   cubre la excepción de saldo, saldo a favor (también con concurrencia),
   reprogramación y cierre sin entregar.
+- Navegador, preview del PR #26 con el proyecto de preview (17 nov 2026):
+  1. Pedido pagado: «Iniciar preparación» pasa sin aviso.
+  2. Cancelación con $700 cobrados → devolución «Saldo a favor»; el cliente
+     queda con $700 de saldo.
+  3. Pedido nuevo de $650 del mismo cliente: «Iniciar preparación» muestra
+     «Saldo pendiente» con «Registrar cobro» y bloquea «Confirmar cambio» hasta
+     marcar la excepción. «Registrar cobro» abre su cuenta; abono «Saldo a
+     favor» limitado a $650 → saldo $0 y saldo a favor $50. Después, la
+     preparación pasa sin aviso.
+  4. Reparto: Fallida → «Reprogramar» al 23 nov (aparece en el tablero de esa
+     fecha con la nota «Reprogramada al 2026-11-23: …») → Fallida → «Cerrar sin
+     entregar», que exige motivo → columna «No entregada»; el pedido queda en
+     Entrega parcial con el historial completo.
+  5. Consulta del cliente (390 px): pedido cancelado con su mensaje; `/pedido`
+     muestra «Pagos, cambios y cancelaciones». Sin desbordamiento horizontal.
