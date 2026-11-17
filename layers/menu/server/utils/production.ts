@@ -74,13 +74,13 @@ export async function getShoppingList(runId: string): Promise<ShoppingListDto> {
 }
 export async function updateShoppingItem(runId: string, itemId: string, input: unknown, actor?: OrderActor) {
   parseOperation(operationId, runId); parseOperation(operationId, itemId);
-  const data = parseOperation(z.object({ version: z.number().int().positive(), purchased: z.boolean(), expenseId: z.uuid().nullable() }), input);
+  const data = parseOperation(z.object({ version: z.number().int().positive(), purchased: z.boolean(), expenseId: z.uuid().nullable().optional() }), input);
   await prisma.$transaction(async tx => {
     const claim = await tx.shoppingList.updateMany({ where: { productionRunId: runId, version: data.version }, data: { version: { increment: 1 } } });
     if (claim.count !== 1) throw createError({ statusCode: 409, statusMessage: 'La lista cambió. Recarga antes de guardar.' });
     const list = await tx.shoppingList.findUniqueOrThrow({ where: { productionRunId: runId } });
     if (data.expenseId && !await tx.expense.findUnique({ where: { id: data.expenseId }, select: { id: true } })) throw createError({ statusCode: 400, statusMessage: 'El gasto ya no existe.' });
-    const updated = await tx.shoppingItem.updateMany({ where: { id: itemId, shoppingListId: list.id }, data: { purchased: data.purchased, expenseId: data.expenseId, updatedBy: actor?.label } });
+    const updated = await tx.shoppingItem.updateMany({ where: { id: itemId, shoppingListId: list.id }, data: { purchased: data.purchased, ...(data.expenseId === undefined ? {} : { expenseId: data.expenseId }), updatedBy: actor?.label } });
     if (updated.count !== 1) throw createError({ statusCode: 404, statusMessage: 'Ingrediente no encontrado en esta lista.' });
   });
   return getShoppingList(runId);

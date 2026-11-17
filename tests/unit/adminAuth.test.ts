@@ -75,6 +75,7 @@ describe("administrative API authorization", () => {
   it("allows a verified administrator and passes the request to the server client", async () => {
     const event = request()
     await expect(adminAuth(event)).resolves.toBeUndefined()
+    expect(event.context.staffRole).toBe("admin")
     expect(serverClient).toHaveBeenCalledWith(event)
     expect(getUser).toHaveBeenCalledOnce()
     expect(getUser).toHaveBeenCalledWith()
@@ -115,6 +116,53 @@ describe("administrative API authorization", () => {
     await expect(adminAuth(request(path, method))).rejects.toMatchObject({ statusCode: 401 })
     getUser.mockResolvedValue({ data: { user: authenticatedUser() }, error: null })
     await expect(adminAuth(request(path, method))).resolves.toBeUndefined()
+  })
+
+  describe("operations role", () => {
+    beforeEach(() => {
+      getUser.mockResolvedValue({ data: { user: authenticatedUser({ role: "operations" }) }, error: null })
+    })
+
+    it.each([
+      ["/api/cycles", "GET"], ["/api/cycles", "HEAD"],
+      ["/api/operations/production/cycle-1", "GET"], ["/api/operations/production/cycle-1", "POST"],
+      ["/api/operations/shopping/run-1", "GET"], ["/api/operations/shopping/run-1/item-1", "PUT"],
+      ["/api/operations/deliveries?date=2026-11-17", "GET"], ["/api/operations/deliveries/row-1", "PUT"],
+      ["/api/orders/order-1/deliveries/1/status", "POST"], ["/api/orders/order-1/deliveries/2/status", "POST"]
+    ])("allows kitchen, purchasing and delivery route %s %s", async (path, method) => {
+      const event = request(path, method)
+      await expect(adminAuth(event)).resolves.toBeUndefined()
+      expect(event.context.staffRole).toBe("operations")
+      expect(event.context.orderActor).toEqual({ id: "user-1", label: "user-1" })
+    })
+
+    it.each([
+      ["/api/orders", "GET"], ["/api/orders", "POST"], ["/api/orders/order-1", "GET"],
+      ["/api/orders/order-1", "PUT"], ["/api/orders/order-1/status", "POST"],
+      ["/api/orders/order-1/deliveries/3/status", "POST"], ["/api/orders/order-1/private-link", "DELETE"],
+      ["/api/orders/options", "GET"], ["/api/customers", "GET"], ["/api/customers/customer-1", "GET"],
+      ["/api/cycles/cycle-1", "PUT"], ["/api/cycles", "POST"],
+      ["/api/operations/dashboard", "GET"], ["/api/operations/accounts", "GET"],
+      ["/api/operations/accounts/order-1", "POST"], ["/api/operations/production/cycle-1", "PUT"],
+      ["/api/operations/production/cycle-1/extra", "GET"], ["/api/operations/shopping/run-1", "PUT"],
+      ["/api/operations/deliveries", "POST"], ["/api/operations/deliveries/row-1", "DELETE"],
+      ["/api/expenses", "GET"], ["/api/expenses/vendors", "GET"], ["/api/plans/all", "GET"],
+      ["/api/menu", "POST"], ["/api/food-components", "GET"], ["/api/ingredients", "GET"],
+      ["/api/operation-settings", "GET"], ["/api/future-endpoint", "GET"]
+    ])("rejects admin-only route %s %s with 403", async (path, method) => {
+      await expect(adminAuth(request(path, method))).rejects.toMatchObject({ statusCode: 403 })
+    })
+
+    it.each([{ role: "Operations" }, { role: ["operations"] }, { roles: ["operations"] }])("rejects malformed operations role %j", async (metadata) => {
+      getUser.mockResolvedValue({ data: { user: authenticatedUser(metadata) }, error: null })
+      await expect(adminAuth(request("/api/cycles"))).rejects.toMatchObject({ statusCode: 403 })
+    })
+
+    it("ignores an operations role claimed only in user_metadata", async () => {
+      const user = { id: "user-1", role: "authenticated", app_metadata: {}, user_metadata: { role: "operations" } }
+      getUser.mockResolvedValue({ data: { user }, error: null })
+      await expect(adminAuth(request("/api/operations/deliveries"))).rejects.toMatchObject({ statusCode: 403 })
+    })
   })
 
   it.each(["/api/menu", "/api/menu/next", "/api/plans"])("keeps GET %s public without consulting Auth", async (path) => {

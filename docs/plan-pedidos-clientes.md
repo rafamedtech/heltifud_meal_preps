@@ -88,6 +88,12 @@ P0 = cerrar antes de abrir autoservicio. P1 = necesario para operar pedidos. P2 
 - Verificación HTTP local contra `http://localhost:3000`: GET y POST `/api/ingredients` sin cookies devolvieron 401 (POST con cuerpo vacío `{}`, sin crear datos). En Chrome se reutilizó el perfil con la sesión administrativa activa de Heltifud; una pestaña adicional de GET `/api/ingredients` mostró el catálogo real. Se volvió a la pestaña original sin alterar la sesión, ediciones pendientes ni datos. La conexión CDP agotó el tiempo de espera; se verificó mediante la interfaz nativa de Chrome.
 - El caso 403 y el permiso para POST administrativo se verificaron en pruebas unitarias; no se cambiaron roles ni se crearon ingredientes para probarlos. Preview/despliegue sigue sin verificar. T02 continúa pendiente por separación de operación/cliente y ownership/token; H03 no cambia.
 
+### Evidencia de cierre T02
+
+- Fecha: 17 de noviembre de 2026. Rol `operations` en `app_metadata.role` con permisos de cocina, compras y reparto definidos en `layers/auth/shared/utils/staffAccess.ts` y aplicados por `admin-auth` (403 fuera de esa lista). `PUT` de la lista de súper con `expenseId` responde 403 para operación. La UI filtra navegación, redirige páginas no permitidas a `/admin/produccion`, oculta enlaces a pedidos, cobros y gastos, y muestra 403 a usuarios sin rol.
+- Cliente: el enlace privado solo resuelve el pedido ligado al hash del token; un token alterado o de invitación sin pedido responde 404 (`customerOrderOwnership.test.ts`).
+- `pnpm lint`, `pnpm typecheck` y `pnpm test:unit` pasan. Local: anónimo 401 en `/api/cycles` y `/api/operations/deliveries`; sesión admin conserva navegación completa y dashboard. Cuenta `operacion@heltifud.com` creada con rol `operations` (SQL privilegiado, sin correos); en navegador con perfil aislado el login redirige a `/admin/produccion`, la navegación queda filtrada, las páginas admin redirigen y la API devuelve 200 en ciclos/reparto y 403 en pedidos, clientes, gastos y dashboard. Se corrigió la carrera tras el login: el guard usa el `app_metadata` de la sesión mientras el módulo carga los claims.
+
 ### Evidencia de corrección H03
 
 - Responsable: Codex. Fecha: 29 de septiembre de 2026, America/Tijuana. Migración Prisma `20260930010000_secure_menu_catalog_rls` aplicada mediante `pnpm exec prisma migrate deploy` en la base Supabase configurada. Cambios locales sin commit, PR ni despliegue de aplicación en esta sesión.
@@ -121,7 +127,7 @@ Cada tarea comienza en estado pendiente. Marcar checkbox solo con criterio de ci
 
 ### Fase 1 — Permisos e integridad
 
-- [ ] T02 · P0 · Separar admin/operación/cliente; proteger todas las mutaciones, incluidos ingredientes, con autorización confiable del servidor. Validar ownership/token en futuras rutas cliente. **Cierre:** anónimo 401, cliente 403 en admin, cliente A no accede a B, admin autorizado opera. Dep.: T01.
+- [x] T02 · P0 · Separar admin/operación/cliente; proteger todas las mutaciones, incluidos ingredientes, con autorización confiable del servidor. Validar ownership/token en futuras rutas cliente. **Cierre:** anónimo 401, cliente 403 en admin, cliente A no accede a B, admin autorizado opera. Dep.: T01.
 - [ ] T03 · P0 · Auditar grants/RLS efectivos de todas las tablas y el rol de conexión Prisma; cerrar exposición no necesaria. **Cierre:** consultas directas anónimas no leen/escriben datos privados; API pública devuelve únicamente catálogo publicable. Dep.: T02.
 - [ ] T04 · P0 · Unificar reglas de días/tiempos/componentes; rechazar plan incompatible, días vacíos y sustituciones no disponibles. Obtener nombres/precios/metadatos desde servidor. **Cierre:** cantidad exacta contratada, principal válido por tiempo y rechazos 400/409; caso fin de semana vacío cubierto. Dep.: T01.
 - [ ] T05 · P0 · Asegurar un solo menú activo mediante restricción DB y operaciones atómicas; manejar solapamientos/concurrencia, vigencia y ausencia de menú. Versionar oferta al enviar pedido. **Cierre:** dos activaciones simultáneas no dejan dos activos; oferta cambiada genera conflicto comprensible. Dep.: T04.

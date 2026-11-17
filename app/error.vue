@@ -19,7 +19,7 @@ useSeoMeta({
         <UError
           :error="{
             statusCode: props.error?.statusCode,
-            message: 'No se encontró la página que buscas.',
+            message: props.error?.statusCode === 403 ? 'Tu cuenta no tiene acceso a esta sección.' : 'No se encontró la página que buscas.',
           }"
           :clear="{ label: 'Volver al inicio', icon: 'i-heroicons-home' }"
         />

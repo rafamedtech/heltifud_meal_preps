@@ -131,12 +131,17 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
 
 ## 5. Seguridad, calidad y lanzamiento
 
-- [ ] Completar separación de permisos admin/operación/cliente y probar acceso
-  ajeno en las futuras rutas de cliente (remanente de T02). La autorización admin
-  y protección de ingredientes ya tienen correcciones documentadas. El 17 nov 2026
-  se cerró un bypass crítico en producción (`/api/%63ustomers` respondía sin
-  sesión): `admin-auth` decide sobre la ruta decodificada y protege todo `/api/*`
-  salvo una lista pública explícita (PR #16). Falta el rol de operación.
+- [x] Separación de permisos admin/operación/cliente (T02). El 17 nov 2026 se
+  cerró un bypass crítico en producción (`/api/%63ustomers`, PR #16) y se añadió
+  el rol `operations` (`app_metadata.role`): solo producción, lista de súper
+  (marcar comprado, sin vincular gastos), etiquetas y reparto, con saldo visible.
+  Reglas en `layers/auth/shared/utils/staffAccess.ts`; el servidor responde 403 al
+  resto y la UI filtra navegación y redirige páginas. Usuario sin rol: 403 en
+  `/admin`. Cliente A no accede a B: el token privado solo resuelve su pedido.
+  Cuenta `operacion@heltifud.com` creada con el rol. Verificado en navegador
+  (perfil aislado): el login lleva a Producción, la navegación muestra solo
+  Producción, Lista de súper y Reparto, `/admin/pedidos` y `/admin/cobros`
+  redirigen, y la API responde 403 a pedidos, clientes, gastos y dashboard.
 - [x] Auditar grants/RLS de todas las tablas y el rol de conexión Prisma (T03).
   17 nov 2026: 27 tablas con RLS y sin acceso de anon/authenticated. Migración
   `database_hardening` aplicada en producción. La app conecta como `heltifud_app`
@@ -184,12 +189,11 @@ contenido siga sin implementar.
 
 ## Orden sugerido
 
-1. Implementar el rol de operación (T02).
-2. Verificar el despliegue real (T26) y ensayar el pedido de cliente en producción.
-3. Cerrar las decisiones comerciales de corte, cobro, cobertura y cambios.
-4. Ensayar un ciclo real con cocina y reparto, completar rendimientos y calibrar
+1. Verificar el despliegue real (T26) y ensayar el pedido de cliente en producción.
+2. Cerrar las decisiones comerciales de corte, cobro, cobertura y cambios.
+3. Ensayar un ciclo real con cocina y reparto, completar rendimientos y calibrar
    la impresión de etiquetas (cierre de T21).
-5. Completar integración (T24), E2E (T25), robustez de formularios (H24) y
+4. Completar integración (T24), E2E (T25), robustez de formularios (H24) y
    limpieza (T27).
 
 En todos los bloques se deben conservar los menús y platillos existentes.

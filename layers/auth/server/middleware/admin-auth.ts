@@ -1,7 +1,9 @@
 import { createError, defineEventHandler, getMethod } from "h3"
 import { serverSupabaseClient } from "#supabase/server"
+import { canAccessApi, staffRoleFrom } from "../../shared/utils/staffAccess"
 
-// Every /api route requires an administrator unless it is listed here.
+// Every /api route requires staff unless it is listed here; operations staff
+// only reach the routes allowed in `staffAccess.ts`, everything else is admin.
 // New routes are therefore private by default (fail closed).
 const publicApiRoutes: Record<string, readonly string[]> = {
   "/api/menu": ["GET"],
@@ -74,11 +76,13 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  if (user.app_metadata?.role !== "admin") {
+  const role = staffRoleFrom(user.app_metadata)
+  if (!role || !canAccessApi(role, path, method === "HEAD" ? "GET" : method)) {
     throw createError({
       statusCode: 403,
       statusMessage: "Forbidden"
     })
   }
+  event.context.staffRole = role
   event.context.orderActor = { id: user.id, label: user.email ?? user.id }
 })
