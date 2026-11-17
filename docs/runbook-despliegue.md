@@ -73,14 +73,29 @@ El rollback de código no toca la base de datos y es inmediato:
 1. Netlify → Deploys → deploy anterior en estado *Published* → **Publish deploy**,
    o por CLI: `netlify api restoreSiteDeploy --data '{"site_id":"035fa99a-15e6-45d7-92f1-3fada7495fa8","deploy_id":"<id>"}'`.
 2. Confirmar con `scripts/verify-deploy.ts` y `EXPECT_COMMIT` del deploy restaurado.
-3. Reactivar el publicado automático (Netlify bloquea auto-publish tras un
-   rollback manual) cuando `main` vuelva a estar sano.
+3. Revisar si el auto-publish quedó bloqueado (`published_deploy.locked` en
+   `netlify api getSite`). Publicar desde la interfaz puede bloquearlo; la
+   restauración por API del ensayo no lo bloqueó. Desbloquear cuando `main`
+   vuelva a estar sano.
 
 Deploys recientes: `netlify api listSiteDeploys --data '{"site_id":"035fa99a-15e6-45d7-92f1-3fada7495fa8","per_page":5}'`.
 
 Migraciones: no hay rollback automático. Por eso deben ser aditivas; si una
 falla, corregir con una migración nueva o restaurar el respaldo (ver runbook de
 base de datos).
+
+## Respaldos
+
+La API de Supabase del proyecto responde `walg_enabled: true`, `pitr_enabled:
+false` y **ninguna copia en la lista** (17 nov 2026). Antes de una migración que
+toque datos, generar una copia manual:
+
+```bash
+pg_dump "$DIRECT_URL" --format=custom --no-owner --file backups/heltifud-$(date +%Y%m%d-%H%M).dump
+```
+
+Guardarla fuera del repositorio o en `backups/` (ignorado por git) y probar que
+`pg_restore --list` la lee.
 
 ## Estado del 17 nov 2026
 
@@ -89,13 +104,21 @@ base de datos).
 - `scripts/verify-deploy.ts` contra `https://heltifud.com`: 18/19; falla solo el
   healthcheck porque `/api/health` aún no está desplegado (responde 401 por la
   regla de rutas privadas por defecto).
+- Preview del PR #23 (`b3bef7d`): prueba de humo 19/19, healthcheck con
+  `database: ok` y contexto `deploy-preview`.
+- Ensayo de rollback por API: producción pasó de `ddf36f1` a `ae1fc5e` y volvió
+  en unos 20 s; humo 18/19 en ambos (sin healthcheck aún) y auto-publish sin
+  bloquear.
 - Observado: los errores 404 de Nitro llevan `Cache-Control: no-cache` aunque el
   middleware de privacidad ponga `no-store`; los cuerpos de error no llevan datos.
 
 Pendiente para cerrar T26:
 
-- [ ] Desplegar `/api/health` y ejecutar la prueba de humo en preview y producción.
-- [ ] Ensayo de rollback (publicar el deploy anterior y volver), con aprobación.
+- [x] Desplegar `/api/health` y ejecutar la prueba de humo en preview.
+- [x] Ensayo de rollback (publicar el deploy anterior y volver).
+- [ ] Prueba de humo en producción con `EXPECT_COMMIT` tras el merge.
+- [ ] Sin respaldos listados en Supabase: confirmar plan y activar respaldos
+  diarios o PITR; mientras tanto, `pg_dump` manual antes de cada migración.
 - [ ] **`DIRECT_URL` (rol `postgres`, dueño del esquema) está disponible en el
   runtime de las funciones** en todos los contextos. La app no la usa: quitar los
   scopes `functions`/`runtime` (o la variable de Netlify) para que una función
