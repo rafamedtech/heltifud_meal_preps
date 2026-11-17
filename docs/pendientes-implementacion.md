@@ -155,18 +155,19 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   reales de alta y workflow de 1.3/1.4 ya cubren parte de este alcance.
 - [ ] Completar E2E móvil/escritorio del recorrido cliente → admin → pago → dos
   entregas, incluyendo accesos ajenos y recuperación de errores (T25).
-- [ ] Verificar despliegue real: preset, API, variables, cookies, migraciones,
-  respaldo, healthcheck, errores sin datos privados y rollback probado (T26/H22).
-  17 nov 2026 (PR #23): `GET /api/health` (base de datos y commit, sin datos
-  privados), prueba de humo `scripts/verify-deploy.ts` y
-  [runbook de despliegue](runbook-despliegue.md). Preview y producción 19/19,
-  migraciones al día, rollback probado (15 s) y `DIRECT_URL` retirada de Netlify.
-  Previews y branch deploys usan un proyecto Free aparte con el catálogo de
-  producción y usuarios de prueba. Falta: ensayo del pedido de cliente. El respaldo programado
-  queda para una versión posterior; por ahora, `pg_dump` manual antes de cada
-  migración.
+- [x] Verificar despliegue real: preset, API, variables, cookies, migraciones,
+  healthcheck, errores sin datos privados y rollback probado (T26/H22). Cerrada
+  el 17 nov 2026 (PR #23 y #24): `GET /api/health`, prueba de humo
+  `scripts/verify-deploy.ts` 19/19 en preview y producción, rollback probado
+  (15 s), `DIRECT_URL` fuera de Netlify, previews en un proyecto Free aparte y
+  ensayo completo cliente → admin → cobro → dos entregas en preview.
+  [Runbook y evidencia](runbook-despliegue.md). Los respaldos programados
+  quedan para una versión posterior.
 - [ ] Endurecer carga, errores y reintento en login/formularios; unificar validación
   de IDs y cursores, y evitar presentar errores como listas vacías (H24).
+  Incluir los hallazgos del ensayo T26: días de la variante no se marcan solos,
+  aviso «La oferta cambió» sin borrador previo y textos de la consulta del
+  cliente que no cambian con el estado ni el cobro.
 - [ ] Actualizar tipos de base de datos, ejemplos de entorno y runbook; retirar
   helpers duplicados y dividir componentes grandes cuando aporte claridad (T27).
 
@@ -197,7 +198,7 @@ contenido siga sin implementar.
 
 ## Orden sugerido
 
-1. Verificar el despliegue real (T26) y ensayar el pedido de cliente en producción.
+1. ~~Verificar el despliegue real (T26)~~ — cerrado el 17 nov 2026.
 2. Cerrar las decisiones comerciales de corte, cobro, cobertura y cambios.
 3. Ensayar un ciclo real con cocina y reparto, completar rendimientos y calibrar
    la impresión de etiquetas (cierre de T21).

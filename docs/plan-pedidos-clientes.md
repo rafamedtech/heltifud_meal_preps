@@ -167,7 +167,7 @@ Evidencia de T17/T18/T20/T22 y límites del ensayo T21: [verificación de operac
 - [ ] T23 · P1 · Restaurar runtime Chromium y añadir typecheck reproducible; ejecutar lint/unit/build en CI. **Cierre:** checkout limpio ejecuta checks con versiones fijadas.
 - [ ] T24 · P0 · Añadir integración con PostgreSQL aislado para permisos, crear/personalizar pedido, snapshots, rollback, vacío/incompatibilidad, idempotencia y concurrencia. **Cierre:** casos críticos pasan sin mocks de persistencia. Dep.: T02–T07, T12.
 - [ ] T25 · P1 · E2E móvil/desktop: plan→personalización→envío→admin→confirmación→cobro→dos entregas; accesos ajenos y fallos recuperables. **Cierre:** flujo completo pasa y conserva datos tras recarga. Dep.: T13–T18, T23–T24.
-- [ ] T26 · P1 · Validar deploy Netlify real, preset/API/env/cookies; migraciones revisadas y respaldo; healthcheck/errores sin datos privados; runbook y ensayo con datos sintéticos. **Cierre:** preview ejecuta flujo completo y existe rollback probado. Dep.: T25.
+- [x] T26 · P1 · Validar deploy Netlify real, preset/API/env/cookies; migraciones revisadas y respaldo; healthcheck/errores sin datos privados; runbook y ensayo con datos sintéticos. **Cierre:** preview ejecuta flujo completo y existe rollback probado. Dep.: T25.
 - [ ] T27 · P2 · Actualizar README/env examples/tipos, retirar duplicados sin uso y dividir componentes grandes donde facilite mantenimiento. Tratar advertencias de dependencias/sourcemaps después de flujo estable. **Cierre:** nuevo operador/desarrollador puede instalar, probar y operar con documentación vigente.
 
 ## Hitos y dependencias
@@ -177,7 +177,7 @@ Evidencia de T17/T18/T20/T22 y límites del ensayo T21: [verificación de operac
 | A. Base confiable | T01–T07, T23 | Permisos, cantidades, menú, fechas y concurrencia correctos. |
 | B. Cliente ordena | T08–T13, T24 | Pedido personalizado guardado y visible en admin; acceso privado. |
 | C. Operación completa | T14–T21 | Cobros y dos entregas trazables; cocina/reparto reciben datos completos. |
-| D. Lanzamiento | T25–T26 | Ensayo completo en preview + migraciones/rollback/observabilidad. |
+| D. Lanzamiento | T25–T26 | Ensayo completo en preview + migraciones/rollback/observabilidad. T26 cerrada el 17 nov 2026 ([runbook](runbook-despliegue.md)). |
 | E. Complementos | T22, T27 | Compras de ingredientes y mantenimiento sin bloquear salida inicial. |
 
 Trabajo grande: no asignar fecha cerrada antes de T01. Estimar tareas por PR después de acordar personalización, acceso cliente y calendario. Primer bloque recomendado: T02, T04, T06 y T14; T03/T05 requieren revisar DB/migraciones antes de ejecución.

@@ -168,4 +168,42 @@ Pendiente para cerrar T26:
   y se vació. Ver «Proyecto de preview».
 - [ ] `NUXT_PUBLIC_GOOGLE_MAPS_API_KEY` no está en Netlify: el autocompletado de
   direcciones queda como texto libre en producción. Confirmar si es intencional.
-- [ ] Ensayo del pedido de cliente en producción con datos sintéticos.
+- [x] Ensayo del flujo completo con datos sintéticos en el preview del PR #24
+  (`cf09a97`, proyecto de preview), 17 nov 2026. Ver «Ensayo completo».
+
+## Ensayo completo (17 nov 2026)
+
+`https://deploy-preview-24--heltifud.netlify.app`, base y Auth del proyecto de
+preview. Producción no recibió escrituras: 0 pedidos de prueba tras el ensayo.
+
+1. **Cliente (móvil, 390 px):** `/pedido` con «Plan comidas · 5 días» ($700),
+   cinco días, una sustitución (lunes: «Pechuga en crema de chipotle» →
+   «Bistec en salsa roja», del jueves), nota por comida, contacto y dos
+   direcciones ficticias. Envío → `/pedido/confirmacion`, pedido #0001
+   «Recibido · pendiente de confirmación», dos entregas (22 y 25 nov). Persiste
+   tras recargar.
+2. **Admin (escritorio, `preview-admin`):** listado con #0001 en Borrador;
+   detalle con la sustitución marcada «Sustituido · del jueves», la nota y la
+   bitácora de cambios. Borrador → Confirmado → En preparación, con motivo y
+   usuario en el historial.
+3. **Cobro:** abono de $700 por transferencia con referencia; saldo $0.
+4. **Reparto:** entrega 1 Pendiente → En reparto → Fallida («cliente
+   ausente») → En reparto (reintento) → Entregada; entrega 2 Pendiente → En
+   reparto → Entregada. El pedido pasa solo a **Entregado** y el historial
+   registra cada transición con responsable y motivo.
+5. **Consulta privada del cliente:** el enlace muestra Entregado y ambas
+   entregas como Entregada. Sin token, la API responde 404 (prueba de humo).
+
+Hallazgos menores (no bloquean T26; van a H24/T25):
+
+- Al cambiar de variante a 5 días, jueves y viernes no se marcan solos; hay
+  que elegirlos para que aparezca la segunda entrega.
+- En una sesión nueva, tras cambiar de plan aparece «La oferta cambió desde tu
+  borrador» y obliga a pulsar «Ya revisé la oferta actual» aunque no había un
+  borrador previo.
+- La consulta del cliente en estado Entregado sigue diciendo «Heltifud
+  revisará las comidas… antes de confirmarla» y «La recepción de esta
+  solicitud no acredita un pago»: el texto no cambia con el estado ni el cobro.
+
+El pedido #0001 queda en el proyecto de preview como dato de ensayo.
+
