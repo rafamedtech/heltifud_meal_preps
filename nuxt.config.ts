@@ -40,6 +40,10 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     corsAllowedOrigins,
+    // Netlify exposes these during the build; /api/health reports them so a
+    // deploy can be matched to its commit without reading the dashboard.
+    deployCommit: process.env.COMMIT_REF || "",
+    deployContext: process.env.CONTEXT || "",
     public: {
       cloudinaryBaseURL,
       googleMapsApiKey

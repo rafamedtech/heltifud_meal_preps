@@ -157,6 +157,12 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   entregas, incluyendo accesos ajenos y recuperación de errores (T25).
 - [ ] Verificar despliegue real: preset, API, variables, cookies, migraciones,
   respaldo, healthcheck, errores sin datos privados y rollback probado (T26/H22).
+  17 nov 2026: `GET /api/health` (base de datos y commit, sin datos privados),
+  prueba de humo `scripts/verify-deploy.ts` y
+  [runbook de despliegue](runbook-despliegue.md). Producción al día en
+  migraciones y 18/19 en la prueba de humo (falta desplegar el healthcheck).
+  Faltan: humo en preview/producción tras desplegar, ensayo de rollback, retirar
+  `DIRECT_URL` del runtime de funciones y decidir base para previews.
 - [ ] Endurecer carga, errores y reintento en login/formularios; unificar validación
   de IDs y cursores, y evitar presentar errores como listas vacías (H24).
 - [ ] Actualizar tipos de base de datos, ejemplos de entorno y runbook; retirar
