@@ -82,6 +82,7 @@ en `.nuxt/ui/<componente>.ts` y en los tipos de
 | Necesidad | Componente | Notas |
 | --- | --- | --- |
 | Diálogo | `UModal` | `title`, `description`, slots `#body` y `#footer`. |
+| Confirmar salida con cambios sin guardar | `AdminUnsavedChangesModal` (propio) + `useLeaveGuard` | Ver patrón 10. |
 | Panel lateral | `USlideover` | |
 | Panel inferior en móvil | `UDrawer` | |
 | Contenido flotante | `UPopover` | Base de los selectores de fecha. |
@@ -127,6 +128,7 @@ Antes de crear un componente, comprobar esta lista. Todos componen Nuxt UI.
 | `AdminNavigationMenu` | `UNavigationMenu` | Navegación a partir de `adminLinks`. |
 | `AdminSection` | `UPageSection` | Sección con título dentro de formularios. |
 | `AdminMetaField` | `UFormField` | Campo con etiqueta y estado inválido. |
+| `AdminUnsavedChangesModal` | `UModal`, `UButton` | Confirmación «Salir sin guardar» de `useLeaveGuard`. Se usa en planes, gastos, platillos, pedido y editor de menú en lugar de copiar el modal. Nuxt UI no trae una confirmación de salida; el componente solo fija los textos y botones del patrón 10. |
 | `AdminMenuContainerSelect` | `URadioGroup` / `USelect` | Selector de contenedor en tarjetas o lista. |
 | `AdminFoodCatalogTable` (+ `Skeleton`) | `UTable` | Catálogo de platillos en modo gestión o selección. |
 | `AdminFoodCatalogForm` (+ `Skeleton`), `AdminFoodItemFields`, `AdminFoodRecipeFields` | `UForm`, `UFormField`, controles | Alta y edición de platillos y recetas. |

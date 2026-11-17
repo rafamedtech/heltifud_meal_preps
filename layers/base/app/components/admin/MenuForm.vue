@@ -354,6 +354,15 @@ const isDirty = computed(() => {
   return JSON.stringify(original) !== JSON.stringify(current)
 })
 const canSubmit = computed(() => canSubmitByValidation.value && isDirty.value && !loading.value)
+// Editing an existing menu: leaving with unsaved changes asks first. `isDirty`
+// is always true for a new menu, so creation is not guarded yet. Right after
+// saving, the parent may navigate before `menu` refreshes; the saved snapshot
+// lets it through.
+const savedSnapshot = ref<string | null>(null)
+const hasUnsavedEdits = computed(() => mode.value === "edit"
+  && isDirty.value
+  && JSON.stringify(comparableMenuInput(state)) !== savedSnapshot.value)
+const { confirmOpen: leaveConfirmOpen, leave: leaveWithoutSaving, leaveTo } = useLeaveGuard(hasUnsavedEdits)
 const draftStorageKey = computed(() => `admin-menu-draft:${mode.value}:${menu.value?.id ?? "create"}`)
 
 interface MenuFormDraftPayload {
@@ -668,7 +677,7 @@ async function openCreateCatalogItem(payload: { tipo?: string, view?: RestoreSel
     : null
   persistDraft()
 
-  await navigateTo({
+  await leaveTo({
     path: "/admin/platillos/crear-nuevo",
     query: {
       ...(prefilledName ? { nombre: prefilledName } : {}),
@@ -684,7 +693,7 @@ async function openEditCatalogItem(payload: { id: string, view: RestoreSelection
     : null
   persistDraft()
 
-  await navigateTo({
+  await leaveTo({
     path: `/admin/platillos/${payload.id}`,
     query: {
       returnTo: buildReturnToPath()
@@ -854,6 +863,7 @@ async function onSubmit(exitEditor = true) {
         : await createMenuOnDB(parsed.data)
 
     clearPersistedDraft()
+    savedSnapshot.value = JSON.stringify(comparableMenuInput(state))
 
     toast.add({
       title: mode.value === "edit" ? "Menú actualizado" : "Menú creado",
@@ -865,7 +875,7 @@ async function onSubmit(exitEditor = true) {
     saveConfirmationOpen.value = false
     emit("saved", savedMenu.id, exitEditor)
   } catch (error) {
-    const message = error instanceof Error ? error.message : "No se pudo guardar el menú"
+    const message = apiErrorMessage(error, "No se pudo guardar el menú")
     toast.add({ title: "Error", description: message, color: "error", icon: "i-lucide-circle-alert" })
   } finally {
     loading.value = false
@@ -1310,5 +1320,11 @@ async function onSubmit(exitEditor = true) {
         </div>
       </template>
     </UModal>
+
+    <AdminUnsavedChangesModal
+      v-model:open="leaveConfirmOpen"
+      description="Tienes cambios sin guardar en el menú. Si sales ahora, se perderán."
+      @leave="leaveWithoutSaving"
+    />
   </section>
 </template>

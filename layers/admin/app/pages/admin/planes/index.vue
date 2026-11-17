@@ -39,8 +39,11 @@ const slotChoices = computed(() => slotOptions.map(slot => ({
 const isFormOpen = ref(false)
 const editingPlan = ref<Plan | null>(null)
 const pendingDelete = ref<Plan | null>(null)
+const deleteConflict = ref("")
 const saving = ref(false)
 const deleting = ref(false)
+const pausing = ref(false)
+const formSnapshot = ref("")
 
 function emptyPlan(): PlanInput {
   return {
@@ -55,17 +58,47 @@ function emptyPlan(): PlanInput {
 
 const formState = reactive<PlanInput>(emptyPlan())
 const formTitle = computed(() => (editingPlan.value ? "Editar plan" : "Nuevo plan"))
+const isFormDirty = computed(() => isFormOpen.value && JSON.stringify(formState) !== formSnapshot.value)
+const { confirmOpen: leaveConfirmOpen, confirmLeave, leave: leaveWithoutSaving } = useLeaveGuard(isFormDirty)
+// Closing with the X, Escape or the overlay asks first when there are changes.
+const formOpen = computed({
+  get: () => isFormOpen.value,
+  set: (open) => {
+    if (open) isFormOpen.value = true
+    else closeForm()
+  }
+})
 const isDeleteOpen = computed({
   get: () => Boolean(pendingDelete.value),
   set: (open) => {
-    if (!open) pendingDelete.value = null
+    if (!open) cancelDelete()
   }
 })
+const deleteDescription = computed(() => {
+  if (!pendingDelete.value) return undefined
+  return deleteConflict.value
+    ? `${pendingDelete.value.title} conserva su historial de pedidos.`
+    : `Se eliminarán ${pendingDelete.value.title} y sus variantes.`
+})
+
+function variantOrders(variantId?: string) {
+  if (!variantId) return 0
+  return editingPlan.value?.variants.find((variant) => variant.id === variantId)?.orderCount ?? 0
+}
+
+function ordersLabel(count: number) {
+  return `${count} ${count === 1 ? "pedido" : "pedidos"}`
+}
+
+function openForm() {
+  formSnapshot.value = JSON.stringify(formState)
+  isFormOpen.value = true
+}
 
 function openCreate() {
   editingPlan.value = null
   Object.assign(formState, emptyPlan())
-  isFormOpen.value = true
+  openForm()
 }
 
 function openEdit(plan: Plan) {
@@ -76,16 +109,20 @@ function openEdit(plan: Plan) {
     image: plan.image,
     slotTypes: [...plan.slotTypes],
     isActive: plan.isActive,
-    variants: plan.variants.map((variant) => ({ ...variant }))
+    variants: plan.variants.map(({ id, title, daysCount, price, isActive }) => ({ id, title, daysCount, price, isActive }))
   })
-  isFormOpen.value = true
+  openForm()
 }
 
 function closeForm() {
-  isFormOpen.value = false
+  if (saving.value) return
+  confirmLeave(() => {
+    isFormOpen.value = false
+  })
 }
 
 function requestDelete(plan: Plan) {
+  deleteConflict.value = ""
   pendingDelete.value = plan
 }
 
@@ -95,7 +132,9 @@ function requestEditingPlanDelete() {
 }
 
 function cancelDelete() {
+  if (deleting.value || pausing.value) return
   pendingDelete.value = null
+  deleteConflict.value = ""
 }
 
 function addVariant() {
@@ -105,7 +144,7 @@ function addVariant() {
 }
 
 function removeVariant(index: number) {
-  if (formState.variants.length === 1) return
+  if (formState.variants.length === 1 || variantOrders(formState.variants[index]?.id)) return
   formState.variants.splice(index, 1)
 }
 
@@ -124,7 +163,7 @@ async function savePlan() {
   } catch (error) {
     toast.add({
       title: "No se pudo guardar el plan",
-      description: error instanceof Error ? error.message : "Revisa la información e intenta de nuevo.",
+      description: apiErrorMessage(error, "Revisa la información e intenta de nuevo."),
       color: "error",
       icon: "i-lucide-circle-alert"
     })
@@ -144,14 +183,52 @@ async function confirmDelete() {
     pendingDelete.value = null
     await refresh()
   } catch (error) {
+    const message = apiErrorMessage(error, "Intenta nuevamente.")
+    if (apiErrorCode(error) === "PLAN_HAS_ORDERS") {
+      deleteConflict.value = message
+      return
+    }
+    toast.add({ title: "No se pudo eliminar el plan", description: message, color: "error", icon: "i-lucide-circle-alert" })
+  } finally {
+    deleting.value = false
+  }
+}
+
+// A plan with orders is archived by pausing it: it keeps its history and stops
+// being offered in new orders.
+async function pausePending() {
+  const plan = pendingDelete.value
+  if (!plan) return
+  pausing.value = true
+  try {
+    await updatePlan(plan.id, {
+      title: plan.title,
+      description: plan.description,
+      image: plan.image,
+      slotTypes: plan.slotTypes,
+      isActive: false,
+      variants: plan.variants.map(({ id, title, daysCount, price, isActive }) => ({ id, title, daysCount, price, isActive }))
+    })
     toast.add({
-      title: "No se pudo eliminar el plan",
-      description: error instanceof Error ? error.message : "Intenta nuevamente.",
+      title: "Plan pausado",
+      description: `${plan.title} ya no se ofrece en pedidos nuevos y conserva su historial.`,
+      color: "success",
+      icon: "i-lucide-circle-check"
+    })
+    isFormOpen.value = false
+    editingPlan.value = null
+    pendingDelete.value = null
+    deleteConflict.value = ""
+    await refresh()
+  } catch (error) {
+    toast.add({
+      title: "No se pudo pausar el plan",
+      description: apiErrorMessage(error, "Intenta nuevamente."),
       color: "error",
       icon: "i-lucide-circle-alert"
     })
   } finally {
-    deleting.value = false
+    pausing.value = false
   }
 }
 </script>
@@ -188,7 +265,7 @@ async function confirmDelete() {
     </UPageGrid>
 
     <UModal
-      v-model:open="isFormOpen"
+      v-model:open="formOpen"
       :title="formTitle"
       description="Configura el contenido y las opciones que verá el equipo al crear pedidos."
       :ui="{ content: 'max-w-4xl' }"
@@ -320,11 +397,17 @@ async function confirmDelete() {
                   icon="i-lucide-x"
                   color="error"
                   variant="ghost"
-                  :disabled="formState.variants.length === 1"
-                  aria-label="Quitar variante"
+                  :disabled="formState.variants.length === 1 || variantOrders(variant.id) > 0"
+                  :aria-label="variantOrders(variant.id) ? `${variant.title} tiene pedidos y no se puede quitar` : 'Quitar variante'"
                   class="mb-0.5"
                   @click="removeVariant(index)"
                 />
+                <p
+                  v-if="variantOrders(variant.id)"
+                  class="text-xs text-muted sm:col-span-5"
+                >
+                  Tiene {{ ordersLabel(variantOrders(variant.id)) }}. Para dejar de ofrecerla, desactívala en lugar de quitarla.
+                </p>
               </div>
             </div>
           </section>
@@ -362,16 +445,25 @@ async function confirmDelete() {
     <UModal
       v-model:open="isDeleteOpen"
       title="Eliminar plan"
-      :description="pendingDelete ? `Se eliminarán ${pendingDelete.title} y sus variantes.` : undefined"
+      :description="deleteDescription"
       :ui="{ content: 'max-w-md' }"
     >
       <template #body>
         <UAlert
+          v-if="deleteConflict"
+          color="warning"
+          variant="soft"
+          icon="i-lucide-triangle-alert"
+          title="No se puede eliminar"
+          :description="pendingDelete?.isActive ? deleteConflict : `${deleteConflict} Ya está pausado.`"
+        />
+        <UAlert
+          v-else
           color="error"
           variant="soft"
           icon="i-lucide-triangle-alert"
-          title="Los pedidos históricos se conservarán"
-          description="Mantendrán el nombre y precio guardados, pero ya no podrás crear pedidos nuevos con este plan."
+          title="Confirma esta acción"
+          description="Solo se pueden eliminar planes sin pedidos. Si ya se vendió, podrás pausarlo para conservar su historial."
         />
       </template>
       <template #footer>
@@ -379,19 +471,32 @@ async function confirmDelete() {
           <UButton
             color="neutral"
             variant="ghost"
-            :disabled="deleting"
+            :disabled="deleting || pausing"
             @click="cancelDelete"
-            >Cancelar</UButton
+            >{{ deleteConflict ? "Cerrar" : "Cancelar" }}</UButton
           >
           <UButton
+            v-if="!deleteConflict"
             color="error"
             icon="i-lucide-trash-2"
             :loading="deleting"
             @click="confirmDelete"
             >Eliminar</UButton
           >
+          <UButton
+            v-else-if="pendingDelete?.isActive"
+            icon="i-lucide-circle-pause"
+            :loading="pausing"
+            @click="pausePending"
+            >Pausar plan</UButton
+          >
         </div>
       </template>
     </UModal>
+
+    <AdminUnsavedChangesModal
+      v-model:open="leaveConfirmOpen"
+      @leave="leaveWithoutSaving"
+    />
   </main>
 </template>

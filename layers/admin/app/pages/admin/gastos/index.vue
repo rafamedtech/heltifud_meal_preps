@@ -94,7 +94,6 @@ const draftToDate = ref("")
 const fromDate = ref("")
 const toDate = ref("")
 const isFormOpen = ref(false)
-const isCancelConfirmOpen = ref(false)
 const isFiltersOpen = ref(false)
 const expenseCreateRequest = useState<number>("admin-expense-create-request", () => 0)
 const editingExpense = ref<Expense | null>(null)
@@ -159,6 +158,9 @@ const activeAdvancedFilters = computed(
       Boolean(fromDate.value || toDate.value)
     ].filter(Boolean).length
 )
+const isFormDirty = computed(() => isFormOpen.value && hasFormChanges.value)
+// Cancel, the sidebar or a reload ask before discarding an open form.
+const { confirmOpen: isCancelConfirmOpen, confirmLeave, leave: discardForm } = useLeaveGuard(isFormDirty)
 
 function currentQuery(cursor?: string | null) {
   return {
@@ -244,18 +246,9 @@ function openCreate() {
 
 function cancelForm() {
   if (saving.value) return
-
-  if (hasFormChanges.value) {
-    isCancelConfirmOpen.value = true
-    return
-  }
-
-  isFormOpen.value = false
-}
-
-function discardForm() {
-  isCancelConfirmOpen.value = false
-  isFormOpen.value = false
+  confirmLeave(() => {
+    isFormOpen.value = false
+  })
 }
 
 watch(expenseCreateRequest, openCreate)
@@ -301,7 +294,7 @@ async function saveExpense() {
     })
     await Promise.all([loadExpenses(), loadVendors()])
   } catch (error) {
-    const message = error instanceof Error ? error.message : "No se pudo guardar el gasto."
+    const message = apiErrorMessage(error, "No se pudo guardar el gasto.")
     toast.add({ title: "Error al guardar", description: message, color: "error", icon: "i-lucide-circle-alert" })
   } finally {
     saving.value = false
@@ -866,30 +859,11 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
       </template>
     </UModal>
 
-    <UModal
+    <AdminUnsavedChangesModal
       v-model:open="isCancelConfirmOpen"
-      :title="editingExpense ? '¿Cancelar la edición?' : '¿Cancelar el registro?'"
-      description="Tienes cambios sin guardar. Si cancelas, se perderán."
-      :close="false"
-      :dismissible="false"
-      :ui="{ content: 'max-w-md' }"
-    >
-      <template #footer>
-        <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            @click="isCancelConfirmOpen = false"
-            >Seguir editando</UButton
-          >
-          <UButton
-            color="error"
-            @click="discardForm"
-            >Descartar cambios</UButton
-          >
-        </div>
-      </template>
-    </UModal>
+      description="Tienes cambios sin guardar en el gasto. Si sales ahora, se perderán."
+      @leave="discardForm"
+    />
 
     <UModal
       v-model:open="isDeleteOpen"
