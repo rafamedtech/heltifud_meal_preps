@@ -1,6 +1,6 @@
 # Pendientes de implementación
 
-Actualizado: 16 de noviembre de 2026.
+Actualizado: 17 de noviembre de 2026.
 
 Lista consolidada de los planes y auditorías de `docs`. Es una revisión documental:
 no constituye una nueva auditoría del código ni una nueva ejecución de pruebas.
@@ -95,7 +95,8 @@ Fuente: T08–T13 del [plan general](plan-pedidos-clientes.md).
 
 Implementado y verificado localmente el 16 de noviembre de 2026.
 [Evidencia, alcance y límites](verificacion-etapa-3-pedido-cliente.md).
-La aplicación aún no se ha desplegado.
+La aplicación ya está en producción (ver T03 y PR #16); falta el ensayo del
+recorrido de cliente en ese entorno y la verificación de despliegue (T26).
 
 ## 4. Operación, compras, cocina y reparto
 
@@ -178,10 +179,13 @@ contenido siga sin implementar.
 
 ## Orden sugerido
 
-1. Ensayar el pedido de cliente implementado en el entorno de despliegue.
-2. Completar políticas comerciales de cobertura, cobro y cambios.
-3. Desarrollar compras, cocina y reparto; pueden avanzar desde pedidos de admin sin
-   esperar el autoservicio del cliente.
-4. Completar cobros, dashboard operativo y verificación de lanzamiento.
+1. Implementar el remanente de T19/H24 (archivar planes y variantes, mensajes de
+   conflicto, cambios sin guardar) y el rol de operación (T02).
+2. Verificar el despliegue real (T26) y ensayar el pedido de cliente en producción.
+3. Cerrar las decisiones comerciales de corte, cobro, cobertura y cambios.
+4. Ensayar un ciclo real con cocina y reparto, completar rendimientos y calibrar
+   la impresión de etiquetas (cierre de T21).
+5. Completar integración (T24), E2E (T25), robustez de formularios (H24) y
+   limpieza (T27).
 
 En todos los bloques se deben conservar los menús y platillos existentes.
