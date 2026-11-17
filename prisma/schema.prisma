@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../layers/menu/generated/prisma"
+  provider            = "prisma-client"
+  output              = "../layers/menu/generated/prisma"
+  importFileExtension = "ts"
 }
 
 datasource db {

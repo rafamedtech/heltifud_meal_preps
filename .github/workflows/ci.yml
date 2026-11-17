@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, typecheck, unit y build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Valores ficticios: el build y las pruebas unitarias no se conectan a servicios reales.
+      NUXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+      NUXT_PUBLIC_SUPABASE_KEY: ci-placeholder-key
+      DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/ci
+      DIRECT_URL: postgresql://ci:ci@127.0.0.1:5432/ci
+      NETLIFY_DEV_EMULATION: "false"
+      NUXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Cliente Prisma sin cambios
+        run: git diff --exit-code -- layers/menu/generated
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Pruebas unitarias y de componentes
+        run: pnpm test:unit
+
+      - name: Build
+        run: pnpm build

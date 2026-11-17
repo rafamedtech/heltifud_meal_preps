@@ -130,10 +130,12 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   y protección de ingredientes ya tienen correcciones documentadas.
 - [ ] Auditar grants/RLS de todas las tablas y el rol de conexión Prisma (T03).
   La protección de menú/catálogo e historial de estados ya tiene evidencia parcial.
-- [ ] Incorporar typecheck reproducible con versiones fijadas, resolver o contrastar
-  los errores reportados y ejecutar lint, pruebas y build en CI (T23). Los informes
-  registran resultados diferentes según la versión de vue-tsc; no asumir un fallo
-  del producto a partir de un único checker temporal.
+- [x] Incorporar typecheck reproducible con versiones fijadas, resolver o contrastar
+  los errores reportados y ejecutar lint, pruebas y build en CI (T23). `vue-tsc`
+  3.3.14 y `typescript` 6.0.3 fijados; `pnpm typecheck` cubre app, servidor,
+  shared y configuración mediante referencias de `tsconfig`. Los 8 errores eran
+  un fallo del checker con `//` dentro de atributos de plantilla, no del producto.
+  GitHub Actions ejecuta lint, typecheck, unit y build con Node 22.23.5 (17 nov 2026).
 - [ ] Completar integración con PostgreSQL aislado para permisos, oferta,
   personalización, idempotencia y fallos transaccionales (T24). Las integraciones
   reales de alta y workflow de 1.3/1.4 ya cubren parte de este alcance.
