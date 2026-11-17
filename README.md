@@ -177,11 +177,29 @@ Run browser end-to-end checks with Playwright:
 pnpm test:e2e
 ```
 
-Run the complete local/CI safety net:
+Type-check the app, server, shared code and Nuxt config (`vue-tsc` and
+`typescript` are pinned to exact versions so every machine gets the same result):
+
+```bash
+pnpm typecheck
+```
+
+Run the complete local safety net (lint, typecheck, unit and E2E):
 
 ```bash
 pnpm test:ci
 ```
+
+GitHub Actions (`.github/workflows/ci.yml`) runs lint, typecheck, unit tests and
+the production build on every pull request and on pushes to `main`, using the
+Node version in `.node-version` (the same one Netlify builds with). It also fails
+if `layers/menu/generated` differs from what `prisma generate` produces, so
+commit the regenerated client together with any schema change. E2E and
+PostgreSQL integration checks are not part of CI yet.
+
+`vue-tsc` 3.3 misreads `//` inside template attributes and then reports bogus
+`.value` errors on the rest of the template; keep such strings (URLs,
+placeholders) in script constants.
 
 Vitest is configured through `@nuxt/test-utils` so component tests run with Nuxt auto-imports, aliases, plugins and a `happy-dom` DOM. Playwright starts the Nuxt dev server on `http://127.0.0.1:3101` unless `PLAYWRIGHT_BASE_URL` is provided, and runs the smoke suite on desktop and mobile Chromium.
 

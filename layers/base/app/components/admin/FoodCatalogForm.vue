@@ -57,6 +57,10 @@ const typeOptions = [
   { label: "Ramekin", value: "ramekin" }
 ]
 
+// vue-tsc 3.3 malinterpreta «//» dentro de la plantilla; estos textos viven aquí.
+const imageUrlPlaceholder = "https://..."
+const imageUrlHint = "Usa una URL completa que empiece con http:// o https://"
+
 const state = reactive<FoodCatalogItemInput>(emptyState())
 const saving = ref(false)
 const imageLoadFailed = ref(false)
@@ -301,12 +305,12 @@ function onCancel() {
               </UFormField>
             </div>
             <UFormField label="Imagen (URL)" name="imagen" :error="invalidFields.imagen" required>
-              <UInput v-model="state.imagen" icon="i-lucide-image" placeholder="https://..." class="w-full" />
+              <UInput v-model="state.imagen" icon="i-lucide-image" :placeholder="imageUrlPlaceholder" class="w-full" />
             </UFormField>
           </div>
           <UCard title="Vista previa" variant="subtle">
             <img v-if="canRenderImagePreview" :src="normalizedImageUrl" :alt="state.nombre || 'Vista previa del platillo'" class="aspect-square w-full object-cover" @error="imageLoadFailed = true">
-            <UEmpty v-else icon="i-lucide-image" :title="imagePlaceholderText" description="Usa una URL completa que empiece con http:// o https://" />
+            <UEmpty v-else icon="i-lucide-image" :title="imagePlaceholderText" :description="imageUrlHint" />
           </UCard>
         </div>
 
