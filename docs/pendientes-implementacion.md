@@ -193,8 +193,8 @@ Estas decisiones condicionan las implementaciones correspondientes:
   fallidas (17 nov 2026): [políticas](politicas-pedidos.md). Implementado: pago
   completo antes de preparar con excepción auditada, saldo a favor, reprogramar
   una entrega fallida y cerrarla sin entregar (`LOST`), textos al cliente.
-- [ ] Hasta qué día y hora se puede cancelar la segunda entrega después del
-  corte.
+- [x] Cancelar la segunda entrega después del corte: a más tardar el martes a
+  las 9:00 p.m. (17 nov 2026). Regla escrita para el cliente; se aplica a mano.
 
 ## Verificaciones pendientes de lo ya implementado
 
@@ -211,8 +211,8 @@ contenido siga sin implementar.
 ## Orden sugerido
 
 1. ~~Verificar el despliegue real (T26)~~ — cerrado el 17 nov 2026.
-2. Definir el plazo para cancelar la segunda entrega después del corte (el resto
-   de las políticas quedó definido e implementado el 17 nov 2026).
+2. ~~Decisiones comerciales~~ — definidas e implementadas el 17 nov 2026
+   ([políticas](politicas-pedidos.md)).
 3. Ensayar un ciclo real con cocina y reparto, completar rendimientos y calibrar
    la impresión de etiquetas (cierre de T21).
 4. Completar integración (T24), E2E (T25), robustez de formularios (H24) y

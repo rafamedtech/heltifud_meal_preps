@@ -31,7 +31,7 @@ suma cargos.
 | Momento | Regla |
 | --- | --- |
 | Antes del corte | El cliente pide cambios de platillos, días o dirección por WhatsApp; administración los aplica en el pedido. Si cancela, se devuelve el total. |
-| Después del corte | No hay devolución de lo ya preparado. La segunda entrega se puede cancelar solo con aviso previo; **falta definir hasta qué día y hora**. Mientras tanto, el texto al cliente dice que se confirmará por WhatsApp. |
+| Después del corte | No hay devolución de lo ya preparado. La segunda entrega se puede cancelar avisando por WhatsApp a más tardar el **martes a las 9:00 p.m.** (America/Tijuana) de la semana del pedido. Administración la aplica a mano; la aplicación no bloquea la fecha. |
 
 ## Devoluciones y saldo a favor
 

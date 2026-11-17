@@ -8,7 +8,7 @@ export const ORDER_POLICY = [
   'Pagas el total antes de que preparemos tu pedido, por transferencia, tarjeta o efectivo.',
   'Puedes pedir cambios de platillos, días o dirección por WhatsApp hasta el corte del viernes.',
   'Si cancelas antes del corte, te devolvemos el total por el mismo medio de pago o como saldo a favor.',
-  'Después del corte ya compramos y preparamos tus comidas: no hay devolución de lo preparado. Si necesitas cancelar la segunda entrega, avísanos por WhatsApp cuanto antes y te confirmamos si aún es posible.',
+  'Después del corte ya compramos y preparamos tus comidas: no hay devolución de lo preparado. Puedes cancelar la segunda entrega avisándonos por WhatsApp a más tardar el martes a las 9:00 p.m.',
   'Si no logramos entregarte, reintentamos el mismo día o al siguiente. Si no logramos contactarte, la entrega se cierra sin devolución.',
 ] as const;
 
