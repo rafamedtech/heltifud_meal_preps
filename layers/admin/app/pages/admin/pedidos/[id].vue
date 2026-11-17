@@ -250,6 +250,8 @@ const transitionOpen = computed({ get: () => Boolean(pendingTransition.value), s
 const canEdit = computed(() => Boolean(order.value && order.value.cycleStatus === "OPEN" && !isClosedOrder(order.value.status)
   && order.value.deliveries.every(delivery => delivery.status === "PENDING")))
 const dirty = computed(() => JSON.stringify(state) !== JSON.stringify(editableState(order.value)))
+// Leaving the order (sidebar, links, reload) with unsaved edits asks first.
+const { confirmOpen: leaveConfirmOpen, leave: leaveWithoutSaving } = useLeaveGuard(() => canEdit.value && dirty.value)
 const orderActions = computed(() => order.value ? ORDER_TRANSITIONS[order.value.status] : [])
 const reasonRequired = computed(() => pendingTransition.value?.status === "CANCELLED" || pendingTransition.value?.status === "FAILED" || Boolean(order.value && isClosedOrder(order.value.status)))
 const transitionTitle = computed(() => {
@@ -531,5 +533,7 @@ async function applyTransition() {
         <UButton label="Confirmar cambio" :loading="saving" :disabled="reasonRequired && !transitionReason.trim()" @click="applyTransition" />
       </template>
     </UModal>
+
+    <AdminUnsavedChangesModal v-model:open="leaveConfirmOpen" description="Tienes cambios sin guardar en el pedido. Si sales ahora, se perderán." @leave="leaveWithoutSaving" />
   </main>
 </template>

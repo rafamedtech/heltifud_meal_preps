@@ -288,11 +288,28 @@ Eliminar:
 </UModal>
 ```
 
-Salir con cambios sin guardar: mismo modal con botones «Seguir editando»
-(`color="neutral" variant="ghost"`) y «Salir sin guardar» (`color="warning"
-icon="i-lucide-arrow-left"`), en
-`flex w-full flex-col-reverse gap-3 sm:flex-row sm:justify-end` con `block
-class="sm:w-auto"` en cada botón.
+Salir con cambios sin guardar: usar `AdminUnsavedChangesModal` con
+`useLeaveGuard`. No copiar el modal en cada pantalla.
+
+```ts
+const isDirty = computed(() => JSON.stringify(formState) !== snapshot.value)
+const { confirmOpen, confirmLeave, leave, leaveTo } = useLeaveGuard(isDirty)
+```
+
+```vue
+<AdminUnsavedChangesModal v-model:open="confirmOpen" @leave="leave" />
+```
+
+- Mientras `isDirty` sea verdadero, salir de la ruta (sidebar, enlaces, atrás)
+  pide confirmación y recargar o cerrar la pestaña muestra el aviso nativo.
+- Un formulario en modal cierra con `confirmLeave(() => { isOpen.value = false })`;
+  enlazar el modal con un `computed` cuyo `set(false)` llame a ese cierre para
+  cubrir la X, Escape y el overlay (ver `admin/planes/index.vue`).
+- Después de guardar, igualar el snapshot al estado o navegar con `leaveTo()`
+  para salir sin preguntar. `leaveTo()` también sirve para salidas intencionales
+  que conservan un borrador (editor de menú → crear platillo).
+- El guard vive donde está el estado: si el formulario es un componente
+  (`AdminFoodCatalogForm`, `AdminMenuForm`), la página solo navega.
 
 ## 11. Notificaciones
 
@@ -303,11 +320,17 @@ toast.add({ title: "Proveedor creado", description: `${saved.nombre} ya está di
 
 toast.add({
   title: "No se pudo guardar el proveedor",
-  description: error instanceof Error ? error.message : "Revisa la información e intenta de nuevo.",
+  description: apiErrorMessage(error, "Revisa la información e intenta de nuevo."),
   color: "error",
   icon: "i-lucide-circle-alert"
 })
 ```
+
+Los errores de `$fetch` se muestran con `apiErrorMessage(error, respaldo)`
+(`layers/base/app/utils/apiErrorMessage.ts`), que toma el `statusMessage` del
+servidor; `error.message` solo dice «[DELETE] /api/…: 409». Para decidir según
+el conflicto usar `apiErrorCode(error)` (`PLAN_HAS_ORDERS`,
+`CUSTOMER_HAS_HISTORY`, etc.).
 
 Título breve que nombra el resultado; descripción con el siguiente paso o la
 causa. No usar `alert()` ni mensajes sueltos en la plantilla para resultados de
@@ -424,12 +447,20 @@ Referencia: selector de cliente en
 
 ## Borrado bloqueado por historial
 
-Referencia: modal de borrado en
-`layers/admin/app/pages/admin/clientes/index.vue`.
+Referencias: modales de borrado en
+`layers/admin/app/pages/admin/clientes/index.vue` y
+`layers/admin/app/pages/admin/planes/index.vue`.
 
 Cuando el servidor rechaza el borrado con 409, el mismo modal del patrón 10
 cambia el `UAlert` a `color="warning"` con el motivo y sustituye el botón
-destructivo por la alternativa que conserva el historial («Marcar inactivo»).
+destructivo por la alternativa que conserva el historial: «Marcar inactivo» en
+clientes y «Pausar plan» en planes. Si el registro ya está inactivo o pausado,
+solo queda «Cerrar».
+
+En el formulario de un plan, una variante con pedidos no se puede quitar: el
+botón de quitar se deshabilita, su `aria-label` explica el motivo y una nota
+indica cuántos pedidos tiene y que se desactive en su lugar. El conteo
+(`orderCount`) solo llega en el listado administrativo.
 
 
 ## Estado de la semana de un menú

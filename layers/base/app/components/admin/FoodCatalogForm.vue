@@ -21,7 +21,6 @@ const emit = defineEmits<{
 const route = useRoute()
 const toast = useToast()
 const cancelTo = computed(() => (typeof route.query.returnTo === "string" ? route.query.returnTo : "/admin/platillos"))
-const cancelConfirmOpen = ref(false)
 function getSingleQueryValue(value: unknown) {
   if (typeof value === "string") {
     return value.trim()
@@ -112,6 +111,8 @@ const imagePlaceholderText = computed(() => {
 })
 const stateSnapshot = computed(() => JSON.stringify(state))
 const isDirty = computed(() => stateSnapshot.value !== initialStateSnapshot.value)
+// Any exit with unsaved changes (cancel, «Regresar», sidebar, reload) asks first.
+const { confirmOpen: leaveConfirmOpen, leave: leaveWithoutSaving } = useLeaveGuard(isDirty)
 
 function clearValidationHighlights() {
   invalidFields.nombre = false
@@ -249,6 +250,8 @@ async function onSubmit() {
         : await createFoodCatalogItem(parsed.data)
 
     clearValidationHighlights()
+    // Saved: the parent navigates away without asking to discard.
+    initialStateSnapshot.value = stateSnapshot.value
     toast.add({
       title: mode.value === "edit" ? "Platillo actualizado" : "Platillo creado",
       color: "success",
@@ -257,25 +260,15 @@ async function onSubmit() {
 
     emit("saved", savedItem.id)
   } catch (error) {
-    const message = error instanceof Error ? error.message : "No se pudo guardar el platillo"
+    const message = apiErrorMessage(error, "No se pudo guardar el platillo")
     toast.add({ title: "Error", description: message, color: "error", icon: "i-lucide-circle-alert" })
   } finally {
     saving.value = false
   }
 }
 
-async function leaveForm() {
-  cancelConfirmOpen.value = false
-  await navigateTo(cancelTo.value)
-}
-
 function onCancel() {
-  if (isDirty.value) {
-    cancelConfirmOpen.value = true
-    return
-  }
-
-  navigateTo(cancelTo.value)
+  return navigateTo(cancelTo.value)
 }
 </script>
 
@@ -349,37 +342,9 @@ function onCancel() {
       </UForm>
     </UCard>
 
-    <UModal
-      v-model:open="cancelConfirmOpen"
-      title="Salir sin guardar"
-      description="Tienes cambios sin guardar. Si sales ahora, se perderán."
-    >
-      <template #body>
-        <p class="text-sm text-muted">¿Quieres continuar de todos modos?</p>
-      </template>
-
-      <template #footer>
-        <div class="flex w-full flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            block
-            class="sm:w-auto"
-            @click="cancelConfirmOpen = false"
-          >
-            Seguir editando
-          </UButton>
-          <UButton
-            color="warning"
-            icon="i-lucide-arrow-left"
-            block
-            class="sm:w-auto"
-            @click="leaveForm"
-          >
-            Salir sin guardar
-          </UButton>
-        </div>
-      </template>
-    </UModal>
+    <AdminUnsavedChangesModal
+      v-model:open="leaveConfirmOpen"
+      @leave="leaveWithoutSaving"
+    />
   </main>
 </template>

@@ -143,6 +143,8 @@ export interface PlanInput {
 
 export interface PlanVariant extends Omit<PlanVariantInput, 'id'> {
   id: string;
+  /** Orders sold under this variant. Only the admin listing includes it. */
+  orderCount?: number;
 }
 
 export interface Plan extends Omit<PlanInput, 'variants'> {
