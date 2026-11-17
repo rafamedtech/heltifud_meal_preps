@@ -31,6 +31,38 @@ netlify api getEnvVars --data '{"account_id":"<account>","site_id":"035fa99a-15e
   | node -e 'for (const v of JSON.parse(require("fs").readFileSync(0))) console.log(v.key, v.scopes.join(","), v.values.map(x => x.context).join(","))'
 ```
 
+## Proyecto de preview
+
+Los contextos *Deploy Previews* y *Branch deploys* de Netlify usan un proyecto de
+Supabase aparte (`tlncrhbfxscwicadxqom`); *Production* y *dev* siguen en
+`qmpslziktjtgenlmrslm`.
+
+| Variable | Preview y branch deploys |
+| --- | --- |
+| `DATABASE_URL` | `heltifud_app.tlncrhbfxscwicadxqom` en el pooler `aws-1-us-east-2` (6543, `pgbouncer=true`), contraseña propia |
+| `NUXT_PUBLIC_SUPABASE_URL` | `https://tlncrhbfxscwicadxqom.supabase.co` |
+| `NUXT_PUBLIC_SUPABASE_KEY` | publishable key del proyecto de preview |
+
+Contenido: las mismas migraciones y permisos que producción
+(`verify-database-hardening.ts` pasa con `heltifud_app`), y una copia del
+catálogo no privado de producción (platillos, ingredientes, recetas, semanas,
+menús generales, planes, variantes y ajustes). Sin clientes, pedidos, cobros,
+gastos ni menús personalizados. Auth tiene dos usuarios de prueba
+(`preview-admin@heltifud.com` con rol `admin` y `preview-operations@heltifud.com`
+con rol `operations`); sus contraseñas no se versionan.
+
+Mantenimiento:
+
+- **Cada migración nueva se aplica en los dos proyectos.** Primero en preview
+  (`DIRECT_URL=<session pooler del preview> pnpm exec prisma migrate deploy`) y
+  después en producción.
+- Free pausa el proyecto tras 7 días sin actividad; reactivarlo desde el panel.
+- El registro abierto (`disable_signup: false`) y las URLs de redirección de Auth
+  del proyecto de preview se ajustan desde su panel (Authentication → Sign In /
+  URL Configuration), igual que en producción.
+- Para rehacer el catálogo: vaciar las tablas y copiar con `\copy` desde
+  producción solo las tablas de catálogo listadas arriba.
+
 ## Antes de publicar
 
 1. CI en verde (lint, typecheck, unit, build, migraciones y permisos en PostgreSQL).
@@ -59,9 +91,8 @@ conexión; HSTS.
 
 Después, en el navegador con la sesión del usuario: menú, `/pedido`, login
 admin, listado y detalle de pedidos, cobros y reparto. En el preview esos
-recorridos escriben en la **misma base de producción** (mismo `DATABASE_URL`),
-así que el ensayo con datos sintéticos debe usar clientes y pedidos marcados
-como prueba y cancelarlos al terminar.
+recorridos escriben en el proyecto de preview, no en producción; usar los
+usuarios de prueba de ese proyecto.
 
 Logs de funciones: Netlify → Logs → Functions → `server`. Buscar `[unhandled]`,
 `42501` (permisos) y `[health]`.
@@ -131,13 +162,10 @@ Pendiente para cerrar T26:
   anteriores la conservan congelada: un rollback a uno de ellos la vuelve a
   exponer al runtime mientras esté publicado. Opcional: rotar la contraseña de
   `postgres` en Supabase y actualizar el `.env` local.
-- [ ] Deploy previews comparten la base de producción. Decisión (17 nov 2026):
-  base aparte, **sin plan Pro** (se queda en Free), así que no hay ramas de
-  Supabase. Alternativa: un segundo proyecto Free `heltifud-preview` con las
-  migraciones de Prisma, su propio `heltifud_app`, usuarios de Auth de prueba y
-  datos sintéticos; en Netlify, `DATABASE_URL` y `NUXT_PUBLIC_SUPABASE_URL/KEY`
-  del contexto *Deploy Previews* apuntando a él. Límites de Free: se pausa tras
-  7 días sin actividad y migraciones nuevas se aplican a mano en ambos proyectos.
+- [x] Base aparte para previews (17 nov 2026), en plan Free. Se reutilizó un
+  proyecto Free de la misma cuenta (`tlncrhbfxscwicadxqom`, us-east-2): se
+  respaldó su contenido anterior en `backups/proyecto-preview-antes-de-borrar-*`
+  y se vació. Ver «Proyecto de preview».
 - [ ] `NUXT_PUBLIC_GOOGLE_MAPS_API_KEY` no está en Netlify: el autocompletado de
   direcciones queda como texto libre en producción. Confirmar si es intencional.
 - [ ] Ensayo del pedido de cliente en producción con datos sintéticos.
