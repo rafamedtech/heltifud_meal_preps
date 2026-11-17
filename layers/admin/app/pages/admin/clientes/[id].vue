@@ -30,6 +30,23 @@ const sourceLabels = {
   recomendacion: "Recomendación",
   otro: "Otro"
 }
+const invitationUrl = ref('')
+const invitationBusy = ref(false)
+const linkError = ref('')
+async function createInvitation() {
+  invitationBusy.value = true; linkError.value = ''
+  try {
+    const result = await $fetch<{ path: string }>(`/api/customers/${route.params.id}/order-link`, { method: 'POST' })
+    invitationUrl.value = `${location.origin}${result.path}`
+  } catch { linkError.value = 'No pudimos crear el enlace. Reintenta.' }
+  finally { invitationBusy.value = false }
+}
+async function revokeInvitation() {
+  invitationBusy.value = true; linkError.value = ''
+  try { await $fetch(`/api/customers/${route.params.id}/order-link`, { method: 'DELETE' }); invitationUrl.value = '' }
+  catch { linkError.value = 'No pudimos revocar el enlace. Reintenta.' }
+  finally { invitationBusy.value = false }
+}
 const notFound = computed(() => error.value?.statusCode === 404)
 
 function formatDate(value: string) {
@@ -56,6 +73,16 @@ function formatDate(value: string) {
     >
       <span class="sr-only">Cargando perfil del cliente</span>
       <USkeleton class="h-44" />
+      <UPageCard title="Pedido por enlace privado" description="La invitación permite configurar un pedido para este cliente y vence a los 7 días. Crear otra revoca la invitación anterior; no envía ningún mensaje.">
+        <UAlert v-if="linkError" color="error" variant="soft" :title="linkError" />
+        <div class="flex flex-wrap gap-3">
+          <UButton icon="i-lucide-link" label="Crear invitación de pedido" :loading="invitationBusy" @click="createInvitation" />
+          <UButton color="neutral" variant="outline" label="Revocar invitación" :disabled="invitationBusy" @click="revokeInvitation" />
+        </div>
+        <UFormField v-if="invitationUrl" label="Enlace privado: cópialo y compártelo con este cliente" name="invitationUrl">
+          <UInput :model-value="invitationUrl" readonly class="w-full" @focus="($event.target as HTMLInputElement).select()" />
+        </UFormField>
+      </UPageCard>
       <div class="grid gap-5 lg:grid-cols-2">
         <USkeleton class="h-64" /><USkeleton class="h-64" />
       </div>

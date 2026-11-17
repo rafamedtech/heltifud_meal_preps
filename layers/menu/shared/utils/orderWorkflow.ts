@@ -41,3 +41,8 @@ export const ORDER_ACTION_LABELS = {
 export const DELIVERY_ACTION_LABELS: Record<DeliveryStatusValue, string> = {
   PENDING: 'Volver a pendiente', OUT_FOR_DELIVERY: 'Iniciar reparto', DELIVERED: 'Marcar entregada', FAILED: 'Marcar fallida',
 };
+
+export const ORDER_STATUS_COLORS = {
+  DRAFT: 'warning', CONFIRMED: 'info', PREPARING: 'primary',
+  PARTIALLY_DELIVERED: 'secondary', DELIVERED: 'success', CANCELLED: 'error',
+} as const;

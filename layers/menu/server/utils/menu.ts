@@ -390,7 +390,8 @@ export async function getNextMenu(menuType: Exclude<MenuType, "PERSONALIZADO"> =
   const menu = await prisma.weeklyMenu.findFirst({
     where: {
       menuType,
-      startDate: { gt: now }
+      startDate: { gt: now },
+      cycle: { status: "OPEN" }
     },
     orderBy: { startDate: "asc" },
     include: menuInclude

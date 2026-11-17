@@ -101,6 +101,7 @@ export type OrderCountAggregateOutputType = {
   notes: number
   createdAt: number
   updatedAt: number
+  contactSnapshot: number
   _all: number
 }
 
@@ -180,6 +181,7 @@ export type OrderCountAggregateInputType = {
   notes?: true
   createdAt?: true
   updatedAt?: true
+  contactSnapshot?: true
   _all?: true
 }
 
@@ -288,6 +290,7 @@ export type OrderGroupByOutputType = {
   notes: string | null
   createdAt: Date
   updatedAt: Date
+  contactSnapshot: runtime.JsonValue | null
   _count: OrderCountAggregateOutputType | null
   _avg: OrderAvgAggregateOutputType | null
   _sum: OrderSumAggregateOutputType | null
@@ -332,6 +335,7 @@ export type OrderWhereInput = {
   notes?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
+  contactSnapshot?: Prisma.JsonNullableFilter<"Order">
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   planVariant?: Prisma.XOR<Prisma.PlanVariantNullableScalarRelationFilter, Prisma.PlanVariantWhereInput> | null
   sourceWeeklyMenu?: Prisma.XOR<Prisma.WeeklyMenuNullableScalarRelationFilter, Prisma.WeeklyMenuWhereInput> | null
@@ -340,6 +344,7 @@ export type OrderWhereInput = {
   menuSlots?: Prisma.OrderMenuSlotListRelationFilter
   statusEvents?: Prisma.OrderStatusEventListRelationFilter
   menuChanges?: Prisma.OrderMenuChangeListRelationFilter
+  accessLinks?: Prisma.OrderAccessLinkListRelationFilter
 }
 
 export type OrderOrderByWithRelationInput = {
@@ -361,6 +366,7 @@ export type OrderOrderByWithRelationInput = {
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  contactSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
   customer?: Prisma.CustomerOrderByWithRelationInput
   planVariant?: Prisma.PlanVariantOrderByWithRelationInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuOrderByWithRelationInput
@@ -369,6 +375,7 @@ export type OrderOrderByWithRelationInput = {
   menuSlots?: Prisma.OrderMenuSlotOrderByRelationAggregateInput
   statusEvents?: Prisma.OrderStatusEventOrderByRelationAggregateInput
   menuChanges?: Prisma.OrderMenuChangeOrderByRelationAggregateInput
+  accessLinks?: Prisma.OrderAccessLinkOrderByRelationAggregateInput
 }
 
 export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -393,6 +400,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   notes?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
+  contactSnapshot?: Prisma.JsonNullableFilter<"Order">
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   planVariant?: Prisma.XOR<Prisma.PlanVariantNullableScalarRelationFilter, Prisma.PlanVariantWhereInput> | null
   sourceWeeklyMenu?: Prisma.XOR<Prisma.WeeklyMenuNullableScalarRelationFilter, Prisma.WeeklyMenuWhereInput> | null
@@ -401,6 +409,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   menuSlots?: Prisma.OrderMenuSlotListRelationFilter
   statusEvents?: Prisma.OrderStatusEventListRelationFilter
   menuChanges?: Prisma.OrderMenuChangeListRelationFilter
+  accessLinks?: Prisma.OrderAccessLinkListRelationFilter
 }, "id" | "folio" | "idempotencyKey">
 
 export type OrderOrderByWithAggregationInput = {
@@ -422,6 +431,7 @@ export type OrderOrderByWithAggregationInput = {
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  contactSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.OrderCountOrderByAggregateInput
   _avg?: Prisma.OrderAvgOrderByAggregateInput
   _max?: Prisma.OrderMaxOrderByAggregateInput
@@ -451,6 +461,7 @@ export type OrderScalarWhereWithAggregatesInput = {
   notes?: Prisma.StringNullableWithAggregatesFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Order"> | Date | string
+  contactSnapshot?: Prisma.JsonNullableWithAggregatesFilter<"Order">
 }
 
 export type OrderCreateInput = {
@@ -468,6 +479,7 @@ export type OrderCreateInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
@@ -476,6 +488,7 @@ export type OrderCreateInput = {
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateInput = {
@@ -497,10 +510,12 @@ export type OrderUncheckedCreateInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUpdateInput = {
@@ -517,6 +532,7 @@ export type OrderUpdateInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
@@ -525,6 +541,7 @@ export type OrderUpdateInput = {
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateInput = {
@@ -546,10 +563,12 @@ export type OrderUncheckedUpdateInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateManyInput = {
@@ -571,6 +590,7 @@ export type OrderCreateManyInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type OrderUpdateManyMutationInput = {
@@ -587,6 +607,7 @@ export type OrderUpdateManyMutationInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type OrderUncheckedUpdateManyInput = {
@@ -608,6 +629,7 @@ export type OrderUncheckedUpdateManyInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type OrderListRelationFilter = {
@@ -639,6 +661,7 @@ export type OrderCountOrderByAggregateInput = {
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  contactSnapshot?: Prisma.SortOrder
 }
 
 export type OrderAvgOrderByAggregateInput = {
@@ -700,6 +723,11 @@ export type OrderSumOrderByAggregateInput = {
 export type OrderScalarRelationFilter = {
   is?: Prisma.OrderWhereInput
   isNot?: Prisma.OrderWhereInput
+}
+
+export type OrderNullableScalarRelationFilter = {
+  is?: Prisma.OrderWhereInput | null
+  isNot?: Prisma.OrderWhereInput | null
 }
 
 export type OrderCreateNestedManyWithoutSourceWeeklyMenuInput = {
@@ -930,6 +958,22 @@ export type OrderUncheckedUpdateManyWithoutCycleNestedInput = {
   deleteMany?: Prisma.OrderScalarWhereInput | Prisma.OrderScalarWhereInput[]
 }
 
+export type OrderCreateNestedOneWithoutAccessLinksInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutAccessLinksInput, Prisma.OrderUncheckedCreateWithoutAccessLinksInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutAccessLinksInput
+  connect?: Prisma.OrderWhereUniqueInput
+}
+
+export type OrderUpdateOneWithoutAccessLinksNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutAccessLinksInput, Prisma.OrderUncheckedCreateWithoutAccessLinksInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutAccessLinksInput
+  upsert?: Prisma.OrderUpsertWithoutAccessLinksInput
+  disconnect?: Prisma.OrderWhereInput | boolean
+  delete?: Prisma.OrderWhereInput | boolean
+  connect?: Prisma.OrderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutAccessLinksInput, Prisma.OrderUpdateWithoutAccessLinksInput>, Prisma.OrderUncheckedUpdateWithoutAccessLinksInput>
+}
+
 export type OrderCreateWithoutSourceWeeklyMenuInput = {
   id?: string
   folio?: number
@@ -945,6 +989,7 @@ export type OrderCreateWithoutSourceWeeklyMenuInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
@@ -952,6 +997,7 @@ export type OrderCreateWithoutSourceWeeklyMenuInput = {
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutSourceWeeklyMenuInput = {
@@ -972,10 +1018,12 @@ export type OrderUncheckedCreateWithoutSourceWeeklyMenuInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutSourceWeeklyMenuInput = {
@@ -1026,6 +1074,7 @@ export type OrderScalarWhereInput = {
   notes?: Prisma.StringNullableFilter<"Order"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Order"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Order"> | Date | string
+  contactSnapshot?: Prisma.JsonNullableFilter<"Order">
 }
 
 export type OrderCreateWithoutCustomerInput = {
@@ -1043,6 +1092,7 @@ export type OrderCreateWithoutCustomerInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
   cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
@@ -1050,6 +1100,7 @@ export type OrderCreateWithoutCustomerInput = {
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutCustomerInput = {
@@ -1070,10 +1121,12 @@ export type OrderUncheckedCreateWithoutCustomerInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutCustomerInput = {
@@ -1117,6 +1170,7 @@ export type OrderCreateWithoutPlanVariantInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
   cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
@@ -1124,6 +1178,7 @@ export type OrderCreateWithoutPlanVariantInput = {
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutPlanVariantInput = {
@@ -1144,10 +1199,12 @@ export type OrderUncheckedCreateWithoutPlanVariantInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutPlanVariantInput = {
@@ -1191,6 +1248,7 @@ export type OrderCreateWithoutDeliveriesInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
@@ -1198,6 +1256,7 @@ export type OrderCreateWithoutDeliveriesInput = {
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutDeliveriesInput = {
@@ -1219,9 +1278,11 @@ export type OrderUncheckedCreateWithoutDeliveriesInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutDeliveriesInput = {
@@ -1254,6 +1315,7 @@ export type OrderUpdateWithoutDeliveriesInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
@@ -1261,6 +1323,7 @@ export type OrderUpdateWithoutDeliveriesInput = {
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutDeliveriesInput = {
@@ -1282,9 +1345,11 @@ export type OrderUncheckedUpdateWithoutDeliveriesInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutStatusEventsInput = {
@@ -1302,6 +1367,7 @@ export type OrderCreateWithoutStatusEventsInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
@@ -1309,6 +1375,7 @@ export type OrderCreateWithoutStatusEventsInput = {
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutStatusEventsInput = {
@@ -1330,9 +1397,11 @@ export type OrderUncheckedCreateWithoutStatusEventsInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutStatusEventsInput = {
@@ -1365,6 +1434,7 @@ export type OrderUpdateWithoutStatusEventsInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
@@ -1372,6 +1442,7 @@ export type OrderUpdateWithoutStatusEventsInput = {
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutStatusEventsInput = {
@@ -1393,9 +1464,11 @@ export type OrderUncheckedUpdateWithoutStatusEventsInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutMenuSlotsInput = {
@@ -1413,6 +1486,7 @@ export type OrderCreateWithoutMenuSlotsInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
@@ -1420,6 +1494,7 @@ export type OrderCreateWithoutMenuSlotsInput = {
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutMenuSlotsInput = {
@@ -1441,9 +1516,11 @@ export type OrderUncheckedCreateWithoutMenuSlotsInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutMenuSlotsInput = {
@@ -1476,6 +1553,7 @@ export type OrderUpdateWithoutMenuSlotsInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
@@ -1483,6 +1561,7 @@ export type OrderUpdateWithoutMenuSlotsInput = {
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
@@ -1504,9 +1583,11 @@ export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutMenuChangesInput = {
@@ -1524,6 +1605,7 @@ export type OrderCreateWithoutMenuChangesInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
@@ -1531,6 +1613,7 @@ export type OrderCreateWithoutMenuChangesInput = {
   deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutMenuChangesInput = {
@@ -1552,9 +1635,11 @@ export type OrderUncheckedCreateWithoutMenuChangesInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutMenuChangesInput = {
@@ -1587,6 +1672,7 @@ export type OrderUpdateWithoutMenuChangesInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
@@ -1594,6 +1680,7 @@ export type OrderUpdateWithoutMenuChangesInput = {
   deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutMenuChangesInput = {
@@ -1615,9 +1702,11 @@ export type OrderUncheckedUpdateWithoutMenuChangesInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutCycleInput = {
@@ -1635,6 +1724,7 @@ export type OrderCreateWithoutCycleInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
   planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
@@ -1642,6 +1732,7 @@ export type OrderCreateWithoutCycleInput = {
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutCycleInput = {
@@ -1662,10 +1753,12 @@ export type OrderUncheckedCreateWithoutCycleInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutCycleInput = {
@@ -1694,6 +1787,125 @@ export type OrderUpdateManyWithWhereWithoutCycleInput = {
   data: Prisma.XOR<Prisma.OrderUpdateManyMutationInput, Prisma.OrderUncheckedUpdateManyWithoutCycleInput>
 }
 
+export type OrderCreateWithoutAccessLinksInput = {
+  id?: string
+  folio?: number
+  status?: $Enums.OrderStatus
+  version?: number
+  offerVersion?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
+  capturedAfterCutoff?: boolean
+  planTitleSnapshot: string
+  planVariantTitleSnapshot: string
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
+  planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
+  sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
+  deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
+  menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
+}
+
+export type OrderUncheckedCreateWithoutAccessLinksInput = {
+  id?: string
+  customerId: string
+  planVariantId?: string | null
+  sourceWeeklyMenuId?: string | null
+  cycleId: string
+  folio?: number
+  status?: $Enums.OrderStatus
+  version?: number
+  offerVersion?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
+  capturedAfterCutoff?: boolean
+  planTitleSnapshot: string
+  planVariantTitleSnapshot: string
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
+  menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
+}
+
+export type OrderCreateOrConnectWithoutAccessLinksInput = {
+  where: Prisma.OrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrderCreateWithoutAccessLinksInput, Prisma.OrderUncheckedCreateWithoutAccessLinksInput>
+}
+
+export type OrderUpsertWithoutAccessLinksInput = {
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutAccessLinksInput, Prisma.OrderUncheckedUpdateWithoutAccessLinksInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutAccessLinksInput, Prisma.OrderUncheckedCreateWithoutAccessLinksInput>
+  where?: Prisma.OrderWhereInput
+}
+
+export type OrderUpdateToOneWithWhereWithoutAccessLinksInput = {
+  where?: Prisma.OrderWhereInput
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutAccessLinksInput, Prisma.OrderUncheckedUpdateWithoutAccessLinksInput>
+}
+
+export type OrderUpdateWithoutAccessLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
+  planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
+  sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
+  deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
+  menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderUncheckedUpdateWithoutAccessLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cycleId?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
+  menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
+}
+
 export type OrderCreateManySourceWeeklyMenuInput = {
   id?: string
   customerId: string
@@ -1712,6 +1924,7 @@ export type OrderCreateManySourceWeeklyMenuInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type OrderUpdateWithoutSourceWeeklyMenuInput = {
@@ -1728,6 +1941,7 @@ export type OrderUpdateWithoutSourceWeeklyMenuInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
@@ -1735,6 +1949,7 @@ export type OrderUpdateWithoutSourceWeeklyMenuInput = {
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutSourceWeeklyMenuInput = {
@@ -1755,10 +1970,12 @@ export type OrderUncheckedUpdateWithoutSourceWeeklyMenuInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutSourceWeeklyMenuInput = {
@@ -1779,6 +1996,7 @@ export type OrderUncheckedUpdateManyWithoutSourceWeeklyMenuInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type OrderCreateManyCustomerInput = {
@@ -1799,6 +2017,7 @@ export type OrderCreateManyCustomerInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type OrderUpdateWithoutCustomerInput = {
@@ -1815,6 +2034,7 @@ export type OrderUpdateWithoutCustomerInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
   cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
@@ -1822,6 +2042,7 @@ export type OrderUpdateWithoutCustomerInput = {
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutCustomerInput = {
@@ -1842,10 +2063,12 @@ export type OrderUncheckedUpdateWithoutCustomerInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutCustomerInput = {
@@ -1866,6 +2089,7 @@ export type OrderUncheckedUpdateManyWithoutCustomerInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type OrderCreateManyPlanVariantInput = {
@@ -1886,6 +2110,7 @@ export type OrderCreateManyPlanVariantInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type OrderUpdateWithoutPlanVariantInput = {
@@ -1902,6 +2127,7 @@ export type OrderUpdateWithoutPlanVariantInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
   cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
@@ -1909,6 +2135,7 @@ export type OrderUpdateWithoutPlanVariantInput = {
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutPlanVariantInput = {
@@ -1929,10 +2156,12 @@ export type OrderUncheckedUpdateWithoutPlanVariantInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutPlanVariantInput = {
@@ -1953,6 +2182,7 @@ export type OrderUncheckedUpdateManyWithoutPlanVariantInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type OrderCreateManyCycleInput = {
@@ -1973,6 +2203,7 @@ export type OrderCreateManyCycleInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type OrderUpdateWithoutCycleInput = {
@@ -1989,6 +2220,7 @@ export type OrderUpdateWithoutCycleInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
   planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
   sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
@@ -1996,6 +2228,7 @@ export type OrderUpdateWithoutCycleInput = {
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutCycleInput = {
@@ -2016,10 +2249,12 @@ export type OrderUncheckedUpdateWithoutCycleInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutCycleInput = {
@@ -2040,6 +2275,7 @@ export type OrderUncheckedUpdateManyWithoutCycleInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -2052,6 +2288,7 @@ export type OrderCountOutputType = {
   menuSlots: number
   statusEvents: number
   menuChanges: number
+  accessLinks: number
 }
 
 export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2059,6 +2296,7 @@ export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   menuSlots?: boolean | OrderCountOutputTypeCountMenuSlotsArgs
   statusEvents?: boolean | OrderCountOutputTypeCountStatusEventsArgs
   menuChanges?: boolean | OrderCountOutputTypeCountMenuChangesArgs
+  accessLinks?: boolean | OrderCountOutputTypeCountAccessLinksArgs
 }
 
 /**
@@ -2099,6 +2337,13 @@ export type OrderCountOutputTypeCountMenuChangesArgs<ExtArgs extends runtime.Typ
   where?: Prisma.OrderMenuChangeWhereInput
 }
 
+/**
+ * OrderCountOutputType without action
+ */
+export type OrderCountOutputTypeCountAccessLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrderAccessLinkWhereInput
+}
+
 
 export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2119,6 +2364,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  contactSnapshot?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
   sourceWeeklyMenu?: boolean | Prisma.Order$sourceWeeklyMenuArgs<ExtArgs>
@@ -2127,6 +2373,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   menuSlots?: boolean | Prisma.Order$menuSlotsArgs<ExtArgs>
   statusEvents?: boolean | Prisma.Order$statusEventsArgs<ExtArgs>
   menuChanges?: boolean | Prisma.Order$menuChangesArgs<ExtArgs>
+  accessLinks?: boolean | Prisma.Order$accessLinksArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
@@ -2149,6 +2396,7 @@ export type OrderSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  contactSnapshot?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
   sourceWeeklyMenu?: boolean | Prisma.Order$sourceWeeklyMenuArgs<ExtArgs>
@@ -2174,6 +2422,7 @@ export type OrderSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  contactSnapshot?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
   sourceWeeklyMenu?: boolean | Prisma.Order$sourceWeeklyMenuArgs<ExtArgs>
@@ -2199,9 +2448,10 @@ export type OrderSelectScalar = {
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  contactSnapshot?: boolean
 }
 
-export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "planVariantId" | "sourceWeeklyMenuId" | "cycleId" | "folio" | "status" | "version" | "offerVersion" | "idempotencyKey" | "idempotencyFingerprint" | "capturedAfterCutoff" | "planTitleSnapshot" | "planVariantTitleSnapshot" | "priceSnapshot" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+export type OrderOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "planVariantId" | "sourceWeeklyMenuId" | "cycleId" | "folio" | "status" | "version" | "offerVersion" | "idempotencyKey" | "idempotencyFingerprint" | "capturedAfterCutoff" | "planTitleSnapshot" | "planVariantTitleSnapshot" | "priceSnapshot" | "notes" | "createdAt" | "updatedAt" | "contactSnapshot", ExtArgs["result"]["order"]>
 export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   planVariant?: boolean | Prisma.Order$planVariantArgs<ExtArgs>
@@ -2211,6 +2461,7 @@ export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   menuSlots?: boolean | Prisma.Order$menuSlotsArgs<ExtArgs>
   statusEvents?: boolean | Prisma.Order$statusEventsArgs<ExtArgs>
   menuChanges?: boolean | Prisma.Order$menuChangesArgs<ExtArgs>
+  accessLinks?: boolean | Prisma.Order$accessLinksArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2237,6 +2488,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     menuSlots: Prisma.$OrderMenuSlotPayload<ExtArgs>[]
     statusEvents: Prisma.$OrderStatusEventPayload<ExtArgs>[]
     menuChanges: Prisma.$OrderMenuChangePayload<ExtArgs>[]
+    accessLinks: Prisma.$OrderAccessLinkPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2257,6 +2509,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     notes: string | null
     createdAt: Date
     updatedAt: Date
+    contactSnapshot: runtime.JsonValue | null
   }, ExtArgs["result"]["order"]>
   composites: {}
 }
@@ -2659,6 +2912,7 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
   menuSlots<T extends Prisma.Order$menuSlotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$menuSlotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderMenuSlotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   statusEvents<T extends Prisma.Order$statusEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$statusEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderStatusEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   menuChanges<T extends Prisma.Order$menuChangesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$menuChangesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderMenuChangePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  accessLinks<T extends Prisma.Order$accessLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$accessLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderAccessLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2706,6 +2960,7 @@ export interface OrderFieldRefs {
   readonly notes: Prisma.FieldRef<"Order", 'String'>
   readonly createdAt: Prisma.FieldRef<"Order", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Order", 'DateTime'>
+  readonly contactSnapshot: Prisma.FieldRef<"Order", 'Json'>
 }
     
 
@@ -3238,6 +3493,30 @@ export type Order$menuChangesArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.OrderMenuChangeScalarFieldEnum | Prisma.OrderMenuChangeScalarFieldEnum[]
+}
+
+/**
+ * Order.accessLinks
+ */
+export type Order$accessLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OrderAccessLink
+   */
+  select?: Prisma.OrderAccessLinkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OrderAccessLink
+   */
+  omit?: Prisma.OrderAccessLinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderAccessLinkInclude<ExtArgs> | null
+  where?: Prisma.OrderAccessLinkWhereInput
+  orderBy?: Prisma.OrderAccessLinkOrderByWithRelationInput | Prisma.OrderAccessLinkOrderByWithRelationInput[]
+  cursor?: Prisma.OrderAccessLinkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrderAccessLinkScalarFieldEnum | Prisma.OrderAccessLinkScalarFieldEnum[]
 }
 
 /**

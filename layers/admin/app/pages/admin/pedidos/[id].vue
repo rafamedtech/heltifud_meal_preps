@@ -39,6 +39,14 @@ useSeoMeta({
 const toast = useToast()
 const { updateOrder, transitionOrder, transitionDelivery } = useOrders()
 const saving = ref(false)
+const revokeLinkOpen = ref(false)
+async function revokePrivateLink() {
+  try {
+    await $fetch(`/api/orders/${id}/private-link`, { method: 'DELETE' })
+    revokeLinkOpen.value = false
+    toast.add({ title: 'Enlace privado revocado', color: 'success', icon: 'i-lucide-circle-check' })
+  } catch { toast.add({ title: 'No pudimos revocar el enlace', color: 'error', icon: 'i-lucide-circle-alert' }) }
+}
 const replacementSelections = reactive<Record<string, string>>({})
 
 // Each place keeps its role and position; `view` is the dish shown, the ids say where it comes from.
@@ -328,6 +336,13 @@ async function applyTransition() {
   <main class="space-y-6">
     <UButton to="/admin/pedidos" color="neutral" variant="ghost" icon="i-lucide-arrow-left" class="-ml-3">Volver a pedidos</UButton>
 
+    <UButton v-if="order" color="neutral" variant="outline" icon="i-lucide-key-round" label="Revocar consulta privada" @click="revokeLinkOpen = true" />
+    <UModal v-model:open="revokeLinkOpen" title="Revocar enlace privado" description="El cliente dejará de poder consultar este pedido con el enlace actual. El pedido y su historial se conservan.">
+      <template #footer>
+        <UButton color="neutral" variant="ghost" label="Cancelar" @click="revokeLinkOpen = false" />
+        <UButton color="error" label="Revocar enlace" @click="revokePrivateLink" />
+      </template>
+    </UModal>
     <section v-if="status === 'pending'" role="status" aria-live="polite" class="space-y-5">
       <span class="sr-only">Cargando pedido</span>
       <USkeleton class="h-44" />
@@ -457,6 +472,7 @@ async function applyTransition() {
             <div class="divide-y divide-default">
               <div v-for="slot in day.slots" :key="slot.slotType" class="space-y-3 p-4">
                 <h4 class="text-xs font-semibold uppercase tracking-wide text-muted">{{ slotLabel(slot.slotType) }}</h4>
+                <UAlert v-if="order?.menuSlots.find(item => item.dayOfWeek === slot.dayOfWeek && item.slotType === slot.slotType)?.notes" color="info" variant="soft" title="Indicaciones del cliente" :description="order.menuSlots.find(item => item.dayOfWeek === slot.dayOfWeek && item.slotType === slot.slotType)?.notes" />
                 <UInput v-model="slot.contenedor" :disabled="!canEdit" variant="soft" icon="i-lucide-package" placeholder="Contenedor" class="w-full" aria-label="Contenedor" />
 
                 <div v-for="component in slot.components" :key="componentKey(slot, component)" class="space-y-2">

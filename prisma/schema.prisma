@@ -143,6 +143,7 @@ model Customer {
   firstDeliveryDay  DayOfWeek? @map("first_delivery_day")
   secondDeliveryDay DayOfWeek? @map("second_delivery_day")
   orders            Order[]
+  orderAccessLinks  OrderAccessLink[]
   personalMenus     WeeklyMenu[]
   exclusions        CustomerExclusion[]
 
@@ -218,6 +219,8 @@ model Order {
   menuSlots                OrderMenuSlot[]
   statusEvents             OrderStatusEvent[]
   menuChanges              OrderMenuChange[]
+  accessLinks              OrderAccessLink[]
+  contactSnapshot          Json?           @map("contact_snapshot")
 
   @@index([customerId, createdAt(sort: Desc)], map: "orders_customer_created_idx")
   @@index([status, createdAt(sort: Desc)], map: "orders_status_created_idx")
@@ -275,6 +278,7 @@ model OrderMenuSlot {
   dayOrder   Int                  @map("day_order")
   slotType   SlotType             @map("slot_type")
   contenedor String?
+  notes      String?
   order      Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
   // NoAction (checked at end of statement) lets an order delete cascade to both
   // tables, while a delivery that still has meals cannot be removed on its own.
@@ -470,4 +474,22 @@ enum ExclusionKind {
   ALERGIA
   INGREDIENTE
   PLATILLO
+}
+
+// Bearer capabilities: invitation (no order) or consultation of exactly one order.
+// Only SHA-256 hashes are stored; raw secrets stay in the customer's link.
+model OrderAccessLink {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tokenHash  String   @unique @map("token_hash")
+  customerId String   @map("customer_id") @db.Uuid
+  orderId    String?  @map("order_id") @db.Uuid
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz(3)
+  revokedAt  DateTime? @map("revoked_at") @db.Timestamptz(3)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  order      Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([orderId])
+  @@map("order_access_links")
 }

@@ -471,3 +471,22 @@ Referencia: sección «Menú personalizado» de
 
 Se componen componentes existentes; no se creó un control propio.
 
+
+## Pedido público y consulta privada
+
+`layers/base/app/pages/pedido/index.vue` compone `UPageHeader`, `UPageCard`,
+`UCheckboxGroup`, `USelectMenu`, `UForm`, `UFormField`, `UInput` y `UTextarea`.
+Las cuatro secciones son plan, comidas, contacto/entregas y resumen. Hereda
+controles `xl`; usa tarjetas `subtle` para comidas y entregas. Carga, oferta no
+disponible, cambios de versión y envío incierto tienen estados explícitos.
+El borrador conserva los datos en el dispositivo por 7 días, con aviso y
+borrado mediante `UModal`. Un envío incierto conserva su payload y bloquea
+edición hasta resolverlo, para reintentar sin duplicados.
+
+`pedido/confirmacion.vue` usa las mismas piezas y muestra el snapshot recibido.
+`DRAFT` se presenta al cliente como «Recibido · pendiente de confirmación», con
+color `warning`; los demás colores vienen de `ORDER_STATUS_COLORS` compartido.
+Compartir por WhatsApp es un `UButton` enlazado con el resumen persistido.
+La invitación se administra en la ficha del cliente; la revocación de consulta
+se confirma con `UModal` desde el detalle del pedido.
+No se crearon controles ni wrappers propios para estas pantallas.

@@ -247,6 +247,7 @@ export type CustomerWhereInput = {
   firstDeliveryDay?: Prisma.EnumDayOfWeekNullableFilter<"Customer"> | $Enums.DayOfWeek | null
   secondDeliveryDay?: Prisma.EnumDayOfWeekNullableFilter<"Customer"> | $Enums.DayOfWeek | null
   orders?: Prisma.OrderListRelationFilter
+  orderAccessLinks?: Prisma.OrderAccessLinkListRelationFilter
   personalMenus?: Prisma.WeeklyMenuListRelationFilter
   exclusions?: Prisma.CustomerExclusionListRelationFilter
 }
@@ -266,6 +267,7 @@ export type CustomerOrderByWithRelationInput = {
   firstDeliveryDay?: Prisma.SortOrderInput | Prisma.SortOrder
   secondDeliveryDay?: Prisma.SortOrderInput | Prisma.SortOrder
   orders?: Prisma.OrderOrderByRelationAggregateInput
+  orderAccessLinks?: Prisma.OrderAccessLinkOrderByRelationAggregateInput
   personalMenus?: Prisma.WeeklyMenuOrderByRelationAggregateInput
   exclusions?: Prisma.CustomerExclusionOrderByRelationAggregateInput
 }
@@ -288,6 +290,7 @@ export type CustomerWhereUniqueInput = Prisma.AtLeast<{
   firstDeliveryDay?: Prisma.EnumDayOfWeekNullableFilter<"Customer"> | $Enums.DayOfWeek | null
   secondDeliveryDay?: Prisma.EnumDayOfWeekNullableFilter<"Customer"> | $Enums.DayOfWeek | null
   orders?: Prisma.OrderListRelationFilter
+  orderAccessLinks?: Prisma.OrderAccessLinkListRelationFilter
   personalMenus?: Prisma.WeeklyMenuListRelationFilter
   exclusions?: Prisma.CustomerExclusionListRelationFilter
 }, "id">
@@ -345,6 +348,7 @@ export type CustomerCreateInput = {
   firstDeliveryDay?: $Enums.DayOfWeek | null
   secondDeliveryDay?: $Enums.DayOfWeek | null
   orders?: Prisma.OrderCreateNestedManyWithoutCustomerInput
+  orderAccessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutCustomerInput
   personalMenus?: Prisma.WeeklyMenuCreateNestedManyWithoutCustomerInput
   exclusions?: Prisma.CustomerExclusionCreateNestedManyWithoutCustomerInput
 }
@@ -364,6 +368,7 @@ export type CustomerUncheckedCreateInput = {
   firstDeliveryDay?: $Enums.DayOfWeek | null
   secondDeliveryDay?: $Enums.DayOfWeek | null
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCustomerInput
+  orderAccessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutCustomerInput
   personalMenus?: Prisma.WeeklyMenuUncheckedCreateNestedManyWithoutCustomerInput
   exclusions?: Prisma.CustomerExclusionUncheckedCreateNestedManyWithoutCustomerInput
 }
@@ -383,6 +388,7 @@ export type CustomerUpdateInput = {
   firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   orders?: Prisma.OrderUpdateManyWithoutCustomerNestedInput
+  orderAccessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutCustomerNestedInput
   personalMenus?: Prisma.WeeklyMenuUpdateManyWithoutCustomerNestedInput
   exclusions?: Prisma.CustomerExclusionUpdateManyWithoutCustomerNestedInput
 }
@@ -402,6 +408,7 @@ export type CustomerUncheckedUpdateInput = {
   firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   orders?: Prisma.OrderUncheckedUpdateManyWithoutCustomerNestedInput
+  orderAccessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutCustomerNestedInput
   personalMenus?: Prisma.WeeklyMenuUncheckedUpdateManyWithoutCustomerNestedInput
   exclusions?: Prisma.CustomerExclusionUncheckedUpdateManyWithoutCustomerNestedInput
 }
@@ -560,6 +567,20 @@ export type CustomerUpdateOneRequiredWithoutExclusionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerUpdateToOneWithWhereWithoutExclusionsInput, Prisma.CustomerUpdateWithoutExclusionsInput>, Prisma.CustomerUncheckedUpdateWithoutExclusionsInput>
 }
 
+export type CustomerCreateNestedOneWithoutOrderAccessLinksInput = {
+  create?: Prisma.XOR<Prisma.CustomerCreateWithoutOrderAccessLinksInput, Prisma.CustomerUncheckedCreateWithoutOrderAccessLinksInput>
+  connectOrCreate?: Prisma.CustomerCreateOrConnectWithoutOrderAccessLinksInput
+  connect?: Prisma.CustomerWhereUniqueInput
+}
+
+export type CustomerUpdateOneRequiredWithoutOrderAccessLinksNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerCreateWithoutOrderAccessLinksInput, Prisma.CustomerUncheckedCreateWithoutOrderAccessLinksInput>
+  connectOrCreate?: Prisma.CustomerCreateOrConnectWithoutOrderAccessLinksInput
+  upsert?: Prisma.CustomerUpsertWithoutOrderAccessLinksInput
+  connect?: Prisma.CustomerWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CustomerUpdateToOneWithWhereWithoutOrderAccessLinksInput, Prisma.CustomerUpdateWithoutOrderAccessLinksInput>, Prisma.CustomerUncheckedUpdateWithoutOrderAccessLinksInput>
+}
+
 export type CustomerCreateWithoutPersonalMenusInput = {
   id?: string
   nombre: string
@@ -575,6 +596,7 @@ export type CustomerCreateWithoutPersonalMenusInput = {
   firstDeliveryDay?: $Enums.DayOfWeek | null
   secondDeliveryDay?: $Enums.DayOfWeek | null
   orders?: Prisma.OrderCreateNestedManyWithoutCustomerInput
+  orderAccessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutCustomerInput
   exclusions?: Prisma.CustomerExclusionCreateNestedManyWithoutCustomerInput
 }
 
@@ -593,6 +615,7 @@ export type CustomerUncheckedCreateWithoutPersonalMenusInput = {
   firstDeliveryDay?: $Enums.DayOfWeek | null
   secondDeliveryDay?: $Enums.DayOfWeek | null
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCustomerInput
+  orderAccessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutCustomerInput
   exclusions?: Prisma.CustomerExclusionUncheckedCreateNestedManyWithoutCustomerInput
 }
 
@@ -627,6 +650,7 @@ export type CustomerUpdateWithoutPersonalMenusInput = {
   firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   orders?: Prisma.OrderUpdateManyWithoutCustomerNestedInput
+  orderAccessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutCustomerNestedInput
   exclusions?: Prisma.CustomerExclusionUpdateManyWithoutCustomerNestedInput
 }
 
@@ -645,6 +669,7 @@ export type CustomerUncheckedUpdateWithoutPersonalMenusInput = {
   firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   orders?: Prisma.OrderUncheckedUpdateManyWithoutCustomerNestedInput
+  orderAccessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutCustomerNestedInput
   exclusions?: Prisma.CustomerExclusionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
@@ -662,6 +687,7 @@ export type CustomerCreateWithoutOrdersInput = {
   updatedAt?: Date | string
   firstDeliveryDay?: $Enums.DayOfWeek | null
   secondDeliveryDay?: $Enums.DayOfWeek | null
+  orderAccessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutCustomerInput
   personalMenus?: Prisma.WeeklyMenuCreateNestedManyWithoutCustomerInput
   exclusions?: Prisma.CustomerExclusionCreateNestedManyWithoutCustomerInput
 }
@@ -680,6 +706,7 @@ export type CustomerUncheckedCreateWithoutOrdersInput = {
   updatedAt?: Date | string
   firstDeliveryDay?: $Enums.DayOfWeek | null
   secondDeliveryDay?: $Enums.DayOfWeek | null
+  orderAccessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutCustomerInput
   personalMenus?: Prisma.WeeklyMenuUncheckedCreateNestedManyWithoutCustomerInput
   exclusions?: Prisma.CustomerExclusionUncheckedCreateNestedManyWithoutCustomerInput
 }
@@ -714,6 +741,7 @@ export type CustomerUpdateWithoutOrdersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  orderAccessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutCustomerNestedInput
   personalMenus?: Prisma.WeeklyMenuUpdateManyWithoutCustomerNestedInput
   exclusions?: Prisma.CustomerExclusionUpdateManyWithoutCustomerNestedInput
 }
@@ -732,6 +760,7 @@ export type CustomerUncheckedUpdateWithoutOrdersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  orderAccessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutCustomerNestedInput
   personalMenus?: Prisma.WeeklyMenuUncheckedUpdateManyWithoutCustomerNestedInput
   exclusions?: Prisma.CustomerExclusionUncheckedUpdateManyWithoutCustomerNestedInput
 }
@@ -751,6 +780,7 @@ export type CustomerCreateWithoutExclusionsInput = {
   firstDeliveryDay?: $Enums.DayOfWeek | null
   secondDeliveryDay?: $Enums.DayOfWeek | null
   orders?: Prisma.OrderCreateNestedManyWithoutCustomerInput
+  orderAccessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutCustomerInput
   personalMenus?: Prisma.WeeklyMenuCreateNestedManyWithoutCustomerInput
 }
 
@@ -769,6 +799,7 @@ export type CustomerUncheckedCreateWithoutExclusionsInput = {
   firstDeliveryDay?: $Enums.DayOfWeek | null
   secondDeliveryDay?: $Enums.DayOfWeek | null
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCustomerInput
+  orderAccessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutCustomerInput
   personalMenus?: Prisma.WeeklyMenuUncheckedCreateNestedManyWithoutCustomerInput
 }
 
@@ -803,6 +834,7 @@ export type CustomerUpdateWithoutExclusionsInput = {
   firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   orders?: Prisma.OrderUpdateManyWithoutCustomerNestedInput
+  orderAccessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutCustomerNestedInput
   personalMenus?: Prisma.WeeklyMenuUpdateManyWithoutCustomerNestedInput
 }
 
@@ -821,7 +853,100 @@ export type CustomerUncheckedUpdateWithoutExclusionsInput = {
   firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
   orders?: Prisma.OrderUncheckedUpdateManyWithoutCustomerNestedInput
+  orderAccessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutCustomerNestedInput
   personalMenus?: Prisma.WeeklyMenuUncheckedUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerCreateWithoutOrderAccessLinksInput = {
+  id?: string
+  nombre: string
+  telefono: string
+  ubicacion1: string
+  ubicacion2?: string | null
+  correoElectronico?: string | null
+  source?: string
+  status?: string
+  tipoCliente?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  firstDeliveryDay?: $Enums.DayOfWeek | null
+  secondDeliveryDay?: $Enums.DayOfWeek | null
+  orders?: Prisma.OrderCreateNestedManyWithoutCustomerInput
+  personalMenus?: Prisma.WeeklyMenuCreateNestedManyWithoutCustomerInput
+  exclusions?: Prisma.CustomerExclusionCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerUncheckedCreateWithoutOrderAccessLinksInput = {
+  id?: string
+  nombre: string
+  telefono: string
+  ubicacion1: string
+  ubicacion2?: string | null
+  correoElectronico?: string | null
+  source?: string
+  status?: string
+  tipoCliente?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  firstDeliveryDay?: $Enums.DayOfWeek | null
+  secondDeliveryDay?: $Enums.DayOfWeek | null
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutCustomerInput
+  personalMenus?: Prisma.WeeklyMenuUncheckedCreateNestedManyWithoutCustomerInput
+  exclusions?: Prisma.CustomerExclusionUncheckedCreateNestedManyWithoutCustomerInput
+}
+
+export type CustomerCreateOrConnectWithoutOrderAccessLinksInput = {
+  where: Prisma.CustomerWhereUniqueInput
+  create: Prisma.XOR<Prisma.CustomerCreateWithoutOrderAccessLinksInput, Prisma.CustomerUncheckedCreateWithoutOrderAccessLinksInput>
+}
+
+export type CustomerUpsertWithoutOrderAccessLinksInput = {
+  update: Prisma.XOR<Prisma.CustomerUpdateWithoutOrderAccessLinksInput, Prisma.CustomerUncheckedUpdateWithoutOrderAccessLinksInput>
+  create: Prisma.XOR<Prisma.CustomerCreateWithoutOrderAccessLinksInput, Prisma.CustomerUncheckedCreateWithoutOrderAccessLinksInput>
+  where?: Prisma.CustomerWhereInput
+}
+
+export type CustomerUpdateToOneWithWhereWithoutOrderAccessLinksInput = {
+  where?: Prisma.CustomerWhereInput
+  data: Prisma.XOR<Prisma.CustomerUpdateWithoutOrderAccessLinksInput, Prisma.CustomerUncheckedUpdateWithoutOrderAccessLinksInput>
+}
+
+export type CustomerUpdateWithoutOrderAccessLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.StringFieldUpdateOperationsInput | string
+  ubicacion1?: Prisma.StringFieldUpdateOperationsInput | string
+  ubicacion2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correoElectronico?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  tipoCliente?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  orders?: Prisma.OrderUpdateManyWithoutCustomerNestedInput
+  personalMenus?: Prisma.WeeklyMenuUpdateManyWithoutCustomerNestedInput
+  exclusions?: Prisma.CustomerExclusionUpdateManyWithoutCustomerNestedInput
+}
+
+export type CustomerUncheckedUpdateWithoutOrderAccessLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  nombre?: Prisma.StringFieldUpdateOperationsInput | string
+  telefono?: Prisma.StringFieldUpdateOperationsInput | string
+  ubicacion1?: Prisma.StringFieldUpdateOperationsInput | string
+  ubicacion2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correoElectronico?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  tipoCliente?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  secondDeliveryDay?: Prisma.NullableEnumDayOfWeekFieldUpdateOperationsInput | $Enums.DayOfWeek | null
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutCustomerNestedInput
+  personalMenus?: Prisma.WeeklyMenuUncheckedUpdateManyWithoutCustomerNestedInput
+  exclusions?: Prisma.CustomerExclusionUncheckedUpdateManyWithoutCustomerNestedInput
 }
 
 
@@ -831,12 +956,14 @@ export type CustomerUncheckedUpdateWithoutExclusionsInput = {
 
 export type CustomerCountOutputType = {
   orders: number
+  orderAccessLinks: number
   personalMenus: number
   exclusions: number
 }
 
 export type CustomerCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   orders?: boolean | CustomerCountOutputTypeCountOrdersArgs
+  orderAccessLinks?: boolean | CustomerCountOutputTypeCountOrderAccessLinksArgs
   personalMenus?: boolean | CustomerCountOutputTypeCountPersonalMenusArgs
   exclusions?: boolean | CustomerCountOutputTypeCountExclusionsArgs
 }
@@ -856,6 +983,13 @@ export type CustomerCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
  */
 export type CustomerCountOutputTypeCountOrdersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.OrderWhereInput
+}
+
+/**
+ * CustomerCountOutputType without action
+ */
+export type CustomerCountOutputTypeCountOrderAccessLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrderAccessLinkWhereInput
 }
 
 /**
@@ -888,6 +1022,7 @@ export type CustomerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   firstDeliveryDay?: boolean
   secondDeliveryDay?: boolean
   orders?: boolean | Prisma.Customer$ordersArgs<ExtArgs>
+  orderAccessLinks?: boolean | Prisma.Customer$orderAccessLinksArgs<ExtArgs>
   personalMenus?: boolean | Prisma.Customer$personalMenusArgs<ExtArgs>
   exclusions?: boolean | Prisma.Customer$exclusionsArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerCountOutputTypeDefaultArgs<ExtArgs>
@@ -944,6 +1079,7 @@ export type CustomerSelectScalar = {
 export type CustomerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nombre" | "telefono" | "ubicacion1" | "ubicacion2" | "correoElectronico" | "source" | "status" | "tipoCliente" | "createdAt" | "updatedAt" | "firstDeliveryDay" | "secondDeliveryDay", ExtArgs["result"]["customer"]>
 export type CustomerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   orders?: boolean | Prisma.Customer$ordersArgs<ExtArgs>
+  orderAccessLinks?: boolean | Prisma.Customer$orderAccessLinksArgs<ExtArgs>
   personalMenus?: boolean | Prisma.Customer$personalMenusArgs<ExtArgs>
   exclusions?: boolean | Prisma.Customer$exclusionsArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerCountOutputTypeDefaultArgs<ExtArgs>
@@ -955,6 +1091,7 @@ export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   name: "Customer"
   objects: {
     orders: Prisma.$OrderPayload<ExtArgs>[]
+    orderAccessLinks: Prisma.$OrderAccessLinkPayload<ExtArgs>[]
     personalMenus: Prisma.$WeeklyMenuPayload<ExtArgs>[]
     exclusions: Prisma.$CustomerExclusionPayload<ExtArgs>[]
   }
@@ -1367,6 +1504,7 @@ readonly fields: CustomerFieldRefs;
 export interface Prisma__CustomerClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   orders<T extends Prisma.Customer$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  orderAccessLinks<T extends Prisma.Customer$orderAccessLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$orderAccessLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderAccessLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   personalMenus<T extends Prisma.Customer$personalMenusArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$personalMenusArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WeeklyMenuPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   exclusions<T extends Prisma.Customer$exclusionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Customer$exclusionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerExclusionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -1825,6 +1963,30 @@ export type Customer$ordersArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.OrderScalarFieldEnum | Prisma.OrderScalarFieldEnum[]
+}
+
+/**
+ * Customer.orderAccessLinks
+ */
+export type Customer$orderAccessLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OrderAccessLink
+   */
+  select?: Prisma.OrderAccessLinkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OrderAccessLink
+   */
+  omit?: Prisma.OrderAccessLinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderAccessLinkInclude<ExtArgs> | null
+  where?: Prisma.OrderAccessLinkWhereInput
+  orderBy?: Prisma.OrderAccessLinkOrderByWithRelationInput | Prisma.OrderAccessLinkOrderByWithRelationInput[]
+  cursor?: Prisma.OrderAccessLinkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrderAccessLinkScalarFieldEnum | Prisma.OrderAccessLinkScalarFieldEnum[]
 }
 
 /**

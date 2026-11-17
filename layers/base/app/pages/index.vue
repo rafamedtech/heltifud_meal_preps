@@ -186,8 +186,7 @@ useSeoMeta({
         <BaseButton
           label="Reclamar promoción"
           icon="i-lucide-rocket"
-          to="https://wa.me/c/5216648161284"
-          target="_blank"
+          to="/pedido"
         />
       </template>
 

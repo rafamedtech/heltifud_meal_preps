@@ -67,31 +67,35 @@ Fuente: [plan de etapa 1](plan-etapa-1-cimientos.md) y H13–H16 del
   [Evidencia](verificacion-etapa-2-personalizacion.md).
 - Límite conocido: 154 de 183 platillos no tienen receta; con alergias se marcan
   «Revisar alergias» y no se sustituyen solos. Capturar recetas mejora la cobertura.
-- [ ] Completar las garantías de vigencia y concurrencia de publicación de menús por
-  ciclo, tipo y cliente personalizado. Contrastar T05/H17/H18 con lo implementado en
-  1.1 antes de determinar qué restricciones u operaciones faltan.
+- [x] Garantías de publicación: unicidad por semana/tipo/cliente, índice de una
+  sola semana abierta, publicación serializada y validación transaccional de
+  corte/oferta al enviar desde cliente. [Evidencia](verificacion-etapa-3-pedido-cliente.md).
 
 Fuentes: etapa 2 de la [auditoría semanal](auditoria-flujo-semanal.md) y
 T04/T05 del [plan general](plan-pedidos-clientes.md).
 
 ## 3. Pedido del cliente
 
-- [ ] Publicar un contrato de oferta con menú, versión, vigencia, planes, variantes,
+- [x] Publicar un contrato de oferta con menú, versión, vigencia, planes, variantes,
   días, tiempos y sustituciones permitidas, sin recetas internas ni datos privados.
-- [ ] Crear `/pedido` con selección real de plan/variante, días y comidas; conservar
+- [x] Crear `/pedido` con selección real de plan/variante, días y comidas; conservar
   la selección desde PlanCard y mostrar cantidades, precio y resumen.
-- [ ] Crear el personalizador con notas por comida, resumen de cambios,
+- [x] Crear el personalizador con notas por comida, resumen de cambios,
   restauración, borrador recuperable y estados de error o falta de disponibilidad.
-- [ ] Capturar contacto, direcciones y entregas; vincular clientes existentes de
+- [x] Capturar contacto, direcciones y entregas; vincular clientes existentes de
   forma verificada sin exponer a otros clientes ni sobrescribirlos por teléfono.
-- [ ] Implementar acceso privado al pedido, con ownership o token limitado,
-  revocable y con vencimiento, conforme a la decisión de acceso pendiente.
-- [ ] Crear el envío público atómico: recalcular total y validar oferta, comidas,
+- [x] Implementar acceso privado al pedido, con ownership o token limitado,
+  revocable y con vencimiento, mediante enlace privado.
+- [x] Crear el envío público atómico: recalcular total y validar oferta, comidas,
   corte y entregas; persistir el snapshot personalizado con idempotencia.
-- [ ] Crear confirmación y consulta privada del pedido/estado; compartir por
+- [x] Crear confirmación y consulta privada del pedido/estado; compartir por
   WhatsApp el resumen del pedido guardado y ajustar los textos de pago.
 
 Fuente: T08–T13 del [plan general](plan-pedidos-clientes.md).
+
+Implementado y verificado localmente el 16 de noviembre de 2026.
+[Evidencia, alcance y límites](verificacion-etapa-3-pedido-cliente.md).
+La aplicación aún no se ha desplegado.
 
 ## 4. Operación, compras, cocina y reparto
 
@@ -147,7 +151,8 @@ Estas decisiones condicionan las implementaciones correspondientes:
 - [x] Repetir platillo: libre; el mismo platillo puede ocupar todos los lugares
   contratados (16 nov 2026).
 - [x] Preferencias: exclusiones y alergias que el sistema aplica solo (16 nov 2026).
-- [ ] Acceso del cliente mediante enlace privado o cuenta propia.
+- [x] Acceso mediante invitación y consulta privada con tokens limitados,
+  revocables y con vencimiento (16 nov 2026).
 - [ ] Cobro manual inicial o pago en línea; reglas de anticipos y devoluciones.
 - [ ] Zonas, recargos, extras y políticas de cambios/cancelaciones del autoservicio.
 
@@ -165,8 +170,8 @@ contenido siga sin implementar.
 
 ## Orden sugerido
 
-1. Cerrar la decisión de acceso y las garantías de publicación restantes del bloque 2.
-2. Implementar pedido del cliente y acceso privado.
+1. Ensayar el pedido de cliente implementado en el entorno de despliegue.
+2. Completar políticas comerciales de cobertura, cobro y cambios.
 3. Desarrollar compras, cocina y reparto; pueden avanzar desde pedidos de admin sin
    esperar el autoservicio del cliente.
 4. Completar cobros, dashboard operativo y verificación de lanzamiento.

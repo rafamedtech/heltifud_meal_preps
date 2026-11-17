@@ -110,6 +110,8 @@ export async function updateCycle(id: string, input: WeeklyCycleUpdateInput) {
   const { status, orderCutoffAt } = parsed.data;
 
   const updated = await prisma.$transaction(async (tx) => {
+    // Serialise opening weeks before reading or closing any other week.
+    await tx.$queryRaw`SELECT pg_advisory_xact_lock(726411, 1)`;
     const cycle = await tx.weeklyCycle.findUnique({ where: { id }, include: { _count: { select: { menus: true } } } });
     if (!cycle) throw createError({ statusCode: 404, statusMessage: 'Semana no encontrada.' });
 
