@@ -19,7 +19,7 @@ Sitio Netlify `heltifud` (`https://heltifud.com`). Complementa el
 | --- | --- | --- |
 | `NUXT_PUBLIC_SUPABASE_URL`, `NUXT_PUBLIC_SUPABASE_KEY` | Auth en cliente y servidor | Todos |
 | `DATABASE_URL` | Prisma en runtime; pooler 6543 con `heltifud_app` | `functions`/`runtime`, secreta |
-| `DIRECT_URL` | Solo `prisma migrate` y scripts `verify-*` | No la usa la app en runtime |
+| `DIRECT_URL` | Solo `prisma migrate` y scripts `verify-*`, desde una máquina local | **No** se define en Netlify (retirada el 17 nov 2026); `prisma generate` funciona sin ella |
 | `NUXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Autocompletado de direcciones (admin) | Opcional: sin ella el campo funciona como texto libre |
 | `NUXT_PUBLIC_CLOUDINARY_BASE_URL` | Imágenes | Opcional: tiene valor por defecto |
 | `NUXT_CORS_ALLOWED_ORIGINS` | Orígenes CORS | Opcional: incluye `heltifud.com` y `www` |
@@ -30,6 +30,38 @@ Listar nombres, scopes y contextos sin ver valores:
 netlify api getEnvVars --data '{"account_id":"<account>","site_id":"035fa99a-15e6-45d7-92f1-3fada7495fa8"}' \
   | node -e 'for (const v of JSON.parse(require("fs").readFileSync(0))) console.log(v.key, v.scopes.join(","), v.values.map(x => x.context).join(","))'
 ```
+
+## Proyecto de preview
+
+Los contextos *Deploy Previews* y *Branch deploys* de Netlify usan un proyecto de
+Supabase aparte (`tlncrhbfxscwicadxqom`); *Production* y *dev* siguen en
+`qmpslziktjtgenlmrslm`.
+
+| Variable | Preview y branch deploys |
+| --- | --- |
+| `DATABASE_URL` | `heltifud_app.tlncrhbfxscwicadxqom` en el pooler `aws-1-us-east-2` (6543, `pgbouncer=true`), contraseña propia |
+| `NUXT_PUBLIC_SUPABASE_URL` | `https://tlncrhbfxscwicadxqom.supabase.co` |
+| `NUXT_PUBLIC_SUPABASE_KEY` | publishable key del proyecto de preview |
+
+Contenido: las mismas migraciones y permisos que producción
+(`verify-database-hardening.ts` pasa con `heltifud_app`), y una copia del
+catálogo no privado de producción (platillos, ingredientes, recetas, semanas,
+menús generales, planes, variantes y ajustes). Sin clientes, pedidos, cobros,
+gastos ni menús personalizados. Auth tiene dos usuarios de prueba
+(`preview-admin@heltifud.com` con rol `admin` y `preview-operations@heltifud.com`
+con rol `operations`); sus contraseñas no se versionan.
+
+Mantenimiento:
+
+- **Cada migración nueva se aplica en los dos proyectos.** Primero en preview
+  (`DIRECT_URL=<session pooler del preview> pnpm exec prisma migrate deploy`) y
+  después en producción.
+- Free pausa el proyecto tras 7 días sin actividad; reactivarlo desde el panel.
+- El registro abierto (`disable_signup: false`) y las URLs de redirección de Auth
+  del proyecto de preview se ajustan desde su panel (Authentication → Sign In /
+  URL Configuration), igual que en producción.
+- Para rehacer el catálogo: vaciar las tablas y copiar con `\copy` desde
+  producción solo las tablas de catálogo listadas arriba.
 
 ## Antes de publicar
 
@@ -59,9 +91,8 @@ conexión; HSTS.
 
 Después, en el navegador con la sesión del usuario: menú, `/pedido`, login
 admin, listado y detalle de pedidos, cobros y reparto. En el preview esos
-recorridos escriben en la **misma base de producción** (mismo `DATABASE_URL`),
-así que el ensayo con datos sintéticos debe usar clientes y pedidos marcados
-como prueba y cancelarlos al terminar.
+recorridos escriben en el proyecto de preview, no en producción; usar los
+usuarios de prueba de ese proyecto.
 
 Logs de funciones: Netlify → Logs → Functions → `server`. Buscar `[unhandled]`,
 `42501` (permisos) y `[health]`.
@@ -109,6 +140,10 @@ Guardarla fuera del repositorio o en `backups/` (ignorado por git) y probar que
 - Ensayo de rollback por API: producción pasó de `ddf36f1` a `ae1fc5e` y volvió
   en unos 20 s; humo 18/19 en ambos (sin healthcheck aún) y auto-publish sin
   bloquear.
+- Ensayo de rollback verificado tras el merge: publicar `ddf36f1` hizo que
+  `/api/health` respondiera 401 (versión sin healthcheck) y el humo bajara a
+  18/19; restaurar `6afc933b` devolvió 200 con `5d7d34a` y 19/19. Ida y vuelta
+  en 15 s; auto-publish sin bloquear.
 - Observado: los errores 404 de Nitro llevan `Cache-Control: no-cache` aunque el
   middleware de privacidad ponga `no-store`; los cuerpos de error no llevan datos.
 
@@ -116,15 +151,59 @@ Pendiente para cerrar T26:
 
 - [x] Desplegar `/api/health` y ejecutar la prueba de humo en preview.
 - [x] Ensayo de rollback (publicar el deploy anterior y volver).
-- [ ] Prueba de humo en producción con `EXPECT_COMMIT` tras el merge.
-- [ ] Sin respaldos listados en Supabase: confirmar plan y activar respaldos
-  diarios o PITR; mientras tanto, `pg_dump` manual antes de cada migración.
-- [ ] **`DIRECT_URL` (rol `postgres`, dueño del esquema) está disponible en el
-  runtime de las funciones** en todos los contextos. La app no la usa: quitar los
-  scopes `functions`/`runtime` (o la variable de Netlify) para que una función
-  comprometida no tenga credenciales con DDL. Requiere aprobación.
-- [ ] Deploy previews comparten la base de producción. Decidir si basta con
-  datos de prueba marcados o si se usa una rama de Supabase para previews.
+- [x] Prueba de humo en producción con `EXPECT_COMMIT` tras el merge: 19/19
+  (`5d7d34a`, contexto `production`).
+- [ ] Sin respaldos de Supabase (plan Free). **Pospuesto a una versión
+  posterior** (decisión del 17 nov 2026): el respaldo programado no forma parte
+  de T26. Mientras tanto, `pg_dump` manual (cliente PostgreSQL 17) a `backups/`
+  antes de cada migración.
+- [x] `DIRECT_URL` (rol `postgres`) retirada de Netlify. El build siguiente
+  (deploy `6afc933b`) terminó bien sin ella y pasó el humo 19/19. Los deploys
+  anteriores la conservan congelada: un rollback a uno de ellos la vuelve a
+  exponer al runtime mientras esté publicado. Opcional: rotar la contraseña de
+  `postgres` en Supabase y actualizar el `.env` local.
+- [x] Base aparte para previews (17 nov 2026), en plan Free. Se reutilizó un
+  proyecto Free de la misma cuenta (`tlncrhbfxscwicadxqom`, us-east-2): se
+  respaldó su contenido anterior en `backups/proyecto-preview-antes-de-borrar-*`
+  y se vació. Ver «Proyecto de preview».
 - [ ] `NUXT_PUBLIC_GOOGLE_MAPS_API_KEY` no está en Netlify: el autocompletado de
   direcciones queda como texto libre en producción. Confirmar si es intencional.
-- [ ] Ensayo del pedido de cliente en producción con datos sintéticos.
+- [x] Ensayo del flujo completo con datos sintéticos en el preview del PR #24
+  (`cf09a97`, proyecto de preview), 17 nov 2026. Ver «Ensayo completo».
+
+## Ensayo completo (17 nov 2026)
+
+`https://deploy-preview-24--heltifud.netlify.app`, base y Auth del proyecto de
+preview. Producción no recibió escrituras: 0 pedidos de prueba tras el ensayo.
+
+1. **Cliente (móvil, 390 px):** `/pedido` con «Plan comidas · 5 días» ($700),
+   cinco días, una sustitución (lunes: «Pechuga en crema de chipotle» →
+   «Bistec en salsa roja», del jueves), nota por comida, contacto y dos
+   direcciones ficticias. Envío → `/pedido/confirmacion`, pedido #0001
+   «Recibido · pendiente de confirmación», dos entregas (22 y 25 nov). Persiste
+   tras recargar.
+2. **Admin (escritorio, `preview-admin`):** listado con #0001 en Borrador;
+   detalle con la sustitución marcada «Sustituido · del jueves», la nota y la
+   bitácora de cambios. Borrador → Confirmado → En preparación, con motivo y
+   usuario en el historial.
+3. **Cobro:** abono de $700 por transferencia con referencia; saldo $0.
+4. **Reparto:** entrega 1 Pendiente → En reparto → Fallida («cliente
+   ausente») → En reparto (reintento) → Entregada; entrega 2 Pendiente → En
+   reparto → Entregada. El pedido pasa solo a **Entregado** y el historial
+   registra cada transición con responsable y motivo.
+5. **Consulta privada del cliente:** el enlace muestra Entregado y ambas
+   entregas como Entregada. Sin token, la API responde 404 (prueba de humo).
+
+Hallazgos menores (no bloquean T26; van a H24/T25):
+
+- Al cambiar de variante a 5 días, jueves y viernes no se marcan solos; hay
+  que elegirlos para que aparezca la segunda entrega.
+- En una sesión nueva, tras cambiar de plan aparece «La oferta cambió desde tu
+  borrador» y obliga a pulsar «Ya revisé la oferta actual» aunque no había un
+  borrador previo.
+- La consulta del cliente en estado Entregado sigue diciendo «Heltifud
+  revisará las comidas… antes de confirmarla» y «La recepción de esta
+  solicitud no acredita un pago»: el texto no cambia con el estado ni el cobro.
+
+El pedido #0001 queda en el proyecto de preview como dato de ensayo.
+
