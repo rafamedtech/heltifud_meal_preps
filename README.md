@@ -67,11 +67,24 @@ Restrict the key to the HTTP referrers used by the app (for example `http://loca
 
 ### Administrative API access
 
-Protected administrative endpoints require a Supabase Auth user whose
-`app_metadata.role` is exactly `admin`. The server calls `auth.getUser()` on each
+Protected endpoints require a Supabase Auth user whose `app_metadata.role` is
+exactly `admin` or `operations`. The server calls `auth.getUser()` on each
 protected request to validate the user and read the current role. Missing or
-invalid authentication returns 401; an authenticated user without this role
+invalid authentication returns 401; an authenticated user without an allowed role
 receives 403. `user_metadata`, request parameters and headers do not grant access.
+
+Roles and their scope are defined in `layers/auth/shared/utils/staffAccess.ts`:
+
+| Role | API | Admin pages |
+| --- | --- | --- |
+| `admin` | Every protected endpoint. | Every `/admin/**` page. |
+| `operations` | `GET /api/cycles`, production (`GET`/`POST /api/operations/production/:cycleId`), shopping list (`GET`, and `PUT` per item without `expenseId`), delivery board (`GET`/`PUT /api/operations/deliveries`) and `POST /api/orders/:id/deliveries/:sequence/status`. Anything else returns 403. | `/admin/produccion`, `/admin/compras`, `/admin/etiquetas`, `/admin/reparto`; other admin pages redirect to `/admin/produccion`. |
+
+Operations staff see the order balance on the delivery board but cannot read
+orders, customers, payments, expenses or the dashboard, nor link a purchase to an
+expense. The admin UI filters navigation and guards pages with the same rules, but
+the server middleware is the authority. A signed-in user without a staff role gets
+a 403 page in `/admin`.
 
 Before deploying this authorization check, assign the role to the existing
 administrators. Use the Supabase SQL Editor with privileged project access and
@@ -80,7 +93,7 @@ preserve all other application metadata fields; they are manual administration
 steps, not application migrations.
 
 ```sql
--- Grant access to one verified administrator.
+-- Grant access to one verified administrator (use "operations" for kitchen/delivery staff).
 update auth.users
 set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb)
   || '{"role":"admin"}'::jsonb
@@ -100,8 +113,8 @@ should reach its handler after granting the role and return 403 after revocation
 If no row is returned, check the Auth ID; do not remove the `where` clause.
 Never grant roles from browser code or expose privileged Supabase credentials.
 
-This check covers administrative API endpoints, including ingredients (H02).
-Role checks for the administrative UI remain separate work. The public GET endpoints
+This check covers administrative API endpoints, including ingredients (H02). The
+public GET endpoints
 `/api/menu`, `/api/menu/next` and `/api/plans` remain accessible without a session.
 
 ### Menu and catalog database access (H03)

@@ -3,6 +3,8 @@ import type { TableColumn } from '@nuxt/ui'
 import type { WeeklyCycle, ExpenseListResponse } from '~~/layers/menu/shared/types/types'
 import type { ProductionRunDto, ProductionGroup, ShoppingListDto, ProductionMeal } from '~~/layers/menu/shared/types/operations'
 const props = defineProps<{ shopping?: boolean }>()
+// Operations staff cannot read expenses or orders; those links stay admin-only.
+const isAdmin = computed(() => useStaffRole().value === 'admin')
 const route = useRoute()
 const toast = useToast()
 const requestFetch = useRequestFetch()
@@ -28,7 +30,7 @@ const { data: list, error: shoppingError, refresh: refreshShopping } = await use
 const { data: expenses, error: expenseError, refresh: refreshExpenses } = await useFetch<ExpenseListResponse>('/api/expenses', { query: { q: expenseSearch, limit: 100 }, immediate: false })
 const expenseItems = computed(() => [{ label: 'Sin gasto vinculado', value: '' }, ...(expenses.value?.items.map(e => ({ label: `${formatDate(e.expenseDate)} · ${e.description} · ${transformPrice(e.amount)}`, value: e.id })) ?? []), ...(edit.value?.expenseId && !expenses.value?.items.some(e => e.id === edit.value?.expenseId) ? [{ label: `Gasto vinculado (${edit.value.expenseId})`, value: edit.value.expenseId }] : [])])
 const groupColumns: TableColumn<ProductionGroup>[] = [{ accessorKey: 'date', header: 'Entrega' }, { accessorKey: 'slotType', header: 'Tiempo' }, { accessorKey: 'name', header: 'Platillo' }, { accessorKey: 'role', header: 'Componente' }, { accessorKey: 'portions', header: 'Porciones' }]
-const shoppingColumns: TableColumn<ShoppingListDto['items'][number]>[] = [{ accessorKey: 'name', header: 'Ingrediente' }, { accessorKey: 'category', header: 'Categoría' }, { accessorKey: 'quantity', header: 'Cantidad' }, { accessorKey: 'purchased', header: 'Compra' }, { id: 'expense', header: 'Gasto' }, { id: 'actions', header: 'Acción' }]
+const shoppingColumns = computed<TableColumn<ShoppingListDto['items'][number]>[]>(() => [{ accessorKey: 'name', header: 'Ingrediente' }, { accessorKey: 'category', header: 'Categoría' }, { accessorKey: 'quantity', header: 'Cantidad' }, { accessorKey: 'purchased', header: 'Compra' }, ...(isAdmin.value ? [{ id: 'expense', header: 'Gasto' }] : []), { id: 'actions', header: 'Acción' }])
 const mealColumns: TableColumn<ProductionMeal>[] = [{ accessorKey: 'folio', header: 'Pedido' }, { accessorKey: 'customer', header: 'Cliente' }, { accessorKey: 'dayOfWeek', header: 'Día de consumo' }, { accessorKey: 'slotType', header: 'Tiempo' }, { id: 'dishes', header: 'Menú guardado' }, { id: 'notes', header: 'Indicaciones' }]
 const canGenerate = computed(() => ['CLOSED', 'IN_PRODUCTION', 'COMPLETED'].includes(cycles.value.find(c => c.id === cycleId.value)?.status ?? ''))
 function message(e: unknown) { return (e as { data?: { statusMessage?: string } })?.data?.statusMessage ?? 'Inténtalo de nuevo.' }
@@ -51,13 +53,13 @@ const createRequest = useState('admin-production-create-request', () => 0)
 watch(createRequest, () => generate())
 async function editItem(item: ShoppingListDto['items'][number]) {
   edit.value = item; purchased.value = item.purchased; expenseId.value = item.expenseId ?? ''; editing.value = true
-  await refreshExpenses()
+  if (isAdmin.value) await refreshExpenses()
 }
 async function saveItem() {
   if (!edit.value || !run.value || !list.value || saving.value) return
   saving.value = true
   try {
-    list.value = await $fetch<ShoppingListDto>(`/api/operations/shopping/${run.value.id}/${edit.value.id}`, { method: 'PUT', body: { version: list.value.version, purchased: purchased.value, expenseId: expenseId.value || null } })
+    list.value = await $fetch<ShoppingListDto>(`/api/operations/shopping/${run.value.id}/${edit.value.id}`, { method: 'PUT', body: { version: list.value.version, purchased: purchased.value, ...(isAdmin.value ? { expenseId: expenseId.value || null } : {}) } })
     editing.value = false
   } catch (e) { toast.add({ title: 'No se guardó la compra', description: message(e), color: 'error' }); await refreshShopping() } finally { saving.value = false }
 }
@@ -101,20 +103,22 @@ async function saveItem() {
         <UCard title="Contenedores"><ul class="space-y-2"><li v-for="(c, i) in run.snapshot.containers" :key="i">{{ formatDate(c.date) }} · {{ c.container }} · {{ c.count }}</li></ul></UCard>
         <UCard title="Detalle de comidas e indicaciones" :ui="{ body: 'p-0 sm:p-0' }">
           <UTable :data="run.snapshot.meals" :columns="mealColumns">
-            <template #folio-cell="{ row }"><ULink :to="`/admin/pedidos/${row.original.orderId}`">#{{ row.original.folio }}</ULink></template>
+            <template #folio-cell="{ row }"><ULink v-if="isAdmin" :to="`/admin/pedidos/${row.original.orderId}`">#{{ row.original.folio }}</ULink><template v-else>#{{ row.original.folio }}</template></template>
             <template #dishes-cell="{ row }"><ul><li v-for="(c, i) in row.original.components" :key="i">{{ c.name }}{{ c.substitution ? ' (sustitución)' : '' }}</li></ul></template>
             <template #notes-cell="{ row }"><p>{{ [row.original.notes, row.original.orderNotes, ...row.original.exclusions].filter(Boolean).join(' · ') || 'Sin indicaciones' }}</p></template>
           </UTable>
         </UCard>
       </template>
     </template>
-    <UModal v-model:open="editing" title="Actualizar compra" description="Marca la compra y vincula un gasto registrado si corresponde." :dismissible="!saving">
+    <UModal v-model:open="editing" title="Actualizar compra" :description="isAdmin ? 'Marca la compra y vincula un gasto registrado si corresponde.' : 'Marca si ya se compró este ingrediente.'" :dismissible="!saving">
       <template #body><div class="space-y-4">
         <p>{{ edit?.name }} · {{ edit?.quantity }} {{ edit?.unit }}</p>
         <UCheckbox v-model="purchased" label="Comprado" :disabled="saving" />
-        <UFormField label="Gasto existente" description="Busca por descripción o proveedor."><USelectMenu v-model="expenseId" v-model:search-term="expenseSearch" :items="expenseItems" value-key="value" :ignore-filter="true" class="w-full" :disabled="saving" /></UFormField>
-        <UAlert v-if="expenseError" title="No se pudieron buscar gastos" color="error" />
-        <UButton to="/admin/gastos" target="_blank" color="neutral" variant="link" label="Abrir gastos" />
+        <template v-if="isAdmin">
+          <UFormField label="Gasto existente" description="Busca por descripción o proveedor."><USelectMenu v-model="expenseId" v-model:search-term="expenseSearch" :items="expenseItems" value-key="value" :ignore-filter="true" class="w-full" :disabled="saving" /></UFormField>
+          <UAlert v-if="expenseError" title="No se pudieron buscar gastos" color="error" />
+          <UButton to="/admin/gastos" target="_blank" color="neutral" variant="link" label="Abrir gastos" />
+        </template>
       </div></template>
       <template #footer><UButton label="Guardar compra" :loading="saving" @click="saveItem" /></template>
     </UModal>

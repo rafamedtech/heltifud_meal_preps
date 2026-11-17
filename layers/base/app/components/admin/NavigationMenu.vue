@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui"
+import { canAccessAdminPage } from "~~/layers/auth/shared/utils/staffAccess"
 
 defineProps<{ collapsed?: boolean }>()
-const items = computed<NavigationMenuItem[]>(() => adminLinks.flat().map(item => ({
+const staffRole = useStaffRole()
+const items = computed<NavigationMenuItem[]>(() => adminLinks.flat().filter(item => staffRole.value && canAccessAdminPage(staffRole.value, String(item.to))).map(item => ({
   ...item,
   exact: item.to === "/admin"
 })))

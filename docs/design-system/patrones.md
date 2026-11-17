@@ -28,7 +28,13 @@ useSeoMeta({ title: "Proveedores | Heltifud Meal Preps", robots: "noindex, nofol
 Para dar de alta la sección:
 
 1. Añadir el enlace en `adminLinks` (`layers/base/app/utils/helpers.ts`) con
-   `label`, `icon` (Lucide) y `to`. Alimenta el sidebar y la búsqueda.
+   `label`, `icon` (Lucide) y `to`. Alimenta el sidebar y la búsqueda, que se
+   filtran por rol con `canAccessAdminPage()`. Una sección nueva es solo para
+   `admin`; si el rol `operations` debe verla, añadir su ruta a
+   `operationsAdminPages` y sus APIs a `operationsApiRoutes` en
+   `layers/auth/shared/utils/staffAccess.ts`. Dentro de una página compartida,
+   ocultar enlaces y acciones de administración con
+   `useStaffRole().value === 'admin'` (ver `reparto.vue`).
 2. Añadir título y descripción en `pageHeaders` de
    `layers/base/app/components/admin/Header.vue`.
 3. Si tiene acción principal, añadirla en el slot `#right` de ese componente

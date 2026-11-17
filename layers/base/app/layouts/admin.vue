@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui"
+import { canAccessAdminPage } from "~~/layers/auth/shared/utils/staffAccess"
 
 const sidebarOpen = ref(false)
-const navigation = computed<NavigationMenuItem[]>(() => adminLinks.flat().map(item => ({
+const staffRole = useStaffRole()
+const navigation = computed<NavigationMenuItem[]>(() => adminLinks.flat().filter(item => staffRole.value && canAccessAdminPage(staffRole.value, String(item.to))).map(item => ({
   ...item,
   exact: item.to === "/admin",
   onSelect: () => { sidebarOpen.value = false }

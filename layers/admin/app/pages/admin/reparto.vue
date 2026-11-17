@@ -5,6 +5,7 @@ import { DELIVERY_TRANSITIONS, DELIVERY_STATUS_LABELS, DELIVERY_ACTION_LABELS } 
 definePageMeta({ layout: 'admin' })
 useSeoMeta({ title: 'Tablero de reparto | Heltifud', robots: 'noindex, nofollow' })
 const toast = useToast()
+const isAdmin = computed(() => useStaffRole().value === 'admin')
 const route = useRoute()
 const router = useRouter()
 const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Tijuana' }).format(new Date())
@@ -41,7 +42,7 @@ async function save() {
       <UFormField label="Fecha de entrega" class="w-48"><CalendarInput v-model="date" label="Fecha de entrega" /></UFormField>
       <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" label="Actualizar" :loading="status === 'pending'" @click="refresh()" />
     </div>
-    <UAlert title="Cobro y reparto" description="El saldo mostrado corresponde al pedido completo. Los cambios de reparto no registran cobros. Abre la cuenta para registrar el dinero recibido." icon="i-lucide-info" color="info" variant="soft" />
+    <UAlert title="Cobro y reparto" :description="`El saldo mostrado corresponde al pedido completo. Los cambios de reparto no registran cobros. ${isAdmin ? 'Abre la cuenta para registrar el dinero recibido.' : 'Entrega a administración el dinero recibido para registrarlo.'}`" icon="i-lucide-info" color="info" variant="soft" />
     <UEmpty v-if="error" title="No fue posible cargar el reparto"><template #actions><UButton label="Reintentar" @click="refresh()" /></template></UEmpty>
     <USkeleton v-else-if="status === 'pending'" class="h-40" />
     <div v-else class="grid gap-4 xl:grid-cols-4">
@@ -52,15 +53,17 @@ async function save() {
             <div class="space-y-3">
               <p class="text-sm">Entrega {{ item.sequence }} · {{ item.meals }} comidas</p><p>{{ item.address }}</p>
               <p class="text-sm text-muted">{{ item.phone }} · {{ item.assignedTo || 'Sin repartidor asignado' }}</p>
-              <p v-if="!['PREPARING', 'PARTIALLY_DELIVERED', 'DELIVERED'].includes(item.orderStatus)" class="text-sm text-muted">Inicia la preparación desde el pedido para habilitar el reparto.</p>
+              <p v-if="!['PREPARING', 'PARTIALLY_DELIVERED', 'DELIVERED'].includes(item.orderStatus)" class="text-sm text-muted">{{ isAdmin ? 'Inicia la preparación desde el pedido para habilitar el reparto.' : 'Administración debe iniciar la preparación del pedido para habilitar el reparto.' }}</p>
               <p>Saldo del pedido: {{ transformPrice(item.balance) }}</p>
               <UAlert v-if="item.deliveryNotes" title="Nota de la entrega" :description="item.deliveryNotes" :color="item.status === 'FAILED' ? 'error' : 'info'" />
               <UAlert v-if="item.incident" title="Incidencia" :description="item.incident" color="warning" />
               <div class="flex flex-wrap gap-2">
                 <UButton size="sm" color="neutral" variant="outline" label="Asignación / evidencia" @click="edit(item)" />
                 <UButton v-for="next in (['PREPARING', 'PARTIALLY_DELIVERED'].includes(item.orderStatus) ? DELIVERY_TRANSITIONS[item.status] : [])" :key="next" size="sm" :label="DELIVERY_ACTION_LABELS[next]" @click="edit(item, next)" />
-                <UButton size="sm" color="neutral" variant="link" :to="`/admin/cobros?pedido=${item.orderId}`" label="Cobros" />
-                <UButton size="sm" color="neutral" variant="link" :to="`/admin/pedidos/${item.orderId}`" label="Pedido e historial" />
+                <template v-if="isAdmin">
+                  <UButton size="sm" color="neutral" variant="link" :to="`/admin/cobros?pedido=${item.orderId}`" label="Cobros" />
+                  <UButton size="sm" color="neutral" variant="link" :to="`/admin/pedidos/${item.orderId}`" label="Pedido e historial" />
+                </template>
                 <UButton v-if="item.evidenceUrl" size="sm" color="neutral" variant="link" :to="item.evidenceUrl" target="_blank" rel="noopener noreferrer" label="Ver evidencia" />
               </div>
             </div>
