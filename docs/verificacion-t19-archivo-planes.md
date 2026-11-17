@@ -76,12 +76,24 @@ la pestaña muestra el aviso nativo del navegador. Antes solo lo hacía el botó
   pide confirmación con cambios y navega libre sin ellos. El 409 no se probó en
   navegador porque requiere pedidos reales; quedó cubierto en PostgreSQL local.
 
-## Pendiente
+## Migración en producción
 
-- **Aplicar la migración en producción** (`prisma migrate deploy`), con
-  aprobación y respaldo según el [runbook](runbook-base-de-datos.md). El código
-  funciona antes de migrar (la comprobación previa responde 409), pero la
-  garantía de la base de datos solo existe después.
+Aplicada el 17 de noviembre de 2026 con aprobación del usuario, antes del merge
+del PR #21 (el código anterior es compatible: nunca borraba con pedidos porque no
+había pedidos, y la FK solo restringe borrados).
+
+- `prisma migrate status`: solo faltaba `20261118000000_restrict_plan_variant_delete`.
+- Respaldo local excluido de Git: `backups/antes-t19-2026-11-17T17-03-04Z/`. Contiene `database.dump` (esquema
+  `public`, `pg_dump` 18, 161107 bytes, 27 tablas en `pg_restore --list`), conteo
+  y huella por tabla en `manifest.json` y la comparación en `verification.json`.
+- Antes: FK `SET NULL` (`n`), 0 pedidos, 4 planes, 11 variantes.
+- `prisma migrate deploy` aplicó la migración. Después: FK `RESTRICT` (`r`);
+  26 tablas idénticas al respaldo y solo `_prisma_migrations` pasó de 24 a 25
+  filas. No se restauró el dump.
+- `scripts/verify-database-hardening.ts` pasa en producción (grants, RLS,
+  triggers de historial).
+
+## Pendiente
 - El alta de un menú nuevo, el alta de pedidos y el modal de clientes aún no
   rastrean cambios sin guardar; el editor de menú en modo creación conserva un
   borrador solo al ir a crear un platillo.

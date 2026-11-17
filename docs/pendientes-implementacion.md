@@ -109,7 +109,8 @@ recorrido de cliente en ese entorno y la verificación de despliegue (T26).
   mensajes útiles y proteger la navegación con cambios sin guardar (T19/H24).
   Plan o variante con pedidos → 409 y «Pausar plan»/desactivar; FK
   `orders.plan_variant_id` en `RESTRICT`; `useLeaveGuard` en planes, gastos,
-  platillos, pedido y editor de menú. Falta aplicar la migración en producción.
+  platillos, pedido y editor de menú. Migración aplicada en producción el
+  17 nov 2026.
   [Evidencia](verificacion-t19-archivo-planes.md).
 - [x] Consolidar ingredientes con rendimiento y unidades compatibles, guardar
   cantidades históricas, marcar comprado y vincular gastos existentes (T22).
@@ -183,8 +184,7 @@ contenido siga sin implementar.
 
 ## Orden sugerido
 
-1. Aplicar en producción la migración de T19 y verificarla en navegador;
-   implementar el rol de operación (T02).
+1. Implementar el rol de operación (T02).
 2. Verificar el despliegue real (T26) y ensayar el pedido de cliente en producción.
 3. Cerrar las decisiones comerciales de corte, cobro, cobertura y cambios.
 4. Ensayar un ciclo real con cocina y reparto, completar rendimientos y calibrar
