@@ -175,14 +175,24 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
 
 Estas decisiones condicionan las implementaciones correspondientes:
 
-- [ ] Hora exacta del corte del viernes.
+- [x] Corte: viernes a las 9:00 p.m. (Tijuana) (17 nov 2026). Es un ajuste
+  editable (Menú → Ajustes y «Editar corte» por semana); no requiere código.
+  Pendiente aplicarlo en producción: ajustes (`cutoffTime` 21:00) y la semana
+  abierta.
 - [x] Repetir platillo: libre; el mismo platillo puede ocupar todos los lugares
   contratados (16 nov 2026).
 - [x] Preferencias: exclusiones y alergias que el sistema aplica solo (16 nov 2026).
 - [x] Acceso mediante invitación y consulta privada con tokens limitados,
   revocables y con vencimiento (16 nov 2026).
-- [ ] Cobro manual inicial o pago en línea; reglas de anticipos y devoluciones.
-- [ ] Zonas, recargos, extras y políticas de cambios/cancelaciones del autoservicio.
+- [x] Cobro manual, sin pago en línea, por transferencia, tarjeta (terminal
+  externa) o efectivo (17 nov 2026). Coincide con los medios ya registrables en
+  Cobros. Quedan por definir las reglas de anticipo y devolución (ver abajo).
+- [x] Cobertura: toda la ciudad, sin zonas ni recargos por ahora (17 nov 2026).
+  No requiere cambios: la app no limita direcciones ni suma cargos.
+- [ ] Políticas de cambios, cancelaciones, anticipos y devoluciones del
+  autoservicio. Preguntas abiertas: hasta cuándo puede el cliente cambiar o
+  cancelar, qué pasa después del corte, si se exige pago o anticipo antes de
+  preparar, cómo se devuelve el dinero y qué pasa con una entrega fallida.
 
 ## Verificaciones pendientes de lo ya implementado
 
@@ -199,7 +209,8 @@ contenido siga sin implementar.
 ## Orden sugerido
 
 1. ~~Verificar el despliegue real (T26)~~ — cerrado el 17 nov 2026.
-2. Cerrar las decisiones comerciales de corte, cobro, cobertura y cambios.
+2. Cerrar la política de cambios, cancelaciones, anticipos y devoluciones (corte,
+   cobro y cobertura definidos el 17 nov 2026).
 3. Ensayar un ciclo real con cocina y reparto, completar rendimientos y calibrar
    la impresión de etiquetas (cierre de T21).
 4. Completar integración (T24), E2E (T25), robustez de formularios (H24) y

@@ -209,4 +209,4 @@ weekly-menu-is-active-2026-11-16T23-03-47Z.csv` (sin versionar); 8 men√∫s, 56 d√
 
 ## Por confirmar
 
-1. Hora del corte del viernes. No bloquea: es un valor de ajustes, editable.
+1. ~~Hora del corte del viernes.~~ Definida el 17 nov 2026: 9:00 p.m. (Tijuana).
