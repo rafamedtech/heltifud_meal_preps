@@ -28,10 +28,12 @@ export type AggregateFoodCatalogItem = {
 
 export type FoodCatalogItemAvgAggregateOutputType = {
   calorias: number | null
+  recipeYield: runtime.Decimal | null
 }
 
 export type FoodCatalogItemSumAggregateOutputType = {
   calorias: number | null
+  recipeYield: runtime.Decimal | null
 }
 
 export type FoodCatalogItemMinAggregateOutputType = {
@@ -44,6 +46,7 @@ export type FoodCatalogItemMinAggregateOutputType = {
   tipo: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  recipeYield: runtime.Decimal | null
 }
 
 export type FoodCatalogItemMaxAggregateOutputType = {
@@ -56,6 +59,7 @@ export type FoodCatalogItemMaxAggregateOutputType = {
   tipo: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  recipeYield: runtime.Decimal | null
 }
 
 export type FoodCatalogItemCountAggregateOutputType = {
@@ -68,16 +72,19 @@ export type FoodCatalogItemCountAggregateOutputType = {
   tipo: number
   createdAt: number
   updatedAt: number
+  recipeYield: number
   _all: number
 }
 
 
 export type FoodCatalogItemAvgAggregateInputType = {
   calorias?: true
+  recipeYield?: true
 }
 
 export type FoodCatalogItemSumAggregateInputType = {
   calorias?: true
+  recipeYield?: true
 }
 
 export type FoodCatalogItemMinAggregateInputType = {
@@ -90,6 +97,7 @@ export type FoodCatalogItemMinAggregateInputType = {
   tipo?: true
   createdAt?: true
   updatedAt?: true
+  recipeYield?: true
 }
 
 export type FoodCatalogItemMaxAggregateInputType = {
@@ -102,6 +110,7 @@ export type FoodCatalogItemMaxAggregateInputType = {
   tipo?: true
   createdAt?: true
   updatedAt?: true
+  recipeYield?: true
 }
 
 export type FoodCatalogItemCountAggregateInputType = {
@@ -114,6 +123,7 @@ export type FoodCatalogItemCountAggregateInputType = {
   tipo?: true
   createdAt?: true
   updatedAt?: true
+  recipeYield?: true
   _all?: true
 }
 
@@ -213,6 +223,7 @@ export type FoodCatalogItemGroupByOutputType = {
   tipo: string
   createdAt: Date
   updatedAt: Date
+  recipeYield: runtime.Decimal | null
   _count: FoodCatalogItemCountAggregateOutputType | null
   _avg: FoodCatalogItemAvgAggregateOutputType | null
   _sum: FoodCatalogItemSumAggregateOutputType | null
@@ -248,6 +259,7 @@ export type FoodCatalogItemWhereInput = {
   tipo?: Prisma.StringFilter<"FoodCatalogItem"> | string
   createdAt?: Prisma.DateTimeFilter<"FoodCatalogItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FoodCatalogItem"> | Date | string
+  recipeYield?: Prisma.DecimalNullableFilter<"FoodCatalogItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentListRelationFilter
   orderComponents?: Prisma.OrderMenuComponentListRelationFilter
   recipeIngredients?: Prisma.RecipeIngredientListRelationFilter
@@ -264,6 +276,7 @@ export type FoodCatalogItemOrderByWithRelationInput = {
   tipo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  recipeYield?: Prisma.SortOrderInput | Prisma.SortOrder
   components?: Prisma.FoodComponentOrderByRelationAggregateInput
   orderComponents?: Prisma.OrderMenuComponentOrderByRelationAggregateInput
   recipeIngredients?: Prisma.RecipeIngredientOrderByRelationAggregateInput
@@ -283,6 +296,7 @@ export type FoodCatalogItemWhereUniqueInput = Prisma.AtLeast<{
   tipo?: Prisma.StringFilter<"FoodCatalogItem"> | string
   createdAt?: Prisma.DateTimeFilter<"FoodCatalogItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FoodCatalogItem"> | Date | string
+  recipeYield?: Prisma.DecimalNullableFilter<"FoodCatalogItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentListRelationFilter
   orderComponents?: Prisma.OrderMenuComponentListRelationFilter
   recipeIngredients?: Prisma.RecipeIngredientListRelationFilter
@@ -299,6 +313,7 @@ export type FoodCatalogItemOrderByWithAggregationInput = {
   tipo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  recipeYield?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.FoodCatalogItemCountOrderByAggregateInput
   _avg?: Prisma.FoodCatalogItemAvgOrderByAggregateInput
   _max?: Prisma.FoodCatalogItemMaxOrderByAggregateInput
@@ -319,6 +334,7 @@ export type FoodCatalogItemScalarWhereWithAggregatesInput = {
   tipo?: Prisma.StringWithAggregatesFilter<"FoodCatalogItem"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FoodCatalogItem"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"FoodCatalogItem"> | Date | string
+  recipeYield?: Prisma.DecimalNullableWithAggregatesFilter<"FoodCatalogItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type FoodCatalogItemCreateInput = {
@@ -331,6 +347,7 @@ export type FoodCatalogItemCreateInput = {
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  recipeYield?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentCreateNestedManyWithoutCatalogItemInput
   orderComponents?: Prisma.OrderMenuComponentCreateNestedManyWithoutCatalogItemInput
   recipeIngredients?: Prisma.RecipeIngredientCreateNestedManyWithoutFoodCatalogItemInput
@@ -347,6 +364,7 @@ export type FoodCatalogItemUncheckedCreateInput = {
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  recipeYield?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentUncheckedCreateNestedManyWithoutCatalogItemInput
   orderComponents?: Prisma.OrderMenuComponentUncheckedCreateNestedManyWithoutCatalogItemInput
   recipeIngredients?: Prisma.RecipeIngredientUncheckedCreateNestedManyWithoutFoodCatalogItemInput
@@ -363,6 +381,7 @@ export type FoodCatalogItemUpdateInput = {
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipeYield?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentUpdateManyWithoutCatalogItemNestedInput
   orderComponents?: Prisma.OrderMenuComponentUpdateManyWithoutCatalogItemNestedInput
   recipeIngredients?: Prisma.RecipeIngredientUpdateManyWithoutFoodCatalogItemNestedInput
@@ -379,6 +398,7 @@ export type FoodCatalogItemUncheckedUpdateInput = {
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipeYield?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentUncheckedUpdateManyWithoutCatalogItemNestedInput
   orderComponents?: Prisma.OrderMenuComponentUncheckedUpdateManyWithoutCatalogItemNestedInput
   recipeIngredients?: Prisma.RecipeIngredientUncheckedUpdateManyWithoutFoodCatalogItemNestedInput
@@ -395,6 +415,7 @@ export type FoodCatalogItemCreateManyInput = {
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  recipeYield?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type FoodCatalogItemUpdateManyMutationInput = {
@@ -407,6 +428,7 @@ export type FoodCatalogItemUpdateManyMutationInput = {
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipeYield?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type FoodCatalogItemUncheckedUpdateManyInput = {
@@ -419,6 +441,7 @@ export type FoodCatalogItemUncheckedUpdateManyInput = {
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipeYield?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
 export type FoodCatalogItemNullableScalarRelationFilter = {
@@ -436,10 +459,12 @@ export type FoodCatalogItemCountOrderByAggregateInput = {
   tipo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  recipeYield?: Prisma.SortOrder
 }
 
 export type FoodCatalogItemAvgOrderByAggregateInput = {
   calorias?: Prisma.SortOrder
+  recipeYield?: Prisma.SortOrder
 }
 
 export type FoodCatalogItemMaxOrderByAggregateInput = {
@@ -452,6 +477,7 @@ export type FoodCatalogItemMaxOrderByAggregateInput = {
   tipo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  recipeYield?: Prisma.SortOrder
 }
 
 export type FoodCatalogItemMinOrderByAggregateInput = {
@@ -464,10 +490,12 @@ export type FoodCatalogItemMinOrderByAggregateInput = {
   tipo?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  recipeYield?: Prisma.SortOrder
 }
 
 export type FoodCatalogItemSumOrderByAggregateInput = {
   calorias?: Prisma.SortOrder
+  recipeYield?: Prisma.SortOrder
 }
 
 export type FoodCatalogItemScalarRelationFilter = {
@@ -489,6 +517,14 @@ export type FoodCatalogItemUpdateOneWithoutComponentsNestedInput = {
   delete?: Prisma.FoodCatalogItemWhereInput | boolean
   connect?: Prisma.FoodCatalogItemWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.FoodCatalogItemUpdateToOneWithWhereWithoutComponentsInput, Prisma.FoodCatalogItemUpdateWithoutComponentsInput>, Prisma.FoodCatalogItemUncheckedUpdateWithoutComponentsInput>
+}
+
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type FoodCatalogItemCreateNestedOneWithoutRecipeIngredientsInput = {
@@ -547,6 +583,7 @@ export type FoodCatalogItemCreateWithoutComponentsInput = {
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  recipeYield?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   orderComponents?: Prisma.OrderMenuComponentCreateNestedManyWithoutCatalogItemInput
   recipeIngredients?: Prisma.RecipeIngredientCreateNestedManyWithoutFoodCatalogItemInput
   exclusions?: Prisma.CustomerExclusionCreateNestedManyWithoutCatalogItemInput
@@ -562,6 +599,7 @@ export type FoodCatalogItemUncheckedCreateWithoutComponentsInput = {
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  recipeYield?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   orderComponents?: Prisma.OrderMenuComponentUncheckedCreateNestedManyWithoutCatalogItemInput
   recipeIngredients?: Prisma.RecipeIngredientUncheckedCreateNestedManyWithoutFoodCatalogItemInput
   exclusions?: Prisma.CustomerExclusionUncheckedCreateNestedManyWithoutCatalogItemInput
@@ -593,6 +631,7 @@ export type FoodCatalogItemUpdateWithoutComponentsInput = {
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipeYield?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   orderComponents?: Prisma.OrderMenuComponentUpdateManyWithoutCatalogItemNestedInput
   recipeIngredients?: Prisma.RecipeIngredientUpdateManyWithoutFoodCatalogItemNestedInput
   exclusions?: Prisma.CustomerExclusionUpdateManyWithoutCatalogItemNestedInput
@@ -608,6 +647,7 @@ export type FoodCatalogItemUncheckedUpdateWithoutComponentsInput = {
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipeYield?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   orderComponents?: Prisma.OrderMenuComponentUncheckedUpdateManyWithoutCatalogItemNestedInput
   recipeIngredients?: Prisma.RecipeIngredientUncheckedUpdateManyWithoutFoodCatalogItemNestedInput
   exclusions?: Prisma.CustomerExclusionUncheckedUpdateManyWithoutCatalogItemNestedInput
@@ -623,6 +663,7 @@ export type FoodCatalogItemCreateWithoutRecipeIngredientsInput = {
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  recipeYield?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentCreateNestedManyWithoutCatalogItemInput
   orderComponents?: Prisma.OrderMenuComponentCreateNestedManyWithoutCatalogItemInput
   exclusions?: Prisma.CustomerExclusionCreateNestedManyWithoutCatalogItemInput
@@ -638,6 +679,7 @@ export type FoodCatalogItemUncheckedCreateWithoutRecipeIngredientsInput = {
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  recipeYield?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentUncheckedCreateNestedManyWithoutCatalogItemInput
   orderComponents?: Prisma.OrderMenuComponentUncheckedCreateNestedManyWithoutCatalogItemInput
   exclusions?: Prisma.CustomerExclusionUncheckedCreateNestedManyWithoutCatalogItemInput
@@ -669,6 +711,7 @@ export type FoodCatalogItemUpdateWithoutRecipeIngredientsInput = {
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipeYield?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentUpdateManyWithoutCatalogItemNestedInput
   orderComponents?: Prisma.OrderMenuComponentUpdateManyWithoutCatalogItemNestedInput
   exclusions?: Prisma.CustomerExclusionUpdateManyWithoutCatalogItemNestedInput
@@ -684,6 +727,7 @@ export type FoodCatalogItemUncheckedUpdateWithoutRecipeIngredientsInput = {
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipeYield?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentUncheckedUpdateManyWithoutCatalogItemNestedInput
   orderComponents?: Prisma.OrderMenuComponentUncheckedUpdateManyWithoutCatalogItemNestedInput
   exclusions?: Prisma.CustomerExclusionUncheckedUpdateManyWithoutCatalogItemNestedInput
@@ -699,6 +743,7 @@ export type FoodCatalogItemCreateWithoutOrderComponentsInput = {
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  recipeYield?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentCreateNestedManyWithoutCatalogItemInput
   recipeIngredients?: Prisma.RecipeIngredientCreateNestedManyWithoutFoodCatalogItemInput
   exclusions?: Prisma.CustomerExclusionCreateNestedManyWithoutCatalogItemInput
@@ -714,6 +759,7 @@ export type FoodCatalogItemUncheckedCreateWithoutOrderComponentsInput = {
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  recipeYield?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentUncheckedCreateNestedManyWithoutCatalogItemInput
   recipeIngredients?: Prisma.RecipeIngredientUncheckedCreateNestedManyWithoutFoodCatalogItemInput
   exclusions?: Prisma.CustomerExclusionUncheckedCreateNestedManyWithoutCatalogItemInput
@@ -745,6 +791,7 @@ export type FoodCatalogItemUpdateWithoutOrderComponentsInput = {
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipeYield?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentUpdateManyWithoutCatalogItemNestedInput
   recipeIngredients?: Prisma.RecipeIngredientUpdateManyWithoutFoodCatalogItemNestedInput
   exclusions?: Prisma.CustomerExclusionUpdateManyWithoutCatalogItemNestedInput
@@ -760,6 +807,7 @@ export type FoodCatalogItemUncheckedUpdateWithoutOrderComponentsInput = {
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipeYield?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentUncheckedUpdateManyWithoutCatalogItemNestedInput
   recipeIngredients?: Prisma.RecipeIngredientUncheckedUpdateManyWithoutFoodCatalogItemNestedInput
   exclusions?: Prisma.CustomerExclusionUncheckedUpdateManyWithoutCatalogItemNestedInput
@@ -775,6 +823,7 @@ export type FoodCatalogItemCreateWithoutExclusionsInput = {
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  recipeYield?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentCreateNestedManyWithoutCatalogItemInput
   orderComponents?: Prisma.OrderMenuComponentCreateNestedManyWithoutCatalogItemInput
   recipeIngredients?: Prisma.RecipeIngredientCreateNestedManyWithoutFoodCatalogItemInput
@@ -790,6 +839,7 @@ export type FoodCatalogItemUncheckedCreateWithoutExclusionsInput = {
   tipo: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  recipeYield?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentUncheckedCreateNestedManyWithoutCatalogItemInput
   orderComponents?: Prisma.OrderMenuComponentUncheckedCreateNestedManyWithoutCatalogItemInput
   recipeIngredients?: Prisma.RecipeIngredientUncheckedCreateNestedManyWithoutFoodCatalogItemInput
@@ -821,6 +871,7 @@ export type FoodCatalogItemUpdateWithoutExclusionsInput = {
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipeYield?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentUpdateManyWithoutCatalogItemNestedInput
   orderComponents?: Prisma.OrderMenuComponentUpdateManyWithoutCatalogItemNestedInput
   recipeIngredients?: Prisma.RecipeIngredientUpdateManyWithoutFoodCatalogItemNestedInput
@@ -836,6 +887,7 @@ export type FoodCatalogItemUncheckedUpdateWithoutExclusionsInput = {
   tipo?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recipeYield?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   components?: Prisma.FoodComponentUncheckedUpdateManyWithoutCatalogItemNestedInput
   orderComponents?: Prisma.OrderMenuComponentUncheckedUpdateManyWithoutCatalogItemNestedInput
   recipeIngredients?: Prisma.RecipeIngredientUncheckedUpdateManyWithoutFoodCatalogItemNestedInput
@@ -909,6 +961,7 @@ export type FoodCatalogItemSelect<ExtArgs extends runtime.Types.Extensions.Inter
   tipo?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  recipeYield?: boolean
   components?: boolean | Prisma.FoodCatalogItem$componentsArgs<ExtArgs>
   orderComponents?: boolean | Prisma.FoodCatalogItem$orderComponentsArgs<ExtArgs>
   recipeIngredients?: boolean | Prisma.FoodCatalogItem$recipeIngredientsArgs<ExtArgs>
@@ -926,6 +979,7 @@ export type FoodCatalogItemSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   tipo?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  recipeYield?: boolean
 }, ExtArgs["result"]["foodCatalogItem"]>
 
 export type FoodCatalogItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -938,6 +992,7 @@ export type FoodCatalogItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   tipo?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  recipeYield?: boolean
 }, ExtArgs["result"]["foodCatalogItem"]>
 
 export type FoodCatalogItemSelectScalar = {
@@ -950,9 +1005,10 @@ export type FoodCatalogItemSelectScalar = {
   tipo?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  recipeYield?: boolean
 }
 
-export type FoodCatalogItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nombre" | "descripcion" | "preparacion" | "calorias" | "imagen" | "tipo" | "createdAt" | "updatedAt", ExtArgs["result"]["foodCatalogItem"]>
+export type FoodCatalogItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nombre" | "descripcion" | "preparacion" | "calorias" | "imagen" | "tipo" | "createdAt" | "updatedAt" | "recipeYield", ExtArgs["result"]["foodCatalogItem"]>
 export type FoodCatalogItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   components?: boolean | Prisma.FoodCatalogItem$componentsArgs<ExtArgs>
   orderComponents?: boolean | Prisma.FoodCatalogItem$orderComponentsArgs<ExtArgs>
@@ -981,6 +1037,7 @@ export type $FoodCatalogItemPayload<ExtArgs extends runtime.Types.Extensions.Int
     tipo: string
     createdAt: Date
     updatedAt: Date
+    recipeYield: runtime.Decimal | null
   }, ExtArgs["result"]["foodCatalogItem"]>
   composites: {}
 }
@@ -1417,6 +1474,7 @@ export interface FoodCatalogItemFieldRefs {
   readonly tipo: Prisma.FieldRef<"FoodCatalogItem", 'String'>
   readonly createdAt: Prisma.FieldRef<"FoodCatalogItem", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"FoodCatalogItem", 'DateTime'>
+  readonly recipeYield: Prisma.FieldRef<"FoodCatalogItem", 'Decimal'>
 }
     
 

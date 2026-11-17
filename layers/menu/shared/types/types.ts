@@ -71,6 +71,7 @@ export interface RecipeIngredient extends RecipeIngredientInput {
 
 export interface FoodCatalogItem extends Omit<FoodItemDetail, 'catalogItemId'> {
   id: string;
+  recipeYield?: number | null;
   preparacion: string;
   ingredientes: RecipeIngredient[];
   createdAt: string;
@@ -78,6 +79,7 @@ export interface FoodCatalogItem extends Omit<FoodItemDetail, 'catalogItemId'> {
 }
 
 export type FoodCatalogItemInput = Omit<FoodItemDetail, 'catalogItemId'> & {
+  recipeYield?: number | null;
   preparacion: string;
   ingredientes: RecipeIngredientInput[];
 };

@@ -345,6 +345,7 @@ export type OrderWhereInput = {
   statusEvents?: Prisma.OrderStatusEventListRelationFilter
   menuChanges?: Prisma.OrderMenuChangeListRelationFilter
   accessLinks?: Prisma.OrderAccessLinkListRelationFilter
+  payments?: Prisma.OrderPaymentListRelationFilter
 }
 
 export type OrderOrderByWithRelationInput = {
@@ -376,6 +377,7 @@ export type OrderOrderByWithRelationInput = {
   statusEvents?: Prisma.OrderStatusEventOrderByRelationAggregateInput
   menuChanges?: Prisma.OrderMenuChangeOrderByRelationAggregateInput
   accessLinks?: Prisma.OrderAccessLinkOrderByRelationAggregateInput
+  payments?: Prisma.OrderPaymentOrderByRelationAggregateInput
 }
 
 export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -410,6 +412,7 @@ export type OrderWhereUniqueInput = Prisma.AtLeast<{
   statusEvents?: Prisma.OrderStatusEventListRelationFilter
   menuChanges?: Prisma.OrderMenuChangeListRelationFilter
   accessLinks?: Prisma.OrderAccessLinkListRelationFilter
+  payments?: Prisma.OrderPaymentListRelationFilter
 }, "id" | "folio" | "idempotencyKey">
 
 export type OrderOrderByWithAggregationInput = {
@@ -489,6 +492,7 @@ export type OrderCreateInput = {
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateInput = {
@@ -516,6 +520,7 @@ export type OrderUncheckedCreateInput = {
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUpdateInput = {
@@ -542,6 +547,7 @@ export type OrderUpdateInput = {
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateInput = {
@@ -569,6 +575,7 @@ export type OrderUncheckedUpdateInput = {
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateManyInput = {
@@ -974,6 +981,20 @@ export type OrderUpdateOneWithoutAccessLinksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutAccessLinksInput, Prisma.OrderUpdateWithoutAccessLinksInput>, Prisma.OrderUncheckedUpdateWithoutAccessLinksInput>
 }
 
+export type OrderCreateNestedOneWithoutPaymentsInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutPaymentsInput, Prisma.OrderUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutPaymentsInput
+  connect?: Prisma.OrderWhereUniqueInput
+}
+
+export type OrderUpdateOneRequiredWithoutPaymentsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderCreateWithoutPaymentsInput, Prisma.OrderUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.OrderCreateOrConnectWithoutPaymentsInput
+  upsert?: Prisma.OrderUpsertWithoutPaymentsInput
+  connect?: Prisma.OrderWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrderUpdateToOneWithWhereWithoutPaymentsInput, Prisma.OrderUpdateWithoutPaymentsInput>, Prisma.OrderUncheckedUpdateWithoutPaymentsInput>
+}
+
 export type OrderCreateWithoutSourceWeeklyMenuInput = {
   id?: string
   folio?: number
@@ -998,6 +1019,7 @@ export type OrderCreateWithoutSourceWeeklyMenuInput = {
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutSourceWeeklyMenuInput = {
@@ -1024,6 +1046,7 @@ export type OrderUncheckedCreateWithoutSourceWeeklyMenuInput = {
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutSourceWeeklyMenuInput = {
@@ -1101,6 +1124,7 @@ export type OrderCreateWithoutCustomerInput = {
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutCustomerInput = {
@@ -1127,6 +1151,7 @@ export type OrderUncheckedCreateWithoutCustomerInput = {
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutCustomerInput = {
@@ -1179,6 +1204,7 @@ export type OrderCreateWithoutPlanVariantInput = {
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutPlanVariantInput = {
@@ -1205,6 +1231,7 @@ export type OrderUncheckedCreateWithoutPlanVariantInput = {
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutPlanVariantInput = {
@@ -1257,6 +1284,7 @@ export type OrderCreateWithoutDeliveriesInput = {
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutDeliveriesInput = {
@@ -1283,6 +1311,7 @@ export type OrderUncheckedCreateWithoutDeliveriesInput = {
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutDeliveriesInput = {
@@ -1324,6 +1353,7 @@ export type OrderUpdateWithoutDeliveriesInput = {
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutDeliveriesInput = {
@@ -1350,6 +1380,7 @@ export type OrderUncheckedUpdateWithoutDeliveriesInput = {
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutStatusEventsInput = {
@@ -1376,6 +1407,7 @@ export type OrderCreateWithoutStatusEventsInput = {
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutStatusEventsInput = {
@@ -1402,6 +1434,7 @@ export type OrderUncheckedCreateWithoutStatusEventsInput = {
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutStatusEventsInput = {
@@ -1443,6 +1476,7 @@ export type OrderUpdateWithoutStatusEventsInput = {
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutStatusEventsInput = {
@@ -1469,6 +1503,7 @@ export type OrderUncheckedUpdateWithoutStatusEventsInput = {
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutMenuSlotsInput = {
@@ -1495,6 +1530,7 @@ export type OrderCreateWithoutMenuSlotsInput = {
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutMenuSlotsInput = {
@@ -1521,6 +1557,7 @@ export type OrderUncheckedCreateWithoutMenuSlotsInput = {
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutMenuSlotsInput = {
@@ -1562,6 +1599,7 @@ export type OrderUpdateWithoutMenuSlotsInput = {
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
@@ -1588,6 +1626,7 @@ export type OrderUncheckedUpdateWithoutMenuSlotsInput = {
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutMenuChangesInput = {
@@ -1614,6 +1653,7 @@ export type OrderCreateWithoutMenuChangesInput = {
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutMenuChangesInput = {
@@ -1640,6 +1680,7 @@ export type OrderUncheckedCreateWithoutMenuChangesInput = {
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutMenuChangesInput = {
@@ -1681,6 +1722,7 @@ export type OrderUpdateWithoutMenuChangesInput = {
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutMenuChangesInput = {
@@ -1707,6 +1749,7 @@ export type OrderUncheckedUpdateWithoutMenuChangesInput = {
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateWithoutCycleInput = {
@@ -1733,6 +1776,7 @@ export type OrderCreateWithoutCycleInput = {
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutCycleInput = {
@@ -1759,6 +1803,7 @@ export type OrderUncheckedCreateWithoutCycleInput = {
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutCycleInput = {
@@ -1811,6 +1856,7 @@ export type OrderCreateWithoutAccessLinksInput = {
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentCreateNestedManyWithoutOrderInput
 }
 
 export type OrderUncheckedCreateWithoutAccessLinksInput = {
@@ -1837,6 +1883,7 @@ export type OrderUncheckedCreateWithoutAccessLinksInput = {
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
   statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
+  payments?: Prisma.OrderPaymentUncheckedCreateNestedManyWithoutOrderInput
 }
 
 export type OrderCreateOrConnectWithoutAccessLinksInput = {
@@ -1878,6 +1925,7 @@ export type OrderUpdateWithoutAccessLinksInput = {
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutAccessLinksInput = {
@@ -1904,6 +1952,130 @@ export type OrderUncheckedUpdateWithoutAccessLinksInput = {
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUncheckedUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderCreateWithoutPaymentsInput = {
+  id?: string
+  folio?: number
+  status?: $Enums.OrderStatus
+  version?: number
+  offerVersion?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
+  capturedAfterCutoff?: boolean
+  planTitleSnapshot: string
+  planVariantTitleSnapshot: string
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  customer: Prisma.CustomerCreateNestedOneWithoutOrdersInput
+  planVariant?: Prisma.PlanVariantCreateNestedOneWithoutOrdersInput
+  sourceWeeklyMenu?: Prisma.WeeklyMenuCreateNestedOneWithoutSourceOrdersInput
+  cycle: Prisma.WeeklyCycleCreateNestedOneWithoutOrdersInput
+  deliveries?: Prisma.OrderDeliveryCreateNestedManyWithoutOrderInput
+  menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkCreateNestedManyWithoutOrderInput
+}
+
+export type OrderUncheckedCreateWithoutPaymentsInput = {
+  id?: string
+  customerId: string
+  planVariantId?: string | null
+  sourceWeeklyMenuId?: string | null
+  cycleId: string
+  folio?: number
+  status?: $Enums.OrderStatus
+  version?: number
+  offerVersion?: number
+  idempotencyKey?: string | null
+  idempotencyFingerprint?: string | null
+  capturedAfterCutoff?: boolean
+  planTitleSnapshot: string
+  planVariantTitleSnapshot: string
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deliveries?: Prisma.OrderDeliveryUncheckedCreateNestedManyWithoutOrderInput
+  menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutOrderInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedCreateNestedManyWithoutOrderInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedCreateNestedManyWithoutOrderInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedCreateNestedManyWithoutOrderInput
+}
+
+export type OrderCreateOrConnectWithoutPaymentsInput = {
+  where: Prisma.OrderWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrderCreateWithoutPaymentsInput, Prisma.OrderUncheckedCreateWithoutPaymentsInput>
+}
+
+export type OrderUpsertWithoutPaymentsInput = {
+  update: Prisma.XOR<Prisma.OrderUpdateWithoutPaymentsInput, Prisma.OrderUncheckedUpdateWithoutPaymentsInput>
+  create: Prisma.XOR<Prisma.OrderCreateWithoutPaymentsInput, Prisma.OrderUncheckedCreateWithoutPaymentsInput>
+  where?: Prisma.OrderWhereInput
+}
+
+export type OrderUpdateToOneWithWhereWithoutPaymentsInput = {
+  where?: Prisma.OrderWhereInput
+  data: Prisma.XOR<Prisma.OrderUpdateWithoutPaymentsInput, Prisma.OrderUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type OrderUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  customer?: Prisma.CustomerUpdateOneRequiredWithoutOrdersNestedInput
+  planVariant?: Prisma.PlanVariantUpdateOneWithoutOrdersNestedInput
+  sourceWeeklyMenu?: Prisma.WeeklyMenuUpdateOneWithoutSourceOrdersNestedInput
+  cycle?: Prisma.WeeklyCycleUpdateOneRequiredWithoutOrdersNestedInput
+  deliveries?: Prisma.OrderDeliveryUpdateManyWithoutOrderNestedInput
+  menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
+}
+
+export type OrderUncheckedUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceWeeklyMenuId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  cycleId?: Prisma.StringFieldUpdateOperationsInput | string
+  folio?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  offerVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  idempotencyFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  capturedAfterCutoff?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  planTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  planVariantTitleSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contactSnapshot?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deliveries?: Prisma.OrderDeliveryUncheckedUpdateManyWithoutOrderNestedInput
+  menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutOrderNestedInput
+  statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
+  menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
+  accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderCreateManySourceWeeklyMenuInput = {
@@ -1950,6 +2122,7 @@ export type OrderUpdateWithoutSourceWeeklyMenuInput = {
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutSourceWeeklyMenuInput = {
@@ -1976,6 +2149,7 @@ export type OrderUncheckedUpdateWithoutSourceWeeklyMenuInput = {
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutSourceWeeklyMenuInput = {
@@ -2043,6 +2217,7 @@ export type OrderUpdateWithoutCustomerInput = {
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutCustomerInput = {
@@ -2069,6 +2244,7 @@ export type OrderUncheckedUpdateWithoutCustomerInput = {
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutCustomerInput = {
@@ -2136,6 +2312,7 @@ export type OrderUpdateWithoutPlanVariantInput = {
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutPlanVariantInput = {
@@ -2162,6 +2339,7 @@ export type OrderUncheckedUpdateWithoutPlanVariantInput = {
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutPlanVariantInput = {
@@ -2229,6 +2407,7 @@ export type OrderUpdateWithoutCycleInput = {
   statusEvents?: Prisma.OrderStatusEventUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateWithoutCycleInput = {
@@ -2255,6 +2434,7 @@ export type OrderUncheckedUpdateWithoutCycleInput = {
   statusEvents?: Prisma.OrderStatusEventUncheckedUpdateManyWithoutOrderNestedInput
   menuChanges?: Prisma.OrderMenuChangeUncheckedUpdateManyWithoutOrderNestedInput
   accessLinks?: Prisma.OrderAccessLinkUncheckedUpdateManyWithoutOrderNestedInput
+  payments?: Prisma.OrderPaymentUncheckedUpdateManyWithoutOrderNestedInput
 }
 
 export type OrderUncheckedUpdateManyWithoutCycleInput = {
@@ -2289,6 +2469,7 @@ export type OrderCountOutputType = {
   statusEvents: number
   menuChanges: number
   accessLinks: number
+  payments: number
 }
 
 export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2297,6 +2478,7 @@ export type OrderCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   statusEvents?: boolean | OrderCountOutputTypeCountStatusEventsArgs
   menuChanges?: boolean | OrderCountOutputTypeCountMenuChangesArgs
   accessLinks?: boolean | OrderCountOutputTypeCountAccessLinksArgs
+  payments?: boolean | OrderCountOutputTypeCountPaymentsArgs
 }
 
 /**
@@ -2344,6 +2526,13 @@ export type OrderCountOutputTypeCountAccessLinksArgs<ExtArgs extends runtime.Typ
   where?: Prisma.OrderAccessLinkWhereInput
 }
 
+/**
+ * OrderCountOutputType without action
+ */
+export type OrderCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OrderPaymentWhereInput
+}
+
 
 export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2374,6 +2563,7 @@ export type OrderSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   statusEvents?: boolean | Prisma.Order$statusEventsArgs<ExtArgs>
   menuChanges?: boolean | Prisma.Order$menuChangesArgs<ExtArgs>
   accessLinks?: boolean | Prisma.Order$accessLinksArgs<ExtArgs>
+  payments?: boolean | Prisma.Order$paymentsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["order"]>
 
@@ -2462,6 +2652,7 @@ export type OrderInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   statusEvents?: boolean | Prisma.Order$statusEventsArgs<ExtArgs>
   menuChanges?: boolean | Prisma.Order$menuChangesArgs<ExtArgs>
   accessLinks?: boolean | Prisma.Order$accessLinksArgs<ExtArgs>
+  payments?: boolean | Prisma.Order$paymentsArgs<ExtArgs>
   _count?: boolean | Prisma.OrderCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrderIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2489,6 +2680,7 @@ export type $OrderPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     statusEvents: Prisma.$OrderStatusEventPayload<ExtArgs>[]
     menuChanges: Prisma.$OrderMenuChangePayload<ExtArgs>[]
     accessLinks: Prisma.$OrderAccessLinkPayload<ExtArgs>[]
+    payments: Prisma.$OrderPaymentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2913,6 +3105,7 @@ export interface Prisma__OrderClient<T, Null = never, ExtArgs extends runtime.Ty
   statusEvents<T extends Prisma.Order$statusEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$statusEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderStatusEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   menuChanges<T extends Prisma.Order$menuChangesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$menuChangesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderMenuChangePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   accessLinks<T extends Prisma.Order$accessLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$accessLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderAccessLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  payments<T extends Prisma.Order$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Order$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3517,6 +3710,30 @@ export type Order$accessLinksArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.OrderAccessLinkScalarFieldEnum | Prisma.OrderAccessLinkScalarFieldEnum[]
+}
+
+/**
+ * Order.payments
+ */
+export type Order$paymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OrderPayment
+   */
+  select?: Prisma.OrderPaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the OrderPayment
+   */
+  omit?: Prisma.OrderPaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.OrderPaymentInclude<ExtArgs> | null
+  where?: Prisma.OrderPaymentWhereInput
+  orderBy?: Prisma.OrderPaymentOrderByWithRelationInput | Prisma.OrderPaymentOrderByWithRelationInput[]
+  cursor?: Prisma.OrderPaymentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.OrderPaymentScalarFieldEnum | Prisma.OrderPaymentScalarFieldEnum[]
 }
 
 /**

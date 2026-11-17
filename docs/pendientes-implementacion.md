@@ -99,22 +99,25 @@ La aplicación aún no se ha desplegado.
 
 ## 4. Operación, compras, cocina y reparto
 
-- [ ] Registrar pagos manuales, método, referencia, anticipos, saldo y devoluciones;
-  separar pago del estado de preparación y entrega (T17).
-- [ ] Completar el dashboard con pedidos por confirmar, entregas de hoy/atrasadas y
-  saldos pendientes (T18). La auditoría de dashboard ya documenta indicadores reales
-  y pedidos recientes; falta el alcance operativo restante.
+- [x] Registrar cobros manuales, método, referencia, anticipos, saldo y devoluciones;
+  separar pago del estado de preparación y entrega (T17). Libro inmutable e
+  idempotente; concurrencia verificada con PostgreSQL.
+- [x] Completar el dashboard con pedidos por confirmar, entregas de hoy/atrasadas,
+  fallidas, saldos y devoluciones pendientes (T18).
 - [ ] Archivar planes y variantes utilizados, traducir conflictos de base de datos a
   mensajes útiles y proteger la navegación con cambios sin guardar (T19/H24).
-- [ ] Consolidar ingredientes por ciclo con rendimiento, unidades compatibles y
-  agrupación por categoría; guardar lista de súper, marcar comprado y vincular
-  gastos. Definir la conservación histórica de recetas cuando corresponda (T22).
-- [ ] Consolidar producción por entrega, fecha, tiempo, platillo, porciones,
-  contenedores y personalización a partir de snapshots válidos (T20).
-- [ ] Generar etiquetas y listas imprimibles por cliente, comida y entrega (T21).
-- [ ] Crear tablero diario de reparto con direcciones históricas, responsable,
-  incidencias, evidencia y cobros pendientes. Estados individuales y estado global
-  derivado ya existen; queda la herramienta operativa (remanente de T16/T21).
+- [x] Consolidar ingredientes con rendimiento y unidades compatibles, guardar
+  cantidades históricas, marcar comprado y vincular gastos existentes (T22).
+- [x] Consolidar producción por entrega, fecha, tiempo, platillo, porciones,
+  contenedores y personalización desde comidas confirmadas (T20).
+- [x] Implementar etiquetas por cliente, comida y entrega; bloquear impresión de
+  versiones desactualizadas. Falta calibrar impresión física y ejecutar semana (T21).
+- [x] Implementar tablero diario de reparto con direcciones históricas, responsable,
+  incidencias, enlace de evidencia, saldo y transiciones individuales auditadas.
+- [ ] Ensayar un ciclo real con cocina/reparto, completar rendimientos de recetas y
+  validar una hoja impresa antes de declarar cierre operativo de T21.
+
+Evidencia, límites y comandos: [verificación de operación](verificacion-operacion.md).
 
 Fuentes: etapas 4–7 de la [auditoría semanal](auditoria-flujo-semanal.md),
 T16–T22 del [plan general](plan-pedidos-clientes.md) y

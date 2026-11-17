@@ -71,7 +71,12 @@ export const ModelName = {
   Expense: 'Expense',
   OperationSettings: 'OperationSettings',
   WeeklyCycle: 'WeeklyCycle',
-  OrderAccessLink: 'OrderAccessLink'
+  OrderAccessLink: 'OrderAccessLink',
+  OrderPayment: 'OrderPayment',
+  ProductionRun: 'ProductionRun',
+  ShoppingList: 'ShoppingList',
+  ShoppingItem: 'ShoppingItem',
+  DeliveryActivity: 'DeliveryActivity'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -151,7 +156,8 @@ export const FoodCatalogItemScalarFieldEnum = {
   imagen: 'imagen',
   tipo: 'tipo',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  recipeYield: 'recipeYield'
 } as const
 
 export type FoodCatalogItemScalarFieldEnum = (typeof FoodCatalogItemScalarFieldEnum)[keyof typeof FoodCatalogItemScalarFieldEnum]
@@ -264,7 +270,10 @@ export const OrderDeliveryScalarFieldEnum = {
   deliveredAt: 'deliveredAt',
   notes: 'notes',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  assignedTo: 'assignedTo',
+  incident: 'incident',
+  evidenceUrl: 'evidenceUrl'
 } as const
 
 export type OrderDeliveryScalarFieldEnum = (typeof OrderDeliveryScalarFieldEnum)[keyof typeof OrderDeliveryScalarFieldEnum]
@@ -419,6 +428,75 @@ export const OrderAccessLinkScalarFieldEnum = {
 export type OrderAccessLinkScalarFieldEnum = (typeof OrderAccessLinkScalarFieldEnum)[keyof typeof OrderAccessLinkScalarFieldEnum]
 
 
+export const OrderPaymentScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  kind: 'kind',
+  amount: 'amount',
+  method: 'method',
+  reference: 'reference',
+  reason: 'reason',
+  receivedAt: 'receivedAt',
+  actorId: 'actorId',
+  actorLabel: 'actorLabel',
+  idempotencyKey: 'idempotencyKey',
+  fingerprint: 'fingerprint',
+  createdAt: 'createdAt'
+} as const
+
+export type OrderPaymentScalarFieldEnum = (typeof OrderPaymentScalarFieldEnum)[keyof typeof OrderPaymentScalarFieldEnum]
+
+
+export const ProductionRunScalarFieldEnum = {
+  id: 'id',
+  cycleId: 'cycleId',
+  sourceFingerprint: 'sourceFingerprint',
+  requestKey: 'requestKey',
+  snapshot: 'snapshot',
+  actorLabel: 'actorLabel',
+  createdAt: 'createdAt'
+} as const
+
+export type ProductionRunScalarFieldEnum = (typeof ProductionRunScalarFieldEnum)[keyof typeof ProductionRunScalarFieldEnum]
+
+
+export const ShoppingListScalarFieldEnum = {
+  id: 'id',
+  productionRunId: 'productionRunId',
+  version: 'version',
+  createdAt: 'createdAt'
+} as const
+
+export type ShoppingListScalarFieldEnum = (typeof ShoppingListScalarFieldEnum)[keyof typeof ShoppingListScalarFieldEnum]
+
+
+export const ShoppingItemScalarFieldEnum = {
+  id: 'id',
+  shoppingListId: 'shoppingListId',
+  ingredientId: 'ingredientId',
+  name: 'name',
+  category: 'category',
+  unit: 'unit',
+  quantity: 'quantity',
+  purchased: 'purchased',
+  expenseId: 'expenseId',
+  updatedBy: 'updatedBy'
+} as const
+
+export type ShoppingItemScalarFieldEnum = (typeof ShoppingItemScalarFieldEnum)[keyof typeof ShoppingItemScalarFieldEnum]
+
+
+export const DeliveryActivityScalarFieldEnum = {
+  id: 'id',
+  deliveryId: 'deliveryId',
+  details: 'details',
+  actorLabel: 'actorLabel',
+  createdAt: 'createdAt'
+} as const
+
+export type DeliveryActivityScalarFieldEnum = (typeof DeliveryActivityScalarFieldEnum)[keyof typeof DeliveryActivityScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -433,6 +511,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

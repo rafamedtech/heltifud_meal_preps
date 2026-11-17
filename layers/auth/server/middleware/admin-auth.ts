@@ -18,9 +18,10 @@ export default defineEventHandler(async (event) => {
   const isProtectedPlanRoute = path.startsWith("/api/plans") && !isPublicPlansRoute
   const isProtectedOrderRoute = path.startsWith("/api/orders")
   const isProtectedCycleRoute = path.startsWith("/api/cycles")
+  const isProtectedOperationsRoute = path === "/api/operations" || path.startsWith("/api/operations/")
   const isProtectedSettingsRoute = path.startsWith("/api/operation-settings")
 
-  if (isPublicMenuRoute || isPublicPlansRoute || !(isProtectedMenuRoute || isProtectedMenuMutation || isProtectedFoodRoute || isProtectedIngredientRoute || isProtectedCustomerRoute || isProtectedExpenseRoute || isProtectedPlanRoute || isProtectedOrderRoute || isProtectedCycleRoute || isProtectedSettingsRoute)) {
+  if (isPublicMenuRoute || isPublicPlansRoute || !(isProtectedMenuRoute || isProtectedMenuMutation || isProtectedFoodRoute || isProtectedIngredientRoute || isProtectedCustomerRoute || isProtectedExpenseRoute || isProtectedPlanRoute || isProtectedOrderRoute || isProtectedCycleRoute || isProtectedSettingsRoute || isProtectedOperationsRoute)) {
     return
   }
 

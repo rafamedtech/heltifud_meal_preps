@@ -142,15 +142,17 @@ Cada tarea comienza en estado pendiente. Marcar checkbox solo con criterio de ci
 - [ ] T14 · P1 · Paginar listado completo; búsqueda remota de clientes; errores/carga/reintento; filtros por menú/semana y cualquiera de las entregas. **Cierre:** más de 150 pedidos y 100 clientes siguen accesibles; segunda entrega aparece en fecha correspondiente.
 - [ ] T15 · P1 · Registrar historial de estados/cambios con operador, fecha y motivo; permitir corrección controlada y cancelación. **Cierre:** se reconstruye evolución del pedido sin alterar historial previo. Dep.: T07, T12.
 - [ ] T16 · P1 · Modelar entregas individuales con comidas asignadas, estado, fecha efectiva, responsable e incidencias. Derivar estado global. **Cierre:** primera entrega no cierra segunda; no marcar entregado con pendientes. Dep.: T01, T15.
-- [ ] T17 · P1 · Registrar cobros manuales, método/referencia, saldo, anticipos y devoluciones; separar estado de pago y preparación. **Cierre:** abonos suman correctamente; sobrepago/devolución siguen reglas y auditoría. Dep.: T01, T12.
-- [ ] T18 · P1 · Sustituir dashboard vacío por pedidos por confirmar, entregas de hoy/atrasadas y saldos pendientes; accesos por rol. **Cierre:** métricas vienen de DB y coinciden con listados. Dep.: T14–T17.
+- [x] T17 · P1 · Registrar cobros manuales, método/referencia, saldo, anticipos y devoluciones; separar estado de pago y preparación. **Cierre:** abonos suman correctamente; sobrepago/devolución siguen reglas y auditoría. Dep.: T01, T12.
+- [x] T18 · P1 · Sustituir dashboard vacío por pedidos por confirmar, entregas de hoy/atrasadas y saldos pendientes; accesos por rol. **Cierre:** métricas vienen de DB y coinciden con listados. Dep.: T14–T17.
 - [ ] T19 · P1 · Archivar clientes/planes/variantes usados; traducir conflictos DB a 409/400 y mensajes útiles. Proteger salida con cambios pendientes. **Cierre:** historial conserva relaciones/snapshots y cliente con pedidos no dispara 500.
 
 ### Fase 4 — Cocina y reparto
 
-- [ ] T20 · P1 · Consolidar cantidades por fecha, tiempo, platillo y personalización desde snapshots confirmados; excluir cancelados/borradores. **Cierre:** sumas coinciden con pedidos de prueba, sustituciones incluidas. Dep.: T15, T16.
-- [ ] T21 · P1 · Crear etiquetas/lista imprimible por cliente/comida/entrega y lista de reparto con direcciones históricas e incidencias. **Cierre:** cocina y reparto ejecutan una semana sin copiar datos manualmente. Dep.: T20.
-- [ ] T22 · P2 · Consolidar ingredientes desde recetas con unidades compatibles y versión histórica cuando corresponda. **Cierre:** no mezclar unidades incompatibles; cambios de receta no falsean compras históricas. Dep.: T20.
+- [x] T20 · P1 · Consolidar cantidades por fecha, tiempo, platillo y personalización desde snapshots confirmados; excluir cancelados/borradores. **Cierre:** sumas coinciden con pedidos de prueba, sustituciones incluidas. Dep.: T15, T16.
+- [ ] T21 · P1 · **Implementación disponible; cierre operativo pendiente:** etiquetas/lista imprimible por cliente/comida/entrega y lista de reparto con direcciones históricas e incidencias. **Cierre:** cocina y reparto ejecutan una semana sin copiar datos manualmente. Dep.: T20.
+- [x] T22 · P2 · Consolidar ingredientes desde recetas con unidades compatibles y versión histórica cuando corresponda. **Cierre:** no mezclar unidades incompatibles; cambios de receta no falsean compras históricas. Dep.: T20.
+
+Evidencia de T17/T18/T20/T22 y límites del ensayo T21: [verificación de operación](verificacion-operacion.md). T21 sigue abierto hasta validar impresión física y ejecutar una semana con cocina y reparto.
 
 ### Fase 5 — Verificación y lanzamiento
 

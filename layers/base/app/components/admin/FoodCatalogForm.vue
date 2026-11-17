@@ -40,6 +40,7 @@ const prefilledType = computed(() => getSingleQueryValue(route.query.tipo))
 const emptyState = (nombre = "", tipo = ""): FoodCatalogItemInput => ({
   nombre,
   descripcion: "",
+  recipeYield: null,
   preparacion: "",
   ingredientes: [],
   calorias: 0,
@@ -62,6 +63,7 @@ const imageLoadFailed = ref(false)
 const invalidFields = reactive<Record<keyof FoodCatalogItemInput, boolean>>({
   nombre: false,
   descripcion: false,
+  recipeYield: false,
   preparacion: false,
   ingredientes: false,
   calorias: false,
@@ -110,6 +112,7 @@ const isDirty = computed(() => stateSnapshot.value !== initialStateSnapshot.valu
 function clearValidationHighlights() {
   invalidFields.nombre = false
   invalidFields.descripcion = false
+  invalidFields.recipeYield = false
   invalidFields.preparacion = false
   invalidFields.ingredientes = false
   invalidFields.calorias = false
@@ -138,6 +141,7 @@ watch(
         ? {
             nombre: item.nombre,
             descripcion: item.descripcion,
+            recipeYield: item.recipeYield ?? null,
             preparacion: item.preparacion,
             ingredientes: item.ingredientes.map((recipeIngredient) => ({
               ingredientId: recipeIngredient.ingredientId,
@@ -305,6 +309,10 @@ function onCancel() {
             <UEmpty v-else icon="i-lucide-image" :title="imagePlaceholderText" description="Usa una URL completa que empiece con http:// o https://" />
           </UCard>
         </div>
+
+        <UFormField label="Rendimiento de la receta (porciones)" name="recipeYield" description="Cantidad de porciones que producen los ingredientes registrados. Necesario para calcular la lista de súper." :error="invalidFields.recipeYield">
+          <UInputNumber v-model="state.recipeYield" :min="0.001" :max="9999999" :step="0.001" placeholder="Sin rendimiento" />
+        </UFormField>
 
         <AdminFoodRecipeFields
           v-model:ingredientes="state.ingredientes"

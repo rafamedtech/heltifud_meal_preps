@@ -13,6 +13,7 @@ function mapCatalogItem(item: {
   id: string;
   nombre: string;
   descripcion: string;
+  recipeYield?: unknown;
   preparacion: string;
   calorias: number;
   imagen: string;
@@ -38,6 +39,7 @@ function mapCatalogItem(item: {
     id: item.id,
     nombre: item.nombre,
     descripcion: item.descripcion,
+    recipeYield: item.recipeYield == null ? null : Number(item.recipeYield),
     preparacion: item.preparacion,
     ingredientes: item.recipeIngredients.map((recipeIngredient) => ({
       id: recipeIngredient.id,
@@ -76,6 +78,7 @@ function validateInput(input: FoodCatalogItemInput) {
     catalogData: {
       nombre: trimString(parsed.data.nombre),
       descripcion: trimString(parsed.data.descripcion),
+      recipeYield: parsed.data.recipeYield,
       preparacion: trimString(parsed.data.preparacion),
       calorias: parsed.data.calorias,
       imagen: trimString(parsed.data.imagen),

@@ -184,6 +184,7 @@ export const recipeIngredientInputSchema = z.object({
 });
 
 export const foodCatalogItemInputSchema = foodItemSchema.extend({
+  recipeYield: z.number().positive('El rendimiento debe ser mayor que cero').max(9999999).refine(value => Number(value.toFixed(3)) === value, 'Usa máximo tres decimales').nullable().default(null),
   preparacion: z.string().default(''),
   ingredientes: z.array(recipeIngredientInputSchema).default([]),
 }).superRefine((value, ctx) => {

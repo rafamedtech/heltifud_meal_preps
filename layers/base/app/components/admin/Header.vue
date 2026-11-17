@@ -7,11 +7,19 @@ const isLoggingOut = ref(false)
 const expenseCreateRequest = useState("admin-expense-create-request", () => 0)
 const customerCreateRequest = useState("admin-customer-create-request", () => 0)
 
+const productionCreateRequest = useState("admin-production-create-request", () => 0)
+const productionReady = useState("admin-production-availability", () => false)
+const isProductionPage = computed(() => route.path.replace(/\/$/, "") === "/admin/produccion")
+
 const pageHeaders: Record<string, { title: string; description: string }> = {
   "/admin": {
     title: "Panel de gestión",
     description: "Consulta y administra las principales secciones de Heltifud Meal Preps."
   },
+  "/admin/cobros": { title: "Cobros y saldos", description: "Registra abonos y devoluciones; consulta el saldo de cada pedido." },
+  "/admin/produccion": { title: "Producción", description: "Consolida los pedidos de cada ciclo y consulta porciones e indicaciones." },
+  "/admin/compras": { title: "Lista de súper", description: "Compra según las recetas y registra lo comprado en cada consolidación." },
+  "/admin/reparto": { title: "Tablero de reparto", description: "Asigna entregas y registra estados, incidencias y evidencia." },
   "/admin/planes": {
     title: "Planes y precios",
     description: "Define qué tiempos incluye cada plan y ofrece diferentes cantidades de días."
@@ -166,6 +174,7 @@ const isOrdersPage = computed(() => route.path.replace(/\/$/, "") === "/admin/pe
       <UDashboardSidebarCollapse size="sm" color="neutral" variant="ghost" />
     </template>
     <template #right>
+      <UButton v-if="isProductionPage" :disabled="!productionReady" label="Consolidar producción" icon="i-lucide-chef-hat" @click="productionCreateRequest++" />
       <UButton v-if="isFoodCatalogEditPage" color="neutral" variant="outline" icon="i-lucide-arrow-left" label="Regresar" @click="requestFoodCatalogBack" />
       <UButton v-if="isFoodCatalogPage" icon="i-lucide-plus" label="Nuevo platillo" :to="foodCatalogCreateTo" />
       <UButton v-if="isExpensesPage" icon="i-lucide-plus" label="Registrar gasto" @click="requestExpenseCreate" />

@@ -490,3 +490,35 @@ Compartir por WhatsApp es un `UButton` enlazado con el resumen persistido.
 La invitación se administra en la ficha del cliente; la revocación de consulta
 se confirma con `UModal` desde el detalle del pedido.
 No se crearon controles ni wrappers propios para estas pantallas.
+
+
+## Operación por consolidación guardada
+
+`AdminProductionWorkspace` sirve a `/admin/produccion` y `/admin/compras`.
+Compone los controles y tablas de Nuxt UI; la acción principal de consolidación
+vive en `AdminHeader`. Carga, error con reintento y vacío son estados explícitos.
+Las lecturas SSR de `useAsyncData` utilizan `useRequestFetch` para conservar la
+sesión. La disponibilidad compartida de la acción se actualiza al montar,
+evita diferencias entre servidor e hidratación y exige una carga exitosa.
+
+Cada consolidación conserva comidas, sustituciones, indicaciones, exclusiones,
+recetas y cantidades calculadas. Un `UAlert` advierte si su origen cambió;
+una tarjeta enumera recetas incompletas. Una nueva versión inicia otra lista
+independiente de compras. La edición de compra usa `UModal`, `UCheckbox` y
+`USelectMenu` para vincular un gasto existente.
+
+`/admin/cobros` compone resumen, filtros, `UTable` y `UModal` con `UForm` para
+abonos y devoluciones manuales. `/admin/reparto` compone cuatro `UCard` por estado,
+con dirección histórica, saldo, responsable, notas e incidencias. Reutiliza las
+transiciones del pedido y abre un modal para motivo o asignación/evidencia.
+
+### Etiquetas imprimibles
+
+`/admin/etiquetas` usa layout independiente, filtros y acciones Nuxt UI y
+artículos semánticos por comida. La cuadrícula y `@media print` son estilos
+propios porque Nuxt UI/Dashboard no ofrecen paginación física de etiquetas.
+Referencia A4, etiquetas de 100 × 70 mm mínimos, separación de 3 mm; el contenido
+largo puede aumentar la altura. No se añaden radios propios. Los colores de
+tinta se fijan a negro únicamente al imprimir. La impresión se bloquea si la
+consolidación está desactualizada. Validar escala y papel antes de un lote;
+no equivale a una plantilla calibrada para hojas adhesivas de un proveedor.
