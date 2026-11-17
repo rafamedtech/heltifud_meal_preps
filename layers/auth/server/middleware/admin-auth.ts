@@ -6,6 +6,7 @@ import { canAccessApi, staffRoleFrom } from "../../shared/utils/staffAccess"
 // only reach the routes allowed in `staffAccess.ts`, everything else is admin.
 // New routes are therefore private by default (fail closed).
 const publicApiRoutes: Record<string, readonly string[]> = {
+  "/api/health": ["GET"],
   "/api/menu": ["GET"],
   "/api/menu/next": ["GET"],
   "/api/plans": ["GET"],

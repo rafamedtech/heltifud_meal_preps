@@ -1,6 +1,11 @@
 import "dotenv/config"
 
-import { defineConfig, env } from "prisma/config"
+import { defineConfig } from "prisma/config"
+
+// Only migrations and verify scripts need the owner connection. `prisma
+// generate` (postinstall, Netlify build) runs without it, so DIRECT_URL never
+// has to reach the deployed functions.
+const directUrl = process.env.DIRECT_URL
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -9,7 +14,5 @@ export default defineConfig({
     seed: "node --import tsx prisma/seed.ts"
   },
   engine: "classic",
-  datasource: {
-    url: env("DIRECT_URL")
-  }
+  ...(directUrl ? { datasource: { url: directUrl } } : {})
 })

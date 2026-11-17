@@ -165,7 +165,7 @@ describe("administrative API authorization", () => {
     })
   })
 
-  it.each(["/api/menu", "/api/menu/next", "/api/plans"])("keeps GET %s public without consulting Auth", async (path) => {
+  it.each(["/api/menu", "/api/menu/next", "/api/plans", "/api/health"])("keeps GET %s public without consulting Auth", async (path) => {
     await expect(adminAuth(request(path))).resolves.toBeUndefined()
     expect(serverClient).not.toHaveBeenCalled()
     expect(getUser).not.toHaveBeenCalled()
