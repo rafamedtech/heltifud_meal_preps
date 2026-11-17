@@ -1,27 +1,63 @@
-import { createError, defineEventHandler, getMethod, getRequestURL } from "h3"
+import { createError, defineEventHandler, getMethod } from "h3"
 import { serverSupabaseClient } from "#supabase/server"
 
-const publicMenuRoutes = new Set(["/api/menu", "/api/menu/next"])
+// Every /api route requires an administrator unless it is listed here.
+// New routes are therefore private by default (fail closed).
+const publicApiRoutes: Record<string, readonly string[]> = {
+  "/api/menu": ["GET"],
+  "/api/menu/next": ["GET"],
+  "/api/plans": ["GET"],
+  "/api/customer-order": ["POST"],
+  "/api/customer-order/offer": ["GET"],
+  "/api/customer-order/private": ["GET"]
+}
+
+const publicApiPrefixes = ["/api/_nuxt_icon/"]
+
+function rawPathname(path: string) {
+  const end = path.search(/[?#]/)
+  return end === -1 ? path : path.slice(0, end)
+}
+
+// Nitro's router decodes the path before matching (`/api/%63ustomers` reaches
+// `/api/customers`), so the decision must be taken on the decoded path.
+// Encoded API paths are never produced by the app; reject them instead of
+// guessing how each layer will interpret them.
+export function resolveApiPath(path: string) {
+  const raw = rawPathname(path)
+  let decoded: string
+  try {
+    decoded = decodeURIComponent(raw)
+  } catch {
+    return { isApi: true, invalid: true, path: raw }
+  }
+
+  const lower = decoded.toLowerCase()
+  const isApi = lower === "/api" || lower.startsWith("/api/") || /^\/+api(\/|$)/.test(lower)
+  return { isApi, invalid: isApi && decoded !== raw, path: decoded }
+}
+
+function isPublicApiRoute(path: string, method: string) {
+  if (publicApiRoutes[path]?.includes(method)) return true
+  return method === "GET" && publicApiPrefixes.some(prefix => path.startsWith(prefix))
+}
 
 export default defineEventHandler(async (event) => {
-  const path = getRequestURL(event).pathname
   const method = getMethod(event)
+  const { isApi, invalid, path } = resolveApiPath(event.path)
 
-  const isPublicMenuRoute = method === "GET" && publicMenuRoutes.has(path)
-  const isProtectedMenuRoute = path === "/api/menu/all" || path.startsWith("/api/menu/")
-  const isProtectedMenuMutation = path === "/api/menu" && method !== "GET"
-  const isProtectedFoodRoute = path.startsWith("/api/food-components")
-  const isProtectedIngredientRoute = path === "/api/ingredients" || path.startsWith("/api/ingredients/")
-  const isProtectedCustomerRoute = path.startsWith("/api/customers")
-  const isProtectedExpenseRoute = path.startsWith("/api/expenses")
-  const isPublicPlansRoute = path === "/api/plans" && method === "GET"
-  const isProtectedPlanRoute = path.startsWith("/api/plans") && !isPublicPlansRoute
-  const isProtectedOrderRoute = path.startsWith("/api/orders")
-  const isProtectedCycleRoute = path.startsWith("/api/cycles")
-  const isProtectedOperationsRoute = path === "/api/operations" || path.startsWith("/api/operations/")
-  const isProtectedSettingsRoute = path.startsWith("/api/operation-settings")
+  if (!isApi) {
+    return
+  }
 
-  if (isPublicMenuRoute || isPublicPlansRoute || !(isProtectedMenuRoute || isProtectedMenuMutation || isProtectedFoodRoute || isProtectedIngredientRoute || isProtectedCustomerRoute || isProtectedExpenseRoute || isProtectedPlanRoute || isProtectedOrderRoute || isProtectedCycleRoute || isProtectedSettingsRoute || isProtectedOperationsRoute)) {
+  if (invalid) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Bad Request"
+    })
+  }
+
+  if (isPublicApiRoute(path, method === "HEAD" ? "GET" : method)) {
     return
   }
 

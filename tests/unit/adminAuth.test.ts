@@ -125,6 +125,55 @@ describe("administrative API authorization", () => {
 
   it("does not apply administrative authorization to unrelated routes", async () => {
     await expect(adminAuth(request("/"))).resolves.toBeUndefined()
+    await expect(adminAuth(request("/admin/clientes"))).resolves.toBeUndefined()
+    await expect(adminAuth(request("/apiary"))).resolves.toBeUndefined()
     expect(serverClient).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ["/api/customer-order", "POST"],
+    ["/api/customer-order/offer", "GET"],
+    ["/api/customer-order/private", "GET"],
+    ["/api/_nuxt_icon/lucide", "GET"],
+    ["/api/plans", "HEAD"],
+    ["/api/menu?week=next", "GET"]
+  ])("keeps public route %s %s open without consulting Auth", async (path, method) => {
+    await expect(adminAuth(request(path, method))).resolves.toBeUndefined()
+    expect(serverClient).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ["/api/customer-order", "GET"],
+    ["/api/customer-order/private", "POST"],
+    ["/api/plans/", "GET"],
+    ["/api/menu/", "GET"],
+    ["/api", "GET"],
+    ["/api/future-endpoint", "GET"],
+    ["/API/customers", "GET"],
+    ["//api/customers", "GET"]
+  ])("fails closed for unlisted API route %s %s", async (path, method) => {
+    getUser.mockResolvedValue({ data: { user: null }, error: null })
+    await expect(adminAuth(request(path, method))).rejects.toMatchObject({ statusCode: 401 })
+  })
+
+  // Regression: Nitro decodes the path before routing, so `/api/%63ustomers`
+  // reached `/api/customers` while the check compared the encoded string.
+  it.each([
+    ["/api/%63ustomers", "GET"],
+    ["/%61pi/customers", "GET"],
+    ["/api/%6Frders", "POST"],
+    ["/api/%6Fperations/dashboard", "GET"],
+    ["/api/menu%2Fall", "GET"],
+    ["/api/menu%2fnext", "GET"],
+    ["/api/plans%2F", "GET"],
+    ["/api/%E0%A4%A", "GET"]
+  ])("rejects percent-encoded API path %s %s before consulting Auth", async (path, method) => {
+    await expect(adminAuth(request(path, method))).rejects.toMatchObject({ statusCode: 400 })
+    expect(serverClient).not.toHaveBeenCalled()
+  })
+
+  it("requires an administrator when only the query string is encoded", async () => {
+    getUser.mockResolvedValue({ data: { user: null }, error: null })
+    await expect(adminAuth(request("/api/customers?search=%41na"))).rejects.toMatchObject({ statusCode: 401 })
   })
 })
