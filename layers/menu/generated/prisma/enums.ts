@@ -67,7 +67,8 @@ export const DeliveryStatus = {
   PENDING: 'PENDING',
   OUT_FOR_DELIVERY: 'OUT_FOR_DELIVERY',
   DELIVERED: 'DELIVERED',
-  FAILED: 'FAILED'
+  FAILED: 'FAILED',
+  LOST: 'LOST'
 } as const
 
 export type DeliveryStatus = (typeof DeliveryStatus)[keyof typeof DeliveryStatus]

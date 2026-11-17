@@ -3,6 +3,7 @@ import { customerContactSchema, type CustomerOffer } from '~~/layers/menu/shared
 import type { Plan, DayOfWeek, SlotTypeValue, ComponentRoleValue } from '~~/layers/menu/shared/types/types'
 import { chosenDaysError, dayOfWeekLabel, planOrderDeliveries } from '~~/layers/menu/shared/utils/orderDeliveries'
 import { roleFamily } from '~~/layers/menu/shared/utils/orderPersonalization'
+import { ORDER_POLICY } from '~~/layers/menu/shared/utils/orderPolicy'
 import { CUSTOMER_DRAFT_KEY, readCustomerDraft, type CustomerDraft } from '~~/layers/menu/shared/utils/customerOrderDraft'
 
 useSeoMeta({ title: 'Tu pedido | Heltifud', robots: 'noindex, nofollow', referrer: 'no-referrer' })
@@ -222,6 +223,12 @@ watch(state, persist, { deep: true })
               <div><dt class="text-sm text-muted">Total del plan</dt><dd class="text-2xl font-semibold tabular-nums text-highlighted">{{ transformPrice(offer.variant.price) }}</dd></div>
             </dl>
             <p class="text-sm text-muted">El envío registra tu solicitud. Heltifud confirmará disponibilidad, cobertura de entrega y forma de pago por WhatsApp antes de preparar el pedido.</p>
+            <div class="space-y-2">
+              <p class="text-sm font-medium text-highlighted">Pagos, cambios y cancelaciones</p>
+              <ul class="list-disc space-y-1 ps-5 text-sm text-muted">
+                <li v-for="rule in ORDER_POLICY" :key="rule">{{ rule }}</li>
+              </ul>
+            </div>
             <p class="text-sm text-muted">Tu borrador, incluidos contacto y direcciones, se guarda en este dispositivo durante 7 días. El enlace privado de consulta vence a los 90 días.</p>
             <UButton type="submit" icon="i-lucide-send" label="Enviar pedido a Heltifud" :loading="saving" :disabled="locked || Boolean(daysError) || needsReview || deliveries.some(d => state.addresses[d.sequence].trim().length < 8)" class="w-full sm:w-fit" />
           </UPageCard>

@@ -4,6 +4,7 @@ import { customerOrderSummary } from '~~/layers/menu/shared/utils/customerOrderS
 import { dayOfWeekLabel, orderFolioLabel } from '~~/layers/menu/shared/utils/orderDeliveries'
 import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, DELIVERY_STATUS_LABELS } from '~~/layers/menu/shared/utils/orderWorkflow'
 import type { OrderStatusValue, DeliveryStatusValue } from '~~/layers/menu/shared/types/types'
+import { customerOrderStatusMessage } from '~~/layers/menu/shared/utils/orderPolicy'
 
 useSeoMeta({ title: 'Consulta de tu pedido | Heltifud', robots: 'noindex, nofollow', referrer: 'no-referrer' })
 const order = ref<PrivateCustomerOrder | null>(null)
@@ -32,13 +33,13 @@ onMounted(async () => { token = new URLSearchParams(location.hash.slice(1)).get(
       <template #actions><UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" label="Reintentar" @click="load" /><UButton to="/pedido" label="Hacer un pedido" /></template>
     </UEmpty>
     <template v-else>
-      <UPageHeader :title="`Tu pedido ${orderFolioLabel(order.folio)}`" description="Tu solicitud quedó registrada. Heltifud revisará las comidas, entregas y forma de pago antes de confirmarla.">
+      <UPageHeader :title="`Tu pedido ${orderFolioLabel(order.folio)}`" :description="customerOrderStatusMessage(order.status as OrderStatusValue)">
         <template #links><UBadge variant="subtle" :color="ORDER_STATUS_COLORS[order.status as OrderStatusValue]" :label="order.status === 'DRAFT' ? 'Recibido · pendiente de confirmación' : ORDER_STATUS_LABELS[order.status as OrderStatusValue]" /></template>
       </UPageHeader>
       <UAlert v-if="error" color="warning" variant="soft" :title="error" />
       <UPageCard :title="`${order.planTitle} · ${order.variantTitle}`" :description="`${order.contact.nombre} · ${order.contact.telefono}`">
         <p class="text-2xl font-semibold tabular-nums text-highlighted">{{ transformPrice(order.price) }}</p>
-        <p class="text-sm text-muted">Total del plan registrado. La recepción de esta solicitud no acredita un pago.</p>
+        <p class="text-sm text-muted">{{ order.status === 'DRAFT' ? 'Total del plan registrado. La recepción de esta solicitud no acredita un pago.' : 'Total del plan. Los pagos se registran con Heltifud.' }}</p>
         <div class="flex flex-wrap gap-3">
           <UButton :to="whatsapp" target="_blank" rel="noopener noreferrer" icon="i-lucide-message-circle" label="Compartir pedido por WhatsApp" />
           <UButton color="neutral" variant="outline" icon="i-lucide-copy" :label="copied ? 'Enlace copiado' : 'Copiar enlace privado'" @click="copyLink" />

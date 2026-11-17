@@ -40,8 +40,8 @@ export async function getOperationsDashboard(): Promise<OperationsDashboard> {
   const eligible = { status: { notIn: ['DRAFT', 'CANCELLED'] as Array<'DRAFT' | 'CANCELLED'> } };
   const [pendingConfirmation, deliveriesToday, overdue, failed, accounts] = await Promise.all([
     prisma.order.count({ where: { status: 'DRAFT' } }),
-    prisma.orderDelivery.count({ where: { scheduledDate: new Date(today), status: { not: 'DELIVERED' }, order: eligible } }),
-    prisma.orderDelivery.count({ where: { scheduledDate: { lt: new Date(today) }, status: { not: 'DELIVERED' }, order: eligible } }),
+    prisma.orderDelivery.count({ where: { scheduledDate: new Date(today), status: { notIn: ['DELIVERED', 'LOST'] }, order: eligible } }),
+    prisma.orderDelivery.count({ where: { scheduledDate: { lt: new Date(today) }, status: { notIn: ['DELIVERED', 'LOST'] }, order: eligible } }),
     prisma.orderDelivery.count({ where: { status: 'FAILED', order: eligible } }),
     getAccounts({}),
   ]);

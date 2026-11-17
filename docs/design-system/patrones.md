@@ -545,9 +545,20 @@ independiente de compras. La edición de compra usa `UModal`, `UCheckbox` y
 `USelectMenu` para vincular un gasto existente.
 
 `/admin/cobros` compone resumen, filtros, `UTable` y `UModal` con `UForm` para
-abonos y devoluciones manuales. `/admin/reparto` compone cuatro `UCard` por estado,
-con dirección histórica, saldo, responsable, notas e incidencias. Reutiliza las
-transiciones del pedido y abre un modal para motivo o asignación/evidencia.
+abonos y devoluciones manuales. El medio «Saldo a favor» muestra el saldo del
+cliente en el modal y limita el importe con `UInputNumber :max`; como devolución,
+lo acredita. `/admin/reparto` compone una `UCard` por estado (Pendiente, En
+reparto, Fallida, Entregada, No entregada; `md:grid-cols-2 xl:grid-cols-3
+2xl:grid-cols-5`), con dirección histórica, saldo, responsable, notas e
+incidencias. Reutiliza las transiciones del pedido y abre un modal para motivo o
+asignación/evidencia. Desde Fallida, «Reprogramar» añade un `CalendarInput`
+opcional para la nueva fecha y «Cerrar sin entregar» (`color="error"
+variant="outline"`) muestra un `UAlert` de advertencia y exige motivo.
+
+Iniciar la preparación con saldo pendiente: el servidor responde 409
+`PAYMENT_PENDING`; el modal del pedido sigue abierto con un `UAlert` warning (acción
+«Registrar cobro») y un `UCheckbox` «Preparar con saldo pendiente» que vuelve
+obligatorio el motivo.
 
 ### Etiquetas imprimibles
 

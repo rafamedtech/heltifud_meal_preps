@@ -56,6 +56,8 @@ import {
 } from './orderPersonalization';
 import { prisma } from './prisma';
 import { ORDER_TRANSITIONS, DELIVERY_TRANSITIONS, derivedOrderStatus, isClosedOrder } from '../../shared/utils/orderWorkflow';
+import { accountTotals } from '../../shared/utils/operations';
+import { localToday } from './payments';
 
 const deliveriesInclude = { orderBy: { sequence: 'asc' as const } };
 
@@ -800,7 +802,7 @@ export async function transitionOrder(id: string, input: OrderStatusInput, actor
   if (!parsed.success) throw createError({ statusCode: 400, statusMessage: 'El cambio de estado no es válido.' });
   const data = parsed.data;
   await prisma.$transaction(async tx => {
-    const existing = await tx.order.findUnique({ where: { id }, include: { deliveries: true } });
+    const existing = await tx.order.findUnique({ where: { id }, include: { deliveries: true, payments: true } });
     if (!existing) throw createError({ statusCode: 404, statusMessage: 'Pedido no encontrado.' });
     if (existing.version !== data.version) throw versionConflict();
     if (!ORDER_TRANSITIONS[existing.status].includes(data.status)) {
@@ -809,6 +811,20 @@ export async function transitionOrder(id: string, input: OrderStatusInput, actor
     const reopening = isClosedOrder(existing.status);
     if ((reopening || data.status === 'CANCELLED') && !data.reason) {
       throw createError({ statusCode: 400, statusMessage: 'Escribe el motivo de la cancelación o reapertura.' });
+    }
+    let reason = data.reason || null;
+    // Policy: the order is paid in full before the kitchen starts. Staff can
+    // still prepare it unpaid (customers who pay later), but only explicitly
+    // and with a reason that stays in the history.
+    if (data.status === 'PREPARING') {
+      const { balance } = accountTotals(Number(existing.priceSnapshot), existing.status, existing.payments.map(item => ({ kind: item.kind, amount: Number(item.amount) })));
+      if (balance > 0) {
+        if (!data.allowUnpaid) {
+          throw createError({ statusCode: 409, statusMessage: `El pedido tiene un saldo pendiente de $${balance.toFixed(2)}. Registra el cobro o confirma que se prepara con saldo pendiente.`, data: { code: 'PAYMENT_PENDING', balance } });
+        }
+        if (!data.reason) throw createError({ statusCode: 400, statusMessage: 'Escribe por qué se prepara con saldo pendiente.' });
+        reason = `Preparación con saldo pendiente de $${balance.toFixed(2)}: ${data.reason}`;
+      }
     }
     await claimVersion(tx, id, data.version);
     if (reopening) {
@@ -824,7 +840,7 @@ export async function transitionOrder(id: string, input: OrderStatusInput, actor
     await tx.order.update({ where: { id }, data: {
       status: data.status,
       statusEvents: { create: { version: data.version + 1, fromStatus: existing.status, toStatus: data.status,
-        actorId: actor.id, actorLabel: actor.label, reason: data.reason || null } },
+        actorId: actor.id, actorLabel: actor.label, reason } },
     } });
   });
   return getOrderById(id);
@@ -847,17 +863,30 @@ export async function transitionDelivery(id: string, sequence: DeliverySequence,
     if (data.status === 'FAILED' && !data.reason) {
       throw createError({ statusCode: 400, statusMessage: 'Escribe el motivo de la entrega fallida.' });
     }
+    if (data.status === 'LOST' && !data.reason) {
+      throw createError({ statusCode: 400, statusMessage: 'Escribe por qué se cierra la entrega sin entregar.' });
+    }
+    // Rescheduling only applies to a failed delivery sent back to pending.
+    if (data.scheduledDate && !(delivery.status === 'FAILED' && data.status === 'PENDING')) {
+      throw createError({ statusCode: 400, statusMessage: 'Solo una entrega fallida se puede reprogramar.' });
+    }
+    if (data.scheduledDate && data.scheduledDate < localToday()) {
+      throw createError({ statusCode: 400, statusMessage: 'La nueva fecha de entrega no puede ser anterior a hoy.' });
+    }
+    let reason = data.reason || null;
+    if (data.scheduledDate) reason = [`Reprogramada al ${data.scheduledDate}`, data.reason].filter(Boolean).join(': ');
     await claimVersion(tx, id, data.version);
     await tx.orderDelivery.update({ where: { id: delivery.id }, data: {
       status: data.status, deliveredAt: data.status === 'DELIVERED' ? new Date() : null,
-      ...(data.reason ? { notes: data.reason } : {}),
+      ...(data.scheduledDate ? { scheduledDate: new Date(`${data.scheduledDate}T00:00:00Z`) } : {}),
+      ...(reason ? { notes: reason } : {}),
     } });
     const status = derivedOrderStatus(existing.status, existing.deliveries.map(item => item.sequence === sequence ? data.status : item.status));
     await tx.order.update({ where: { id }, data: {
       status,
       statusEvents: { create: { version: data.version + 1, fromStatus: existing.status, toStatus: status,
         deliverySequence: sequence, fromDeliveryStatus: delivery.status, toDeliveryStatus: data.status,
-        actorId: actor.id, actorLabel: actor.label, reason: data.reason || null } },
+        actorId: actor.id, actorLabel: actor.label, reason } },
     } });
   });
   return getOrderById(id);

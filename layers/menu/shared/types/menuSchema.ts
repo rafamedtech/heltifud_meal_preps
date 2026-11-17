@@ -7,6 +7,7 @@ import {
   COMPONENT_ROLE_VALUES,
   CYCLE_STATUS_VALUES,
   DAY_OF_WEEK_VALUES,
+  DELIVERY_STATUS_VALUES,
   EXPENSE_CATEGORY_VALUES,
   EXPENSE_PAYMENT_METHOD_VALUES,
   EXPENSE_TYPE_VALUES,
@@ -402,12 +403,16 @@ export const orderStatusInputSchema = z.object({
   version: z.number().int().positive(),
   status: z.enum(ORDER_STATUS_VALUES),
   reason: optionalTrimmedString(1000),
+  // Starting preparation with an unpaid balance needs an explicit exception.
+  allowUnpaid: z.boolean().optional(),
 }).strict();
 
 export const deliveryStatusInputSchema = z.object({
   version: z.number().int().positive(),
-  status: z.enum(['PENDING', 'OUT_FOR_DELIVERY', 'DELIVERED', 'FAILED']),
+  status: z.enum(DELIVERY_STATUS_VALUES),
   reason: optionalTrimmedString(1000),
+  // New civil date when a failed delivery is rescheduled (retry another day).
+  scheduledDate: z.iso.date().optional(),
 }).strict();
 
 export const orderListQuerySchema = z.object({
