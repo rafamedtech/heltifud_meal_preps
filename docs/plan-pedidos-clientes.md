@@ -150,7 +150,9 @@ Cada tarea comienza en estado pendiente. Marcar checkbox solo con criterio de ci
 - [ ] T16 · P1 · Modelar entregas individuales con comidas asignadas, estado, fecha efectiva, responsable e incidencias. Derivar estado global. **Cierre:** primera entrega no cierra segunda; no marcar entregado con pendientes. Dep.: T01, T15.
 - [x] T17 · P1 · Registrar cobros manuales, método/referencia, saldo, anticipos y devoluciones; separar estado de pago y preparación. **Cierre:** abonos suman correctamente; sobrepago/devolución siguen reglas y auditoría. Dep.: T01, T12.
 - [x] T18 · P1 · Sustituir dashboard vacío por pedidos por confirmar, entregas de hoy/atrasadas y saldos pendientes; accesos por rol. **Cierre:** métricas vienen de DB y coinciden con listados. Dep.: T14–T17.
-- [ ] T19 · P1 · Archivar clientes/planes/variantes usados; traducir conflictos DB a 409/400 y mensajes útiles. Proteger salida con cambios pendientes. **Cierre:** historial conserva relaciones/snapshots y cliente con pedidos no dispara 500.
+- [x] T19 · P1 · Archivar clientes/planes/variantes usados; traducir conflictos DB a 409/400 y mensajes útiles. Proteger salida con cambios pendientes. **Cierre:** historial conserva relaciones/snapshots y cliente con pedidos no dispara 500.
+
+T19: clientes en 1.5; planes y variantes, mensajes y salida con cambios en [verificación T19](verificacion-t19-archivo-planes.md). Migración `RESTRICT` aplicada en producción el 17 nov 2026.
 
 ### Fase 4 — Cocina y reparto
 

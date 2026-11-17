@@ -105,8 +105,13 @@ recorrido de cliente en ese entorno y la verificación de despliegue (T26).
   idempotente; concurrencia verificada con PostgreSQL.
 - [x] Completar el dashboard con pedidos por confirmar, entregas de hoy/atrasadas,
   fallidas, saldos y devoluciones pendientes (T18).
-- [ ] Archivar planes y variantes utilizados, traducir conflictos de base de datos a
+- [x] Archivar planes y variantes utilizados, traducir conflictos de base de datos a
   mensajes útiles y proteger la navegación con cambios sin guardar (T19/H24).
+  Plan o variante con pedidos → 409 y «Pausar plan»/desactivar; FK
+  `orders.plan_variant_id` en `RESTRICT`; `useLeaveGuard` en planes, gastos,
+  platillos, pedido y editor de menú. Migración aplicada en producción el
+  17 nov 2026.
+  [Evidencia](verificacion-t19-archivo-planes.md).
 - [x] Consolidar ingredientes con rendimiento y unidades compatibles, guardar
   cantidades históricas, marcar comprado y vincular gastos existentes (T22).
 - [x] Consolidar producción por entrega, fecha, tiempo, platillo, porciones,
@@ -184,13 +189,11 @@ contenido siga sin implementar.
 
 ## Orden sugerido
 
-1. Implementar el remanente de T19/H24 (archivar planes y variantes, mensajes de
-   conflicto, cambios sin guardar).
-2. Verificar el despliegue real (T26) y ensayar el pedido de cliente en producción.
-3. Cerrar las decisiones comerciales de corte, cobro, cobertura y cambios.
-4. Ensayar un ciclo real con cocina y reparto, completar rendimientos y calibrar
+1. Verificar el despliegue real (T26) y ensayar el pedido de cliente en producción.
+2. Cerrar las decisiones comerciales de corte, cobro, cobertura y cambios.
+3. Ensayar un ciclo real con cocina y reparto, completar rendimientos y calibrar
    la impresión de etiquetas (cierre de T21).
-5. Completar integración (T24), E2E (T25), robustez de formularios (H24) y
+4. Completar integración (T24), E2E (T25), robustez de formularios (H24) y
    limpieza (T27).
 
 En todos los bloques se deben conservar los menús y platillos existentes.

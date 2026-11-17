@@ -214,7 +214,7 @@ model Order {
   createdAt                DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt                DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
   customer                 Customer        @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  planVariant              PlanVariant?    @relation(fields: [planVariantId], references: [id], onDelete: SetNull)
+  planVariant              PlanVariant?    @relation(fields: [planVariantId], references: [id], onDelete: Restrict)
   sourceWeeklyMenu         WeeklyMenu?     @relation(fields: [sourceWeeklyMenuId], references: [id], onDelete: SetNull)
   cycle                    WeeklyCycle     @relation(fields: [cycleId], references: [id], onDelete: Restrict)
   deliveries               OrderDelivery[]
