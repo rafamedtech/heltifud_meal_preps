@@ -4,6 +4,7 @@ import type { Prisma } from '../../generated/prisma/client';
 import { customerOrderInputSchema, type CustomerOffer, type CustomerOrderInput, type PrivateCustomerOrder } from '../../shared/types/customerOrder';
 import { availableOrderDays, chosenDaysError, planOrderDeliveries, deliverySequenceForDay } from '../../shared/utils/orderDeliveries';
 import { pickCompatibleOption, roleFamily, withRolePositions } from '../../shared/utils/orderPersonalization';
+import { accountTotals } from '../../shared/utils/operations';
 import { utcToZonedDateTime } from '../../shared/utils/weeklyCycle';
 import { personalizationMenuInclude, loadExclusionRules, loadRecipeFacts, buildMenuOptions, menuCatalogItemIds } from './orderPersonalization';
 import { hashOrderSecret, parseOrderSecret, resolveOrderAccess } from './orderAccess';
@@ -194,13 +195,14 @@ export async function getPrivateCustomerOrder(token: string): Promise<PrivateCus
   const link = await resolveOrderAccess(prisma, token);
   if (!link.orderId) throw createError({ statusCode: 404, statusMessage: 'El enlace no corresponde a un pedido enviado.' });
   const order = await prisma.order.findUniqueOrThrow({ where: { id: link.orderId }, include: {
-    customer: true, deliveries: { orderBy: { sequence: 'asc' } },
+    customer: true, deliveries: { orderBy: { sequence: 'asc' } }, payments: { select: { kind: true, amount: true } },
     menuSlots: { orderBy: [{ dayOrder: 'asc' }, { slotType: 'asc' }], include: { components: { orderBy: [{ componentRole: 'asc' }, { position: 'asc' }] } } },
   } });
   const snapshot = order.contactSnapshot as PrivateCustomerOrder['contact'] | null;
   return { folio: order.folio, status: order.status, planTitle: order.planTitleSnapshot, variantTitle: order.planVariantTitleSnapshot,
     price: Number(order.priceSnapshot), contact: snapshot ?? { nombre: order.customer.nombre, telefono: order.customer.telefono, correoElectronico: order.customer.correoElectronico ?? '' },
     notes: order.notes ?? '', expiresAt: link.expiresAt.toISOString(),
+    payment: accountTotals(Number(order.priceSnapshot), order.status, order.payments.map(p => ({ kind: p.kind, amount: Number(p.amount) }))),
     deliveries: order.deliveries.map(d => ({ sequence: d.sequence, date: d.scheduledDate.toISOString().slice(0, 10), address: d.addressSnapshot, status: d.status })),
     meals: order.menuSlots.map(m => ({ dayOfWeek: m.dayOfWeek, slotType: m.slotType, notes: m.notes ?? '', dishes: m.components.map(c => c.nombre) })),
   };

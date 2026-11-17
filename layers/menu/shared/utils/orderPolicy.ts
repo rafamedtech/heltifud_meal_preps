@@ -23,3 +23,28 @@ export function customerOrderStatusMessage(status: OrderStatusValue) {
     case 'CANCELLED': return 'Tu pedido fue cancelado. Escríbenos por WhatsApp si tienes dudas.';
   }
 }
+
+export interface CustomerPaymentTotals { paid: number; balance: number; refundable: number }
+
+const money = (amount: number) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
+
+/**
+ * Payment line of the private order page. It follows the immutable ledger
+ * (`accountTotals`), so it changes with the order status and with every
+ * payment or refund Heltifud registers.
+ */
+export function customerPaymentMessage(status: OrderStatusValue, totals: CustomerPaymentTotals) {
+  if (status === 'DRAFT') {
+    return totals.paid > 0
+      ? `Registramos un pago de ${money(totals.paid)}. Lo aplicaremos al confirmar tu pedido.`
+      : 'Total del plan registrado. La recepción de esta solicitud no acredita un pago.';
+  }
+  if (status === 'CANCELLED') {
+    return totals.refundable > 0
+      ? `Te devolveremos ${money(totals.refundable)} por el mismo medio de pago o como saldo a favor.`
+      : 'Sin pagos pendientes.';
+  }
+  if (totals.balance === 0) return 'Pagado. Gracias.';
+  if (totals.paid > 0) return `Pagaste ${money(totals.paid)}. Saldo pendiente: ${money(totals.balance)}.`;
+  return `Pendiente de pago: ${money(totals.balance)}. Pagas el total antes de que preparemos tu pedido.`;
+}
