@@ -131,19 +131,14 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   se cerró un bypass crítico en producción (`/api/%63ustomers` respondía sin
   sesión): `admin-auth` decide sobre la ruta decodificada y protege todo `/api/*`
   salvo una lista pública explícita (PR #16). Falta el rol de operación.
-- [ ] Auditar grants/RLS de todas las tablas y el rol de conexión Prisma (T03).
-  Auditoría hecha el 17 nov 2026: 27 tablas con RLS y sin acceso de
-  anon/authenticated. Migración `database_hardening`: rol `heltifud_app` sin DDL ni
-  TRUNCATE, RLS en `_prisma_migrations`, historial de entregas y cambios de menú
-  inmutable, TRUNCATE bloqueado en el historial. `verify-database-hardening.ts`
-  corre en CI con PostgreSQL 17. Falta aplicar en producción y cambiar
-  `DATABASE_URL` al rol nuevo según el [runbook](runbook-base-de-datos.md).
-- [x] Incorporar typecheck reproducible con versiones fijadas, resolver o contrastar
-  los errores reportados y ejecutar lint, pruebas y build en CI (T23). `vue-tsc`
-  3.3.14 y `typescript` 6.0.3 fijados; `pnpm typecheck` cubre app, servidor,
-  shared y configuración mediante referencias de `tsconfig`. Los 8 errores eran
-  un fallo del checker con `//` dentro de atributos de plantilla, no del producto.
-  GitHub Actions ejecuta lint, typecheck, unit y build con Node 22.23.5 (17 nov 2026).
+- [x] Auditar grants/RLS de todas las tablas y el rol de conexión Prisma (T03).
+  17 nov 2026: 27 tablas con RLS y sin acceso de anon/authenticated. Migración
+  `database_hardening` aplicada en producción. La app conecta como `heltifud_app`
+  (solo filas, sin DDL ni TRUNCATE); `postgres` queda para migraciones. Historial de
+  entregas y cambios de menú inmutable, TRUNCATE bloqueado en el historial y RLS en
+  `_prisma_migrations`. Verificado en producción con `verify-database-hardening.ts`
+  (también como la app), en el preview y con lecturas admin. El CI ejecuta la
+  verificación en PostgreSQL 17. [Runbook](runbook-base-de-datos.md).
 - [ ] Completar integración con PostgreSQL aislado para permisos, oferta,
   personalización, idempotencia y fallos transaccionales (T24). Las integraciones
   reales de alta y workflow de 1.3/1.4 ya cubren parte de este alcance.
