@@ -142,6 +142,11 @@ Antes de crear un componente, comprobar esta lista. Todos componen Nuxt UI.
 | `StartDate` | `menu` | `UPopover`, `UButton`, `UCalendar` | Fecha de inicio en el menú público. |
 | `MenuDate`, `MenuMobileCarousel` | `menu` | HTML | Piezas del menú público. |
 
+`PlanCard` conserva la composición de marketing y ahora navega a `/pedido`
+con los IDs de plan y variante; ya no abre el modal del catálogo de WhatsApp.
+El formulario y la consulta privada componen directamente piezas Nuxt UI (ver
+[patrón de pedido público](patrones.md#pedido-público-y-consulta-privada)).
+
 ## 3. Qué no reutilizar en UI nueva
 
 - Clases globales `app-surface*`, `app-control-surface*`, `app-chip-surface`,

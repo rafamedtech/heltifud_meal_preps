@@ -34,6 +34,8 @@ try {
       },
     }) as unknown as PrismaClient;
 
+    // Rollback-only: free the single OPEN slot without changing the live week.
+    await tx.weeklyCycle.updateMany({ where: { status: 'OPEN' }, data: { status: 'CLOSED' } });
     const cycle = await tx.weeklyCycle.create({ data: {
       weekStart: new Date('2098-11-17'), status: 'OPEN', orderCutoffAt: new Date('2098-11-14T02:00:00Z'),
       firstDeliveryAllowedDays: ['DOMINGO', 'LUNES'], secondDeliveryAllowedDays: ['MIERCOLES', 'JUEVES'],

@@ -157,8 +157,7 @@ onBeforeUnmount(() => {
                 <BaseButton
                   icon="i-lucide-rocket"
                   label="Ordenar"
-                  to="https://wa.me/c/5216648161284"
-                  target="_blank"
+                  to="/pedido"
                   block
                   class="flex w-full justify-center py-3"
                 />
@@ -169,8 +168,7 @@ onBeforeUnmount(() => {
           <BaseButton
             icon="i-lucide-rocket"
             label="Ordenar"
-            to="https://wa.me/c/5216648161284"
-            target="_blank"
+            to="/pedido"
             class="hidden md:inline-flex"
           />
         </div>

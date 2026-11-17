@@ -161,11 +161,11 @@ export const steps = [
   {
     id: 2,
     title: "(2) Realiza tu pedido",
-    description: "Realiza tu pedido por WhatsApp y paga en línea.",
+    description: "Elige tus comidas y envía tu pedido. Confirmamos entregas y pago por WhatsApp.",
     button: {
       label: "¡Ordenar ahora!",
       icon: "i-heroicons-rocket-launch",
-      click: () => navigateTo("https://wa.me/c/5216648161284", { external: true, open: { target: "_blank" } })
+      click: () => navigateTo("/pedido")
     },
     image: "v1746204409/heltifud/step2_m2tljn.png"
   },
@@ -295,7 +295,7 @@ export const faqQuestions = [
   {
     id: 5,
     question: "¿Cómo puedo realizar un pedido?",
-    answer: "Puedes realizar tu pedido a través de WhatsApp. Haz clic en el botón 'Ordenar' para comenzar."
+    answer: "Elige tu plan y comidas en la página de pedido. Al enviarlo recibirás un folio y podrás compartir el resumen por WhatsApp para coordinar la confirmación y el pago."
   }
 ]
 

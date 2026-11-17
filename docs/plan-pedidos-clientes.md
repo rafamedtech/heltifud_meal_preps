@@ -2,11 +2,16 @@
 
 Fecha de revisión: 29 de septiembre de 2026, America/Tijuana.
 
+Actualización del 16 de noviembre: T08–T13 implementadas y verificadas
+localmente en la [etapa 3](verificacion-etapa-3-pedido-cliente.md). Los hallazgos
+de la revisión inicial se conservan como contexto histórico; el
+[consolidado vigente](pendientes-implementacion.md) define el trabajo restante.
+
 ## Resultado esperado
 
 El cliente elige un plan y variante, personaliza las comidas permitidas del menú activo, captura sus entregas y envía un pedido persistido. Administración recibe ese mismo pedido y controla confirmación, cobros, preparación y cada entrega, conservando historial.
 
-La base administrativa existe. El flujo de autoservicio del cliente todavía no existe: el botón «Ordenar» abre un catálogo de WhatsApp y no registra la selección.
+En la revisión inicial existía la base administrativa y faltaba el autoservicio. La etapa 3 añade `/pedido`, persistencia atómica y consulta privada; los CTAs ya conservan plan y variante. Véase la evidencia actualizada arriba.
 
 ## Alcance y evidencia
 
@@ -125,12 +130,12 @@ Cada tarea comienza en estado pendiente. Marcar checkbox solo con criterio de ci
 
 ### Fase 2 — Compra y personalización cliente
 
-- [ ] T08 · P0 · Crear contrato público de oferta: menú/version/vigencia, planes, variantes, días, tiempos y sustituciones permitidas. DTO sin recetas internas ni datos personales. **Cierre:** frontend tiene todo lo necesario para configurar sin consultar endpoints admin. Dep.: T02–T05.
-- [ ] T09 · P0 · Crear `/pedido` con selección real de plan/variante, días y comidas. Conservar IDs al navegar desde PlanCard y mostrar unidades/precio total/resumen. **Cierre:** recorrido usable en móvil, sin selección perdida, muestra menú activo y restricciones. Dep.: T08.
-- [ ] T10 · P0 · Construir personalizador reutilizable con resumen de cambios, restaurar menú original y notas por comida. Guardar borrador/reanudar; accesibilidad y estados de error/vacío. **Cierre:** sustituciones válidas persisten; inválidas no avanzan; sin menú disponible impide envío con explicación. Dep.: T09.
-- [ ] T11 · P0 · Capturar identidad/contacto/direcciones/entregas; vincular cliente de forma verificada sin exponer existencia de otros clientes ni sobrescribirlos por teléfono enviado. **Cierre:** cliente nuevo y existente completan flujo; token solo permite su pedido. Dep.: T02, T06, T10.
-- [ ] T12 · P0 · Crear endpoint de envío atómico: recalcular total, validar versión/disponibilidad, crear/vincular cliente y guardar snapshot personalizado con estado de recepción definido. **Cierre:** pedido enviado aparece una sola vez en admin con exactamente las comidas y entregas del resumen. Dep.: T07, T11.
-- [ ] T13 · P1 · Crear confirmación y consulta privada de pedido/estado, folio humano y resumen compartible. Actualizar CTAs WhatsApp y textos que prometen pagar en línea. **Cierre:** enlace privado funciona sin conceder admin; WhatsApp usa resumen del pedido ya registrado. Dep.: T12.
+- [x] T08 · P0 · Crear contrato público de oferta: menú/version/vigencia, planes, variantes, días, tiempos y sustituciones permitidas. DTO sin recetas internas ni datos personales. **Cierre:** frontend tiene todo lo necesario para configurar sin consultar endpoints admin. Dep.: T02–T05.
+- [x] T09 · P0 · Crear `/pedido` con selección real de plan/variante, días y comidas. Conservar IDs al navegar desde PlanCard y mostrar unidades/precio total/resumen. **Cierre:** recorrido usable en móvil, sin selección perdida, muestra menú activo y restricciones. Dep.: T08.
+- [x] T10 · P0 · Construir personalizador reutilizable con resumen de cambios, restaurar menú original y notas por comida. Guardar borrador/reanudar; accesibilidad y estados de error/vacío. **Cierre:** sustituciones válidas persisten; inválidas no avanzan; sin menú disponible impide envío con explicación. Dep.: T09.
+- [x] T11 · P0 · Capturar identidad/contacto/direcciones/entregas; vincular cliente de forma verificada sin exponer existencia de otros clientes ni sobrescribirlos por teléfono enviado. **Cierre:** cliente nuevo y existente completan flujo; token solo permite su pedido. Dep.: T02, T06, T10.
+- [x] T12 · P0 · Crear endpoint de envío atómico: recalcular total, validar versión/disponibilidad, crear/vincular cliente y guardar snapshot personalizado con estado de recepción definido. **Cierre:** pedido enviado aparece una sola vez en admin con exactamente las comidas y entregas del resumen. Dep.: T07, T11.
+- [x] T13 · P1 · Crear confirmación y consulta privada de pedido/estado, folio humano y resumen compartible. Actualizar CTAs WhatsApp y textos que prometen pagar en línea. **Cierre:** enlace privado funciona sin conceder admin; WhatsApp usa resumen del pedido ya registrado. Dep.: T12.
 
 ### Fase 3 — Control administrativo
 

@@ -953,13 +953,14 @@ async function onSubmit(exitEditor = true) {
             :ui="{ label: 'text-xs font-medium text-toned', container: 'mt-2' }"
           >
             <USelectMenu
-              v-model="state.customerId"
+              :model-value="state.customerId ?? undefined"
               :items="dietCustomerOptions"
               value-key="value"
               icon="i-lucide-user-round"
               placeholder="Cliente de dieta"
               :loading="dietCustomersStatus === 'pending'"
               class="w-full"
+              @update:model-value="state.customerId = $event ?? null"
             />
           </UFormField>
 

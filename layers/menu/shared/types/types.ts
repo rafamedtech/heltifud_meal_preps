@@ -277,6 +277,7 @@ export interface OrderMenuComponent extends OrderMenuComponentData {
 }
 
 export interface OrderMenuSlot extends Omit<OrderMenuSlotInput, 'components'> {
+  notes?: string;
   id: string;
   /** Delivery that carries this meal. */
   deliverySequence: DeliverySequence;
