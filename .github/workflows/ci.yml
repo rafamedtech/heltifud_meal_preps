@@ -52,3 +52,58 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+  database:
+    name: Migraciones y permisos (PostgreSQL)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      ADMIN_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      APP_DATABASE_URL: postgresql://heltifud_app:ci-only@localhost:5432/postgres
+      NUXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+      NUXT_PUBLIC_SUPABASE_KEY: ci-placeholder-key
+      NUXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Roles de Supabase
+        run: |
+          psql "$ADMIN_DATABASE_URL" -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE ROLE anon NOLOGIN;
+          CREATE ROLE authenticated NOLOGIN;
+          CREATE ROLE service_role NOLOGIN BYPASSRLS;
+          REVOKE ALL ON SCHEMA public FROM PUBLIC;
+          SQL
+
+      - name: Aplicar migraciones
+        run: pnpm exec prisma migrate deploy
+
+      - name: Habilitar el rol de la app (solo CI)
+        run: psql "$ADMIN_DATABASE_URL" -v ON_ERROR_STOP=1 -c "ALTER ROLE heltifud_app LOGIN PASSWORD 'ci-only'"
+
+      - name: Verificar permisos, RLS e historial
+        run: node --import tsx scripts/verify-database-hardening.ts

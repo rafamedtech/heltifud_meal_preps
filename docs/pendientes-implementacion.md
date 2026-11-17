@@ -127,9 +127,17 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
 
 - [ ] Completar separación de permisos admin/operación/cliente y probar acceso
   ajeno en las futuras rutas de cliente (remanente de T02). La autorización admin
-  y protección de ingredientes ya tienen correcciones documentadas.
+  y protección de ingredientes ya tienen correcciones documentadas. El 17 nov 2026
+  se cerró un bypass crítico en producción (`/api/%63ustomers` respondía sin
+  sesión): `admin-auth` decide sobre la ruta decodificada y protege todo `/api/*`
+  salvo una lista pública explícita (PR #16). Falta el rol de operación.
 - [ ] Auditar grants/RLS de todas las tablas y el rol de conexión Prisma (T03).
-  La protección de menú/catálogo e historial de estados ya tiene evidencia parcial.
+  Auditoría hecha el 17 nov 2026: 27 tablas con RLS y sin acceso de
+  anon/authenticated. Migración `database_hardening`: rol `heltifud_app` sin DDL ni
+  TRUNCATE, RLS en `_prisma_migrations`, historial de entregas y cambios de menú
+  inmutable, TRUNCATE bloqueado en el historial. `verify-database-hardening.ts`
+  corre en CI con PostgreSQL 17. Falta aplicar en producción y cambiar
+  `DATABASE_URL` al rol nuevo según el [runbook](runbook-base-de-datos.md).
 - [x] Incorporar typecheck reproducible con versiones fijadas, resolver o contrastar
   los errores reportados y ejecutar lint, pruebas y build en CI (T23). `vue-tsc`
   3.3.14 y `typescript` 6.0.3 fijados; `pnpm typecheck` cubre app, servidor,
