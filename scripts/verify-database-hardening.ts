@@ -144,12 +144,13 @@ async function catalogChecks(db: Client) {
   ok(`${HISTORY_TABLES.length} tablas de historial con triggers activos para UPDATE, DELETE y TRUNCATE`);
 }
 
+// Fixture orders use negative folios so no real folio number is consumed.
 async function behaviourChecks(db: Client, prefix = '', truncateCode = 'P0001') {
   const id = () => randomUUID();
   const [customer, cycle, order, delivery] = [id(), id(), id(), id()];
   await db.query(`INSERT INTO customers (id, nombre, telefono, ubicacion1, updated_at) VALUES ($1, 'Verificación T03', '0000000000', 'Sin dirección', now())`, [customer]);
   await db.query(`INSERT INTO weekly_cycles (id, week_start, order_cutoff_at, status) VALUES ($1, '2099-01-05', '2099-01-02', 'CLOSED')`, [cycle]);
-  await db.query(`INSERT INTO orders (id, customer_id, cycle_id, plan_title_snapshot, plan_variant_title_snapshot, price_snapshot, updated_at, status) VALUES ($1, $2, $3, 'Prueba', 'Una', 100, now(), 'CONFIRMED')`, [order, customer, cycle]);
+  await db.query(`INSERT INTO orders (id, folio, customer_id, cycle_id, plan_title_snapshot, plan_variant_title_snapshot, price_snapshot, updated_at, status) VALUES ($1, -1, $2, $3, 'Prueba', 'Una', 100, now(), 'CONFIRMED')`, [order, customer, cycle]);
   await db.query(`INSERT INTO order_deliveries (id, order_id, sequence, scheduled_date, location_number, address_snapshot) VALUES ($1, $2, 1, '2099-01-06', 1, 'Sin dirección')`, [delivery, order]);
   await db.query(`INSERT INTO delivery_activities (delivery_id, details) VALUES ($1, '{"kind":"verify"}')`, [delivery]);
   await db.query(`INSERT INTO order_menu_changes (order_id, order_version, kind, day_of_week, slot_type, component_role, position, from_nombre, to_nombre) VALUES ($1, 1, 'SUSTITUCION', 'LUNES', 'COMIDA', 'PLATILLO_PRINCIPAL', 0, 'A', 'B')`, [order]);
@@ -179,7 +180,7 @@ async function behaviourChecks(db: Client, prefix = '', truncateCode = 'P0001') 
 
   // Without payments, deleting the order cascades its menu changes and status events.
   const second = id();
-  await db.query(`INSERT INTO orders (id, customer_id, cycle_id, plan_title_snapshot, plan_variant_title_snapshot, price_snapshot, updated_at) VALUES ($1, $2, $3, 'Prueba', 'Una', 100, now())`, [second, customer, cycle]);
+  await db.query(`INSERT INTO orders (id, folio, customer_id, cycle_id, plan_title_snapshot, plan_variant_title_snapshot, price_snapshot, updated_at) VALUES ($1, -2, $2, $3, 'Prueba', 'Una', 100, now())`, [second, customer, cycle]);
   await db.query(`INSERT INTO order_menu_changes (order_id, order_version, kind, day_of_week, slot_type, component_role, position, from_nombre, to_nombre) VALUES ($1, 1, 'SUSTITUCION', 'LUNES', 'COMIDA', 'PLATILLO_PRINCIPAL', 0, 'A', 'B')`, [second]);
   await db.query(`INSERT INTO order_status_events (order_id, version, to_status) VALUES ($1, 1, 'DRAFT')`, [second]);
   await db.query('DELETE FROM orders WHERE id = $1', [second]);
@@ -203,7 +204,10 @@ async function appRoleChecks(app: Client) {
     await expectError(app, 'DROP TABLE order_payments', '42501', 'app DROP TABLE');
     await expectError(app, 'CREATE SCHEMA t03_probe', '42501', 'app CREATE SCHEMA');
     await expectError(app, 'SET ROLE postgres', '42501', 'app SET ROLE postgres');
-    await app.query(`SELECT nextval('orders_folio_seq')`);
+    // Sequences are not transactional: check the privilege instead of calling
+    // nextval(), which would burn a real order folio.
+    const { rows: [sequence] } = await app.query(`SELECT has_sequence_privilege('orders_folio_seq', 'USAGE') AS usable`);
+    assert.equal(sequence.usable, true, `${APP_ROLE} needs the folio sequence`);
     ok(`${APP_ROLE} real: lee y escribe filas; sin TRUNCATE, DDL, desactivar triggers ni SET ROLE`);
     // Trigger functions live in `private`, where the runtime role has no USAGE;
     // they must still fire for its writes.

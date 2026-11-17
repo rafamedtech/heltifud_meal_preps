@@ -35,10 +35,10 @@ Requiere aprobación explícita. Hacerlo fuera del horario de pedidos.
 2. **Migrar.** `pnpm exec prisma migrate deploy` con `DIRECT_URL` de producción.
    No cambia el comportamiento de la app: sigue conectada como `postgres`.
 3. **Verificar sin la app.** Ejecutar el script con solo `ADMIN_DATABASE_URL`.
-4. **Contraseña.** Generar una contraseña aleatoria larga (por ejemplo
-   `openssl rand -base64 32 | tr -d '/+='`) y, en el SQL editor de Supabase:
-   `ALTER ROLE heltifud_app LOGIN PASSWORD '<contraseña>';`
-   Guardarla solo en el gestor de secretos y en Netlify.
+4. **Contraseña.** Generar una contraseña aleatoria larga y fijarla como
+   verificador SCRAM (`ALTER ROLE heltifud_app LOGIN PASSWORD 'SCRAM-SHA-256$4096:…'`),
+   calculado localmente, para que la contraseña en claro no aparezca en los logs
+   SQL de Supabase. Solo vive en Netlify; para rotarla, repetir este paso y el 6–7.
 5. **Probar la conexión.** Con el pooler, el usuario es
    `heltifud_app.<project-ref>`:
    `postgresql://heltifud_app.<project-ref>:<contraseña>@<host-pooler>:6543/postgres`
@@ -55,9 +55,14 @@ Los scripts `scripts/verify-*.ts` crean esquemas temporales: ejecutarlos con
 
 ## Rollback
 
-- **App con errores de permisos tras el paso 6 o 7:** restaurar el valor anterior de
-  `DATABASE_URL` en Netlify (conexión `postgres`) y redeployar. No requiere tocar la
-  base de datos.
+Las variables de Netlify de production y deploy-preview son secretas: no se pueden
+leer después de guardarlas. Netlify congela las variables en cada deploy.
+
+- **App con errores de permisos tras el paso 6 o 7:** en Netlify → Deploys,
+  publicar el deploy anterior (*Publish deploy*); conserva la `DATABASE_URL` con
+  `postgres` con la que se construyó. Es inmediato y no toca la base de datos.
+  Después, restaurar la variable del contexto con el valor del contexto `dev`
+  (igual a la `DATABASE_URL` de `.env`) antes del siguiente deploy.
 - **Bloquear el rol:** `ALTER ROLE heltifud_app NOLOGIN;` corta sus conexiones
   nuevas sin afectar a `postgres`.
 - **Revertir la migración** (solo si un trigger de historial bloquea una operación
