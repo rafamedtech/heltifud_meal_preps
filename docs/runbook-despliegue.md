@@ -19,7 +19,7 @@ Sitio Netlify `heltifud` (`https://heltifud.com`). Complementa el
 | --- | --- | --- |
 | `NUXT_PUBLIC_SUPABASE_URL`, `NUXT_PUBLIC_SUPABASE_KEY` | Auth en cliente y servidor | Todos |
 | `DATABASE_URL` | Prisma en runtime; pooler 6543 con `heltifud_app` | `functions`/`runtime`, secreta |
-| `DIRECT_URL` | Solo `prisma migrate` y scripts `verify-*` | No la usa la app en runtime |
+| `DIRECT_URL` | Solo `prisma migrate` y scripts `verify-*`, desde una máquina local | **No** se define en Netlify (retirada el 17 nov 2026); `prisma generate` funciona sin ella |
 | `NUXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Autocompletado de direcciones (admin) | Opcional: sin ella el campo funciona como texto libre |
 | `NUXT_PUBLIC_CLOUDINARY_BASE_URL` | Imágenes | Opcional: tiene valor por defecto |
 | `NUXT_CORS_ALLOWED_ORIGINS` | Orígenes CORS | Opcional: incluye `heltifud.com` y `www` |
@@ -109,6 +109,10 @@ Guardarla fuera del repositorio o en `backups/` (ignorado por git) y probar que
 - Ensayo de rollback por API: producción pasó de `ddf36f1` a `ae1fc5e` y volvió
   en unos 20 s; humo 18/19 en ambos (sin healthcheck aún) y auto-publish sin
   bloquear.
+- Ensayo de rollback verificado tras el merge: publicar `ddf36f1` hizo que
+  `/api/health` respondiera 401 (versión sin healthcheck) y el humo bajara a
+  18/19; restaurar `6afc933b` devolvió 200 con `5d7d34a` y 19/19. Ida y vuelta
+  en 15 s; auto-publish sin bloquear.
 - Observado: los errores 404 de Nitro llevan `Cache-Control: no-cache` aunque el
   middleware de privacidad ponga `no-store`; los cuerpos de error no llevan datos.
 
@@ -116,15 +120,23 @@ Pendiente para cerrar T26:
 
 - [x] Desplegar `/api/health` y ejecutar la prueba de humo en preview.
 - [x] Ensayo de rollback (publicar el deploy anterior y volver).
-- [ ] Prueba de humo en producción con `EXPECT_COMMIT` tras el merge.
+- [x] Prueba de humo en producción con `EXPECT_COMMIT` tras el merge: 19/19
+  (`5d7d34a`, contexto `production`).
 - [ ] Sin respaldos listados en Supabase: confirmar plan y activar respaldos
   diarios o PITR; mientras tanto, `pg_dump` manual antes de cada migración.
-- [ ] **`DIRECT_URL` (rol `postgres`, dueño del esquema) está disponible en el
-  runtime de las funciones** en todos los contextos. La app no la usa: quitar los
-  scopes `functions`/`runtime` (o la variable de Netlify) para que una función
-  comprometida no tenga credenciales con DDL. Requiere aprobación.
-- [ ] Deploy previews comparten la base de producción. Decidir si basta con
-  datos de prueba marcados o si se usa una rama de Supabase para previews.
+- [x] `DIRECT_URL` (rol `postgres`) retirada de Netlify. El build siguiente
+  (deploy `6afc933b`) terminó bien sin ella y pasó el humo 19/19. Los deploys
+  anteriores la conservan congelada: un rollback a uno de ellos la vuelve a
+  exponer al runtime mientras esté publicado. Opcional: rotar la contraseña de
+  `postgres` en Supabase y actualizar el `.env` local.
+- [ ] Deploy previews comparten la base de producción. Decisión (17 nov 2026):
+  base aparte con rama de Supabase. Bloqueado: el token disponible no tiene
+  permiso sobre ramas y el proyecto no lista respaldos, lo que apunta a plan
+  Free (branching requiere Pro). Falta confirmar plan/costo con el dueño de la
+  cuenta. Al crearla: `prisma migrate deploy` contra la rama, contraseña propia
+  de `heltifud_app`, usuarios de Auth de prueba y datos sintéticos; en Netlify,
+  `DATABASE_URL` y `NUXT_PUBLIC_SUPABASE_URL/KEY` del contexto *Deploy Previews*
+  apuntando a la rama.
 - [ ] `NUXT_PUBLIC_GOOGLE_MAPS_API_KEY` no está en Netlify: el autocompletado de
   direcciones queda como texto libre en producción. Confirmar si es intencional.
 - [ ] Ensayo del pedido de cliente en producción con datos sintéticos.
