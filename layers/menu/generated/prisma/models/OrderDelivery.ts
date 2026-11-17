@@ -48,6 +48,9 @@ export type OrderDeliveryMinAggregateOutputType = {
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  assignedTo: string | null
+  incident: string | null
+  evidenceUrl: string | null
 }
 
 export type OrderDeliveryMaxAggregateOutputType = {
@@ -62,6 +65,9 @@ export type OrderDeliveryMaxAggregateOutputType = {
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  assignedTo: string | null
+  incident: string | null
+  evidenceUrl: string | null
 }
 
 export type OrderDeliveryCountAggregateOutputType = {
@@ -76,6 +82,9 @@ export type OrderDeliveryCountAggregateOutputType = {
   notes: number
   createdAt: number
   updatedAt: number
+  assignedTo: number
+  incident: number
+  evidenceUrl: number
   _all: number
 }
 
@@ -102,6 +111,9 @@ export type OrderDeliveryMinAggregateInputType = {
   notes?: true
   createdAt?: true
   updatedAt?: true
+  assignedTo?: true
+  incident?: true
+  evidenceUrl?: true
 }
 
 export type OrderDeliveryMaxAggregateInputType = {
@@ -116,6 +128,9 @@ export type OrderDeliveryMaxAggregateInputType = {
   notes?: true
   createdAt?: true
   updatedAt?: true
+  assignedTo?: true
+  incident?: true
+  evidenceUrl?: true
 }
 
 export type OrderDeliveryCountAggregateInputType = {
@@ -130,6 +145,9 @@ export type OrderDeliveryCountAggregateInputType = {
   notes?: true
   createdAt?: true
   updatedAt?: true
+  assignedTo?: true
+  incident?: true
+  evidenceUrl?: true
   _all?: true
 }
 
@@ -231,6 +249,9 @@ export type OrderDeliveryGroupByOutputType = {
   notes: string | null
   createdAt: Date
   updatedAt: Date
+  assignedTo: string | null
+  incident: string | null
+  evidenceUrl: string | null
   _count: OrderDeliveryCountAggregateOutputType | null
   _avg: OrderDeliveryAvgAggregateOutputType | null
   _sum: OrderDeliverySumAggregateOutputType | null
@@ -268,8 +289,12 @@ export type OrderDeliveryWhereInput = {
   notes?: Prisma.StringNullableFilter<"OrderDelivery"> | string | null
   createdAt?: Prisma.DateTimeFilter<"OrderDelivery"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"OrderDelivery"> | Date | string
+  assignedTo?: Prisma.StringNullableFilter<"OrderDelivery"> | string | null
+  incident?: Prisma.StringNullableFilter<"OrderDelivery"> | string | null
+  evidenceUrl?: Prisma.StringNullableFilter<"OrderDelivery"> | string | null
   order?: Prisma.XOR<Prisma.OrderScalarRelationFilter, Prisma.OrderWhereInput>
   menuSlots?: Prisma.OrderMenuSlotListRelationFilter
+  activities?: Prisma.DeliveryActivityListRelationFilter
 }
 
 export type OrderDeliveryOrderByWithRelationInput = {
@@ -284,8 +309,12 @@ export type OrderDeliveryOrderByWithRelationInput = {
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  assignedTo?: Prisma.SortOrderInput | Prisma.SortOrder
+  incident?: Prisma.SortOrderInput | Prisma.SortOrder
+  evidenceUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   order?: Prisma.OrderOrderByWithRelationInput
   menuSlots?: Prisma.OrderMenuSlotOrderByRelationAggregateInput
+  activities?: Prisma.DeliveryActivityOrderByRelationAggregateInput
 }
 
 export type OrderDeliveryWhereUniqueInput = Prisma.AtLeast<{
@@ -304,8 +333,12 @@ export type OrderDeliveryWhereUniqueInput = Prisma.AtLeast<{
   notes?: Prisma.StringNullableFilter<"OrderDelivery"> | string | null
   createdAt?: Prisma.DateTimeFilter<"OrderDelivery"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"OrderDelivery"> | Date | string
+  assignedTo?: Prisma.StringNullableFilter<"OrderDelivery"> | string | null
+  incident?: Prisma.StringNullableFilter<"OrderDelivery"> | string | null
+  evidenceUrl?: Prisma.StringNullableFilter<"OrderDelivery"> | string | null
   order?: Prisma.XOR<Prisma.OrderScalarRelationFilter, Prisma.OrderWhereInput>
   menuSlots?: Prisma.OrderMenuSlotListRelationFilter
+  activities?: Prisma.DeliveryActivityListRelationFilter
 }, "id" | "orderId_sequence">
 
 export type OrderDeliveryOrderByWithAggregationInput = {
@@ -320,6 +353,9 @@ export type OrderDeliveryOrderByWithAggregationInput = {
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  assignedTo?: Prisma.SortOrderInput | Prisma.SortOrder
+  incident?: Prisma.SortOrderInput | Prisma.SortOrder
+  evidenceUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.OrderDeliveryCountOrderByAggregateInput
   _avg?: Prisma.OrderDeliveryAvgOrderByAggregateInput
   _max?: Prisma.OrderDeliveryMaxOrderByAggregateInput
@@ -342,6 +378,9 @@ export type OrderDeliveryScalarWhereWithAggregatesInput = {
   notes?: Prisma.StringNullableWithAggregatesFilter<"OrderDelivery"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"OrderDelivery"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"OrderDelivery"> | Date | string
+  assignedTo?: Prisma.StringNullableWithAggregatesFilter<"OrderDelivery"> | string | null
+  incident?: Prisma.StringNullableWithAggregatesFilter<"OrderDelivery"> | string | null
+  evidenceUrl?: Prisma.StringNullableWithAggregatesFilter<"OrderDelivery"> | string | null
 }
 
 export type OrderDeliveryCreateInput = {
@@ -355,8 +394,12 @@ export type OrderDeliveryCreateInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  assignedTo?: string | null
+  incident?: string | null
+  evidenceUrl?: string | null
   order: Prisma.OrderCreateNestedOneWithoutDeliveriesInput
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutDeliveryInput
+  activities?: Prisma.DeliveryActivityCreateNestedManyWithoutDeliveryInput
 }
 
 export type OrderDeliveryUncheckedCreateInput = {
@@ -371,7 +414,11 @@ export type OrderDeliveryUncheckedCreateInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  assignedTo?: string | null
+  incident?: string | null
+  evidenceUrl?: string | null
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutDeliveryInput
+  activities?: Prisma.DeliveryActivityUncheckedCreateNestedManyWithoutDeliveryInput
 }
 
 export type OrderDeliveryUpdateInput = {
@@ -385,8 +432,12 @@ export type OrderDeliveryUpdateInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  incident?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.OrderUpdateOneRequiredWithoutDeliveriesNestedInput
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutDeliveryNestedInput
+  activities?: Prisma.DeliveryActivityUpdateManyWithoutDeliveryNestedInput
 }
 
 export type OrderDeliveryUncheckedUpdateInput = {
@@ -401,7 +452,11 @@ export type OrderDeliveryUncheckedUpdateInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  incident?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutDeliveryNestedInput
+  activities?: Prisma.DeliveryActivityUncheckedUpdateManyWithoutDeliveryNestedInput
 }
 
 export type OrderDeliveryCreateManyInput = {
@@ -416,6 +471,9 @@ export type OrderDeliveryCreateManyInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  assignedTo?: string | null
+  incident?: string | null
+  evidenceUrl?: string | null
 }
 
 export type OrderDeliveryUpdateManyMutationInput = {
@@ -429,6 +487,9 @@ export type OrderDeliveryUpdateManyMutationInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  incident?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type OrderDeliveryUncheckedUpdateManyInput = {
@@ -443,6 +504,9 @@ export type OrderDeliveryUncheckedUpdateManyInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  incident?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type OrderDeliveryListRelationFilter = {
@@ -472,6 +536,9 @@ export type OrderDeliveryCountOrderByAggregateInput = {
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  assignedTo?: Prisma.SortOrder
+  incident?: Prisma.SortOrder
+  evidenceUrl?: Prisma.SortOrder
 }
 
 export type OrderDeliveryAvgOrderByAggregateInput = {
@@ -491,6 +558,9 @@ export type OrderDeliveryMaxOrderByAggregateInput = {
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  assignedTo?: Prisma.SortOrder
+  incident?: Prisma.SortOrder
+  evidenceUrl?: Prisma.SortOrder
 }
 
 export type OrderDeliveryMinOrderByAggregateInput = {
@@ -505,6 +575,9 @@ export type OrderDeliveryMinOrderByAggregateInput = {
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  assignedTo?: Prisma.SortOrder
+  incident?: Prisma.SortOrder
+  evidenceUrl?: Prisma.SortOrder
 }
 
 export type OrderDeliverySumOrderByAggregateInput = {
@@ -581,6 +654,20 @@ export type OrderDeliveryUpdateOneRequiredWithoutMenuSlotsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrderDeliveryUpdateToOneWithWhereWithoutMenuSlotsInput, Prisma.OrderDeliveryUpdateWithoutMenuSlotsInput>, Prisma.OrderDeliveryUncheckedUpdateWithoutMenuSlotsInput>
 }
 
+export type OrderDeliveryCreateNestedOneWithoutActivitiesInput = {
+  create?: Prisma.XOR<Prisma.OrderDeliveryCreateWithoutActivitiesInput, Prisma.OrderDeliveryUncheckedCreateWithoutActivitiesInput>
+  connectOrCreate?: Prisma.OrderDeliveryCreateOrConnectWithoutActivitiesInput
+  connect?: Prisma.OrderDeliveryWhereUniqueInput
+}
+
+export type OrderDeliveryUpdateOneRequiredWithoutActivitiesNestedInput = {
+  create?: Prisma.XOR<Prisma.OrderDeliveryCreateWithoutActivitiesInput, Prisma.OrderDeliveryUncheckedCreateWithoutActivitiesInput>
+  connectOrCreate?: Prisma.OrderDeliveryCreateOrConnectWithoutActivitiesInput
+  upsert?: Prisma.OrderDeliveryUpsertWithoutActivitiesInput
+  connect?: Prisma.OrderDeliveryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrderDeliveryUpdateToOneWithWhereWithoutActivitiesInput, Prisma.OrderDeliveryUpdateWithoutActivitiesInput>, Prisma.OrderDeliveryUncheckedUpdateWithoutActivitiesInput>
+}
+
 export type OrderDeliveryCreateWithoutOrderInput = {
   id?: string
   sequence: number
@@ -592,7 +679,11 @@ export type OrderDeliveryCreateWithoutOrderInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  assignedTo?: string | null
+  incident?: string | null
+  evidenceUrl?: string | null
   menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutDeliveryInput
+  activities?: Prisma.DeliveryActivityCreateNestedManyWithoutDeliveryInput
 }
 
 export type OrderDeliveryUncheckedCreateWithoutOrderInput = {
@@ -606,7 +697,11 @@ export type OrderDeliveryUncheckedCreateWithoutOrderInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  assignedTo?: string | null
+  incident?: string | null
+  evidenceUrl?: string | null
   menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutDeliveryInput
+  activities?: Prisma.DeliveryActivityUncheckedCreateNestedManyWithoutDeliveryInput
 }
 
 export type OrderDeliveryCreateOrConnectWithoutOrderInput = {
@@ -650,6 +745,9 @@ export type OrderDeliveryScalarWhereInput = {
   notes?: Prisma.StringNullableFilter<"OrderDelivery"> | string | null
   createdAt?: Prisma.DateTimeFilter<"OrderDelivery"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"OrderDelivery"> | Date | string
+  assignedTo?: Prisma.StringNullableFilter<"OrderDelivery"> | string | null
+  incident?: Prisma.StringNullableFilter<"OrderDelivery"> | string | null
+  evidenceUrl?: Prisma.StringNullableFilter<"OrderDelivery"> | string | null
 }
 
 export type OrderDeliveryCreateWithoutMenuSlotsInput = {
@@ -663,7 +761,11 @@ export type OrderDeliveryCreateWithoutMenuSlotsInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  assignedTo?: string | null
+  incident?: string | null
+  evidenceUrl?: string | null
   order: Prisma.OrderCreateNestedOneWithoutDeliveriesInput
+  activities?: Prisma.DeliveryActivityCreateNestedManyWithoutDeliveryInput
 }
 
 export type OrderDeliveryUncheckedCreateWithoutMenuSlotsInput = {
@@ -678,6 +780,10 @@ export type OrderDeliveryUncheckedCreateWithoutMenuSlotsInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  assignedTo?: string | null
+  incident?: string | null
+  evidenceUrl?: string | null
+  activities?: Prisma.DeliveryActivityUncheckedCreateNestedManyWithoutDeliveryInput
 }
 
 export type OrderDeliveryCreateOrConnectWithoutMenuSlotsInput = {
@@ -707,7 +813,11 @@ export type OrderDeliveryUpdateWithoutMenuSlotsInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  incident?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   order?: Prisma.OrderUpdateOneRequiredWithoutDeliveriesNestedInput
+  activities?: Prisma.DeliveryActivityUpdateManyWithoutDeliveryNestedInput
 }
 
 export type OrderDeliveryUncheckedUpdateWithoutMenuSlotsInput = {
@@ -722,6 +832,98 @@ export type OrderDeliveryUncheckedUpdateWithoutMenuSlotsInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  incident?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activities?: Prisma.DeliveryActivityUncheckedUpdateManyWithoutDeliveryNestedInput
+}
+
+export type OrderDeliveryCreateWithoutActivitiesInput = {
+  id?: string
+  sequence: number
+  scheduledDate: Date | string
+  locationNumber: number
+  addressSnapshot: string
+  status?: $Enums.DeliveryStatus
+  deliveredAt?: Date | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  assignedTo?: string | null
+  incident?: string | null
+  evidenceUrl?: string | null
+  order: Prisma.OrderCreateNestedOneWithoutDeliveriesInput
+  menuSlots?: Prisma.OrderMenuSlotCreateNestedManyWithoutDeliveryInput
+}
+
+export type OrderDeliveryUncheckedCreateWithoutActivitiesInput = {
+  id?: string
+  orderId: string
+  sequence: number
+  scheduledDate: Date | string
+  locationNumber: number
+  addressSnapshot: string
+  status?: $Enums.DeliveryStatus
+  deliveredAt?: Date | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  assignedTo?: string | null
+  incident?: string | null
+  evidenceUrl?: string | null
+  menuSlots?: Prisma.OrderMenuSlotUncheckedCreateNestedManyWithoutDeliveryInput
+}
+
+export type OrderDeliveryCreateOrConnectWithoutActivitiesInput = {
+  where: Prisma.OrderDeliveryWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrderDeliveryCreateWithoutActivitiesInput, Prisma.OrderDeliveryUncheckedCreateWithoutActivitiesInput>
+}
+
+export type OrderDeliveryUpsertWithoutActivitiesInput = {
+  update: Prisma.XOR<Prisma.OrderDeliveryUpdateWithoutActivitiesInput, Prisma.OrderDeliveryUncheckedUpdateWithoutActivitiesInput>
+  create: Prisma.XOR<Prisma.OrderDeliveryCreateWithoutActivitiesInput, Prisma.OrderDeliveryUncheckedCreateWithoutActivitiesInput>
+  where?: Prisma.OrderDeliveryWhereInput
+}
+
+export type OrderDeliveryUpdateToOneWithWhereWithoutActivitiesInput = {
+  where?: Prisma.OrderDeliveryWhereInput
+  data: Prisma.XOR<Prisma.OrderDeliveryUpdateWithoutActivitiesInput, Prisma.OrderDeliveryUncheckedUpdateWithoutActivitiesInput>
+}
+
+export type OrderDeliveryUpdateWithoutActivitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sequence?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  locationNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  addressSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumDeliveryStatusFieldUpdateOperationsInput | $Enums.DeliveryStatus
+  deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  incident?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  order?: Prisma.OrderUpdateOneRequiredWithoutDeliveriesNestedInput
+  menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutDeliveryNestedInput
+}
+
+export type OrderDeliveryUncheckedUpdateWithoutActivitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  orderId?: Prisma.StringFieldUpdateOperationsInput | string
+  sequence?: Prisma.IntFieldUpdateOperationsInput | number
+  scheduledDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  locationNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  addressSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumDeliveryStatusFieldUpdateOperationsInput | $Enums.DeliveryStatus
+  deliveredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  incident?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutDeliveryNestedInput
 }
 
 export type OrderDeliveryCreateManyOrderInput = {
@@ -735,6 +937,9 @@ export type OrderDeliveryCreateManyOrderInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  assignedTo?: string | null
+  incident?: string | null
+  evidenceUrl?: string | null
 }
 
 export type OrderDeliveryUpdateWithoutOrderInput = {
@@ -748,7 +953,11 @@ export type OrderDeliveryUpdateWithoutOrderInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  incident?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   menuSlots?: Prisma.OrderMenuSlotUpdateManyWithoutDeliveryNestedInput
+  activities?: Prisma.DeliveryActivityUpdateManyWithoutDeliveryNestedInput
 }
 
 export type OrderDeliveryUncheckedUpdateWithoutOrderInput = {
@@ -762,7 +971,11 @@ export type OrderDeliveryUncheckedUpdateWithoutOrderInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  incident?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   menuSlots?: Prisma.OrderMenuSlotUncheckedUpdateManyWithoutDeliveryNestedInput
+  activities?: Prisma.DeliveryActivityUncheckedUpdateManyWithoutDeliveryNestedInput
 }
 
 export type OrderDeliveryUncheckedUpdateManyWithoutOrderInput = {
@@ -776,6 +989,9 @@ export type OrderDeliveryUncheckedUpdateManyWithoutOrderInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  incident?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -785,10 +1001,12 @@ export type OrderDeliveryUncheckedUpdateManyWithoutOrderInput = {
 
 export type OrderDeliveryCountOutputType = {
   menuSlots: number
+  activities: number
 }
 
 export type OrderDeliveryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   menuSlots?: boolean | OrderDeliveryCountOutputTypeCountMenuSlotsArgs
+  activities?: boolean | OrderDeliveryCountOutputTypeCountActivitiesArgs
 }
 
 /**
@@ -808,6 +1026,13 @@ export type OrderDeliveryCountOutputTypeCountMenuSlotsArgs<ExtArgs extends runti
   where?: Prisma.OrderMenuSlotWhereInput
 }
 
+/**
+ * OrderDeliveryCountOutputType without action
+ */
+export type OrderDeliveryCountOutputTypeCountActivitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DeliveryActivityWhereInput
+}
+
 
 export type OrderDeliverySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -821,8 +1046,12 @@ export type OrderDeliverySelect<ExtArgs extends runtime.Types.Extensions.Interna
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  assignedTo?: boolean
+  incident?: boolean
+  evidenceUrl?: boolean
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
   menuSlots?: boolean | Prisma.OrderDelivery$menuSlotsArgs<ExtArgs>
+  activities?: boolean | Prisma.OrderDelivery$activitiesArgs<ExtArgs>
   _count?: boolean | Prisma.OrderDeliveryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["orderDelivery"]>
 
@@ -838,6 +1067,9 @@ export type OrderDeliverySelectCreateManyAndReturn<ExtArgs extends runtime.Types
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  assignedTo?: boolean
+  incident?: boolean
+  evidenceUrl?: boolean
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["orderDelivery"]>
 
@@ -853,6 +1085,9 @@ export type OrderDeliverySelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  assignedTo?: boolean
+  incident?: boolean
+  evidenceUrl?: boolean
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["orderDelivery"]>
 
@@ -868,12 +1103,16 @@ export type OrderDeliverySelectScalar = {
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  assignedTo?: boolean
+  incident?: boolean
+  evidenceUrl?: boolean
 }
 
-export type OrderDeliveryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "sequence" | "scheduledDate" | "locationNumber" | "addressSnapshot" | "status" | "deliveredAt" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["orderDelivery"]>
+export type OrderDeliveryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "orderId" | "sequence" | "scheduledDate" | "locationNumber" | "addressSnapshot" | "status" | "deliveredAt" | "notes" | "createdAt" | "updatedAt" | "assignedTo" | "incident" | "evidenceUrl", ExtArgs["result"]["orderDelivery"]>
 export type OrderDeliveryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   order?: boolean | Prisma.OrderDefaultArgs<ExtArgs>
   menuSlots?: boolean | Prisma.OrderDelivery$menuSlotsArgs<ExtArgs>
+  activities?: boolean | Prisma.OrderDelivery$activitiesArgs<ExtArgs>
   _count?: boolean | Prisma.OrderDeliveryCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrderDeliveryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -888,6 +1127,7 @@ export type $OrderDeliveryPayload<ExtArgs extends runtime.Types.Extensions.Inter
   objects: {
     order: Prisma.$OrderPayload<ExtArgs>
     menuSlots: Prisma.$OrderMenuSlotPayload<ExtArgs>[]
+    activities: Prisma.$DeliveryActivityPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -901,6 +1141,9 @@ export type $OrderDeliveryPayload<ExtArgs extends runtime.Types.Extensions.Inter
     notes: string | null
     createdAt: Date
     updatedAt: Date
+    assignedTo: string | null
+    incident: string | null
+    evidenceUrl: string | null
   }, ExtArgs["result"]["orderDelivery"]>
   composites: {}
 }
@@ -1297,6 +1540,7 @@ export interface Prisma__OrderDeliveryClient<T, Null = never, ExtArgs extends ru
   readonly [Symbol.toStringTag]: "PrismaPromise"
   order<T extends Prisma.OrderDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrderDefaultArgs<ExtArgs>>): Prisma.Prisma__OrderClient<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   menuSlots<T extends Prisma.OrderDelivery$menuSlotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrderDelivery$menuSlotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderMenuSlotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  activities<T extends Prisma.OrderDelivery$activitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrderDelivery$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeliveryActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1337,6 +1581,9 @@ export interface OrderDeliveryFieldRefs {
   readonly notes: Prisma.FieldRef<"OrderDelivery", 'String'>
   readonly createdAt: Prisma.FieldRef<"OrderDelivery", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"OrderDelivery", 'DateTime'>
+  readonly assignedTo: Prisma.FieldRef<"OrderDelivery", 'String'>
+  readonly incident: Prisma.FieldRef<"OrderDelivery", 'String'>
+  readonly evidenceUrl: Prisma.FieldRef<"OrderDelivery", 'String'>
 }
     
 
@@ -1759,6 +2006,30 @@ export type OrderDelivery$menuSlotsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.OrderMenuSlotScalarFieldEnum | Prisma.OrderMenuSlotScalarFieldEnum[]
+}
+
+/**
+ * OrderDelivery.activities
+ */
+export type OrderDelivery$activitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DeliveryActivity
+   */
+  select?: Prisma.DeliveryActivitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DeliveryActivity
+   */
+  omit?: Prisma.DeliveryActivityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DeliveryActivityInclude<ExtArgs> | null
+  where?: Prisma.DeliveryActivityWhereInput
+  orderBy?: Prisma.DeliveryActivityOrderByWithRelationInput | Prisma.DeliveryActivityOrderByWithRelationInput[]
+  cursor?: Prisma.DeliveryActivityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DeliveryActivityScalarFieldEnum | Prisma.DeliveryActivityScalarFieldEnum[]
 }
 
 /**

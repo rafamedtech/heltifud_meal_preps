@@ -51,6 +51,26 @@ export const adminLinks: NavigationMenuItem[][] = [
       to: "/admin/pedidos"
     },
     {
+      label: "Cobros y saldos",
+      icon: "i-lucide-banknote",
+      to: "/admin/cobros"
+    },
+    {
+      label: "Producción",
+      icon: "i-lucide-chef-hat",
+      to: "/admin/produccion"
+    },
+    {
+      label: "Lista de súper",
+      icon: "i-lucide-shopping-basket",
+      to: "/admin/compras"
+    },
+    {
+      label: "Reparto",
+      icon: "i-lucide-truck",
+      to: "/admin/reparto"
+    },
+    {
       label: "Clientes",
       icon: "i-lucide-users-round",
       to: "/admin/clientes"

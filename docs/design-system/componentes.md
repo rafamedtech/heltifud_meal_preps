@@ -104,7 +104,7 @@ Antes de crear un componente, comprobar esta lista. Todos componen Nuxt UI.
 
 | Componente | Compone | Propósito | Por qué existe |
 | --- | --- | --- | --- |
-| `CalendarInput` | `UPopover`, `UButton`, `UCalendar` | Fecha única con modelo `string` ISO. | Nuxt UI no ofrece un selector de fecha con botón y popover en una sola pieza. |
+| `CalendarInput` | `UPopover`, `UButton`, `UCalendar` | Fecha única con modelo `string` ISO; cierra al elegir un día; `disabled` bloquea el botón mientras se guarda. | Nuxt UI no ofrece un selector de fecha con botón y popover en una sola pieza. |
 | `CalendarRangeInput` | `UPopover`, `UButton`, `UCalendar` | Rango con modelos `start` y `end`, y limpieza. | Igual que el anterior, para rangos. |
 | `DatePicker` | `UPopover`, `UButton`, `UCalendar` | Fecha única con modelo `Date`, estado `invalid` y cierre al elegir. | Igual; variante para formularios con validación. |
 | `BaseButton` | `UButton` | Reenvía props con `useForwardProps`. | Wrapper heredado del sitio público. En UI nueva usar `UButton`. |
@@ -130,6 +130,7 @@ Antes de crear un componente, comprobar esta lista. Todos componen Nuxt UI.
 | `AdminMenuContainerSelect` | `URadioGroup` / `USelect` | Selector de contenedor en tarjetas o lista. |
 | `AdminFoodCatalogTable` (+ `Skeleton`) | `UTable` | Catálogo de platillos en modo gestión o selección. |
 | `AdminFoodCatalogForm` (+ `Skeleton`), `AdminFoodItemFields`, `AdminFoodRecipeFields` | `UForm`, `UFormField`, controles | Alta y edición de platillos y recetas. |
+| `AdminProductionWorkspace` | `UCard`, `UTable`, `USelect`, `UAlert`, `UEmpty`, `UModal`, `UCheckbox`, `USelectMenu` | Producción y compras por consolidación histórica. Composición de negocio sin equivalente completo en Nuxt UI o Dashboard; comparte selección de ciclo, versiones y advertencias. |
 | `AdminMenuForm` (+ `Skeleton`), `AdminMenuSlotEditor`, `AdminMenuIndexSkeleton` | `UCard`, controles | Editor del menú semanal. Composición de negocio sin equivalente en Nuxt UI. Muestra el estado de la semana; no publica ni abre pedidos (ver patrón «Estado de la semana de un menú»). |
 
 ### Por capa

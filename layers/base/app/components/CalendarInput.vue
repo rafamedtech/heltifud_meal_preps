@@ -7,14 +7,17 @@ interface Props {
   label: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   buttonUi?: ButtonProps['ui'];
+  disabled?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   size: undefined,
   buttonUi: undefined,
+  disabled: false,
 });
 
 const model = defineModel<string>({ required: true });
+const open = ref(false);
 const dateFormatter = new DateFormatter('es-MX', { dateStyle: 'medium' });
 
 const calendarValue = computed<CalendarDate | null>({
@@ -23,6 +26,8 @@ const calendarValue = computed<CalendarDate | null>({
   },
   set(value) {
     model.value = value?.toString() ?? '';
+    // Choosing a day completes the input, as in DatePicker.
+    if (value) open.value = false;
   },
 });
 
@@ -32,13 +37,14 @@ const displayDate = computed(() => calendarValue.value
 </script>
 
 <template>
-  <UPopover :content="{ align: 'start' }">
+  <UPopover v-model:open="open" :content="{ align: 'start' }">
     <UButton
       color="neutral"
       variant="subtle"
       icon="i-lucide-calendar"
       :size="props.size"
       :ui="props.buttonUi"
+      :disabled="props.disabled"
       :aria-label="`Abrir calendario para ${props.label.toLocaleLowerCase('es-MX')}`"
       class="w-full justify-start"
       :class="calendarValue ? 'text-highlighted' : 'text-muted'"

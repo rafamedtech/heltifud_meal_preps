@@ -92,6 +92,7 @@ model FoodCatalogItem {
   updatedAt         DateTime             @updatedAt
   components        FoodComponent[]
   orderComponents   OrderMenuComponent[]
+  recipeYield       Decimal?             @map("recipe_yield") @db.Decimal(10, 3)
   recipeIngredients RecipeIngredient[]
   exclusions        CustomerExclusion[]
 
@@ -220,6 +221,7 @@ model Order {
   statusEvents             OrderStatusEvent[]
   menuChanges              OrderMenuChange[]
   accessLinks              OrderAccessLink[]
+  payments                 OrderPayment[]
   contactSnapshot          Json?           @map("contact_snapshot")
 
   @@index([customerId, createdAt(sort: Desc)], map: "orders_customer_created_idx")
@@ -245,6 +247,10 @@ model OrderDelivery {
   updatedAt       DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
   order           Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
   menuSlots       OrderMenuSlot[]
+  assignedTo      String?         @map("assigned_to")
+  incident        String?
+  evidenceUrl     String?         @map("evidence_url")
+  activities      DeliveryActivity[]
 
   @@unique([orderId, sequence], map: "order_deliveries_order_sequence_key")
   @@index([scheduledDate, status], map: "order_deliveries_date_status_idx")
@@ -376,6 +382,8 @@ model Expense {
   createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
+  shoppingItems     ShoppingItem[]
+
   @@index([expenseDate(sort: Desc), id], map: "expenses_date_id_idx")
   @@index([category, expenseDate(sort: Desc)], map: "expenses_category_date_idx")
   @@index([expenseType, expenseDate(sort: Desc)], map: "expenses_type_date_idx")
@@ -408,6 +416,7 @@ model WeeklyCycle {
   secondDeliveryMealDays    DayOfWeek[] @map("second_delivery_meal_days")
   createdAt                 DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
   updatedAt                 DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+  productionRuns            ProductionRun[]
   menus                     WeeklyMenu[]
   orders                    Order[]
 
@@ -492,4 +501,85 @@ model OrderAccessLink {
   @@index([customerId])
   @@index([orderId])
   @@map("order_access_links")
+}
+
+
+/// Append-only manual cash ledger. Corrections are compensating movements.
+model OrderPayment {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId        String   @map("order_id") @db.Uuid
+  kind           String
+  amount         Decimal  @db.Decimal(10, 2)
+  method         String
+  reference      String
+  reason         String
+  receivedAt     DateTime @map("received_at") @db.Date
+  actorId        String?  @map("actor_id") @db.Uuid
+  actorLabel     String?  @map("actor_label")
+  idempotencyKey String   @map("idempotency_key") @db.Uuid
+  fingerprint    String
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Restrict)
+
+  @@unique([orderId, idempotencyKey])
+  @@index([orderId, createdAt])
+  @@map("order_payments")
+}
+
+/// Immutable production + recipe snapshot. Later edits require a new run.
+model ProductionRun {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cycleId           String   @map("cycle_id") @db.Uuid
+  sourceFingerprint String   @map("source_fingerprint")
+  requestKey        String   @unique @map("request_key") @db.Uuid
+  snapshot          Json
+  actorLabel        String?  @map("actor_label")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  cycle             WeeklyCycle @relation(fields: [cycleId], references: [id], onDelete: Restrict)
+  shoppingList      ShoppingList?
+
+  @@index([cycleId, createdAt(sort: Desc)])
+  @@map("production_runs")
+}
+
+model ShoppingList {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productionRunId String   @unique @map("production_run_id") @db.Uuid
+  version         Int      @default(1)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  productionRun   ProductionRun @relation(fields: [productionRunId], references: [id], onDelete: Restrict)
+  items           ShoppingItem[]
+
+  @@map("shopping_lists")
+}
+
+model ShoppingItem {
+  id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  shoppingListId String  @map("shopping_list_id") @db.Uuid
+  ingredientId   String  @map("ingredient_id")
+  name           String
+  category       String
+  unit           String
+  quantity       Decimal @db.Decimal(16, 3)
+  purchased      Boolean @default(false)
+  expenseId      String? @map("expense_id") @db.Uuid
+  updatedBy      String? @map("updated_by")
+  shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
+  expense        Expense? @relation(fields: [expenseId], references: [id], onDelete: Restrict)
+
+  @@index([expenseId])
+  @@unique([shoppingListId, ingredientId, unit])
+  @@map("shopping_items")
+}
+
+model DeliveryActivity {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  deliveryId String   @map("delivery_id") @db.Uuid
+  details    Json
+  actorLabel String?  @map("actor_label")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  delivery   OrderDelivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+
+  @@index([deliveryId, createdAt])
+  @@map("delivery_activities")
 }
