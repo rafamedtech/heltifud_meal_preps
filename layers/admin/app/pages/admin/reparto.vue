@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DeliveryBoardItem } from '~~/layers/menu/shared/types/operations'
 import { deliveryOperationSchema } from '~~/layers/menu/shared/types/operations'
-import { DELIVERY_TRANSITIONS, DELIVERY_STATUS_LABELS, DELIVERY_ACTION_LABELS } from '~~/layers/menu/shared/utils/orderWorkflow'
+import { DELIVERY_TRANSITIONS, DELIVERY_STATUS_LABELS, deliveryActionLabel, deliveryReasonRequired } from '~~/layers/menu/shared/utils/orderWorkflow'
 definePageMeta({ layout: 'admin' })
 useSeoMeta({ title: 'Tablero de reparto | Heltifud', robots: 'noindex, nofollow' })
 const toast = useToast()
@@ -19,15 +19,19 @@ const open = ref(false)
 const saving = ref(false)
 const transition = ref<DeliveryBoardItem['status'] | ''>('')
 const reason = ref('')
+// Optional new date when a failed delivery is rescheduled.
+const scheduledDate = ref('')
+const rescheduling = computed(() => selected.value?.status === 'FAILED' && transition.value === 'PENDING')
+const reasonMissing = computed(() => Boolean(transition.value && deliveryReasonRequired(transition.value) && !reason.value.trim()))
 const state = reactive({ version: 1, assignedTo: '', incident: '', evidenceUrl: '' })
 function edit(item: DeliveryBoardItem, next: DeliveryBoardItem['status'] | '' = '') {
-  selected.value = item; transition.value = next; reason.value = ''; Object.assign(state, { version: item.version, assignedTo: item.assignedTo, incident: item.incident, evidenceUrl: item.evidenceUrl }); open.value = true
+  selected.value = item; transition.value = next; reason.value = ''; scheduledDate.value = ''; Object.assign(state, { version: item.version, assignedTo: item.assignedTo, incident: item.incident, evidenceUrl: item.evidenceUrl }); open.value = true
 }
 async function save() {
   if (!selected.value || saving.value) return
   saving.value = true
   try {
-    if (transition.value) await $fetch(`/api/orders/${selected.value.orderId}/deliveries/${selected.value.sequence}/status`, { method: 'POST', body: { version: state.version, status: transition.value, reason: reason.value } })
+    if (transition.value) await $fetch(`/api/orders/${selected.value.orderId}/deliveries/${selected.value.sequence}/status`, { method: 'POST', body: { version: state.version, status: transition.value, reason: reason.value, ...(rescheduling.value && scheduledDate.value ? { scheduledDate: scheduledDate.value } : {}) } })
     else await $fetch(`/api/operations/deliveries/${selected.value.id}`, { method: 'PUT', body: { ...state } })
     open.value = false; await refresh(); toast.add({ title: 'Entrega actualizada', color: 'success' })
   } catch (e) {
@@ -45,8 +49,8 @@ async function save() {
     <UAlert title="Cobro y reparto" :description="`El saldo mostrado corresponde al pedido completo. Los cambios de reparto no registran cobros. ${isAdmin ? 'Abre la cuenta para registrar el dinero recibido.' : 'Entrega a administración el dinero recibido para registrarlo.'}`" icon="i-lucide-info" color="info" variant="soft" />
     <UEmpty v-if="error" title="No fue posible cargar el reparto"><template #actions><UButton label="Reintentar" @click="refresh()" /></template></UEmpty>
     <USkeleton v-else-if="status === 'pending'" class="h-40" />
-    <div v-else class="grid gap-4 xl:grid-cols-4">
-      <UCard v-for="column in (['PENDING', 'OUT_FOR_DELIVERY', 'FAILED', 'DELIVERED'] as const)" :key="column" :title="DELIVERY_STATUS_LABELS[column]" :description="deliveryCount(data.filter(d => d.status === column).length)">
+    <div v-else class="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+      <UCard v-for="column in (['PENDING', 'OUT_FOR_DELIVERY', 'FAILED', 'DELIVERED', 'LOST'] as const)" :key="column" :title="DELIVERY_STATUS_LABELS[column]" :description="deliveryCount(data.filter(d => d.status === column).length)">
         <UEmpty v-if="!data.some(d => d.status === column)" title="Sin entregas" icon="i-lucide-package-check" />
         <div v-else class="space-y-4">
           <UCard v-for="item in data.filter(d => d.status === column)" :key="item.id" :title="`#${item.folio} · ${item.customer}`" variant="subtle">
@@ -55,11 +59,11 @@ async function save() {
               <p class="text-sm text-muted">{{ item.phone }} · {{ item.assignedTo || 'Sin repartidor asignado' }}</p>
               <p v-if="!['PREPARING', 'PARTIALLY_DELIVERED', 'DELIVERED'].includes(item.orderStatus)" class="text-sm text-muted">{{ isAdmin ? 'Inicia la preparación desde el pedido para habilitar el reparto.' : 'Administración debe iniciar la preparación del pedido para habilitar el reparto.' }}</p>
               <p>Saldo del pedido: {{ transformPrice(item.balance) }}</p>
-              <UAlert v-if="item.deliveryNotes" title="Nota de la entrega" :description="item.deliveryNotes" :color="item.status === 'FAILED' ? 'error' : 'info'" />
+              <UAlert v-if="item.deliveryNotes" title="Nota de la entrega" :description="item.deliveryNotes" :color="['FAILED', 'LOST'].includes(item.status) ? 'error' : 'info'" />
               <UAlert v-if="item.incident" title="Incidencia" :description="item.incident" color="warning" />
               <div class="flex flex-wrap gap-2">
                 <UButton size="sm" color="neutral" variant="outline" label="Asignación / evidencia" @click="edit(item)" />
-                <UButton v-for="next in (['PREPARING', 'PARTIALLY_DELIVERED'].includes(item.orderStatus) ? DELIVERY_TRANSITIONS[item.status] : [])" :key="next" size="sm" :label="DELIVERY_ACTION_LABELS[next]" @click="edit(item, next)" />
+                <UButton v-for="next in (['PREPARING', 'PARTIALLY_DELIVERED'].includes(item.orderStatus) ? DELIVERY_TRANSITIONS[item.status] : [])" :key="next" size="sm" :label="deliveryActionLabel(item.status, next)" :color="next === 'LOST' ? 'error' : undefined" :variant="next === 'LOST' ? 'outline' : undefined" @click="edit(item, next)" />
                 <template v-if="isAdmin">
                   <UButton size="sm" color="neutral" variant="link" :to="`/admin/cobros?pedido=${item.orderId}`" label="Cobros" />
                   <UButton size="sm" color="neutral" variant="link" :to="`/admin/pedidos/${item.orderId}`" label="Pedido e historial" />
@@ -71,18 +75,22 @@ async function save() {
         </div>
       </UCard>
     </div>
-    <UModal v-model:open="open" :title="transition ? DELIVERY_ACTION_LABELS[transition] : 'Asignación e incidencia'" description="Los cambios se guardan con el responsable y se rechazan si el pedido cambió." :dismissible="!saving">
+    <UModal v-model:open="open" :title="transition && selected ? deliveryActionLabel(selected.status, transition) : 'Asignación e incidencia'" description="Los cambios se guardan con el responsable y se rechazan si el pedido cambió." :dismissible="!saving">
       <template #body>
         <UForm :state="state" :schema="deliveryOperationSchema" class="space-y-4" @submit="save">
           <p>#{{ selected?.folio }} · {{ selected?.customer }}</p>
-          <template v-if="transition"><UFormField label="Motivo / referencia" description="Obligatorio si la entrega falló o si se reintenta."><UTextarea v-model="reason" :maxlength="1000" class="w-full" :disabled="saving" /></UFormField></template>
+          <template v-if="transition">
+            <UAlert v-if="transition === 'LOST'" title="Cerrar sin entregar" description="Úsalo cuando el cliente no respondió tras los reintentos. La entrega queda cerrada y no genera devolución." icon="i-lucide-circle-alert" color="warning" variant="soft" />
+            <UFormField v-if="rescheduling" label="Nueva fecha de entrega" description="Opcional. Déjala vacía para reintentar en la misma fecha."><CalendarInput v-model="scheduledDate" label="Nueva fecha de entrega" :disabled="saving" /></UFormField>
+            <UFormField label="Motivo / referencia" :required="deliveryReasonRequired(transition)" description="Obligatorio si la entrega falló o se cierra sin entregar."><UTextarea v-model="reason" :maxlength="1000" class="w-full" :disabled="saving" /></UFormField>
+          </template>
           <template v-else>
             <UFormField name="assignedTo" label="Repartidor"><UInput v-model="state.assignedTo" :maxlength="120" class="w-full" :disabled="saving" /></UFormField>
             <UFormField name="incident" label="Incidencia"><UTextarea v-model="state.incident" :maxlength="1000" class="w-full" :disabled="saving" /></UFormField>
             <UFormField name="evidenceUrl" label="Enlace de evidencia" description="Enlace HTTPS a un comprobante existente."><UInput v-model="state.evidenceUrl" placeholder="https://..." class="w-full" :disabled="saving" /></UFormField>
             <ul v-if="selected?.activities.length" class="space-y-2 text-sm text-muted"><li v-for="a in selected.activities" :key="a.id">{{ new Date(a.createdAt).toLocaleString('es-MX') }} · {{ a.actorLabel || 'Administrador' }} · Asignación o incidencia actualizada</li></ul>
           </template>
-          <UButton type="submit" label="Guardar" :loading="saving" />
+          <UButton type="submit" label="Guardar" :loading="saving" :disabled="reasonMissing" />
         </UForm>
       </template>
     </UModal>

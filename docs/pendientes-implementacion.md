@@ -189,10 +189,12 @@ Estas decisiones condicionan las implementaciones correspondientes:
   Cobros. Quedan por definir las reglas de anticipo y devolución (ver abajo).
 - [x] Cobertura: toda la ciudad, sin zonas ni recargos por ahora (17 nov 2026).
   No requiere cambios: la app no limita direcciones ni suma cargos.
-- [ ] Políticas de cambios, cancelaciones, anticipos y devoluciones del
-  autoservicio. Preguntas abiertas: hasta cuándo puede el cliente cambiar o
-  cancelar, qué pasa después del corte, si se exige pago o anticipo antes de
-  preparar, cómo se devuelve el dinero y qué pasa con una entrega fallida.
+- [x] Políticas de cambios, cancelaciones, cobro, devoluciones y entregas
+  fallidas (17 nov 2026): [políticas](politicas-pedidos.md). Implementado: pago
+  completo antes de preparar con excepción auditada, saldo a favor, reprogramar
+  una entrega fallida y cerrarla sin entregar (`LOST`), textos al cliente.
+- [ ] Hasta qué día y hora se puede cancelar la segunda entrega después del
+  corte.
 
 ## Verificaciones pendientes de lo ya implementado
 
@@ -209,8 +211,8 @@ contenido siga sin implementar.
 ## Orden sugerido
 
 1. ~~Verificar el despliegue real (T26)~~ — cerrado el 17 nov 2026.
-2. Cerrar la política de cambios, cancelaciones, anticipos y devoluciones (corte,
-   cobro y cobertura definidos el 17 nov 2026).
+2. Definir el plazo para cancelar la segunda entrega después del corte (el resto
+   de las políticas quedó definido e implementado el 17 nov 2026).
 3. Ensayar un ciclo real con cocina y reparto, completar rendimientos y calibrar
    la impresión de etiquetas (cierre de T21).
 4. Completar integración (T24), E2E (T25), robustez de formularios (H24) y

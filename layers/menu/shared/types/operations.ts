@@ -1,14 +1,20 @@
 import { z } from 'zod';
+import type { DeliveryStatusValue } from './types';
 
+export const PAYMENT_METHOD_VALUES = ['CASH', 'TRANSFER', 'CARD', 'CREDIT'] as const;
+export type PaymentMethodValue = (typeof PAYMENT_METHOD_VALUES)[number];
+// CREDIT is the customer's store credit ("saldo a favor"): a refund with it adds
+// to the credit and a payment with it spends the credit.
 export const paymentMethods = [
   { label: 'Efectivo', value: 'CASH' },
   { label: 'Transferencia', value: 'TRANSFER' },
   { label: 'Tarjeta (cobro externo)', value: 'CARD' },
+  { label: 'Saldo a favor', value: 'CREDIT' },
 ] as const;
 export const paymentInputSchema = z.object({
   kind: z.enum(['PAYMENT', 'REFUND']),
   amount: z.number().positive().max(99999999.99).refine(value => Math.abs(value * 100 - Math.round(value * 100)) < 0.000001, 'Usa como máximo dos decimales.'),
-  method: z.enum(['CASH', 'TRANSFER', 'CARD']),
+  method: z.enum(PAYMENT_METHOD_VALUES),
   reference: z.string().trim().max(200).default(''),
   reason: z.string().trim().min(1, 'Indica el motivo del movimiento.').max(500),
   receivedAt: z.iso.date(),
@@ -39,6 +45,8 @@ export interface AccountsResponse {
 export interface PaymentDetail {
   account: Account;
   entries: PaymentEntry[];
+  /** Store credit the customer can spend on this or other orders. */
+  customerCredit: number;
 }
 export interface ProductionMeal {
   orderId: string;
@@ -102,7 +110,7 @@ export interface DeliveryBoardItem {
   sequence: number;
   date: string;
   address: string;
-  status: 'PENDING' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'FAILED';
+  status: DeliveryStatusValue;
   orderStatus: string;
   meals: number;
   balance: number;

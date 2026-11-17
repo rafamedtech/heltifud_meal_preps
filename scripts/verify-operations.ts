@@ -31,6 +31,8 @@ try {
   await pool.query(ddl);
   const safeguards = readFileSync('prisma/migrations/20261117020000_operations/migration.sql', 'utf8').split('-- Server-only operational data:')[1]!;
   await pool.query('-- ' + safeguards);
+  // Store credit (method CREDIT) widens the payment method constraint.
+  await pool.query(readFileSync('prisma/migrations/20261119000000_payment_credit_and_lost_delivery/migration.sql', 'utf8'));
   shared.prisma = db;
   const cycle = await db.weeklyCycle.create({ data: { weekStart: new Date('2097-11-18'), status: 'CLOSED', orderCutoffAt: new Date('2097-11-15') } });
   const customer = await db.customer.create({ data: { nombre: 'Fixture aislada', telefono: '0000000000', ubicacion1: 'Dirección de prueba' } });
@@ -82,7 +84,12 @@ try {
   await updateDeliveryOperation(delivery.id, { version: 1, assignedTo: 'Repartidor', incident: 'Llamar', evidenceUrl: 'https://example.com/evidence' }, actor);
   await assert.rejects(updateDeliveryOperation(delivery.id, { version: 1, assignedTo: '', incident: '', evidenceUrl: '' }, actor), { statusCode: 409 });
   assert.equal(await db.deliveryActivity.count(), 1);
-  await transitionOrder(order.id, { version: 2, status: 'PREPARING' }, actor);
+  // Policy: paid in full before preparing, unless staff prepares it unpaid on purpose.
+  await assert.rejects(transitionOrder(order.id, { version: 2, status: 'PREPARING' }, actor), (e: { statusCode?: number; data?: { code?: string; balance?: number } }) => e.statusCode === 409 && e.data?.code === 'PAYMENT_PENDING' && e.data.balance === 30);
+  await assert.rejects(transitionOrder(order.id, { version: 2, status: 'PREPARING', allowUnpaid: true }, actor), { statusCode: 400 });
+  await transitionOrder(order.id, { version: 2, status: 'PREPARING', allowUnpaid: true, reason: 'Paga el viernes' }, actor);
+  const unpaidEvent = await db.orderStatusEvent.findFirstOrThrow({ where: { orderId: order.id, toStatus: 'PREPARING' } });
+  assert.equal(unpaidEvent.reason, 'Preparación con saldo pendiente de $30.00: Paga el viernes');
   await transitionDelivery(order.id, 1, { version: 3, status: 'OUT_FOR_DELIVERY' }, actor);
   assert.equal((await getProductionRuns(cycle.id))[0]?.stale, false);
   await transitionDelivery(order.id, 1, { version: 4, status: 'FAILED', reason: 'No recibió' }, actor);
@@ -96,6 +103,50 @@ try {
   await registerPayment(order.id, { ...retry, kind: 'REFUND', amount: 70, idempotencyKey: randomUUID() }, actor);
   assert.equal((await getPayments(order.id)).account.refundable, 0);
   checks.push('Delivery assignments are audited, stale writes rejected, status progression preserves consolidation and cancellation releases refund');
+  checks.push('Preparing with an unpaid balance needs the explicit exception and a reason kept in the history');
+
+  // Store credit: a refund as CREDIT adds to the customer's credit; payments with CREDIT spend it.
+  const tomorrow = new Date(Date.parse(`${localToday()}T00:00:00Z`) + 86_400_000).toISOString().slice(0, 10);
+  const yesterday = new Date(Date.parse(`${localToday()}T00:00:00Z`) - 86_400_000).toISOString().slice(0, 10);
+  const newOrder = (price: number) => db.order.create({ data: { customerId: customer.id, cycleId: cycle.id, status: 'CONFIRMED', priceSnapshot: price, planTitleSnapshot: 'Prueba', planVariantTitleSnapshot: 'Una comida', contactSnapshot: { nombre: 'Nombre guardado', telefono: '0000000000' }, deliveries: { create: { sequence: 1, scheduledDate: new Date(localToday()), locationNumber: 1, addressSnapshot: 'Dirección guardada' } } } });
+  const version = async (id: string) => (await db.order.findUniqueOrThrow({ where: { id } })).version;
+  const move = (kind: 'PAYMENT' | 'REFUND', amount: number, method: 'CASH' | 'TRANSFER' | 'CREDIT') => ({ kind, amount, method, receivedAt: localToday(), reason: 'Saldo a favor', idempotencyKey: randomUUID() });
+  const cancelled = await newOrder(100);
+  await registerPayment(cancelled.id, move('PAYMENT', 100, 'TRANSFER'), actor);
+  await transitionOrder(cancelled.id, { version: await version(cancelled.id), status: 'CANCELLED', reason: 'Canceló antes del corte' }, actor);
+  await registerPayment(cancelled.id, move('REFUND', 100, 'CREDIT'), actor);
+  assert.equal((await getPayments(cancelled.id)).customerCredit, 100);
+  const next = await newOrder(80);
+  await registerPayment(next.id, move('PAYMENT', 80, 'CREDIT'), actor);
+  assert.equal((await getPayments(next.id)).account.balance, 0);
+  assert.equal((await getPayments(next.id)).customerCredit, 20);
+  const [a, b] = [await newOrder(50), await newOrder(50)];
+  await assert.rejects(registerPayment(a.id, move('PAYMENT', 30, 'CREDIT'), actor), { statusCode: 409 });
+  const race = await Promise.allSettled([registerPayment(a.id, move('PAYMENT', 20, 'CREDIT'), actor), registerPayment(b.id, move('PAYMENT', 20, 'CREDIT'), actor)]);
+  assert.equal(race.filter(r => r.status === 'fulfilled').length, 1);
+  assert.equal((await getPayments(a.id)).customerCredit, 0);
+  checks.push('Refunds as store credit add to the customer credit; credit payments spend it, never beyond the credit, also under concurrency');
+
+  // Failed delivery: reschedule to another day, then close as LOST when the customer never answers.
+  await transitionOrder(next.id, { version: await version(next.id), status: 'PREPARING' }, actor);
+  await transitionDelivery(next.id, 1, { version: await version(next.id), status: 'OUT_FOR_DELIVERY' }, actor);
+  await transitionDelivery(next.id, 1, { version: await version(next.id), status: 'FAILED', reason: 'Cliente ausente' }, actor);
+  await assert.rejects(transitionDelivery(next.id, 1, { version: await version(next.id), status: 'PENDING', scheduledDate: yesterday }, actor), { statusCode: 400 });
+  await assert.rejects(transitionDelivery(next.id, 1, { version: await version(next.id), status: 'OUT_FOR_DELIVERY', scheduledDate: tomorrow }, actor), { statusCode: 400 });
+  await transitionDelivery(next.id, 1, { version: await version(next.id), status: 'PENDING', scheduledDate: tomorrow, reason: 'Pidió mañana' }, actor);
+  const moved = await db.orderDelivery.findFirstOrThrow({ where: { orderId: next.id } });
+  assert.equal(moved.scheduledDate.toISOString().slice(0, 10), tomorrow);
+  assert.equal(moved.notes, `Reprogramada al ${tomorrow}: Pidió mañana`);
+  assert.equal((await getDeliveryBoard({ date: tomorrow })).filter(item => item.orderId === next.id).length, 1);
+  await transitionDelivery(next.id, 1, { version: await version(next.id), status: 'OUT_FOR_DELIVERY' }, actor);
+  await transitionDelivery(next.id, 1, { version: await version(next.id), status: 'FAILED', reason: 'Sin respuesta' }, actor);
+  await assert.rejects(transitionDelivery(next.id, 1, { version: await version(next.id), status: 'LOST' }, actor), { statusCode: 400 });
+  await transitionDelivery(next.id, 1, { version: await version(next.id), status: 'LOST', reason: 'Nunca respondió' }, actor);
+  assert.equal((await db.order.findUniqueOrThrow({ where: { id: next.id } })).status, 'DELIVERED');
+  assert.equal((await getPayments(next.id)).account.refundable, 0);
+  const afterLost = await getOperationsDashboard();
+  assert.equal(afterLost.failed, 0);
+  checks.push('A failed delivery is rescheduled to a future date or closed as LOST with a reason; LOST closes the order without a refund or pending counts');
   const privacy = await pool.query(`SELECT tablename, rowsecurity FROM pg_tables WHERE schemaname=$1 AND tablename IN ('order_payments','production_runs','shopping_lists','shopping_items','delivery_activities')`, [schema]);
   assert.equal(privacy.rows.length, 5); assert.ok(privacy.rows.every(r => r.rowsecurity));
   const grant = await pool.query(`SELECT count(*)::int AS n FROM information_schema.role_table_grants WHERE table_schema=$1 AND grantee IN ('anon','authenticated','PUBLIC')`, [schema]);

@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { createError } from 'h3';
 import { z } from 'zod';
 import { Prisma } from '../../generated/prisma/client';
-import type { Account, AccountsResponse, PaymentDetail } from '../../shared/types/operations';
+import type { Account, AccountsResponse, PaymentDetail, PaymentMethodValue } from '../../shared/types/operations';
 import { paymentInputSchema } from '../../shared/types/operations';
 import type { OrderActor } from '../../shared/types/types';
 import { accountTotals } from '../../shared/utils/operations';
@@ -47,6 +47,17 @@ export async function getAccounts(query: unknown): Promise<AccountsResponse> {
     return { items: rows.map(mapAccount), total: Number(summary!.count), page: q.page, summary: { paid: Number(summary!.paid ?? 0), balance: Number(summary!.balance ?? 0), refundable: Number(summary!.refundable ?? 0) } };
   }, { isolationLevel: 'RepeatableRead' });
 }
+/**
+ * Store credit ("saldo a favor") of a customer, derived from the immutable
+ * ledger: refunds paid as CREDIT add to it, payments made with CREDIT spend it.
+ */
+export async function customerCredit(client: Pick<Prisma.TransactionClient, '$queryRaw'>, customerId: string) {
+  const [row] = await client.$queryRaw<Array<{ credit: Prisma.Decimal | null }>>`
+    SELECT SUM(CASE WHEN p.kind = 'REFUND' THEN p.amount ELSE -p.amount END) AS credit
+    FROM order_payments p JOIN orders o ON o.id = p.order_id
+    WHERE o.customer_id = ${customerId}::uuid AND p.method = 'CREDIT'`;
+  return Math.round(Number(row?.credit ?? 0) * 100) / 100;
+}
 export async function getPayments(id: string): Promise<PaymentDetail> {
   parseOperation(operationId, id);
   const order = await prisma.order.findUnique({ where: { id }, include: { customer: true, payments: { orderBy: [{ createdAt: 'desc' }, { id: 'desc' }] } } });
@@ -54,7 +65,8 @@ export async function getPayments(id: string): Promise<PaymentDetail> {
   const contact = order.contactSnapshot as { nombre?: string } | null;
   return {
     account: { id, folio: order.folio, customerName: contact?.nombre ?? order.customer.nombre, status: order.status, total: Number(order.priceSnapshot), ...accountTotals(Number(order.priceSnapshot), order.status, order.payments.map(item => ({ kind: item.kind, amount: Number(item.amount) }))) },
-    entries: order.payments.map(item => ({ id: item.id, kind: item.kind as 'PAYMENT' | 'REFUND', amount: Number(item.amount), method: item.method as 'CASH' | 'TRANSFER' | 'CARD', reference: item.reference, reason: item.reason, receivedAt: item.receivedAt.toISOString().slice(0, 10), actorLabel: item.actorLabel, createdAt: item.createdAt.toISOString() })),
+    entries: order.payments.map(item => ({ id: item.id, kind: item.kind as 'PAYMENT' | 'REFUND', amount: Number(item.amount), method: item.method as PaymentMethodValue, reference: item.reference, reason: item.reason, receivedAt: item.receivedAt.toISOString().slice(0, 10), actorLabel: item.actorLabel, createdAt: item.createdAt.toISOString() })),
+    customerCredit: await customerCredit(prisma, order.customerId),
   };
 }
 export async function registerPayment(id: string, input: unknown, actor?: OrderActor) {
@@ -77,6 +89,13 @@ export async function registerPayment(id: string, input: unknown, actor?: OrderA
       throw createError({ statusCode: 409, statusMessage: 'Confirma el pedido y registra un abono que no supere su saldo actual.' });
     }
     if (data.kind === 'REFUND' && data.amount > totals.paid) throw createError({ statusCode: 409, statusMessage: 'La devolución supera lo efectivamente cobrado.' });
+    if (data.method === 'CREDIT') {
+      // Serializes every movement of this customer's credit (lock order: order, then customer).
+      await tx.$queryRaw`SELECT id FROM customers WHERE id = ${order.customerId}::uuid FOR UPDATE`;
+      if (data.kind === 'PAYMENT' && data.amount > await customerCredit(tx, order.customerId)) {
+        throw createError({ statusCode: 409, statusMessage: 'El abono supera el saldo a favor del cliente.' });
+      }
+    }
     const { idempotencyKey, ...movement } = data;
     await tx.orderPayment.create({ data: { ...movement, receivedAt: new Date(`${data.receivedAt}T00:00:00Z`), orderId: id, idempotencyKey, fingerprint, actorId: actor?.id, actorLabel: actor?.label } });
   });

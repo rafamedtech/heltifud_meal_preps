@@ -463,6 +463,8 @@ enum DeliveryStatus {
   OUT_FOR_DELIVERY
   DELIVERED
   FAILED
+  /// Closed without delivery after the retries (customer never answered). No refund.
+  LOST
 }
 
 enum OrderStatus {

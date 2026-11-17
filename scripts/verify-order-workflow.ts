@@ -72,7 +72,8 @@ try {
 
   const slotIds = order.menuSlots.map(s => s.id);
   order = (await transitionOrder(order.id, { version: order.version, status: 'CONFIRMED', reason: '' }, actor))!;
-  order = (await transitionOrder(order.id, { version: order.version, status: 'PREPARING', reason: '' }, actor))!;
+  // Payment is covered by verify-operations; here the unpaid exception keeps the flow focused on statuses.
+  order = (await transitionOrder(order.id, { version: order.version, status: 'PREPARING', reason: 'Verificación de flujo', allowUnpaid: true }, actor))!;
   assert.deepEqual(order.menuSlots.map(s => s.id), slotIds);
   for (const sequence of [1, 2] as const) {
     order = (await transitionDelivery(order.id, sequence, { version: order.version, status: 'OUT_FOR_DELIVERY', reason: '' }, actor))!;

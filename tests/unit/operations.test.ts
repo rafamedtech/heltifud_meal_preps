@@ -19,6 +19,12 @@ describe('operational accounts', () => {
     for (const patch of [{ amount: 0 }, { amount: 0.001 }, { amount: -1 }, { reason: ' ' }, { receivedAt: '2026-02-30' }]) expect(paymentInputSchema.safeParse({ ...base, ...patch }).success).toBe(false);
     expect(deliveryOperationSchema.safeParse({ version: 1, assignedTo: '', incident: '', evidenceUrl: 'http://example.com/photo' }).success).toBe(false);
   });
+  it('accepts store credit as a payment method and nothing else new', () => {
+    const base = { kind: 'REFUND', amount: 100, method: 'CREDIT', receivedAt: '2026-11-16', reason: 'Cancelación antes del corte', idempotencyKey: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' };
+    expect(paymentInputSchema.safeParse(base).success).toBe(true);
+    expect(paymentInputSchema.safeParse({ ...base, kind: 'PAYMENT' }).success).toBe(true);
+    expect(paymentInputSchema.safeParse({ ...base, method: 'VOUCHER' }).success).toBe(false);
+  });
 });
 describe('frozen production and purchases', () => {
   it('counts actual saved substitutions, containers, notes and separate deliveries', () => {

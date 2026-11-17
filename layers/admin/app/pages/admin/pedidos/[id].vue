@@ -19,7 +19,7 @@ import type {
 import { DELIVERY_SEQUENCE_LABELS, orderFolioLabel } from "~~/layers/menu/shared/utils/orderDeliveries"
 import { orderPlaceKey, roleFamily } from "~~/layers/menu/shared/utils/orderPersonalization"
 
-import { ORDER_ACTION_LABELS, DELIVERY_ACTION_LABELS, ORDER_TRANSITIONS, DELIVERY_TRANSITIONS, ORDER_STATUS_LABELS, DELIVERY_STATUS_LABELS, isClosedOrder } from "~~/layers/menu/shared/utils/orderWorkflow"
+import { ORDER_ACTION_LABELS, ORDER_TRANSITIONS, DELIVERY_TRANSITIONS, ORDER_STATUS_LABELS, DELIVERY_STATUS_LABELS, deliveryActionLabel, deliveryReasonRequired, isClosedOrder } from "~~/layers/menu/shared/utils/orderWorkflow"
 
 definePageMeta({ layout: "admin" })
 
@@ -246,6 +246,12 @@ function payload(): OrderUpdateInput {
 const conflict = ref(false)
 const pendingTransition = ref<{ status: OrderStatusValue | DeliveryStatusValue, sequence?: DeliverySequence } | null>(null)
 const transitionReason = ref("")
+// Set when the server reports an unpaid balance before preparation (PAYMENT_PENDING).
+const unpaidBalance = ref<number | null>(null)
+const allowUnpaid = ref(false)
+const rescheduleDate = ref("")
+const rescheduling = computed(() => Boolean(pendingTransition.value?.sequence && pendingTransition.value.status === "PENDING"
+  && deliveryStatus(pendingTransition.value.sequence) === "FAILED"))
 const transitionOpen = computed({ get: () => Boolean(pendingTransition.value), set: value => { if (!value) pendingTransition.value = null } })
 const canEdit = computed(() => Boolean(order.value && order.value.cycleStatus === "OPEN" && !isClosedOrder(order.value.status)
   && order.value.deliveries.every(delivery => delivery.status === "PENDING")))
@@ -253,10 +259,13 @@ const dirty = computed(() => JSON.stringify(state) !== JSON.stringify(editableSt
 // Leaving the order (sidebar, links, reload) with unsaved edits asks first.
 const { confirmOpen: leaveConfirmOpen, leave: leaveWithoutSaving } = useLeaveGuard(() => canEdit.value && dirty.value)
 const orderActions = computed(() => order.value ? ORDER_TRANSITIONS[order.value.status] : [])
-const reasonRequired = computed(() => pendingTransition.value?.status === "CANCELLED" || pendingTransition.value?.status === "FAILED" || Boolean(order.value && isClosedOrder(order.value.status)))
+const reasonRequired = computed(() => pendingTransition.value?.status === "CANCELLED"
+  || Boolean(pendingTransition.value?.sequence && deliveryReasonRequired(pendingTransition.value.status as DeliveryStatusValue))
+  || allowUnpaid.value
+  || Boolean(order.value && isClosedOrder(order.value.status)))
 const transitionTitle = computed(() => {
   if (!pendingTransition.value) return "Cambiar estado"
-  if (pendingTransition.value.sequence) return `${DELIVERY_SEQUENCE_LABELS[pendingTransition.value.sequence]}: ${DELIVERY_STATUS_LABELS[pendingTransition.value.status as DeliveryStatusValue]}`
+  if (pendingTransition.value.sequence) return `${DELIVERY_SEQUENCE_LABELS[pendingTransition.value.sequence]}: ${deliveryActionLabel(deliveryStatus(pendingTransition.value.sequence), pendingTransition.value.status as DeliveryStatusValue)}`
   return order.value && isClosedOrder(order.value.status) ? "Reabrir pedido" : ORDER_STATUS_LABELS[pendingTransition.value.status as OrderStatusValue]
 })
 const menuChangeTimeline = computed(() => (order.value?.menuChanges ?? []).map(change => ({
@@ -292,6 +301,9 @@ function datesFor(sequence: DeliverySequence) {
 }
 function startTransition(target: OrderStatusValue | DeliveryStatusValue, sequence?: DeliverySequence) {
   transitionReason.value = ""
+  unpaidBalance.value = null
+  allowUnpaid.value = false
+  rescheduleDate.value = ""
   pendingTransition.value = { status: target, sequence }
 }
 // Saved components get new ids, so their conflicts are read again before rebuilding the form.
@@ -324,12 +336,21 @@ async function applyTransition() {
     const { status: target, sequence } = pendingTransition.value
     const input = { version: state.version, reason: transitionReason.value }
     const saved = sequence
-      ? await transitionDelivery(id, sequence, { ...input, status: target as DeliveryStatusValue })
-      : await transitionOrder(id, { ...input, status: target as OrderStatusValue })
+      ? await transitionDelivery(id, sequence, { ...input, status: target as DeliveryStatusValue, ...(rescheduling.value && rescheduleDate.value ? { scheduledDate: rescheduleDate.value } : {}) })
+      : await transitionOrder(id, { ...input, status: target as OrderStatusValue, ...(allowUnpaid.value ? { allowUnpaid: true } : {}) })
     await acceptSaved(saved)
     pendingTransition.value = null
     toast.add({ title: "Estado actualizado", description: "El cambio quedó registrado en el historial.", color: "success", icon: "i-lucide-circle-check" })
-  } catch (error) { pendingTransition.value = null; mutationError(error) } finally { saving.value = false }
+  } catch (error) {
+    const failure = error as { data?: { data?: { code?: string, balance?: number } } }
+    // Keep the dialog open: staff can register the payment or prepare it unpaid on purpose.
+    if (failure.data?.data?.code === "PAYMENT_PENDING") {
+      unpaidBalance.value = failure.data.data.balance ?? 0
+      return
+    }
+    pendingTransition.value = null
+    mutationError(error)
+  } finally { saving.value = false }
 }
 
 </script>
@@ -426,7 +447,7 @@ async function applyTransition() {
                 {{ deliveryAddress(delivery.sequence, delivery.locationNumber) || "Sin dirección registrada" }}
               </p>
               <div class="flex flex-wrap gap-3">
-                <UButton v-for="target in deliveryActions(delivery.sequence)" :key="target" type="button" :label="DELIVERY_ACTION_LABELS[target]" color="neutral" variant="outline" :disabled="dirty || conflict" @click="startTransition(target, delivery.sequence)" />
+                <UButton v-for="target in deliveryActions(delivery.sequence)" :key="target" type="button" :label="deliveryActionLabel(deliveryStatus(delivery.sequence), target)" :color="target === 'LOST' ? 'error' : 'neutral'" variant="outline" :disabled="dirty || conflict" @click="startTransition(target, delivery.sequence)" />
               </div>
             </UCard>
           </div>
@@ -526,11 +547,19 @@ async function applyTransition() {
     </UForm>
     <UModal v-model:open="transitionOpen" :title="transitionTitle" :description="order && isClosedOrder(order.status) ? 'La reapertura dejará las entregas pendientes y conservará el historial anterior.' : 'El cambio se guardará con tu usuario en el historial del pedido.'" :ui="{ content: 'max-w-md' }">
       <template #body>
-        <UFormField label="Motivo" :required="reasonRequired"><UTextarea v-model="transitionReason" :maxlength="1000" class="w-full" /></UFormField>
+        <div class="space-y-4">
+          <template v-if="unpaidBalance !== null">
+            <UAlert title="Saldo pendiente" :description="`El pedido debe ${transformPrice(unpaidBalance)}. La política es cobrar completo antes de preparar.`" icon="i-lucide-circle-alert" color="warning" variant="soft" :actions="[{ label: 'Registrar cobro', to: `/admin/cobros?pedido=${id}`, color: 'neutral', variant: 'outline' }]" />
+            <UCheckbox v-model="allowUnpaid" label="Preparar con saldo pendiente" description="El cliente pagará después. El motivo queda en el historial." />
+          </template>
+          <UAlert v-if="pendingTransition?.status === 'LOST'" title="Cerrar sin entregar" description="Úsalo cuando el cliente no respondió tras los reintentos. La entrega queda cerrada y no genera devolución." icon="i-lucide-circle-alert" color="warning" variant="soft" />
+          <UFormField v-if="rescheduling" label="Nueva fecha de entrega" description="Opcional. Déjala vacía para reintentar en la misma fecha."><CalendarInput v-model="rescheduleDate" label="Nueva fecha de entrega" /></UFormField>
+          <UFormField label="Motivo" :required="reasonRequired"><UTextarea v-model="transitionReason" :maxlength="1000" class="w-full" /></UFormField>
+        </div>
       </template>
       <template #footer>
         <UButton label="Cancelar" color="neutral" variant="ghost" :disabled="saving" @click="transitionOpen = false" />
-        <UButton label="Confirmar cambio" :loading="saving" :disabled="reasonRequired && !transitionReason.trim()" @click="applyTransition" />
+        <UButton label="Confirmar cambio" :loading="saving" :disabled="(reasonRequired && !transitionReason.trim()) || (unpaidBalance !== null && !allowUnpaid)" @click="applyTransition" />
       </template>
     </UModal>
 

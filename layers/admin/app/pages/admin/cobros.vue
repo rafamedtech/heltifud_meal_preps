@@ -32,6 +32,20 @@ async function show(id: string) {
     Object.assign(state, { kind: selected.value.account.refundable > 0 ? 'REFUND' : 'PAYMENT', amount: selected.value.account.balance || selected.value.account.refundable, method: 'TRANSFER', reference: '', reason: '', receivedAt: new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Tijuana' }).format(new Date()), idempotencyKey: crypto.randomUUID() })
   } catch (e) { detailError.value = message(e) } finally { loadingDetail.value = false }
 }
+// Paying with store credit is limited by both the balance and the customer's credit.
+const maxAmount = computed(() => {
+  if (!selected.value) return 0
+  const { balance, paid } = selected.value.account
+  if (state.kind === 'REFUND') return paid
+  return state.method === 'CREDIT' ? Math.min(balance, selected.value.customerCredit) : balance
+})
+const methodItems = computed(() => paymentMethods.map(method => ({
+  ...method,
+  disabled: method.value === 'CREDIT' && state.kind === 'PAYMENT' && (selected.value?.customerCredit ?? 0) <= 0
+})))
+const methodHint = computed(() => state.method !== 'CREDIT' ? undefined
+  : state.kind === 'REFUND' ? 'La devolución queda como saldo a favor del cliente para otro pedido.'
+  : 'Se descuenta del saldo a favor del cliente.')
 function message(e: unknown) { return (e as { data?: { statusMessage?: string } })?.data?.statusMessage ?? 'No fue posible completar la operación.' }
 async function save() {
   if (!selected.value || saving.value) return
@@ -80,14 +94,15 @@ onMounted(() => { if (typeof route.query.pedido === 'string') show(route.query.p
         <div v-else-if="selected" class="space-y-5">
           <p class="font-medium text-highlighted">#{{ selected.account.folio }} · {{ selected.account.customerName }}</p>
           <p>Saldo: {{ transformPrice(selected.account.balance) }} · Cobrado neto: {{ transformPrice(selected.account.paid) }} · Por devolver: {{ transformPrice(selected.account.refundable) }}</p>
+          <p class="text-sm text-muted">Saldo a favor del cliente: {{ transformPrice(selected.customerCredit) }}</p>
           <UForm :schema="paymentInputSchema" :state="state" class="space-y-4" @submit="save">
             <UFormField label="Movimiento" name="kind"><USelect v-model="state.kind" :items="[{ label: 'Abono', value: 'PAYMENT' }, { label: 'Devolución', value: 'REFUND' }]" class="w-full" :disabled="saving" /></UFormField>
-            <UFormField label="Importe (MXN)" name="amount" required><UInputNumber v-model="state.amount" :min="0" :step="0.01" :max="state.kind === 'PAYMENT' ? selected.account.balance : selected.account.paid" class="w-full" :disabled="saving" /></UFormField>
-            <UFormField label="Medio" name="method"><USelect v-model="state.method" :items="[...paymentMethods]" class="w-full" :disabled="saving" /></UFormField>
+            <UFormField label="Importe (MXN)" name="amount" required><UInputNumber v-model="state.amount" :min="0" :step="0.01" :max="maxAmount" class="w-full" :disabled="saving" /></UFormField>
+            <UFormField label="Medio" name="method" :description="methodHint"><USelect v-model="state.method" :items="methodItems" class="w-full" :disabled="saving" /></UFormField>
             <UFormField label="Fecha" name="receivedAt"><CalendarInput v-model="state.receivedAt" label="Fecha de recepción" :disabled="saving" /></UFormField>
             <UFormField label="Referencia" name="reference"><UInput v-model="state.reference" :maxlength="200" class="w-full" :disabled="saving" /></UFormField>
             <UFormField label="Motivo" name="reason" required><UTextarea v-model="state.reason" :maxlength="500" class="w-full" :disabled="saving" /></UFormField>
-            <UButton type="submit" label="Registrar movimiento" :loading="saving" :disabled="state.kind === 'PAYMENT' ? selected.account.balance <= 0 : selected.account.paid <= 0" />
+            <UButton type="submit" label="Registrar movimiento" :loading="saving" :disabled="maxAmount <= 0" />
           </UForm>
           <USeparator label="Historial" />
           <UEmpty v-if="!selected.entries.length" title="Sin movimientos" icon="i-lucide-wallet" />

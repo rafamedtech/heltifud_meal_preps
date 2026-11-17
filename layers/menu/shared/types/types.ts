@@ -171,6 +171,7 @@ export const DELIVERY_STATUS_VALUES = [
   'OUT_FOR_DELIVERY',
   'DELIVERED',
   'FAILED',
+  'LOST',
 ] as const;
 
 export type DeliveryStatusValue = (typeof DELIVERY_STATUS_VALUES)[number];
@@ -400,8 +401,8 @@ export interface OrderPersonalization {
 }
 
 export interface OrderActor { id: string; label: string }
-export interface OrderStatusInput { version: number; status: OrderStatusValue; reason: string }
-export interface DeliveryStatusInput { version: number; status: DeliveryStatusValue; reason: string }
+export interface OrderStatusInput { version: number; status: OrderStatusValue; reason: string; allowUnpaid?: boolean }
+export interface DeliveryStatusInput { version: number; status: DeliveryStatusValue; reason: string; scheduledDate?: string }
 export interface OrderStatusEvent {
   id: string;
   version: number;
