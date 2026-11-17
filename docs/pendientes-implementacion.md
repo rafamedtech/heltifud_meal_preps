@@ -162,8 +162,9 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   [runbook de despliegue](runbook-despliegue.md). Preview y producción 19/19,
   migraciones al día, rollback probado (15 s) y `DIRECT_URL` retirada de Netlify.
   Faltan (plan Free, sin Pro por ahora): base aparte para previews en un
-  segundo proyecto Free, respaldo diario programado con `pg_dump` cifrado y
-  ensayo del pedido de cliente.
+  segundo proyecto Free y ensayo del pedido de cliente. El respaldo programado
+  queda para una versión posterior; por ahora, `pg_dump` manual antes de cada
+  migración.
 - [ ] Endurecer carga, errores y reintento en login/formularios; unificar validación
   de IDs y cursores, y evitar presentar errores como listas vacías (H24).
 - [ ] Actualizar tipos de base de datos, ejemplos de entorno y runbook; retirar

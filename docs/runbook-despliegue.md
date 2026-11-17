@@ -122,10 +122,10 @@ Pendiente para cerrar T26:
 - [x] Ensayo de rollback (publicar el deploy anterior y volver).
 - [x] Prueba de humo en producción con `EXPECT_COMMIT` tras el merge: 19/19
   (`5d7d34a`, contexto `production`).
-- [ ] Sin respaldos de Supabase (plan Free, sin Pro por ahora): programar un
-  `pg_dump` diario cifrado (p. ej. GitHub Actions con PostgreSQL 17 y cifrado
-  antes de subir el artefacto) y conservar el `pg_dump` manual antes de cada
-  migración.
+- [ ] Sin respaldos de Supabase (plan Free). **Pospuesto a una versión
+  posterior** (decisión del 17 nov 2026): el respaldo programado no forma parte
+  de T26. Mientras tanto, `pg_dump` manual (cliente PostgreSQL 17) a `backups/`
+  antes de cada migración.
 - [x] `DIRECT_URL` (rol `postgres`) retirada de Netlify. El build siguiente
   (deploy `6afc933b`) terminó bien sin ella y pasó el humo 19/19. Los deploys
   anteriores la conservan congelada: un rollback a uno de ellos la vuelve a
