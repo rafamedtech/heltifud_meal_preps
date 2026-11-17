@@ -165,9 +165,13 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   quedan para una versión posterior.
 - [ ] Endurecer carga, errores y reintento en login/formularios; unificar validación
   de IDs y cursores, y evitar presentar errores como listas vacías (H24).
-  Incluir los hallazgos del ensayo T26: días de la variante no se marcan solos,
-  aviso «La oferta cambió» sin borrador previo y textos de la consulta del
-  cliente que no cambian con el estado ni el cobro.
+  Hallazgos del ensayo T26 resueltos el 17 nov 2026: al cambiar de variante
+  los días se completan o recortan solos (`fitChosenDays`); el aviso «La oferta
+  cambió» solo aparece al recuperar un borrador con la misma variante y tipo
+  cuya oferta cambió (`offerChangedSinceDraft`); la consulta del cliente
+  muestra el estado y el cobro desde el libro (`customerPaymentMessage`:
+  pendiente, abono parcial, pagado, devolución). Verificado con pruebas
+  unitarias y en navegador (`/pedido`, sin enviar). Queda el resto de H24.
 - [ ] Actualizar tipos de base de datos, ejemplos de entorno y runbook; retirar
   helpers duplicados y dividir componentes grandes cuando aporte claridad (T27).
 

@@ -15,7 +15,7 @@ const links = new Map([
 ]);
 const order = (id: string, nombre: string) => ({ id, folio: id === 'order-a' ? 1 : 2, status: 'CONFIRMED', planTitleSnapshot: 'Plan', planVariantTitleSnapshot: '5 días',
   priceSnapshot: 1000, contactSnapshot: { nombre, telefono: '6640000000', correoElectronico: '' }, customer: { nombre, telefono: '', correoElectronico: null },
-  notes: null, deliveries: [], menuSlots: [] });
+  notes: null, deliveries: [], menuSlots: [], payments: id === 'order-a' ? [{ kind: 'PAYMENT', amount: 400 }] : [] });
 
 beforeEach(() => {
   prisma.orderAccessLink.findUnique.mockReset();
@@ -26,7 +26,7 @@ beforeEach(() => {
 
 describe('private order ownership', () => {
   it('loads only the order bound to the token', async () => {
-    await expect(getPrivateCustomerOrder(tokenA)).resolves.toMatchObject({ folio: 1, contact: { nombre: 'Cliente A' } });
+    await expect(getPrivateCustomerOrder(tokenA)).resolves.toMatchObject({ folio: 1, contact: { nombre: 'Cliente A' }, payment: { paid: 400, balance: 600, refundable: 0 } });
     expect(prisma.order.findUniqueOrThrow).toHaveBeenCalledOnce();
     expect(prisma.order.findUniqueOrThrow.mock.calls[0]![0]).toMatchObject({ where: { id: 'order-a' } });
   });

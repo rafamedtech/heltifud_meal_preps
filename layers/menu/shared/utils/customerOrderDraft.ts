@@ -25,3 +25,28 @@ export function readCustomerDraft(raw: string | null, now = Date.now()): Custome
     return result.data;
   } catch { return null; }
 }
+
+/**
+ * Keeps the chosen days that the offer still sells and completes or trims them
+ * to the plan's day count, in the offer's day order. Switching from a 3-day to
+ * a 5-day variant adds the next available days instead of leaving them blank.
+ */
+export function fitChosenDays<T extends string>(days: readonly T[], available: readonly T[], daysCount: number): T[] {
+  const kept = available.filter(day => days.includes(day)).slice(0, daysCount);
+  const extra = available.filter(day => !kept.includes(day)).slice(0, Math.max(0, daysCount - kept.length));
+  return available.filter(day => kept.includes(day) || extra.includes(day));
+}
+
+/** Offer identity stored in a recovered draft, used once to detect a changed offer. */
+export type DraftOfferBaseline = Pick<CustomerDraft, 'variantId' | 'menuType' | 'menuId' | 'offerVersion' | 'offerRevision' | 'expectedPrice'>;
+
+/**
+ * True only when a recovered draft refers to the same plan variant and menu type
+ * and the offer behind it changed. A selection changed in this session, or a
+ * session without a recovered draft, never asks for an offer review.
+ */
+export function offerChangedSinceDraft(baseline: DraftOfferBaseline | null, current: DraftOfferBaseline) {
+  if (!baseline?.menuId || baseline.variantId !== current.variantId || baseline.menuType !== current.menuType) return false;
+  return baseline.menuId !== current.menuId || baseline.offerVersion !== current.offerVersion
+    || baseline.offerRevision !== current.offerRevision || baseline.expectedPrice !== current.expectedPrice;
+}

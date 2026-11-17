@@ -4,7 +4,7 @@ import type { Plan, DayOfWeek, SlotTypeValue, ComponentRoleValue } from '~~/laye
 import { chosenDaysError, dayOfWeekLabel, planOrderDeliveries } from '~~/layers/menu/shared/utils/orderDeliveries'
 import { roleFamily } from '~~/layers/menu/shared/utils/orderPersonalization'
 import { ORDER_POLICY } from '~~/layers/menu/shared/utils/orderPolicy'
-import { CUSTOMER_DRAFT_KEY, readCustomerDraft, type CustomerDraft } from '~~/layers/menu/shared/utils/customerOrderDraft'
+import { CUSTOMER_DRAFT_KEY, fitChosenDays, offerChangedSinceDraft, readCustomerDraft, type CustomerDraft, type DraftOfferBaseline } from '~~/layers/menu/shared/utils/customerOrderDraft'
 
 useSeoMeta({ title: 'Tu pedido | Heltifud', robots: 'noindex, nofollow', referrer: 'no-referrer' })
 const route = useRoute()
@@ -21,6 +21,8 @@ const submitError = ref('')
 const restored = ref(false)
 const discardOpen = ref(false)
 const needsReview = ref(false)
+// Offer identity of a recovered draft; compared once against the first offer loaded.
+let draftBaseline: DraftOfferBaseline | null = null
 const storageError = ref(false)
 const locked = computed(() => saving.value || Boolean(state.pending))
 const variants = computed(() => (plans.value ?? []).flatMap(plan => plan.variants.map(variant => ({
@@ -61,13 +63,13 @@ async function loadOffer() {
     const result = await $fetch<CustomerOffer>('/api/customer-order/offer', { query: { variantId: state.variantId, type: state.menuType },
       headers: state.invitation ? { 'x-customer-invitation': state.invitation } : {} })
     if (current !== request) return
-    const different = Boolean(state.menuId && (state.menuId !== result.menu.id || state.offerVersion !== result.menu.version || state.expectedPrice !== result.variant.price || state.offerRevision !== result.revision))
-    needsReview.value = different
+    needsReview.value = offerChangedSinceDraft(draftBaseline, { variantId: state.variantId, menuType: state.menuType,
+      menuId: result.menu.id, offerVersion: result.menu.version, offerRevision: result.revision, expectedPrice: result.variant.price })
+    draftBaseline = null
     offer.value = result
     state.menuId = result.menu.id; state.offerVersion = result.menu.version; state.offerRevision = result.revision; state.expectedPrice = result.variant.price
     if (result.contact && !state.contact.nombre) state.contact = { ...result.contact }
-    state.days = state.days.filter(day => result.availableDays.includes(day))
-    if (!state.days.length && !different) state.days = result.availableDays.slice(0, result.variant.daysCount)
+    state.days = fitChosenDays(state.days, result.availableDays, result.variant.daysCount)
     state.meals = result.slots.map(slot => {
       const saved = state.meals.find(meal => meal.dayOfWeek === slot.dayOfWeek && meal.slotType === slot.slotType)
       return { dayOfWeek: slot.dayOfWeek, slotType: slot.slotType, notes: saved?.notes ?? '',
@@ -124,6 +126,7 @@ function discardDraft() {
   state.addresses = { 1: '', 2: '' }; state.days = []; state.meals = []; state.notes = ''
   state.deliveryDays = { 1: null, 2: null }; state.menuId = ''; state.offerVersion = 0
   state.invitation = ''; restored.value = false; discardOpen.value = false
+  draftBaseline = null; needsReview.value = false
   freshDraft(); void loadOffer()
 }
 function freshDraft() {
@@ -134,7 +137,10 @@ onMounted(async () => {
   let draft: CustomerDraft | null = null
   try { draft = readCustomerDraft(localStorage.getItem(CUSTOMER_DRAFT_KEY)) } catch { storageError.value = true }
   const invitation = new URLSearchParams(location.hash.slice(1)).get('invitacion')
-  if (draft && (!invitation || invitation === draft.invitation)) { Object.assign(state, draft); restored.value = true }
+  if (draft && (!invitation || invitation === draft.invitation)) {
+    Object.assign(state, draft); restored.value = true
+    draftBaseline = { variantId: draft.variantId, menuType: draft.menuType, menuId: draft.menuId, offerVersion: draft.offerVersion, offerRevision: draft.offerRevision, expectedPrice: draft.expectedPrice }
+  }
   else freshDraft()
   if (invitation) state.invitation = invitation
   if (invitation) history.replaceState(null, '', `${location.pathname}${location.search}`)

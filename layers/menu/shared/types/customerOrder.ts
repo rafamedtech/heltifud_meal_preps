@@ -48,6 +48,8 @@ export interface CustomerOffer {
 export interface PrivateCustomerOrder {
   folio: number; status: string; planTitle: string; variantTitle: string; price: number;
   contact: z.infer<typeof customerContactSchema>; notes: string; expiresAt: string;
+  /** Ledger totals of this order only (`accountTotals`). */
+  payment: { paid: number; balance: number; refundable: number };
   deliveries: Array<{ sequence: number; date: string; address: string; status: string }>;
   meals: Array<{ dayOfWeek: DayOfWeek; slotType: SlotTypeValue; notes: string; dishes: string[] }>;
 }

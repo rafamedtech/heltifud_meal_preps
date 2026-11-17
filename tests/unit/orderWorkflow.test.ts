@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { derivedOrderStatus, deliveryActionLabel, deliveryReasonRequired, isClosedDelivery, ORDER_TRANSITIONS, DELIVERY_TRANSITIONS } from '../../layers/menu/shared/utils/orderWorkflow';
-import { ORDER_POLICY, customerOrderStatusMessage } from '../../layers/menu/shared/utils/orderPolicy';
+import { ORDER_POLICY, customerOrderStatusMessage, customerPaymentMessage } from '../../layers/menu/shared/utils/orderPolicy';
 import { deliveryStatusInputSchema, orderStatusInputSchema } from '../../layers/menu/shared/types/menuSchema';
 import { ORDER_STATUS_VALUES } from '../../layers/menu/shared/types/types';
 
@@ -57,5 +57,15 @@ describe('customer order policy', () => {
     for (const status of ORDER_STATUS_VALUES) expect(customerOrderStatusMessage(status)).toBeTruthy();
     expect(customerOrderStatusMessage('DELIVERED')).not.toMatch(/revisará/);
     expect(ORDER_POLICY.length).toBeGreaterThan(0);
+  });
+  it('describes the payment from the ledger, not only from the status', () => {
+    const none = { paid: 0, balance: 0, refundable: 0 };
+    expect(customerPaymentMessage('DRAFT', none)).toMatch(/no acredita un pago/);
+    expect(customerPaymentMessage('CONFIRMED', { paid: 0, balance: 1000, refundable: 0 })).toMatch(/Pendiente de pago: \$1,000\.00/);
+    expect(customerPaymentMessage('PREPARING', { paid: 400, balance: 600, refundable: 0 })).toMatch(/Pagaste \$400\.00\. Saldo pendiente: \$600\.00/);
+    expect(customerPaymentMessage('DELIVERED', { paid: 1000, balance: 0, refundable: 0 })).toBe('Pagado. Gracias.');
+    expect(customerPaymentMessage('DELIVERED', { paid: 1000, balance: 0, refundable: 0 })).not.toMatch(/no acredita/);
+    expect(customerPaymentMessage('CANCELLED', { paid: 700, balance: 0, refundable: 700 })).toMatch(/devolveremos \$700\.00/);
+    expect(customerPaymentMessage('CANCELLED', none)).toBe('Sin pagos pendientes.');
   });
 });
