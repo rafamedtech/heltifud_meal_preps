@@ -122,21 +122,22 @@ Pendiente para cerrar T26:
 - [x] Ensayo de rollback (publicar el deploy anterior y volver).
 - [x] Prueba de humo en producción con `EXPECT_COMMIT` tras el merge: 19/19
   (`5d7d34a`, contexto `production`).
-- [ ] Sin respaldos listados en Supabase: confirmar plan y activar respaldos
-  diarios o PITR; mientras tanto, `pg_dump` manual antes de cada migración.
+- [ ] Sin respaldos de Supabase (plan Free, sin Pro por ahora): programar un
+  `pg_dump` diario cifrado (p. ej. GitHub Actions con PostgreSQL 17 y cifrado
+  antes de subir el artefacto) y conservar el `pg_dump` manual antes de cada
+  migración.
 - [x] `DIRECT_URL` (rol `postgres`) retirada de Netlify. El build siguiente
   (deploy `6afc933b`) terminó bien sin ella y pasó el humo 19/19. Los deploys
   anteriores la conservan congelada: un rollback a uno de ellos la vuelve a
   exponer al runtime mientras esté publicado. Opcional: rotar la contraseña de
   `postgres` en Supabase y actualizar el `.env` local.
 - [ ] Deploy previews comparten la base de producción. Decisión (17 nov 2026):
-  base aparte con rama de Supabase. Bloqueado: el token disponible no tiene
-  permiso sobre ramas y el proyecto no lista respaldos, lo que apunta a plan
-  Free (branching requiere Pro). Falta confirmar plan/costo con el dueño de la
-  cuenta. Al crearla: `prisma migrate deploy` contra la rama, contraseña propia
-  de `heltifud_app`, usuarios de Auth de prueba y datos sintéticos; en Netlify,
-  `DATABASE_URL` y `NUXT_PUBLIC_SUPABASE_URL/KEY` del contexto *Deploy Previews*
-  apuntando a la rama.
+  base aparte, **sin plan Pro** (se queda en Free), así que no hay ramas de
+  Supabase. Alternativa: un segundo proyecto Free `heltifud-preview` con las
+  migraciones de Prisma, su propio `heltifud_app`, usuarios de Auth de prueba y
+  datos sintéticos; en Netlify, `DATABASE_URL` y `NUXT_PUBLIC_SUPABASE_URL/KEY`
+  del contexto *Deploy Previews* apuntando a él. Límites de Free: se pausa tras
+  7 días sin actividad y migraciones nuevas se aplican a mano en ambos proyectos.
 - [ ] `NUXT_PUBLIC_GOOGLE_MAPS_API_KEY` no está en Netlify: el autocompletado de
   direcciones queda como texto libre en producción. Confirmar si es intencional.
 - [ ] Ensayo del pedido de cliente en producción con datos sintéticos.

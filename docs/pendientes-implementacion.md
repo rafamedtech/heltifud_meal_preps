@@ -161,8 +161,9 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   privados), prueba de humo `scripts/verify-deploy.ts` y
   [runbook de despliegue](runbook-despliegue.md). Preview y producción 19/19,
   migraciones al día, rollback probado (15 s) y `DIRECT_URL` retirada de Netlify.
-  Faltan: base aparte para previews (rama de Supabase; requiere plan Pro),
-  respaldos (Supabase no lista ninguno) y ensayo del pedido de cliente.
+  Faltan (plan Free, sin Pro por ahora): base aparte para previews en un
+  segundo proyecto Free, respaldo diario programado con `pg_dump` cifrado y
+  ensayo del pedido de cliente.
 - [ ] Endurecer carga, errores y reintento en login/formularios; unificar validación
   de IDs y cursores, y evitar presentar errores como listas vacías (H24).
 - [ ] Actualizar tipos de base de datos, ejemplos de entorno y runbook; retirar
