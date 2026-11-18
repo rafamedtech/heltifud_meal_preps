@@ -163,7 +163,7 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   ensayo completo cliente → admin → cobro → dos entregas en preview.
   [Runbook y evidencia](runbook-despliegue.md). Los respaldos programados
   quedan para una versión posterior.
-- [ ] Endurecer carga, errores y reintento en login/formularios; unificar validación
+- [x] Endurecer carga, errores y reintento en login/formularios; unificar validación
   de IDs y cursores, y evitar presentar errores como listas vacías (H24).
   Hallazgos del ensayo T26 resueltos el 17 nov 2026: al cambiar de variante
   los días se completan o recortan solos (`fitChosenDays`); el aviso «La oferta
@@ -179,8 +179,18 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   platillos, 404. Ahora responde 400 «El identificador … no es válido.» sin
   consultar la base. Todos los ids del esquema son UUID (comprobado en el
   catálogo del preview). El único cursor (clientes) ya respondía 400.
-  Queda: carga, error y reintento en login y formularios, y errores mostrados
-  como listas vacías.
+  Login y formularios (18 nov 2026): el login usa `try/finally`, así que una
+  excepción de red ya no deja el botón bloqueado, y `loginErrorMessage`
+  traduce la respuesta de Supabase («Correo o contraseña incorrectos.», correo
+  sin confirmar, demasiados intentos, sin conexión) en lugar de mostrar el
+  texto en inglés. Las cargas que fallaban en silencio ahora muestran
+  `UEmpty` con «Reintentar» en vez de un estado vacío: nuevo pedido (clientes
+  y planes; antes decía «Falta información»), lista de menús («Aún no hay
+  menús»), platillos, catálogo al crear o editar un menú, y el menú público
+  («No hay menú activo»). El selector de clientes de dieta y el catálogo de
+  ingredientes avisan del error con su reintento. Verificado con pruebas
+  unitarias y de componente (fallo de planes en nuevo pedido) y en navegador
+  (login con credenciales inválidas, `/menu`).
 - [ ] Actualizar tipos de base de datos, ejemplos de entorno y runbook; retirar
   helpers duplicados y dividir componentes grandes cuando aporte claridad (T27).
 
@@ -228,7 +238,6 @@ contenido siga sin implementar.
    ([políticas](politicas-pedidos.md)).
 3. Ensayar un ciclo real con cocina y reparto, completar rendimientos y calibrar
    la impresión de etiquetas (cierre de T21).
-4. Completar integración (T24), E2E (T25), robustez de formularios (H24) y
-   limpieza (T27).
+4. Completar integración (T24), E2E (T25) y limpieza (T27).
 
 En todos los bloques se deben conservar los menús y platillos existentes.

@@ -121,6 +121,16 @@ Cuando la forma final es conocida (tarjetas, formularios, detalle), usar
 </section>
 ```
 
+Un error de carga nunca se presenta como vacío. Con `useFetch` o
+`useLazyFetch` y `default: () => []`, leer también `error` y comprobarlo antes
+del estado vacío; la descripción sale de
+`apiErrorMessage(error, 'Intenta de nuevo en unos segundos.')` y el botón llama
+a `refresh()`. Si lo que falla es el catálogo de un control dentro de un
+formulario (clientes de un `USelectMenu`, ingredientes), no bloquear la
+pantalla: poner el aviso en el `error` del `UFormField` con «Reintentar» en su
+slot `hint`, o un `UAlert` `color="error"` con `actions` sobre la lista
+afectada.
+
 ## 5. Tabla de datos
 
 El tratamiento visual del template (cabecera `bg-elevated/50`, separadores) ya

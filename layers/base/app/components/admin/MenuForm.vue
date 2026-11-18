@@ -251,7 +251,7 @@ const toast = useToast()
 const { createMenuOnDB, updateMenuOnDB } = useMenu()
 const resolvedCatalogItems = computed<FoodCatalogItem[]>(() => catalogItems.value ?? [])
 // Personalised menus belong to one diet customer.
-const { data: dietCustomers, status: dietCustomersStatus } = useLazyFetch<CustomerListResponse>("/api/customers", {
+const { data: dietCustomers, status: dietCustomersStatus, refresh: refreshDietCustomers } = useLazyFetch<CustomerListResponse>("/api/customers", {
   query: { tipoCliente: "dieta", limit: 100 },
   default: () => ({ items: [], nextCursor: null })
 })
@@ -959,9 +959,20 @@ async function onSubmit(exitEditor = true) {
             v-if="state.menuType === 'PERSONALIZADO'"
             name="customerId"
             label="Cliente"
-            :error="invalidFields.customerId ? 'Selecciona el cliente de este menú.' : undefined"
+            :error="dietCustomersStatus === 'error' ? 'No se pudieron cargar los clientes de dieta.' : invalidFields.customerId ? 'Selecciona el cliente de este menú.' : undefined"
             :ui="{ label: 'text-xs font-medium text-toned', container: 'mt-2' }"
           >
+            <!-- The error sits below the select; the retry goes next to the label. -->
+            <template v-if="dietCustomersStatus === 'error'" #hint>
+              <UButton
+                icon="i-lucide-refresh-cw"
+                color="neutral"
+                variant="link"
+                size="xs"
+                label="Reintentar"
+                @click="refreshDietCustomers()"
+              />
+            </template>
             <USelectMenu
               :model-value="state.customerId ?? undefined"
               :items="dietCustomerOptions"

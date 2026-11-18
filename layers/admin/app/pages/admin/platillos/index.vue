@@ -37,7 +37,8 @@ const deleteBlockedState = ref<DeleteBlockedModalState | null>(null)
 const {
   data: items,
   refresh,
-  status
+  status,
+  error: loadError
 } = useLazyFetch<FoodCatalogItem[]>("/api/food-components", {
   default: () => []
 })
@@ -137,7 +138,19 @@ function editTo(item: FoodCatalogItem) {
 
     <div class="w-full">
       <div class="space-y-4">
+        <!-- The table's own empty state would claim there are no dishes. -->
+        <UEmpty
+          v-if="loadError && !isLoading"
+          icon="i-lucide-cloud-alert"
+          title="No fue posible cargar los platillos"
+          :description="apiErrorMessage(loadError, 'Intenta de nuevo en unos segundos.')"
+        >
+          <template #actions>
+            <UButton icon="i-lucide-refresh-cw" color="neutral" variant="outline" @click="refresh()">Reintentar</UButton>
+          </template>
+        </UEmpty>
         <AdminFoodCatalogTable
+          v-else
           :items="items"
           :loading="isLoading"
           :deleting-id="deletingId"

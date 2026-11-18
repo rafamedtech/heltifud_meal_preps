@@ -11,7 +11,7 @@ const { data: menu, status, refresh, error } = useLazyFetch<WeeklyMenu>(`/api/me
   key: `admin-menu-${route.params.id}`,
 });
 
-const { data: catalogItems, status: catalogStatus, refresh: refreshCatalog } = useLazyFetch<FoodCatalogItem[]>('/api/food-components', {
+const { data: catalogItems, status: catalogStatus, error: catalogError, refresh: refreshCatalog } = useLazyFetch<FoodCatalogItem[]>('/api/food-components', {
   key: 'menu-form-catalog-items',
   default: () => [],
 });
@@ -37,6 +37,13 @@ async function onSaved(_menuId: string, exitEditor: boolean) {
   }
 }
 
+function retryLoad() {
+  return Promise.all([
+    error.value ? refresh() : undefined,
+    catalogError.value ? refreshCatalog() : undefined
+  ])
+}
+
 onMounted(async () => {
   if (route.query.restoreMenuDraft === '1') {
     await refreshCatalog()
@@ -53,14 +60,16 @@ onMounted(async () => {
       <AdminMenuFormSkeleton />
     </section>
 
-    <UAlert
-      v-else-if="error"
-      color="error"
-      variant="soft"
-      title="No se pudo cargar el menú"
-      :description="error.statusMessage || 'Intenta de nuevo en unos segundos.'"
-      icon="i-lucide-circle-alert"
-    />
+    <UEmpty
+      v-else-if="error || catalogError"
+      icon="i-lucide-cloud-alert"
+      :title="error ? 'No fue posible cargar el menú' : 'No fue posible cargar los platillos'"
+      :description="apiErrorMessage(error ?? catalogError, 'Intenta de nuevo en unos segundos.')"
+    >
+      <template #actions>
+        <UButton icon="i-lucide-refresh-cw" color="neutral" variant="outline" @click="retryLoad()">Reintentar</UButton>
+      </template>
+    </UEmpty>
 
     <AdminMenuForm v-else-if="menu" :menu="menu" :catalog-items="catalogItems" mode="edit" @saved="onSaved" />
   </main>
