@@ -1,3 +1,4 @@
 import { registerPayment } from '~~/layers/menu/server/utils/payments';
+import { requireUuidParam } from '../../../../utils/routeParams';
 
-export default defineEventHandler(async event => registerPayment(getRouterParam(event, 'id') ?? '', await readBody(event), event.context.orderActor));
+export default defineEventHandler(async event => registerPayment(requireUuidParam(event, 'id', 'del pedido'), await readBody(event), event.context.orderActor));

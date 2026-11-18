@@ -1,14 +1,10 @@
-import { createError } from 'h3';
-
 import type { WeeklyMenuInput } from '~~/layers/menu/shared/types/types';
 
 import { updateWeeklyMenu } from '../../../utils/menu';
+import { requireUuidParam } from '../../../utils/routeParams';
 
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id');
-  if (!id) {
-    throw createError({ statusCode: 400, statusMessage: 'ID de menú inválido.' });
-  }
+  const id = requireUuidParam(event, 'id', 'del menú');
 
   const body = await readBody<WeeklyMenuInput>(event);
   return updateWeeklyMenu(id, body);

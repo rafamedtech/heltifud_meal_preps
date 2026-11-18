@@ -1,9 +1,9 @@
 import type { WeeklyCycleUpdateInput } from '~~/layers/menu/shared/types/types';
 
 import { updateCycle } from '../../../utils/cycles';
+import { requireUuidParam } from '../../../utils/routeParams';
 
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id');
-  if (!id) throw createError({ statusCode: 400, statusMessage: 'El id de la semana es obligatorio.' });
+  const id = requireUuidParam(event, 'id', 'de la semana');
   return updateCycle(id, await readBody<WeeklyCycleUpdateInput>(event));
 });
