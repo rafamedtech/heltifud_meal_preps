@@ -151,8 +151,14 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   (también como la app), en el preview y con lecturas admin. El CI ejecuta la
   verificación en PostgreSQL 17. [Runbook](runbook-base-de-datos.md).
 - [ ] Completar integración con PostgreSQL aislado para permisos, oferta,
-  personalización, idempotencia y fallos transaccionales (T24). Las integraciones
-  reales de alta y workflow de 1.3/1.4 ya cubren parte de este alcance.
+  personalización, idempotencia y fallos transaccionales (T24). 17 nov 2026: los
+  ocho scripts `verify-*` de servicios corren en el job de PostgreSQL 17 del CI
+  (rama `feat/t24-integracion-ci`): cinco en transacción revertida y tres con
+  conexiones concurrentes reales sobre una semana abierta que siembra
+  `scripts/seed-ci-open-week.ts` (solo base desechable). Secuencia completa
+  verificada en PostgreSQL local limpio (10/10, 33 s). Se corrigió además la
+  resolución del alias `~~` (`TSX_TSCONFIG_PATH`), que impedía ejecutarlos.
+  Cerrar al ver el CI en verde en GitHub.
 - [ ] Completar E2E móvil/escritorio del recorrido cliente → admin → pago → dos
   entregas, incluyendo accesos ajenos y recuperación de errores (T25).
 - [x] Verificar despliegue real: preset, API, variables, cookies, migraciones,
