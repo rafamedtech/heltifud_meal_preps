@@ -150,9 +150,22 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   `_prisma_migrations`. Verificado en producción con `verify-database-hardening.ts`
   (también como la app), en el preview y con lecturas admin. El CI ejecuta la
   verificación en PostgreSQL 17. [Runbook](runbook-base-de-datos.md).
-- [ ] Completar integración con PostgreSQL aislado para permisos, oferta,
-  personalización, idempotencia y fallos transaccionales (T24). Las integraciones
-  reales de alta y workflow de 1.3/1.4 ya cubren parte de este alcance.
+- [x] Completar integración con PostgreSQL aislado para permisos, oferta,
+  personalización, idempotencia y fallos transaccionales (T24). 17 nov 2026: los
+  ocho scripts `verify-*` de servicios corren en el job de PostgreSQL 17 del CI
+  (rama `feat/t24-integracion-ci`): cinco en transacción revertida y tres con
+  conexiones concurrentes reales sobre una semana abierta que siembra
+  `scripts/seed-ci-open-week.ts` (solo base desechable). Secuencia completa
+  verificada en PostgreSQL local limpio (10/10, 33 s). Se corrigió además la
+  resolución del alias `~~` (`TSX_TSCONFIG_PATH`), que impedía ejecutarlos.
+  También pasaron 9/9 en el proyecto de preview de Supabase (PostgreSQL 17.6,
+  26/26 migraciones, oferta real de la semana del 23 nov), sin sembrar, en
+  295 s: clientes, pedidos, semanas, menús, planes, enlaces y cobros quedaron
+  con los mismos conteos. Solo avanzó `orders_folio_seq` (4 → 27), porque las
+  secuencias no se revierten. El hardening corrió sin `APP_DATABASE_URL`.
+  Cerrada con el CI en verde del PR #28 (`134869b`): el job de PostgreSQL 17
+  ejecutó hardening, los cinco scripts transaccionales, la siembra y los tres
+  concurrentes.
 - [ ] Completar E2E móvil/escritorio del recorrido cliente → admin → pago → dos
   entregas, incluyendo accesos ajenos y recuperación de errores (T25).
 - [x] Verificar despliegue real: preset, API, variables, cookies, migraciones,
@@ -216,10 +229,10 @@ semana, guardado de ajustes y creación de menú personalizado. La verificación
 cubre pedidos con menú personalizado, pero no demuestra por sí sola todo el flujo
 de creación de ese menú desde su interfaz. Cerrar esas comprobaciones con evidencia.
 
-El plan general mantiene casillas T01–T27 abiertas y hallazgos antiguos que se
-solapan con avances posteriores. Antes de cerrar cada tarea, ajustar su alcance
-contra las evidencias de 1.1–1.4; una casilla antigua abierta no prueba que todo su
-contenido siga sin implementar.
+Las casillas T01–T27 del plan general se sincronizaron con las evidencias el
+17 de noviembre de 2026. Siguen abiertas T21 (cierre operativo), T23 (falta E2E
+con Chromium en CI), T25 y T27; T24 se cerró con el PR #28. Los errores, carga y reintento de T14 pasan
+a H24.
 
 ## Orden sugerido
 
@@ -228,7 +241,7 @@ contenido siga sin implementar.
    ([políticas](politicas-pedidos.md)).
 3. Ensayar un ciclo real con cocina y reparto, completar rendimientos y calibrar
    la impresión de etiquetas (cierre de T21).
-4. Completar integración (T24), E2E (T25), robustez de formularios (H24) y
+4. ~~Integración (T24)~~ — cerrada el 17 nov 2026. Completar E2E (T25), robustez de formularios (H24) y
    limpieza (T27).
 
 En todos los bloques se deben conservar los menús y platillos existentes.
