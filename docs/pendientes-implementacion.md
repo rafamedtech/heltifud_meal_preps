@@ -207,10 +207,10 @@ semana, guardado de ajustes y creación de menú personalizado. La verificación
 cubre pedidos con menú personalizado, pero no demuestra por sí sola todo el flujo
 de creación de ese menú desde su interfaz. Cerrar esas comprobaciones con evidencia.
 
-El plan general mantiene casillas T01–T27 abiertas y hallazgos antiguos que se
-solapan con avances posteriores. Antes de cerrar cada tarea, ajustar su alcance
-contra las evidencias de 1.1–1.4; una casilla antigua abierta no prueba que todo su
-contenido siga sin implementar.
+Las casillas T01–T27 del plan general se sincronizaron con las evidencias el
+17 de noviembre de 2026. Siguen abiertas T21 (cierre operativo), T23 (falta E2E
+con Chromium en CI), T24, T25 y T27. Los errores, carga y reintento de T14 pasan
+a H24.
 
 ## Orden sugerido
 

@@ -7,6 +7,11 @@ localmente en la [etapa 3](verificacion-etapa-3-pedido-cliente.md). Los hallazgo
 de la revisión inicial se conservan como contexto histórico; el
 [consolidado vigente](pendientes-implementacion.md) define el trabajo restante.
 
+Actualización del 17 de noviembre: casillas sincronizadas con las evidencias de
+1.2–1.5, etapas 2–3, T03 y las políticas de pedidos. Quedan abiertas T21
+(cierre operativo), T23 (E2E en CI), T24, T25 y T27. Cada tarea cerrada en esta
+revisión indica su evidencia y, cuando aplica, el alcance que se trasladó.
+
 ## Resultado esperado
 
 El cliente elige un plan y variante, personaliza las comidas permitidas del menú activo, captura sus entregas y envía un pedido persistido. Administración recibe ese mismo pedido y controla confirmación, cobros, preparación y cada entrega, conservando historial.
@@ -123,15 +128,15 @@ Cada tarea comienza en estado pendiente. Marcar checkbox solo con criterio de ci
 
 ### Fase 0 — Contrato de operación
 
-- [ ] T01 · P0 · Acordar decisiones anteriores y ejemplos de planes 3/4/5/7 días. Definir disponibilidad, sustituciones, cobros y entregas. **Cierre:** matriz de reglas y ejemplos aprobados; dependencias posteriores claras.
+- [x] T01 · P0 · Acordar decisiones anteriores y ejemplos de planes 3/4/5/7 días. Definir disponibilidad, sustituciones, cobros y entregas. **Cierre:** matriz de reglas y ejemplos aprobados; dependencias posteriores claras. Decisiones aprobadas el 16–17 nov 2026 (corte, repetición, exclusiones, acceso, cobro manual, cobertura, cambios/cancelaciones/devoluciones/entregas fallidas): [políticas](politicas-pedidos.md) y «Decisiones de negocio» del [consolidado](pendientes-implementacion.md). Ejemplos verificados con variantes de 3 y 5 días ([1.3](verificacion-etapa-1.3.md)); no hay ejemplo documentado de 4 o 7 días.
 
 ### Fase 1 — Permisos e integridad
 
 - [x] T02 · P0 · Separar admin/operación/cliente; proteger todas las mutaciones, incluidos ingredientes, con autorización confiable del servidor. Validar ownership/token en futuras rutas cliente. **Cierre:** anónimo 401, cliente 403 en admin, cliente A no accede a B, admin autorizado opera. Dep.: T01.
-- [ ] T03 · P0 · Auditar grants/RLS efectivos de todas las tablas y el rol de conexión Prisma; cerrar exposición no necesaria. **Cierre:** consultas directas anónimas no leen/escriben datos privados; API pública devuelve únicamente catálogo publicable. Dep.: T02.
-- [ ] T04 · P0 · Unificar reglas de días/tiempos/componentes; rechazar plan incompatible, días vacíos y sustituciones no disponibles. Obtener nombres/precios/metadatos desde servidor. **Cierre:** cantidad exacta contratada, principal válido por tiempo y rechazos 400/409; caso fin de semana vacío cubierto. Dep.: T01.
-- [ ] T05 · P0 · Asegurar un solo menú activo mediante restricción DB y operaciones atómicas; manejar solapamientos/concurrencia, vigencia y ausencia de menú. Versionar oferta al enviar pedido. **Cierre:** dos activaciones simultáneas no dejan dos activos; oferta cambiada genera conflicto comprensible. Dep.: T04.
-- [ ] T06 · P1 · Separar fecha civil de timestamp. Corregir UI/defaults/calendario en zona Tijuana; preservar direcciones snapshot al cambiar estado. **Cierre:** misma fecha en formulario, listado, detalle e historial; cambiar cliente no mueve dirección de pedido confirmado. Dep.: T01.
+- [x] T03 · P0 · Auditar grants/RLS efectivos de todas las tablas y el rol de conexión Prisma; cerrar exposición no necesaria. **Cierre:** consultas directas anónimas no leen/escriben datos privados; API pública devuelve únicamente catálogo publicable. Dep.: T02. Cerrada el 17 nov 2026: 27 tablas con RLS sin acceso de anon/authenticated, app como `heltifud_app`, historial inmutable; verificación en producción y en CI ([runbook](runbook-base-de-datos.md)).
+- [x] T04 · P0 · Unificar reglas de días/tiempos/componentes; rechazar plan incompatible, días vacíos y sustituciones no disponibles. Obtener nombres/precios/metadatos desde servidor. **Cierre:** cantidad exacta contratada, principal válido por tiempo y rechazos 400/409; caso fin de semana vacío cubierto. Dep.: T01. Días iguales a `daysCount` sin faltantes ni duplicados, principal en cada tiempo (sábado incompleto rechazado) ([1.3](verificacion-etapa-1.3.md)); sustituciones por familia con 400/409 y datos copiados por el servidor ([etapa 2](verificacion-etapa-2-personalizacion.md)).
+- [x] T05 · P0 · Asegurar un solo menú activo mediante restricción DB y operaciones atómicas; manejar solapamientos/concurrencia, vigencia y ausencia de menú. Versionar oferta al enviar pedido. **Cierre:** dos activaciones simultáneas no dejan dos activos; oferta cambiada genera conflicto comprensible. Dep.: T04. Índice único parcial de una sola semana `OPEN`, publicación serializada con bloqueo asesor ([etapa 3](verificacion-etapa-3-pedido-cliente.md)); `offerVersion` con 409 `OFFER_VERSION_CONFLICT` y `FOR SHARE` ([etapa 2](verificacion-etapa-2-personalizacion.md)). `WeeklyMenu.isActive` retirado en 1.6.
+- [x] T06 · P1 · Separar fecha civil de timestamp. Corregir UI/defaults/calendario en zona Tijuana; preservar direcciones snapshot al cambiar estado. **Cierre:** misma fecha en formulario, listado, detalle e historial; cambiar cliente no mueve dirección de pedido confirmado. Dep.: T01. Fechas civiles en `America/Tijuana` ([1.2](verificacion-etapa-1.2.md)); dirección congelada al guardar y al cambiar estados ([1.4](verificacion-etapa-1.4.md)).
 - [x] T07 · P1 · Añadir clave idempotente para envío y versión para update; reglas de transición y bloqueo de pedidos cerrados. **Cierre:** doble envío crea uno; editor desactualizado recibe 409; transición ilegal rechazada. Dep.: T04. [1.4](verificacion-etapa-1.4.md) y [alta](verificacion-idempotencia-alta.md).
 
 ### Fase 2 — Compra y personalización cliente
@@ -145,9 +150,9 @@ Cada tarea comienza en estado pendiente. Marcar checkbox solo con criterio de ci
 
 ### Fase 3 — Control administrativo
 
-- [ ] T14 · P1 · Paginar listado completo; búsqueda remota de clientes; errores/carga/reintento; filtros por menú/semana y cualquiera de las entregas. **Cierre:** más de 150 pedidos y 100 clientes siguen accesibles; segunda entrega aparece en fecha correspondiente.
-- [ ] T15 · P1 · Registrar historial de estados/cambios con operador, fecha y motivo; permitir corrección controlada y cancelación. **Cierre:** se reconstruye evolución del pedido sin alterar historial previo. Dep.: T07, T12.
-- [ ] T16 · P1 · Modelar entregas individuales con comidas asignadas, estado, fecha efectiva, responsable e incidencias. Derivar estado global. **Cierre:** primera entrega no cierra segunda; no marcar entregado con pendientes. Dep.: T01, T15.
+- [x] T14 · P1 · Paginar listado completo; búsqueda remota de clientes; errores/carga/reintento; filtros por menú/semana y cualquiera de las entregas. **Cierre:** más de 150 pedidos y 100 clientes siguen accesibles; segunda entrega aparece en fecha correspondiente. Páginas de 50 con acceso a todos los registros, filtro por semana y por fecha de cualquier entrega, búsqueda remota fuera de los primeros 20 ([1.5](verificacion-etapa-1.5.md), con 60 pedidos y 25 clientes; filtro de segunda entrega en [1.2](verificacion-etapa-1.2.md)). Errores/carga/reintento se trasladan a H24 en el [consolidado](pendientes-implementacion.md).
+- [x] T15 · P1 · Registrar historial de estados/cambios con operador, fecha y motivo; permitir corrección controlada y cancelación. **Cierre:** se reconstruye evolución del pedido sin alterar historial previo. Dep.: T07, T12. Historial inmutable con estados, versión, fecha, usuario y motivo; cancelación y reapertura con motivo ([1.4](verificacion-etapa-1.4.md)); cambios de menú en `order_menu_changes` ([etapa 2](verificacion-etapa-2-personalizacion.md)).
+- [x] T16 · P1 · Modelar entregas individuales con comidas asignadas, estado, fecha efectiva, responsable e incidencias. Derivar estado global. **Cierre:** primera entrega no cierra segunda; no marcar entregado con pendientes. Dep.: T01, T15. Entregas individuales ([1.2](verificacion-etapa-1.2.md)); estado global derivado, parcial con pendientes y entregado solo con todas completadas ([1.4](verificacion-etapa-1.4.md)); responsable e incidencias en el tablero de reparto ([operación](verificacion-operacion.md)).
 - [x] T17 · P1 · Registrar cobros manuales, método/referencia, saldo, anticipos y devoluciones; separar estado de pago y preparación. **Cierre:** abonos suman correctamente; sobrepago/devolución siguen reglas y auditoría. Dep.: T01, T12.
 - [x] T18 · P1 · Sustituir dashboard vacío por pedidos por confirmar, entregas de hoy/atrasadas y saldos pendientes; accesos por rol. **Cierre:** métricas vienen de DB y coinciden con listados. Dep.: T14–T17.
 - [x] T19 · P1 · Archivar clientes/planes/variantes usados; traducir conflictos DB a 409/400 y mensajes útiles. Proteger salida con cambios pendientes. **Cierre:** historial conserva relaciones/snapshots y cliente con pedidos no dispara 500.
@@ -164,7 +169,7 @@ Evidencia de T17/T18/T20/T22 y límites del ensayo T21: [verificación de operac
 
 ### Fase 5 — Verificación y lanzamiento
 
-- [ ] T23 · P1 · Restaurar runtime Chromium y añadir typecheck reproducible; ejecutar lint/unit/build en CI. **Cierre:** checkout limpio ejecuta checks con versiones fijadas.
+- [ ] T23 · P1 · Restaurar runtime Chromium y añadir typecheck reproducible; ejecutar lint/unit/build en CI. **Cierre:** checkout limpio ejecuta checks con versiones fijadas. Parcial (17 nov 2026): `.github/workflows/ci.yml` ejecuta lint, typecheck, unitarias y build con lockfile congelado, y migraciones/permisos en PostgreSQL 17. Falta instalar Chromium y ejecutar `pnpm test:e2e` en CI.
 - [ ] T24 · P0 · Añadir integración con PostgreSQL aislado para permisos, crear/personalizar pedido, snapshots, rollback, vacío/incompatibilidad, idempotencia y concurrencia. **Cierre:** casos críticos pasan sin mocks de persistencia. Dep.: T02–T07, T12.
 - [ ] T25 · P1 · E2E móvil/desktop: plan→personalización→envío→admin→confirmación→cobro→dos entregas; accesos ajenos y fallos recuperables. **Cierre:** flujo completo pasa y conserva datos tras recarga. Dep.: T13–T18, T23–T24.
 - [x] T26 · P1 · Validar deploy Netlify real, preset/API/env/cookies; migraciones revisadas y respaldo; healthcheck/errores sin datos privados; runbook y ensayo con datos sintéticos. **Cierre:** preview ejecuta flujo completo y existe rollback probado. Dep.: T25.
