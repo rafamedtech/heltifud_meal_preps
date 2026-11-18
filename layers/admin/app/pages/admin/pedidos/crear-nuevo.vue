@@ -27,7 +27,10 @@ useSeoMeta({
 
 const CUSTOMER_PAGE_SIZE = 20
 
-const [{ data: customerResponse, status: customerStatus }, { data: plans, status: planStatus }] = await Promise.all([
+const [
+  { data: customerResponse, status: customerStatus, error: customerError, refresh: refreshCustomers },
+  { data: plans, status: planStatus, error: planError, refresh: refreshPlans }
+] = await Promise.all([
   useFetch<CustomerListResponse>("/api/customers", { query: { limit: CUSTOMER_PAGE_SIZE }, default: () => ({ items: [], nextCursor: null }) }),
   useFetch<Plan[]>("/api/plans", { default: () => [] })
 ])
@@ -113,6 +116,19 @@ const locationOptions = computed(() => {
   ]
 })
 const isLoading = computed(() => customerStatus.value === "pending" || planStatus.value === "pending")
+// A failed load must not read as "no customers or plans yet".
+const loadError = computed(() => customerError.value
+  ? apiErrorMessage(customerError.value, "No se pudieron cargar los clientes.")
+  : planError.value
+    ? apiErrorMessage(planError.value, "No se pudieron cargar los planes.")
+    : "")
+
+function retryLoad() {
+  return Promise.all([
+    customerError.value ? refreshCustomers() : undefined,
+    planError.value ? refreshPlans() : undefined
+  ])
+}
 
 // What the open week offers this customer for this plan: menu, days and delivery rules.
 const options = ref<OrderOptions | null>(null)
@@ -247,6 +263,12 @@ async function submitOrder() {
     <section v-if="isLoading" class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
       <USkeleton class="h-160" /><USkeleton class="h-96" />
     </section>
+
+    <UEmpty v-else-if="loadError" icon="i-lucide-cloud-alert" title="No fue posible preparar el pedido" :description="loadError">
+      <template #actions>
+        <UButton icon="i-lucide-refresh-cw" color="neutral" variant="outline" @click="retryLoad()">Reintentar</UButton>
+      </template>
+    </UEmpty>
 
     <UAlert v-else-if="!customerResponse.items.length || !plans.length" color="warning" variant="soft" icon="i-lucide-triangle-alert" title="Falta información para crear un pedido">
       <template #description>

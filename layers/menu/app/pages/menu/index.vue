@@ -2,7 +2,7 @@
 import { formatShortDate } from "~~/layers/base/app/utils/dateFormatting"
 
 const user = useSupabaseUser()
-const { data: activeMenu, status } = useLazyFetch<WeeklyMenu | null>(`/api/menu`, {
+const { data: activeMenu, status, refresh } = useLazyFetch<WeeklyMenu | null>(`/api/menu`, {
   default: () => null,
   server: false,
 })
@@ -58,6 +58,19 @@ useSeoMeta({
       </template>
 
       <section>
+        <!-- A failed request must not read as "no active menu". -->
+        <UEmpty
+          v-if="status === 'error'"
+          icon="i-lucide-cloud-alert"
+          title="No fue posible cargar el menú"
+          description="Revisa tu conexión e intenta de nuevo."
+          class="mx-auto mt-6 max-w-2xl"
+        >
+          <template #actions>
+            <UButton icon="i-lucide-refresh-cw" color="neutral" variant="outline" @click="refresh()">Reintentar</UButton>
+          </template>
+        </UEmpty>
+
         <UCard
           v-if="status === 'success' && !hasMenu"
           variant="subtle"

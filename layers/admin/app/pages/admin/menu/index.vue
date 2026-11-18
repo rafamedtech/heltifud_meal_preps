@@ -17,7 +17,8 @@ import {
 const {
   data: menus,
   refresh,
-  status
+  status,
+  error: loadError
 } = await useLazyFetch<WeeklyMenu[]>("/api/menu/all", {
   default: () => []
 })
@@ -293,6 +294,17 @@ useSeoMeta({
     <section class="space-y-4">
       <AdminMenuIndexSkeleton v-if="isLoading" />
 
+      <UEmpty
+        v-else-if="loadError"
+        icon="i-lucide-cloud-alert"
+        title="No fue posible cargar los menús"
+        :description="apiErrorMessage(loadError, 'Intenta de nuevo en unos segundos.')"
+      >
+        <template #actions>
+          <UButton icon="i-lucide-refresh-cw" color="neutral" variant="outline" @click="refresh()">Reintentar</UButton>
+        </template>
+      </UEmpty>
+
       <section
         v-else
         class="grid gap-3 lg:grid-cols-3"
@@ -391,7 +403,7 @@ useSeoMeta({
       </section>
 
       <UAlert
-        v-if="!isLoading && !menus.length"
+        v-if="!isLoading && !loadError && !menus.length"
         title="Aún no hay menús"
         description="Empieza creando el primer menú semanal desde el botón de arriba."
         color="neutral"

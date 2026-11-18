@@ -15,7 +15,7 @@ const preparacion = defineModel<string>("preparacion", { required: true })
 const toast = useToast()
 const { getIngredients, createIngredient } = useIngredientCatalog()
 
-const { data: ingredientCatalog, status: ingredientStatus } = useAsyncData<Ingredient[]>(
+const { data: ingredientCatalog, status: ingredientStatus, refresh: refreshIngredients } = useAsyncData<Ingredient[]>(
   "ingredient-catalog",
   getIngredients,
   { default: () => [], lazy: true }
@@ -186,6 +186,17 @@ async function saveNewIngredient() {
             {{ ingredientes.length }} {{ ingredientes.length === 1 ? "ingrediente" : "ingredientes" }}
           </UBadge>
         </div>
+
+        <!-- Without the catalog the selects would look like there are no ingredients. -->
+        <UAlert
+          v-if="ingredientStatus === 'error'"
+          color="error"
+          variant="soft"
+          icon="i-lucide-cloud-alert"
+          title="No fue posible cargar los ingredientes"
+          description="Reintenta antes de elegir o crear ingredientes."
+          :actions="[{ label: 'Reintentar', icon: 'i-lucide-refresh-cw', color: 'neutral', variant: 'outline', onClick: () => refreshIngredients() }]"
+        />
 
         <div
           v-if="ingredientes.length === 0"
