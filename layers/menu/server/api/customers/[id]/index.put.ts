@@ -1,13 +1,10 @@
 import type { CustomerInput } from '~~/layers/menu/shared/types/types';
 
 import { updateCustomer } from '../../../utils/customers';
+import { requireUuidParam } from '../../../utils/routeParams';
 
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id');
-
-  if (!id) {
-    throw createError({ statusCode: 400, statusMessage: 'El id del cliente es obligatorio.' });
-  }
+  const id = requireUuidParam(event, 'id', 'del cliente');
 
   return updateCustomer(id, await readBody<CustomerInput>(event));
 });

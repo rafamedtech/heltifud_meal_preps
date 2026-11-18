@@ -1,4 +1,5 @@
 import { updateShoppingItem } from '~~/layers/menu/server/utils/production';
+import { requireUuidParam } from '../../../../utils/routeParams';
 
 export default defineEventHandler(async event => {
   const body = await readBody(event);
@@ -6,5 +7,5 @@ export default defineEventHandler(async event => {
   if (event.context.staffRole !== 'admin' && body && typeof body === 'object' && 'expenseId' in body) {
     throw createError({ statusCode: 403, statusMessage: 'Solo administración puede vincular gastos.' });
   }
-  return updateShoppingItem(getRouterParam(event, 'runId') ?? '', getRouterParam(event, 'itemId') ?? '', body, event.context.orderActor);
+  return updateShoppingItem(requireUuidParam(event, 'runId', 'de la producción'), requireUuidParam(event, 'itemId', 'del artículo'), body, event.context.orderActor);
 });

@@ -171,7 +171,16 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   cuya oferta cambió (`offerChangedSinceDraft`); la consulta del cliente
   muestra el estado y el cobro desde el libro (`customerPaymentMessage`:
   pendiente, abono parcial, pagado, devolución). Verificado con pruebas
-  unitarias y en navegador (`/pedido`, sin enviar). Queda el resto de H24.
+  unitarias y en navegador (`/pedido`, sin enviar).
+  Validación de IDs unificada (17 nov 2026): `requireUuidParam` en
+  `layers/menu/server/utils/routeParams.ts` valida los parámetros de ruta de
+  las 31 rutas con id. Antes, un id mal formado en pedidos, clientes, semanas o
+  gastos llegaba a PostgreSQL (Prisma `P2007`) y respondía 500; en menús y
+  platillos, 404. Ahora responde 400 «El identificador … no es válido.» sin
+  consultar la base. Todos los ids del esquema son UUID (comprobado en el
+  catálogo del preview). El único cursor (clientes) ya respondía 400.
+  Queda: carga, error y reintento en login y formularios, y errores mostrados
+  como listas vacías.
 - [ ] Actualizar tipos de base de datos, ejemplos de entorno y runbook; retirar
   helpers duplicados y dividir componentes grandes cuando aporte claridad (T27).
 

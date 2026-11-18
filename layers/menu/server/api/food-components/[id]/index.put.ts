@@ -1,15 +1,10 @@
-import { createError } from 'h3';
-
 import type { FoodCatalogItemInput } from '~~/layers/menu/shared/types/types';
 
 import { updateFoodCatalogItem } from '../../../utils/foodCatalog';
+import { requireUuidParam } from '../../../utils/routeParams';
 
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id');
-
-  if (!id) {
-    throw createError({ statusCode: 400, statusMessage: 'ID de FoodComponent inválido.' });
-  }
+  const id = requireUuidParam(event, 'id', 'del platillo');
 
   const body = await readBody<FoodCatalogItemInput>(event);
   return updateFoodCatalogItem(id, body);

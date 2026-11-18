@@ -1,7 +1,6 @@
-import { z } from 'zod';
 import { issueCustomerOrderInvitation } from '../../../utils/orderAccess';
+import { requireUuidParam } from '../../../utils/routeParams';
 export default defineEventHandler(event => {
-  const id = z.uuid().safeParse(getRouterParam(event, 'id'));
-  if (!id.success) throw createError({ statusCode: 400, statusMessage: 'Cliente no válido.' });
-  return issueCustomerOrderInvitation(id.data);
+  const id = requireUuidParam(event, 'id', 'del cliente');
+  return issueCustomerOrderInvitation(id);
 });

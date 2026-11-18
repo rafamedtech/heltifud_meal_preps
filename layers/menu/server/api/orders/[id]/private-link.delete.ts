@@ -1,2 +1,3 @@
 import { revokeOrderLinks } from '../../../utils/orderAccess';
-export default defineEventHandler(event => revokeOrderLinks(getRouterParam(event, 'id')!));
+import { requireUuidParam } from '../../../utils/routeParams';
+export default defineEventHandler(event => revokeOrderLinks(requireUuidParam(event, 'id', 'del pedido')));
