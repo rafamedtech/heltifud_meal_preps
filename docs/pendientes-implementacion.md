@@ -158,6 +158,11 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   `scripts/seed-ci-open-week.ts` (solo base desechable). Secuencia completa
   verificada en PostgreSQL local limpio (10/10, 33 s). Se corrigió además la
   resolución del alias `~~` (`TSX_TSCONFIG_PATH`), que impedía ejecutarlos.
+  También pasaron 9/9 en el proyecto de preview de Supabase (PostgreSQL 17.6,
+  26/26 migraciones, oferta real de la semana del 23 nov), sin sembrar, en
+  295 s: clientes, pedidos, semanas, menús, planes, enlaces y cobros quedaron
+  con los mismos conteos. Solo avanzó `orders_folio_seq` (4 → 27), porque las
+  secuencias no se revierten. El hardening corrió sin `APP_DATABASE_URL`.
   Cerrar al ver el CI en verde en GitHub.
 - [ ] Completar E2E móvil/escritorio del recorrido cliente → admin → pago → dos
   entregas, incluyendo accesos ajenos y recuperación de errores (T25).
