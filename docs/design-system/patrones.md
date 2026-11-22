@@ -526,6 +526,8 @@ Se componen componentes existentes; no se creó un control propio.
 Las cuatro secciones son plan, comidas, contacto/entregas y resumen. Hereda
 controles `xl`; usa tarjetas `subtle` para comidas y entregas. Carga, oferta no
 disponible, cambios de versión y envío incierto tienen estados explícitos.
+Para una oferta cuyo plazo ya venció, `UEmpty` muestra la fecha y la hora de
+cierre en Tijuana y conserva la acción para revisar disponibilidad.
 El borrador conserva los datos en el dispositivo por 7 días, con aviso y
 borrado mediante `UModal`. Un envío incierto conserva su payload y bloquea
 edición hasta resolverlo, para reintentar sin duplicados.
