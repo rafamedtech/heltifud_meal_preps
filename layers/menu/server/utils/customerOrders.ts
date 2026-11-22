@@ -5,13 +5,13 @@ import { customerOrderInputSchema, type CustomerOffer, type CustomerOrderInput, 
 import { availableOrderDays, chosenDaysError, planOrderDeliveries, deliverySequenceForDay } from '../../shared/utils/orderDeliveries';
 import { pickCompatibleOption, roleFamily, withRolePositions } from '../../shared/utils/orderPersonalization';
 import { accountTotals } from '../../shared/utils/operations';
-import { utcToZonedDateTime } from '../../shared/utils/weeklyCycle';
+import { BUSINESS_TIME_ZONE, utcToZonedDateTime } from '../../shared/utils/weeklyCycle';
 import { personalizationMenuInclude, loadExclusionRules, loadRecipeFacts, buildMenuOptions, menuCatalogItemIds } from './orderPersonalization';
 import { hashOrderSecret, parseOrderSecret, resolveOrderAccess } from './orderAccess';
 import { parseIdempotencyKey } from './orders';
 import { prisma } from './prisma';
 
-const unavailable = () => createError({ statusCode: 409, statusMessage: 'No hay un menú disponible para recibir este pedido. Revisa la semana y el corte.', data: { code: 'OFFER_UNAVAILABLE' } });
+const unavailable = (orderCutoffAt?: Date) => createError({ statusCode: 409, statusMessage: 'No hay un menú disponible para recibir este pedido. Revisa la semana y el corte.', data: { code: 'OFFER_UNAVAILABLE', ...(orderCutoffAt && { orderCutoffAt: orderCutoffAt.toISOString() }) } });
 const offerChanged = () => createError({ statusCode: 409, statusMessage: 'La oferta cambió. Actualiza el menú y revisa tu selección antes de enviar.', data: { code: 'OFFER_VERSION_CONFLICT' } });
 const invalidSelection = () => createError({ statusCode: 400, statusMessage: 'Revisa los días, comidas y entregas del pedido.' });
 
@@ -24,10 +24,13 @@ async function context(tx: Prisma.TransactionClient, variantId: string, menuType
   const variant = await tx.planVariant.findUnique({ where: { id: variantId }, include: { plan: true } });
   if (!variant?.isActive || !variant.plan.isActive) throw unavailable();
   const menu = await tx.weeklyMenu.findFirst({
-    where: { cycleScope: scope, cycle: { status: 'OPEN', orderCutoffAt: { gt: new Date() } } },
+    where: { cycleScope: scope, cycle: { status: 'OPEN' } },
     include: { ...personalizationMenuInclude, cycle: true },
   });
-  if (!menu?.cycle || menu.cycle.weekStart.toISOString().slice(0, 10) <= utcToZonedDateTime(new Date(), 'America/Tijuana').date) throw unavailable();
+  if (!menu?.cycle) throw unavailable();
+  const now = new Date();
+  if (menu.cycle.orderCutoffAt <= now) throw unavailable(menu.cycle.orderCutoffAt);
+  if (menu.cycle.weekStart.toISOString().slice(0, 10) <= utcToZonedDateTime(now, BUSINESS_TIME_ZONE).date) throw unavailable();
   // Historical seed menus use a named placeholder instead of an empty slot.
   // It is not a dish and must not become a sellable day or substitution.
   for (const day of menu.days) for (const slot of day.slots) {

@@ -9,8 +9,8 @@ de la revisión inicial se conservan como contexto histórico; el
 
 Actualización del 17 de noviembre: casillas sincronizadas con las evidencias de
 1.2–1.5, etapas 2–3, T03 y las políticas de pedidos. Quedan abiertas T21
-(cierre operativo), T23 (E2E en CI), T25 y T27. T24 se cerró después con el PR #28. Cada tarea cerrada en esta
-revisión indica su evidencia y, cuando aplica, el alcance que se trasladó.
+(cierre operativo), T23 (E2E en CI), T25 y T27. T24 se incorporó con el PR #28. Cada tarea cerrada
+indica su evidencia y, cuando aplica, el alcance que se trasladó.
 
 ## Resultado esperado
 
@@ -170,7 +170,7 @@ Evidencia de T17/T18/T20/T22 y límites del ensayo T21: [verificación de operac
 ### Fase 5 — Verificación y lanzamiento
 
 - [ ] T23 · P1 · Restaurar runtime Chromium y añadir typecheck reproducible; ejecutar lint/unit/build en CI. **Cierre:** checkout limpio ejecuta checks con versiones fijadas. Parcial (17 nov 2026): `.github/workflows/ci.yml` ejecuta lint, typecheck, unitarias y build con lockfile congelado, y migraciones/permisos en PostgreSQL 17. Falta instalar Chromium y ejecutar `pnpm test:e2e` en CI.
-- [x] T24 · P0 · Añadir integración con PostgreSQL aislado para permisos, crear/personalizar pedido, snapshots, rollback, vacío/incompatibilidad, idempotencia y concurrencia. **Cierre:** casos críticos pasan sin mocks de persistencia. Dep.: T02–T07, T12. Cerrada el 17 nov 2026 (PR #28): scripts `verify-*` de servicios en el job de PostgreSQL 17 del CI, también verificados en el proyecto de preview; ver el [consolidado](pendientes-implementacion.md).
+- [x] T24 · P0 · Añadir integración con PostgreSQL aislado para permisos, crear/personalizar pedido, snapshots, rollback, vacío/incompatibilidad, idempotencia y concurrencia. **Cierre:** casos críticos pasan sin mocks de persistencia. Dep.: T02–T07, T12. Incorporada con el PR #28: scripts `verify-*` de servicios en el job de PostgreSQL 17 del CI, también verificados en el proyecto de preview; ver el [consolidado](pendientes-implementacion.md).
 - [ ] T25 · P1 · E2E móvil/desktop: plan→personalización→envío→admin→confirmación→cobro→dos entregas; accesos ajenos y fallos recuperables. **Cierre:** flujo completo pasa y conserva datos tras recarga. Dep.: T13–T18, T23–T24.
 - [x] T26 · P1 · Validar deploy Netlify real, preset/API/env/cookies; migraciones revisadas y respaldo; healthcheck/errores sin datos privados; runbook y ensayo con datos sintéticos. **Cierre:** preview ejecuta flujo completo y existe rollback probado. Dep.: T25.
 - [ ] T27 · P2 · Actualizar README/env examples/tipos, retirar duplicados sin uso y dividir componentes grandes donde facilite mantenimiento. Tratar advertencias de dependencias/sourcemaps después de flujo estable. **Cierre:** nuevo operador/desarrollador puede instalar, probar y operar con documentación vigente.

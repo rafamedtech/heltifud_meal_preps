@@ -1,13 +1,10 @@
 import type { ExpenseInput } from '~~/layers/menu/shared/types/types';
 
 import { updateExpense } from '../../../utils/expenses';
+import { requireUuidParam } from '../../../utils/routeParams';
 
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id');
-
-  if (!id) {
-    throw createError({ statusCode: 400, statusMessage: 'El id del gasto es obligatorio.' });
-  }
+  const id = requireUuidParam(event, 'id', 'del gasto');
 
   return updateExpense(id, await readBody<ExpenseInput>(event));
 });

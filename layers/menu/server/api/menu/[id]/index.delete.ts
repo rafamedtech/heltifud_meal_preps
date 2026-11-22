@@ -1,12 +1,8 @@
-import { createError } from 'h3';
-
 import { deleteWeeklyMenu } from '../../../utils/menu';
+import { requireUuidParam } from '../../../utils/routeParams';
 
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id');
-  if (!id) {
-    throw createError({ statusCode: 400, statusMessage: 'ID de menú inválido.' });
-  }
+  const id = requireUuidParam(event, 'id', 'del menú');
 
   return deleteWeeklyMenu(id);
 });

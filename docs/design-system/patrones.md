@@ -121,6 +121,16 @@ Cuando la forma final es conocida (tarjetas, formularios, detalle), usar
 </section>
 ```
 
+Un error de carga nunca se presenta como vacío. Con `useFetch` o
+`useLazyFetch` y `default: () => []`, leer también `error` y comprobarlo antes
+del estado vacío; la descripción sale de
+`apiErrorMessage(error, 'Intenta de nuevo en unos segundos.')` y el botón llama
+a `refresh()`. Si lo que falla es el catálogo de un control dentro de un
+formulario (clientes de un `USelectMenu`, ingredientes), no bloquear la
+pantalla: poner el aviso en el `error` del `UFormField` con «Reintentar» en su
+slot `hint`, o un `UAlert` `color="error"` con `actions` sobre la lista
+afectada.
+
 ## 5. Tabla de datos
 
 El tratamiento visual del template (cabecera `bg-elevated/50`, separadores) ya
@@ -516,6 +526,8 @@ Se componen componentes existentes; no se creó un control propio.
 Las cuatro secciones son plan, comidas, contacto/entregas y resumen. Hereda
 controles `xl`; usa tarjetas `subtle` para comidas y entregas. Carga, oferta no
 disponible, cambios de versión y envío incierto tienen estados explícitos.
+Para una oferta cuyo plazo ya venció, `UEmpty` muestra la fecha y la hora de
+cierre en Tijuana y conserva la acción para revisar disponibilidad.
 El borrador conserva los datos en el dispositivo por 7 días, con aviso y
 borrado mediante `UModal`. Un envío incierto conserva su payload y bloquea
 edición hasta resolverlo, para reintentar sin duplicados.

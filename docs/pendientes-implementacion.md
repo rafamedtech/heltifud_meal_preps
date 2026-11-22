@@ -163,9 +163,9 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   295 s: clientes, pedidos, semanas, menús, planes, enlaces y cobros quedaron
   con los mismos conteos. Solo avanzó `orders_folio_seq` (4 → 27), porque las
   secuencias no se revierten. El hardening corrió sin `APP_DATABASE_URL`.
-  Cerrada con el CI en verde del PR #28 (`134869b`): el job de PostgreSQL 17
-  ejecutó hardening, los cinco scripts transaccionales, la siembra y los tres
-  concurrentes.
+  El job del [PR #28](https://github.com/rafamedtech/heltifud_meal_preps/pull/28)
+  aplica las migraciones, comprueba permisos, RLS e historial y ejecuta los
+  cinco scripts transaccionales, la siembra y los tres concurrentes.
 - [ ] Completar E2E móvil/escritorio del recorrido cliente → admin → pago → dos
   entregas, incluyendo accesos ajenos y recuperación de errores (T25).
 - [x] Verificar despliegue real: preset, API, variables, cookies, migraciones,
@@ -176,7 +176,7 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   ensayo completo cliente → admin → cobro → dos entregas en preview.
   [Runbook y evidencia](runbook-despliegue.md). Los respaldos programados
   quedan para una versión posterior.
-- [ ] Endurecer carga, errores y reintento en login/formularios; unificar validación
+- [x] Endurecer carga, errores y reintento en login/formularios; unificar validación
   de IDs y cursores, y evitar presentar errores como listas vacías (H24).
   Hallazgos del ensayo T26 resueltos el 17 nov 2026: al cambiar de variante
   los días se completan o recortan solos (`fitChosenDays`); el aviso «La oferta
@@ -184,7 +184,26 @@ T16–T22 del [plan general](plan-pedidos-clientes.md) y
   cuya oferta cambió (`offerChangedSinceDraft`); la consulta del cliente
   muestra el estado y el cobro desde el libro (`customerPaymentMessage`:
   pendiente, abono parcial, pagado, devolución). Verificado con pruebas
-  unitarias y en navegador (`/pedido`, sin enviar). Queda el resto de H24.
+  unitarias y en navegador (`/pedido`, sin enviar).
+  Validación de IDs unificada (17 nov 2026): `requireUuidParam` en
+  `layers/menu/server/utils/routeParams.ts` valida los parámetros de ruta de
+  las 31 rutas con id. Antes, un id mal formado en pedidos, clientes, semanas o
+  gastos llegaba a PostgreSQL (Prisma `P2007`) y respondía 500; en menús y
+  platillos, 404. Ahora responde 400 «El identificador … no es válido.» sin
+  consultar la base. Todos los ids del esquema son UUID (comprobado en el
+  catálogo del preview). El único cursor (clientes) ya respondía 400.
+  Login y formularios (18 nov 2026): el login usa `try/finally`, así que una
+  excepción de red ya no deja el botón bloqueado, y `loginErrorMessage`
+  traduce la respuesta de Supabase («Correo o contraseña incorrectos.», correo
+  sin confirmar, demasiados intentos, sin conexión) en lugar de mostrar el
+  texto en inglés. Las cargas que fallaban en silencio ahora muestran
+  `UEmpty` con «Reintentar» en vez de un estado vacío: nuevo pedido (clientes
+  y planes; antes decía «Falta información»), lista de menús («Aún no hay
+  menús»), platillos, catálogo al crear o editar un menú, y el menú público
+  («No hay menú activo»). El selector de clientes de dieta y el catálogo de
+  ingredientes avisan del error con su reintento. Verificado con pruebas
+  unitarias y de componente (fallo de planes en nuevo pedido) y en navegador
+  (login con credenciales inválidas, `/menu`).
 - [ ] Actualizar tipos de base de datos, ejemplos de entorno y runbook; retirar
   helpers duplicados y dividir componentes grandes cuando aporte claridad (T27).
 
@@ -222,8 +241,8 @@ de creación de ese menú desde su interfaz. Cerrar esas comprobaciones con evid
 
 Las casillas T01–T27 del plan general se sincronizaron con las evidencias el
 17 de noviembre de 2026. Siguen abiertas T21 (cierre operativo), T23 (falta E2E
-con Chromium en CI), T25 y T27; T24 se cerró con el PR #28. Los errores, carga y reintento de T14 pasan
-a H24.
+con Chromium en CI), T25 y T27. T24 se incorporó con el PR #28. Los errores,
+carga y reintento de T14 se atendieron en H24.
 
 ## Orden sugerido
 
@@ -232,7 +251,7 @@ a H24.
    ([políticas](politicas-pedidos.md)).
 3. Ensayar un ciclo real con cocina y reparto, completar rendimientos y calibrar
    la impresión de etiquetas (cierre de T21).
-4. ~~Integración (T24)~~ — cerrada el 17 nov 2026. Completar E2E (T25), robustez de formularios (H24) y
+4. ~~Integración (T24)~~ — incorporada con el PR #28. Completar E2E (T25) y
    limpieza (T27).
 
 En todos los bloques se deben conservar los menús y platillos existentes.

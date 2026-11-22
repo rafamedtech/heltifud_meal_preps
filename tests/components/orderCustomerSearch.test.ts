@@ -15,14 +15,21 @@ function customer(id: string, nombre: string) {
 
 const plan = { id: 'plan-1', title: 'Plan Balance', isActive: true, slotTypes: ['COMIDA'], variants: [{ id: 'variant-1', title: '5 días', daysCount: 5, price: 1450, isActive: true }] };
 
+// Set by a test to make the plans request fail; `refreshPlans` stands in for the retry.
+const { failPlans, refreshPlans } = vi.hoisted(() => ({ failPlans: { value: false }, refreshPlans: vi.fn() }));
+
 mockNuxtImport('useFetch', () => (url: string) => Promise.resolve(url === '/api/customers'
-  ? { data: ref({ items: [customer('customer-1', 'Ana López')], nextCursor: null }), status: ref('success') }
-  : { data: ref([plan]), status: ref('success') }));
+  ? { data: ref({ items: [customer('customer-1', 'Ana López')], nextCursor: null }), status: ref('success'), error: ref(null), refresh: vi.fn() }
+  : failPlans.value
+    ? { data: ref([]), status: ref('error'), error: ref({ data: { statusMessage: 'Servicio no disponible' } }), refresh: refreshPlans }
+    : { data: ref([plan]), status: ref('success'), error: ref(null), refresh: refreshPlans }));
 mockNuxtImport('useOrders', () => () => ({ createOrder: vi.fn(), getOrderOptions }));
 mockNuxtImport('useCustomers', () => () => ({ getCustomers }));
 
 describe('New order: remote customer search', () => {
   beforeEach(() => {
+    failPlans.value = false;
+    refreshPlans.mockReset();
     getCustomers.mockReset().mockResolvedValue({ items: [customer('customer-250', 'Zoe Ramírez')], nextCursor: null });
     getOrderOptions.mockReset().mockRejectedValue({ data: { statusMessage: 'Sin semana abierta' } });
   });
@@ -50,6 +57,19 @@ describe('New order: remote customer search', () => {
     await vi.waitFor(() => expect(vm.customerOptions.map(option => option.label)).toEqual(['Ana López']));
     expect(vm.selectedCustomer?.nombre).toBe('Zoe Ramírez');
     expect(wrapper.text()).toContain('Zoe Ramírez');
+    wrapper.unmount();
+  });
+
+  it('shows a failed load with a retry instead of "no plans yet"', async () => {
+    failPlans.value = true;
+    const wrapper = await mountSuspended(NewOrder);
+    expect(wrapper.text()).toContain('No fue posible preparar el pedido');
+    expect(wrapper.text()).toContain('Servicio no disponible');
+    expect(wrapper.text()).not.toContain('Falta información para crear un pedido');
+
+    const retry = wrapper.findAll('button').find(button => button.text().includes('Reintentar'));
+    await retry!.trigger('click');
+    expect(refreshPlans).toHaveBeenCalledOnce();
     wrapper.unmount();
   });
 });

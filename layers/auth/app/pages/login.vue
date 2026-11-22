@@ -22,42 +22,44 @@ const isSubmitting = ref(false)
 const authError = ref("")
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
+  if (isSubmitting.value) return
   authError.value = ""
   isSubmitting.value = true
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: event.data.email,
-    password: event.data.password
-  })
+  try {
+    // A dropped connection can throw instead of returning `error`; both end in the alert below.
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: event.data.email,
+      password: event.data.password
+    })
+    if (error) throw error
 
-  isSubmitting.value = false
+    toast.add({
+      title: "Sesión iniciada",
+      description: "Redirigiendo al panel administrativo.",
+      color: "success",
+      icon: "i-lucide-circle-check"
+    })
 
-  if (error) {
-    authError.value = error.message || "No fue posible iniciar sesión."
+    currentSession.value = data.session ?? null
+
+    const redirectTo =
+      redirectInfo.pluck() ||
+      (typeof route.query.redirect === "string" ? route.query.redirect : "/admin")
+
+    await nextTick()
+    await navigateTo(redirectTo, { replace: true })
+  } catch (error) {
+    authError.value = loginErrorMessage(error)
     toast.add({
       title: "Error al iniciar sesión",
       description: authError.value,
       color: "error",
       icon: "i-lucide-circle-alert"
     })
-    return
+  } finally {
+    isSubmitting.value = false
   }
-
-  toast.add({
-    title: "Sesión iniciada",
-    description: "Redirigiendo al panel administrativo.",
-    color: "success",
-    icon: "i-lucide-check-circle"
-  })
-
-  currentSession.value = data.session ?? null
-
-  const redirectTo =
-    redirectInfo.pluck() ||
-    (typeof route.query.redirect === "string" ? route.query.redirect : "/admin")
-
-  await nextTick()
-  await navigateTo(redirectTo, { replace: true })
 }
 
 definePageMeta({
