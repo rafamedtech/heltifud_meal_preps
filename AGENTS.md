@@ -74,23 +74,21 @@ tipografía o iconos protegidos por las convenciones de las siguientes secciones
 Estas reglas del proyecto también se aplican al utilizar otras skills de diseño
 y prevalecen sobre sus ejemplos genéricos de personalización.
 
-## Pruebas en navegador
+## Uso del navegador
 
-Siempre que se deban realizar pruebas en navegador, reutilizar la sesión activa
-del usuario en su navegador habitual, como en la verificación de H01. Inspeccionar
-las pestañas abiertas y seleccionar la sesión correspondiente a Heltifud antes
-de iniciar las pruebas. Usar las herramientas de navegador disponibles para
-operar esa sesión.
+Siempre que una tarea de Heltifud requiera usar el navegador, usar Google Chrome
+con el perfil de trabajo existente «Rafael Amed (heltifud.com)», asociado a
+`admin@heltifud.com`. Antes de navegar, confirmar la cuenta en el selector de
+perfiles e inspeccionar sus pestañas abiertas. Reutilizar la pestaña de Heltifud
+que corresponda al entorno (producción o localhost) cuando se pueda conservar su
+estado. Si hace falta abrir otra, hacerlo en ese mismo perfil. Usar las
+herramientas de navegador disponibles para operar esa sesión.
 
-No iniciar por defecto un navegador aislado, un perfil nuevo ni otra sesión de
-autenticación. No cerrar la sesión activa, cambiar credenciales ni modificar
-datos del usuario para preparar las pruebas.
-
-Si no existe una sesión activa adecuada, pedir al usuario que inicie sesión en
-el navegador y continuar con esa sesión. Usar un contexto aislado únicamente
-cuando el usuario lo solicite expresamente o cuando la prueba requiera otro
-estado de autenticación; en ese caso, conservar la sesión activa y explicar la
-necesidad del contexto adicional.
+Nunca abrir Chrome en modo Invitado ni usar un navegador de invitado como
+alternativa. Si el perfil indicado no está disponible, pedir al usuario que lo
+abra. Si el proyecto requiere autenticación y la sesión no está activa, pedirle
+que inicie sesión en ese perfil. Conservar la sesión activa, sus credenciales y
+los datos del usuario durante las pruebas.
 
 Verificar el resultado visible después de cada acción relevante y conservar
 las pestañas del usuario y cualquier edición pendiente.
