@@ -280,3 +280,14 @@ node --import tsx --env-file=.env scripts/verify-customer-order-concurrency.ts
 The first script rolls back its fixtures. The second requires a currently
 sellable standard offer, creates a temporary contact/order, then deletes only
 those fixtures. See [stage 3 evidence](docs/verificacion-etapa-3-pedido-cliente.md).
+
+The `verify-*` scripts import server services that use Nuxt's `~~` alias. Keep
+`TSX_TSCONFIG_PATH=.nuxt/tsconfig.server.json` in `.env` (see `.env.example`)
+so tsx resolves it; without it they fail with `Cannot find package '~~'`.
+
+CI runs every integration script against a disposable PostgreSQL 17 (job
+«Migraciones y permisos»). Scripts that need real concurrent connections
+(idempotency, order workflow, customer concurrency) run after
+`scripts/seed-ci-open-week.ts`, which commits an open 2096 week and refuses to
+write unless `CI_DISPOSABLE_DATABASE=1` and the database has no customers,
+orders or open week. Never run it against production or the preview project.

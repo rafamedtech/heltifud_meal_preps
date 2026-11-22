@@ -77,6 +77,9 @@ jobs:
       NUXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
       NUXT_PUBLIC_SUPABASE_KEY: ci-placeholder-key
       NUXT_TELEMETRY_DISABLED: "1"
+      # Los servicios importan con el alias `~~`; tsx lo resuelve con el tsconfig
+      # de servidor que genera `nuxt prepare` (postinstall).
+      TSX_TSCONFIG_PATH: .nuxt/tsconfig.server.json
     steps:
       - uses: actions/checkout@v4
 
@@ -107,3 +110,28 @@ jobs:
 
       - name: Verificar permisos, RLS e historial
         run: node --import tsx scripts/verify-database-hardening.ts
+
+      # T24: servicios reales contra PostgreSQL, sin mocks de persistencia.
+      # Estos scripts trabajan en una transacción que siempre se revierte.
+      - name: Integración transaccional (alta, listado, personalización, pedido cliente, operación)
+        run: |
+          for script in order-create order-list order-personalization customer-order operations; do
+            echo "::group::verify-$script"
+            node --import tsx "scripts/verify-$script.ts"
+            echo "::endgroup::"
+          done
+
+      # Idempotencia, workflow y concurrencia usan conexiones reales simultáneas,
+      # así que necesitan una semana abierta confirmada. Solo en esta base desechable.
+      - name: Sembrar semana abierta (solo CI)
+        run: node --import tsx scripts/seed-ci-open-week.ts
+        env:
+          CI_DISPOSABLE_DATABASE: "1"
+
+      - name: Integración concurrente (idempotencia, workflow, envío cliente)
+        run: |
+          for script in order-idempotency order-workflow customer-order-concurrency; do
+            echo "::group::verify-$script"
+            node --import tsx "scripts/verify-$script.ts"
+            echo "::endgroup::"
+          done
