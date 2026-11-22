@@ -4,6 +4,7 @@ import type { Plan, DayOfWeek, SlotTypeValue, ComponentRoleValue } from '~~/laye
 import { chosenDaysError, dayOfWeekLabel, planOrderDeliveries } from '~~/layers/menu/shared/utils/orderDeliveries'
 import { roleFamily } from '~~/layers/menu/shared/utils/orderPersonalization'
 import { ORDER_POLICY } from '~~/layers/menu/shared/utils/orderPolicy'
+import { BUSINESS_TIME_ZONE } from '~~/layers/menu/shared/utils/weeklyCycle'
 import { CUSTOMER_DRAFT_KEY, fitChosenDays, offerChangedSinceDraft, readCustomerDraft, type CustomerDraft, type DraftOfferBaseline } from '~~/layers/menu/shared/utils/customerOrderDraft'
 
 useSeoMeta({ title: 'Tu pedido | Heltifud', robots: 'noindex, nofollow', referrer: 'no-referrer' })
@@ -17,6 +18,7 @@ const offer = ref<CustomerOffer | null>(null)
 const loading = ref(false)
 const saving = ref(false)
 const loadError = ref('')
+const expiredCutoff = ref('')
 const submitError = ref('')
 const restored = ref(false)
 const discardOpen = ref(false)
@@ -36,7 +38,8 @@ const deliveries = computed(() => offer.value ? planOrderDeliveries({ weekStart:
 const substitutionCount = computed(() => state.meals.filter(meal => state.days.includes(meal.dayOfWeek)).reduce((sum, meal) => sum + meal.components.filter(c => c.selectedId !== c.originalId).length, 0))
 const unverifiedCount = computed(() => state.meals.filter(meal => state.days.includes(meal.dayOfWeek)).flatMap(meal => meal.components)
   .filter(c => offer.value?.options.find(option => option.id === c.selectedId)?.conflict.status === 'unverified').length)
-const cutoffLabel = computed(() => offer.value ? new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/Tijuana' }).format(new Date(offer.value.cycle.orderCutoffAt)) : '')
+const cutoffFormatter = new Intl.DateTimeFormat('es-MX', { dateStyle: 'full', timeStyle: 'short', timeZone: BUSINESS_TIME_ZONE })
+const cutoffLabel = computed(() => offer.value ? cutoffFormatter.format(new Date(offer.value.cycle.orderCutoffAt)) : '')
 const mealLabel = (slotType: string) => ({ DESAYUNO: 'Desayuno', COMIDA: 'Comida', CENA: 'Cena', SNACK1: 'Snack 1', SNACK2: 'Snack 2' })[slotType] ?? slotType
 const roleLabel = (role: ComponentRoleValue) => role === 'PLATILLO_PRINCIPAL' ? 'Platillo principal' : role === 'ADICIONAL' ? 'Adicional' : 'Guarnición'
 const mealKey = (day: string, slot: string) => `${day}:${slot}`
@@ -58,7 +61,7 @@ let request = 0
 async function loadOffer() {
   if (!ready.value || !state.variantId || state.pending) return
   const current = ++request
-  loading.value = true; loadError.value = ''; offer.value = null
+  loading.value = true; loadError.value = ''; expiredCutoff.value = ''; offer.value = null
   try {
     const result = await $fetch<CustomerOffer>('/api/customer-order/offer', { query: { variantId: state.variantId, type: state.menuType },
       headers: state.invitation ? { 'x-customer-invitation': state.invitation } : {} })
@@ -80,7 +83,13 @@ async function loadOffer() {
         }) }
     })
   } catch (error) {
-    if (current === request) loadError.value = (error as { data?: { statusMessage?: string } }).data?.statusMessage ?? 'No pudimos cargar el menú. Reintenta.'
+    if (current === request) {
+      const response = (error as { data?: { statusMessage?: string; data?: { code?: string; orderCutoffAt?: string } } }).data
+      loadError.value = response?.statusMessage ?? 'No pudimos cargar el menú. Reintenta.'
+      if (response?.data?.code === 'OFFER_UNAVAILABLE' && response.data.orderCutoffAt) {
+        expiredCutoff.value = cutoffFormatter.format(new Date(response.data.orderCutoffAt))
+      }
+    }
   } finally { if (current === request) loading.value = false }
 }
 function resetOriginals() {
@@ -182,7 +191,7 @@ watch(state, persist, { deep: true })
         </div>
       </UPageCard>
       <UEmpty v-if="loading || !ready" loading title="Buscando el menú de tu semana" />
-      <UEmpty v-else-if="loadError || !offer" icon="i-lucide-calendar-x" title="Esta oferta no está disponible" :description="loadError || 'Selecciona un plan para ver las comidas disponibles.'">
+      <UEmpty v-else-if="loadError || !offer" icon="i-lucide-calendar-x" title="Esta oferta no está disponible" :description="expiredCutoff ? `Los pedidos cerraron el ${expiredCutoff} (hora de Tijuana).` : loadError || 'Selecciona un plan para ver las comidas disponibles.'">
         <template #actions><UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" label="Revisar disponibilidad" @click="loadOffer" /></template>
       </UEmpty>
       <template v-else>

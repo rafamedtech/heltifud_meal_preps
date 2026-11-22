@@ -1,9 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 import { randomBytes, randomUUID } from 'node:crypto';
-import { validateCustomerMeals } from '../../layers/menu/server/utils/customerOrders';
+import { getCustomerOffer, validateCustomerMeals } from '../../layers/menu/server/utils/customerOrders';
 import { hashOrderSecret, resolveOrderAccess } from '../../layers/menu/server/utils/orderAccess';
 import { customerOrderInputSchema, customerContactSchema, type CustomerOffer } from '../../layers/menu/shared/types/customerOrder';
 import { readCustomerDraft } from '../../layers/menu/shared/utils/customerOrderDraft';
+
+const { transaction } = vi.hoisted(() => ({ transaction: vi.fn() }));
+vi.mock('../../layers/menu/server/utils/prisma', () => ({ prisma: { $transaction: transaction } }));
 
 const id = randomUUID();
 const other = randomUUID();
@@ -15,6 +18,25 @@ const offer = {
 // Keep fixtures independent so a mutation test cannot change another test's input.
 const input = () => ({ days: ['LUNES'] as Array<'LUNES'>,
   meals: [{ dayOfWeek: 'LUNES' as const, slotType: 'COMIDA' as const, notes: '', components: [{ originalId: id, selectedId: id }] }] });
+
+describe('customer offer availability', () => {
+  it('reports the expired cutoff of the matching open cycle while rejecting the offer', async () => {
+    const orderCutoffAt = new Date('2026-01-03T05:00:00.000Z');
+    const tx = {
+      planVariant: { findUnique: vi.fn().mockResolvedValue({ isActive: true, plan: { isActive: true } }) },
+      weeklyMenu: { findFirst: vi.fn().mockResolvedValue({ cycle: { orderCutoffAt } }) },
+    };
+    transaction.mockImplementationOnce(work => work(tx));
+
+    await expect(getCustomerOffer(id, 'ESTANDAR')).rejects.toMatchObject({
+      statusCode: 409,
+      data: { code: 'OFFER_UNAVAILABLE', orderCutoffAt: orderCutoffAt.toISOString() },
+    });
+    expect(tx.weeklyMenu.findFirst).toHaveBeenCalledWith(expect.objectContaining({
+      where: { cycleScope: 'ESTANDAR', cycle: { status: 'OPEN' } },
+    }));
+  });
+});
 
 describe('customer order selection', () => {
   it('accepts the complete fixed structure', () => expect(validateCustomerMeals(input(), offer)).toHaveLength(1));
